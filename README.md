@@ -25,11 +25,11 @@
 > source( "CGD.stand-alone.R" )    # ソースファイルを読み込みます
 > a <- CGD$new()    # 連結ガウス分布クラスのオブジェクトを生成します
 >
-> # 連結分布の構成が既知の場合 (ほとんど無いと思いますが) は
-> # new() の引数に
-> #       mean = 平均値,
-> #       intervals = 連結分布の構成 (CGDInterval オブジェクトの list)
-> # を与えてください
+>    # 連結分布の構成が既知の場合 (ほとんど無いと思いますが) は
+>    # new() の引数に
+>    #       mean = 平均値,
+>    #       intervals = 連結分布の構成 (CGDInterval オブジェクトの list)
+>    # を与えてください
 >
 > a$set.waypoints(
 >   data.frame(
