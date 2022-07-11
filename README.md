@@ -139,7 +139,7 @@ Field "m.sd":
 
 1. ある有限個の正規分布の集合 S<sub>N</sub> = { N<sub>1</sub>, N<sub>2</sub>, ..., N<sub>n</sub> } の要素である各正規分布 N<sub>i</sub> ( 1 ≦ i ≦ n ) に対して、
 区間 [0, 1] の部分閉区間 I<sub>1</sub>, I<sub>2</sub>, ..., I<sub>n</sub> ( ⊂ [0, 1] ) をそれぞれ割り当てる。各部分閉区間は互いに重複しないようにする。
-つまり、∀i, j, i ≠ j ⇒ I<sub>i</sub> ∩ I<sub>j</sub> = φ となるようにする。
+つまり、∀i, j, i ≠ j ⇒ I<sub>i</sub> ∩ I<sub>j</sub> = ∅ となるようにする。
 割り当てる区間は1点からなる区間 [x, x] (x ∈ [0, 1]) も許される。
 なお、集合 S の要素には、N<sub>i</sub> = N<sub>j</sub> ( i ≠ j ) なる同一の分布があってもよい。
 
