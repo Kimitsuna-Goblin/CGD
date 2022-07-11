@@ -123,8 +123,9 @@ Field "m.sd":
 [CGD.stand-alone.R](https://github.com/Kimitsuna-Goblin/CGD/blob/master/CGD.stand-alone.R) - メインのR言語のソースファイルです。単独で動きます。
 
 [common.R](https://github.com/Kimitsuna-Goblin/CGD/blob/master/common.R) - おまけの自作ライブラリ (抜粋公開版) です。
+<br>
 もとの GCD.R は、このライブラリを参照していましたが、このライブラリから必要な関数を CGD.stand-alone.R にコピーしましたので、別に無くても動きます。
-誰かの役に立つ関数があるかも知れないということもあり、おまけで公開しました。
+誰かの役に立つ関数があるかも知れないということもあって、おまけで公開しました。
 
 
 ### 連結ガウス分布の構成 - How to construct a connected Gaussian distribution
