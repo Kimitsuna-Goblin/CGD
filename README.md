@@ -124,8 +124,9 @@ Field "m.sd":
 
 [common.R](https://github.com/Kimitsuna-Goblin/CGD/blob/master/common.R) - おまけの自作ライブラリ (抜粋公開版) です。
 <br>
-もとの GCD.R は、この common.R を参照していましたが、この common.R の中の必要な関数は CGD.stand-alone.R にコピーしましたので、このファイルは別に無くても動きます。
-誰かの役に立つ関数があるかも知れないということもあって、おまけで公開しました。
+著作者のローカル環境では、CGD.stand-alone.R の元になった GCD.R は、この common.R を参照していましたが、
+common.R の中にある GCD.R に必要だった関数は、すべて CGD.stand-alone.R にコピーしました。なので、このファイルは別に無くても動きます。
+ということで、別にこのファイルは無くてもいいのですが、誰かの役に立つ関数があるかも知れないということもあって、おまけで公開しました。
 
 
 ### 連結ガウス分布の構成 - How to construct a connected Gaussian distribution
