@@ -124,7 +124,7 @@ Field "m.sd":
 
 [common.R](https://github.com/Kimitsuna-Goblin/CGD/blob/master/common.R) - おまけの自作ライブラリ (抜粋公開版) です。
 <br>
-もとの GCD.R は、このライブラリを参照していましたが、このライブラリから必要な関数を CGD.stand-alone.R にコピーしましたので、別に無くても動きます。
+もとの GCD.R は、この common.R を参照していましたが、この common.R の中の必要な関数は CGD.stand-alone.R にコピーしましたので、このファイルは別に無くても動きます。
 誰かの役に立つ関数があるかも知れないということもあって、おまけで公開しました。
 
 
