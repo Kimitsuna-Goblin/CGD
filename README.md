@@ -118,6 +118,7 @@ Field "m.sd":
 ### ファイル - Files
 
 このソフトウェア (ライブラリ) は以下のファイルから成り立ちます。
+<br>
 なお、以下のソースファイルはすべて4文字タブで整形しています。
 
 [CGD.stand-alone.R](https://github.com/Kimitsuna-Goblin/CGD/blob/master/CGD.stand-alone.R) - メインのR言語のソースファイルです。単独で動きます。
