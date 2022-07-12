@@ -143,8 +143,10 @@ Field "m.sd":
 
 つまり、
 
-$$I = \left\{ I_i \subset [0, 1] | 1 \leq i \leq n, I_i=[a_i, b_i] \left( 0 \leq a \leq b \leq 1 \right), a_1=0, b_n=1,
-      i \neq j \Rightarrow I_i \cap I_j = \varnothing  \right\}$$
+$$
+I = \left\lbrace I_i \subset [0, 1] | 1 \leq i \leq n, I_i=[a_i, b_i] ( 0 \leq a \leq b \leq 1 ), a_1=0, b_n=1,
+      i \neq j \Rightarrow I_i \cap I_j = \varnothing \right\rbrace
+$$
 
 を満たすような、閉区間の集合 I を用意する (便宜上、I の先頭の要素 I<sub>1</sub> に 0 が含まれ、最後の要素 I<sub>n</sub> に 1 が含まれるものとする)。
 その要素 I<sub>i</sub> は、1点のみからなる区間 [a<sub>i</sub>, a<sub>i</sub>] ( 0 ≦ a<sub>i</sub> ≦ 1 ) でもよい。
