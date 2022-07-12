@@ -161,7 +161,7 @@ I = { I<sub>i</sub> ⊂ [0, 1] | 1 ≦ i ≦ n, I<sub>i</sub> = [a<sub>i</sub>, 
 その要素の正規分布 N<sub>i</sub> ( 1 ≦ i ≦ n ) に、
 閉区間 I<sub>i</sub> をそれぞれ1つずつ割り当てる。
 
-このとき、集合 N の要素となる正規分布には、以下の条件を課す。
+このとき、集合 N の要素には、以下の条件を課す。
 
 + 任意の2つの N<sub>i</sub>, N<sub>j</sub> ( i ≠ j ) について、N<sub>i</sub>, N<sub>j</sub> に割り当てられた閉区間 I<sub>i</sub>, I<sub>j</sub> の範囲において、
 N<sub>i</sub>, N<sub>j</sub> の累積分布関数 Φ<sub>i</sub>, Φ<sub>j</sub> の定義域が互いに重ならないこと。
