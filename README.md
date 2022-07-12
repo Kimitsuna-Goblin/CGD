@@ -188,7 +188,7 @@ N<sub>i</sub>, N<sub>j</sub> の累積分布関数 Φ<sub>i</sub>, Φ<sub>j</sub
 これまでの工程によって、与えられた経路上の点をすべて通過する、累積分布関数の不連続な断片が構成できたので、あとはそれらの断片を連続になるように接続すればよい。
 そこで、最終的な工程として、
 
-3. 隣接する2つの区間 I<sub>i</sub> = [a<sub>i</sub>, b<sub>i</sub>], I<sub>i+1</sub> = [a<sub>i+1</sub>, b<sub>i+1</sub>] ( 1 ≦ i ≦ n - 1 ) に対して、
+3. 隣接する2つの区間 I<sub>i</sub> = [a<sub>i</sub>, b<sub>i</sub>], I<sub>i+1</sub> = [a<sub>i+1</sub>, b<sub>i+1</sub>] ( 1 ≦ i ≦ n - 1 ) に対し、
 Ψ<sub>i</sub>( b<sub>i</sub> ) = Φ<sub>i</sub>( b<sub>i</sub> ), Ψ<sub>i</sub>( a<sub>i+1</sub> ) = Φ<sub>i+1</sub>( a<sub>i+1</sub> ) を満たすような、
 連続な単調増加関数 Ψ<sub>i</sub> を適当に定める。
 
