@@ -154,7 +154,7 @@ $$
 すなわち、$1 \leq i \leq n - 1$ に対して、$b_i ＜ a_{i+1}$ となるように構成しておくことが望ましい
  (以下、$I$ はそのように構成されているものとする)。
 
-ここで、累積分布関数の経路 $W = \left\lbrace ( x_j, p_j ) \in ( \mathbb{R}, [0, 1] ) | 1 \leq j \leq m \right\rbrace$ が与えられているときは、
+ここで、累積分布関数の経路 (クォンタイル) $W = \left\lbrace ( x_j, p_j ) \in ( \mathbb{R}, [0, 1] ) | 1 \leq j \leq m \right\rbrace$ が与えられているときは、
 その経路にあるすべての確率 $p_j ( 1 \leq j \leq m )$ の値が、いずれかの $I_i$ に必ず含まれるように取る
  (便宜上、確率 $\left\lbrace p_j \right\rbrace$ は昇順に並んでいるものとする)。
 このとき、$n = m$ として、1つの閉区間 $I_i ( 1 \leq i \leq n )$ に確率 $p_i$ が1つだけ含まれるように $I$ を構成すれば、後の工程も容易になる。
