@@ -161,7 +161,7 @@ I = { I<sub>i</sub> ⊂ [0, 1] | 1 ≦ i ≦ n, I<sub>i</sub> = [a<sub>i</sub>, 
 その要素の正規分布 N<sub>i</sub> ( 1 ≦ i ≦ n ) に、
 閉区間 I<sub>i</sub> をそれぞれ1つずつ割り当てる。
 
-このとき、集合 N の要素には、以下の条件を課す。
+このとき、集合 N の要素には、以下の2つの条件を課す。
 
 + 任意の2つの N<sub>i</sub>, N<sub>j</sub> ( i ≠ j ) について、N<sub>i</sub>, N<sub>j</sub> にそれぞれ割り当てられた閉区間 I<sub>i</sub>, I<sub>j</sub> の範囲においては、
 N<sub>i</sub>, N<sub>j</sub> の累積分布関数 Φ<sub>i</sub>, Φ<sub>j</sub> の定義域が互いに重ならないこと。
@@ -169,7 +169,7 @@ N<sub>i</sub>, N<sub>j</sub> の累積分布関数 Φ<sub>i</sub>, Φ<sub>j</sub
 + 累積分布関数を通過させる経路 W = { ( x<sub>j</sub>, p<sub>j</sub> ) } が与えられており、
 経路の確率 p<sub>j</sub> が閉区間 I<sub>i</sub> に含まれているときは、
 その区間が割り当てられている確率分布 N<sub>i</sub> の累積分布関数 Φ<sub>i</sub> が、必ずその経路上の点を通過すること。
-すなわち、∀j, p<sub>j</sub> ∈ I<sub>i</sub> ⇒ Φ<sub>i</sub>( x<sub>j</sub> ) = p<sub>j</sub> が成り立つこと。
+すなわち、p<sub>j</sub> ∈ I<sub>i</sub> ⇒ Φ<sub>i</sub>( x<sub>j</sub> ) = p<sub>j</sub> が成り立つこと。
 
 なお、集合 N の要素の中には、N<sub>i</sub> = N<sub>j</sub> ( i ≠ j ) なる同一の分布が存在してもよい。
 <br>
