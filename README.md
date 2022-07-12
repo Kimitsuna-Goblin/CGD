@@ -146,7 +146,7 @@ I = { I<sub>i</sub> ⊂ [0, 1] | 1 ≦ i ≦ n, I<sub>i</sub> = [a<sub>i</sub>, 
 								i ≠ j ⇒ I<sub>i</sub> ∩ I<sub>j</sub> = ∅, 0 ∈ I<sub>1</sub>, 1 ∈ I<sub>n</sub> }
 								
 を満たすような、閉区間の集合 I を用意する (便宜上、I の先頭の要素 I<sub>1</sub> に 0 が含まれ、最後の要素 I<sub>n</sub> に 1 が含まれるものとする)。
-I<sub>i</sub> は、1点のみからなる区間 [a<sub>i</sub>, a<sub>i</sub>] ( 0 ≦ a<sub>i</sub> ≦ 1 ) でもよい。
+その要素 I<sub>i</sub> は、1点のみからなる区間 [a<sub>i</sub>, a<sub>i</sub>] ( 0 ≦ a<sub>i</sub> ≦ 1 ) でもよい。
 
 累積分布関数を通過させる経路上の確率 p<sub>1</sub>, p<sub>2</sub>, ... , p<sub>m</sub> が与えられているときは、
 それらすべての確率 p<sub>j</sub> ( 1 ≦ j ≦ m ) の値が、いずれかの I<sub>i</sub> に必ず含まれるように取る。
