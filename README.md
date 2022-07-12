@@ -143,23 +143,27 @@ Field "m.sd":
 つまり、
 
 I = { I<sub>i</sub> ⊂ [0, 1] | 1 ≦ i ≦ n, I<sub>i</sub> = [a<sub>i</sub>, b<sub>i</sub>] ( 0 ≦ a<sub>i</sub> ≦ b<sub>i</sub> ≦ 1 ),
-								a<sub>1</sub> = 0, b<sub>n</sub> = 1, i ≠ j ⇒ I<sub>i</sub> ∩ I<sub>j</sub> = ∅ }
-								
+                                a<sub>1</sub> = 0, b<sub>n</sub> = 1, i ≠ j ⇒ I<sub>i</sub> ∩ I<sub>j</sub> = ∅ }
+
 を満たすような、閉区間の集合 I を用意する (便宜上、I の先頭の要素 I<sub>1</sub> に 0 が含まれ、最後の要素 I<sub>n</sub> に 1 が含まれるものとする)。
 その要素 I<sub>i</sub> は、1点のみからなる区間 [a<sub>i</sub>, a<sub>i</sub>] ( 0 ≦ a<sub>i</sub> ≦ 1 ) でもよい。
+また、それぞれの閉区間 I<sub>i</sub> は昇順に並んでいることが望ましい。
+すなわち、1 ≦ i ≦ n - 1 に対して、b<sub>i</sub> ＜ a<sub>i+1</sub> となるように構成しておくことが望ましい
+ (以下、I はそのように構成されているものとする)。
 
 ここで、累積分布関数を通過させる経路上の確率 p<sub>1</sub>, p<sub>2</sub>, ... , p<sub>m</sub> が与えられているときは、
-それらすべての確率 p<sub>j</sub> ( 1 ≦ j ≦ m ) の値が、いずれかの I<sub>i</sub> に必ず含まれるように取る。
-このとき、n = m として、1つの閉区間 I<sub>i</sub> ( 1 ≦ i ≦ n ) に確率 p<sub>i</sub> が1つだけ含まれるように I を構成すれば、後の工程も含めて容易になる。
+それらすべての確率 p<sub>j</sub> ( 1 ≦ j ≦ m ) の値が、いずれかの I<sub>i</sub> に必ず含まれるように取る ({ p<sub>j</sub> } は昇順に並んでいるものとする)。
+このとき、n = m として、1つの閉区間 I<sub>i</sub> ( 1 ≦ i ≦ n ) に確率 p<sub>i</sub> が1つだけ含まれるように I を構成すれば、後の工程も容易になる。
 ただし、後の工程が実現可能であれば、1つの閉区間 I<sub>i</sub> に複数の確率 p<sub>j</sub>, p<sub>j+1</sub>, p<sub>j+2</sub>, ... が含まれるように構成してもよい。
 
 
-2. 閉区間の集合 I の要素数と等しい、n個 の正規分布からなる集合 N = { N<sub>1</sub>, N<sub>2</sub>, ..., N<sub>n</sub> } を用意して、
+2. 閉区間の集合 I の要素数と等しい、n個の正規分布からなる集合 N = { N<sub>1</sub>, N<sub>2</sub>, ..., N<sub>n</sub> } を用意して、
 その要素の正規分布 N<sub>i</sub> ( 1 ≦ i ≦ n ) に、
 閉区間 I<sub>i</sub> をそれぞれ1つずつ割り当てる。
 
 このとき、集合 N の要素となる正規分布には、以下の条件を課す。
 
++ すべての N<sub>i</sub> に
 
 なお、N の要素の中には、N<sub>i</sub> = N<sub>j</sub> ( i ≠ j ) なる同一の分布があってもよい。
 
