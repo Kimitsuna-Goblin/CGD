@@ -154,7 +154,7 @@ $$
 すなわち、$1 \leq i \leq n - 1$ に対して、$b_i ＜ a_{i+1}$ となるように構成しておくことが望ましい
  (以下、$I$ はそのように構成されているものとする)。
 
-ここで、累積分布関数を通過させる経路 $W = \left\lbrace ( x_j, p_j ) \in ( \mathbb{R}, [0, 1] ) | 1 \leq j \leq m \right\rbrace$ が与えられているときは、
+ここで、累積分布関数の経路 $W = \left\lbrace ( x_j, p_j ) \in ( \mathbb{R}, [0, 1] ) | 1 \leq j \leq m \right\rbrace$ が与えられているときは、
 その経路のすべての確率 $p_j ( 1 \leq j \leq m )$ の値が、いずれかの $I_i$ に必ず含まれるように取る
  (便宜上、確率 $\left\lbrace p_j \right\rbrace$ は昇順に並んでいるものとする)。
 このとき、$n = m$ として、1つの閉区間 $I_i ( 1 \leq i \leq n )$ に確率 $p_i$ が1つだけ含まれるように $I$ を構成すれば、後の工程も容易になる。
@@ -172,7 +172,7 @@ $N_i, N_j$ の累積分布関数 $\Phi_i, \Phi_j$ の定義域が互いに重な
 すなわち、
 $\left\lbrace \Phi_i^{-1}( p \in I_i ) \right\rbrace ∩ \left\lbrace \Phi_j^{-1}( p \in I_j ) \right\rbrace = \varnothing$
 であること。
-+ 累積分布関数を通過させる経路 $W = \left\lbrace ( x_j, p_j ) \right\rbrace$ が与えられており、
++ 経路 $W = \left\lbrace ( x_j, p_j ) \right\rbrace$ が与えられており、
 経路の確率 $p_j$ が閉区間 $I_i$ に含まれているときは、
 その区間が割り当てられている確率分布 $N_i$ の累積分布関数 $\Phi_i$ が、必ずその経路上の点を通過すること。
 すなわち、$p_j \in I_i ⇒ \Phi_i( x_j ) = p_j$ が成り立つこと。
