@@ -169,7 +169,9 @@ $$
 
 + 任意の2つの $N_i, N_j ( i \neq j )$ について、$N_i, N_j$ に割り当てられた閉区間 $I_i, I_j$ の範囲においては、
 $N_i, N_j$ の累積分布関数 $\Phi_i, \Phi_j$ の定義域が互いに重ならないこと。
-すなわち、$\left\lbrace \Phi_i<sup>-1</sup>( p \in I_i ) \right\rbrace ∩ \left\lbrace \Phi_j<sup>-1</sup>( p \in I_j ) \right\rbrace = ∅$ であること。
+すなわち、
+$\left\lbrace \Phi_i<sup>-1</sup>( p \in I_i ) \right\rbrace ∩ \left\lbrace \Phi_j<sup>-1</sup>( p \in I_j ) \right\rbrace = \varnothing$
+であること。
 + 累積分布関数を通過させる経路 $W = \left\lbrace ( x_j, p_j ) \right\rbrace$ が与えられており、
 経路の確率 $p_j$ が閉区間 $I_i$ に含まれているときは、
 その区間が割り当てられている確率分布 $N_i$ の累積分布関数 $\Phi_i$ が、必ずその経路上の点を通過すること。
