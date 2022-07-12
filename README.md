@@ -122,12 +122,12 @@ Field "m.sd":
 <br>
 なお、以下のソースファイルはすべて4文字タブで整形しています。
 
-[CGD.stand-alone.\mathbb{R}](https://github.com/Kimitsuna-Goblin/CGD/blob/master/CGD.stand-alone.\mathbb{R}) - メインの\mathbb{R}言語のソースファイルです。単独で動きます。
+[CGD.stand-alone.R](https://github.com/Kimitsuna-Goblin/CGD/blob/master/CGD.stand-alone.R) - メインのR言語のソースファイルです。単独で動きます。
 
-[common.\mathbb{R}](https://github.com/Kimitsuna-Goblin/CGD/blob/master/common.\mathbb{R}) - おまけの自作ライブラリ (抜粋公開版) です。
+[common.R](https://github.com/Kimitsuna-Goblin/CGD/blob/master/common.R) - おまけの自作ライブラリ (抜粋公開版) です。
 <br>
-著作者のローカルPC環境では、CGD.stand-alone.\mathbb{R} の元になった GCD.\mathbb{R} は、この common.\mathbb{R} を参照していました。
-ですが、common.\mathbb{R} の中にある GCD.\mathbb{R} に必要だった関数は、すべて CGD.stand-alone.\mathbb{R} にコピーしました。
+著作者のローカルPC環境では、CGD.stand-alone.R の元になった GCD.R は、この common.R を参照していました。
+ですが、common.R の中にある GCD.R に必要だった関数は、すべて CGD.stand-alone.R にコピーしました。
 <br>
 なので、このファイルは別に無くても動きます。
 <br>
