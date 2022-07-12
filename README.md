@@ -143,8 +143,8 @@ Field "m.sd":
 
 つまり、
 
-I = { I<sub>i</sub> ⊂ [0, 1] | 1 ≦ i ≦ n, I<sub>i</sub> = [a<sub>i</sub>, b<sub>i</sub>] ( 0 ≦ a<sub>i</sub> ≦ b<sub>i</sub> ≦ 1 ),
-                                a<sub>1</sub> = 0, b<sub>n</sub> = 1, i ≠ j ⇒ I<sub>i</sub> ∩ I<sub>j</sub> = ∅ }
+$$I = \left\{ I_i \subset [0, 1] | 1 \leq i \leq n, I_i=[a_i, b_i] \left( 0 \leq a \leq b \leq 1 \right), a_1=0, b_n=1,
+      i \neq j \Rightarrow I_i \cap I_j = \varnothing  \right\}$$
 
 を満たすような、閉区間の集合 I を用意する (便宜上、I の先頭の要素 I<sub>1</sub> に 0 が含まれ、最後の要素 I<sub>n</sub> に 1 が含まれるものとする)。
 その要素 I<sub>i</sub> は、1点のみからなる区間 [a<sub>i</sub>, a<sub>i</sub>] ( 0 ≦ a<sub>i</sub> ≦ 1 ) でもよい。
@@ -183,7 +183,7 @@ N<sub>i</sub>, N<sub>j</sub> の累積分布関数 Φ<sub>i</sub>, Φ<sub>j</sub
 累積分布関数 Φ( x ) = p, Φ( μ ) = 0.5 が成り立つような正規分布は一意に定まるので、
 すべての閉区間 I<sub>i</sub> が1点のみからなる場合は、
 そのような正規分布をうまく探して集めることによって、平均値をすべて揃えた正規分布で集合 N を構成することができる。
-本ライブラリでは、そのような方法で、集合 N を構成している。
+本ライブラリでは、そのような方法で集合 N を構成している。
 
 これまでの工程によって、与えられた経路上の点をすべて通過する、累積分布関数の不連続な断片が構成できたので、あとはそれらの断片を連続になるように接続すればよい。
 そこで、最終的な工程として、
@@ -191,6 +191,9 @@ N<sub>i</sub>, N<sub>j</sub> の累積分布関数 Φ<sub>i</sub>, Φ<sub>j</sub
 3. 隣接する2つの区間 I<sub>i</sub> = [a<sub>i</sub>, b<sub>i</sub>], I<sub>i+1</sub> = [a<sub>i+1</sub>, b<sub>i+1</sub>] ( 1 ≦ i ≦ n - 1 ) に対し、
 Ψ<sub>i</sub>( b<sub>i</sub> ) = Φ<sub>i</sub>( b<sub>i</sub> ), Ψ<sub>i</sub>( a<sub>i+1</sub> ) = Φ<sub>i+1</sub>( a<sub>i+1</sub> ) を満たすような、
 連続な単調増加関数 Ψ<sub>i</sub> を適当に定める。
+
+以上のように関数 Φ<sub>i</sub>, Ψ<sub>i</sub> を定めたとき、
+関数 Φ<sub>c</sub> =
 
 これらの、1つの正規分布に対して1つずつ独立的に割り当てられた閉区間を「独立区間」と呼ぶ。
 そして、独立区間における連結ガウス分布の累積分布関数は、当該区間を割り当てられた正規分布の累積分布関数に一致するように定める。
