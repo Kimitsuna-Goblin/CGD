@@ -143,7 +143,7 @@ Field "m.sd":
 つまり、
 
 I = { I<sub>i</sub> ⊂ [0, 1] | 1 ≦ i ≦ n, I<sub>i</sub> = [a<sub>i</sub>, b<sub>i</sub>] ( 0 ≦ a<sub>i</sub> ≦ b<sub>i</sub> ≦ 1 ),
-								0 ∈ I<sub>1</sub>, 1 ∈ I<sub>n</sub>, i ≠ j ⇒ I<sub>i</sub> ∩ I<sub>j</sub> = ∅ }
+								a<sub>1</sub> = 0, b<sub>n</sub> = 1, i ≠ j ⇒ I<sub>i</sub> ∩ I<sub>j</sub> = ∅ }
 								
 を満たすような、閉区間の集合 I を用意する (便宜上、I の先頭の要素 I<sub>1</sub> に 0 が含まれ、最後の要素 I<sub>n</sub> に 1 が含まれるものとする)。
 その要素 I<sub>i</sub> は、1点のみからなる区間 [a<sub>i</sub>, a<sub>i</sub>] ( 0 ≦ a<sub>i</sub> ≦ 1 ) でもよい。
