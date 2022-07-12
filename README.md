@@ -144,7 +144,7 @@ Field "m.sd":
 I = { I<sub>i</sub> ⊂ [0, 1] | 1 ≦ i ≦ n, I<sub>i</sub> = [a<sub>i</sub>, b<sub>i</sub>] ( 0 ≦ a<sub>i</sub> ≦ b<sub>i</sub> ≦ 1 ),
 								i ≠ j ⇒ I<sub>i</sub> ∩ I<sub>j</sub> = ∅, 0 ∈ I<sub>1</sub>, 1 ∈ I<sub>n</sub> }
 を満たすような、閉区間の集合 I を用意する (便宜上、I の先頭の要素 I<sub>1</sub> に 0 が含まれ、最後の要素 I<sub>n</sub> に 1 が含まれるものとする)。
-I<sub>i</sub> は、ただ1点からなる区間 [a, a] ( 0 ≦ a ≦ 1 ) でもよい。
+I<sub>i</sub> は、ただ1点からなる区間 [a<sub>i</sub>, a<sub>i</sub>] ( 0 ≦ a<sub>i</sub> ≦ 1 ) でもよい。
 
 連結ガウス分布の累積分布関数を通過させる経路の確率 p<sub>1</sub>, p<sub>2</sub>, ... , p<sub>m</sub> が与えられているときは、
 それらのすべての確率 p<sub>j</sub> ( 1 ≦ j ≦ m ) の値が、いずれかの I<sub>i</sub> に必ず含まれるように取る。
