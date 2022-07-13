@@ -138,7 +138,7 @@ Field "m.sd":
 ということで、別に common.R は無くてもいいのですが、誰かの役に立つ関数があるかも知れないということもあって、おまけで公開しました。
 
 
-### 連結ガウス分布の構成方法 (一般の場合) - How to construct a connected Gaussian distribution (generally)
+### 連結ガウス分布の構成方法 (一般の場合) - How to construct a Connected Gaussian Distribution (generally)
 
 連結ガウス分布は次のようにして構成されます。
 
@@ -223,7 +223,7 @@ $$
 2つの独立区間を接続していることから、これを「接続区間」と呼ぶ。
 
 
-### 本ライブラリにおける連結ガウス分布の構成方法 - The way to construct a connected Gaussian distribution in this library
+### 本ライブラリにおける連結ガウス分布の構成方法 - The way to construct a Connected Gaussian Distribution in this library
 
 
 
