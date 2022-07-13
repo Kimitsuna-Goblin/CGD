@@ -138,7 +138,7 @@ Field "m.sd":
 ということで、別に common.R は無くてもいいのですが、誰かの役に立つ関数があるかも知れないということもあって、おまけで公開しました。
 
 
-### 一般的な連結ガウス分布の構成方法 - How to construct a connected Gaussian distribution generally
+### 連結ガウス分布の構成方法 (一般の場合) - How to construct a connected Gaussian distribution (generally)
 
 連結ガウス分布は次のようにして構成されます。
 
