@@ -225,10 +225,11 @@ $$
 
 ### 本ライブラリにおける連結ガウス分布の構成方法 - The way to construct a Connected Gaussian Distribution in this library
 
-#### 独立区間と正規分布の構成
+#### 独立区間と正規分布の構成 - Constructing indipendent intervals and normal distributions
 
 
-#### 接続区間の構成
+
+#### 接続区間の構成 - Constructing connecting intervals
 
 
 ## 参考資料 - References
