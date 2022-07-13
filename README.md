@@ -138,7 +138,7 @@ Field "m.sd":
 ということで、別に common.R は無くてもいいのですが、誰かの役に立つ関数があるかも知れないということもあって、おまけで公開しました。
 
 
-### 連結ガウス分布の構成 - How to construct a connected Gaussian distribution
+### 一般的な連結ガウス分布の構成方法 - How to construct a connected Gaussian distribution generally
 
 連結ガウス分布は次のようにして構成されます。
 
@@ -221,6 +221,10 @@ $$
 連結ガウス分布の累積分布関数を単独で独立的に負担していることから、これを「独立区間」と呼ぶ。
 それに対して、関数 $\Psi_i(x) ( 1 \leq i \leq n - 1 )$ が累積分布関数を負担している開区間は、
 2つの独立区間を接続していることから、これを「接続区間」と呼ぶ。
+
+
+### 本ライブラリにおける連結ガウス分布の構成方法 - The way to construct a connected Gaussian distribution in this library
+
 
 
 ## 参考資料 - References
