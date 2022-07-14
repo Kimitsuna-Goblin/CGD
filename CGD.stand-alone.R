@@ -126,8 +126,8 @@ CGD <- setRefClass(
 		},
 
 ###############################################################################
-# 通過点を設定する
-# @param	waypoints		通過点の data.frame( q = 通過点のX座標 (クォンタイル), p = その点における確率 )
+# 累積分布関数の経路 (クォンタイル) を設定する
+# @param	waypoints		経路の data.frame( q = 経路のX座標 (クォンタイル), p = その点における確率 )
 #							X座標 (クォンタイル) は昇順にソートしておくこと。平均値は p = 0.5 の行に設定すること
 # @return	計算結果
 ###############################################################################
@@ -137,9 +137,9 @@ CGD <- setRefClass(
 			intervals <<- list()
 			m.sd <<- -Inf
 
-			wp <- data.frame( q = numeric(), p = numeric() )	# 平均値を除いた通過点
+			wp <- data.frame( q = numeric(), p = numeric() )	# 平均値を除いた経路
 
-			# 平均値および、平均値を除いた通過点の data.frame を取得
+			# 平均値および、平均値を除いた経路の data.frame を取得
 			j <- 1
 			is.set.mean <- FALSE
 			for ( i in 1:nrow( waypoints ) )
@@ -150,9 +150,23 @@ CGD <- setRefClass(
 					mean <<- waypoints[i,]$q
 					is.set.mean <- TRUE
 				}
+				else if ( waypoints$p[i] < 0 || waypoints$p[i] > 1 )
+				{
+					# 確率が負または1を超えている
+					warning( paste( "Warning: probability" , waypoints$p[i] , "is out of range [0, 1]." ) )
+				}
+				else if ( waypoints$q[i] == -Inf || waypoints$q[i] == Inf )
+				{
+					# X座標が±∞の点は無視 (ただし、確率が 0 または 1 でない場合は警告)
+					if ( ( waypoints$q[i] == -Inf &&  waypoints$p[i] != 0 ) ||
+							( waypoints$q[i] == Inf && waypoints$p[i] != 1 ) )
+					{
+						warning( "Warning: q is infinite (-Inf or Inf) but probability is not 0 or 1." )
+					}
+				}
 				else
 				{
-					# 通過点を取得
+					# 経路を取得
 					wp[j,]$q <- waypoints[i,]$q
 					wp[j,]$p <- waypoints[i,]$p
 					j <- j + 1
@@ -163,7 +177,7 @@ CGD <- setRefClass(
 				warning( "Warning: q for mean (p = 0.5) is not given." )
 			}
 
-			# 通過点を通る標準偏差を取得
+			# 経路上の点を通る標準偏差を取得
 			sds <- sd.mqp.norm( rep( mean, nrow( wp ) ), wp$q, wp$p )
 
 			# 連結区間を設定
@@ -193,7 +207,7 @@ CGD <- setRefClass(
 					q.ind <- c( q.conn.prev[2], Inf )
 				}
 
-				# 標準偏差を変えずに次の通過点を通れるか探索
+				# 標準偏差を変えずに次の経路上の点を通れるか探索
 				if ( i < nrow( wp ) )
 				{
 					j <- i + 1
@@ -202,8 +216,8 @@ CGD <- setRefClass(
 					{
 						if ( sds[i] == sds[j] )
 						{
-							# 標準偏差が次の通過点を通る分布の標準偏差と等しい場合
-							# 独立区間を次の通過点まで延長
+							# 標準偏差が次の経路上の点を通る分布の標準偏差と等しい場合
+							# 独立区間を次の経路上の点まで延長
 							q.ind[2] <- wp[j,]$q
 							p.ind[2] <- pnorm( wp[j,]$q, mean, sds[i] )
 							extended.to <- j
@@ -226,11 +240,11 @@ CGD <- setRefClass(
 				# 次の区間との接続区間を取得
 				if ( i == nrow( wp ) )
 				{
-					# 最後の通過点まで来たので、次の区間は無し
+					# 経路の最後の点まで来たので、次の区間は無し
 					p.conn.next <- c( 1, 1 )
 					q.conn.next <- c( Inf, Inf )
 
-					# 最後の通過点まで通過できた場合、独立区間は無限大まで
+					# 経路の最後の点まで通過できた場合、独立区間は無限大まで
 					p.ind[2] <- 1
 					q.ind[2] <- Inf
 				}
