@@ -148,7 +148,7 @@ Field "m.sd":
 つまり、
 
 $$
-I = \left\lbrace I_i \subset [0, 1] | I_i=[a_i, b_i] ( 0 \leq a_i \leq b_i \leq 1, 1 \leq i \leq n), a_1=0, b_n=1,
+I = \left\lbrace I_i \subset [0, 1] | I_i=[a_i, b_i] ( 1 \leq i \leq n, 0 \leq a_i \leq b_i \leq 1 ), a_1=0, b_n=1,
       i \neq j \Rightarrow I_i \cap I_j = \varnothing \right\rbrace
 $$
 
