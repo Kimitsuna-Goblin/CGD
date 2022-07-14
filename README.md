@@ -148,7 +148,7 @@ Field "m.sd":
 つまり、
 
 $$
-I = \left\lbrace I_i \subset [0, 1] | 1 \leq i \leq n, I_i=[a_i, b_i] ( 0 \leq a_i \leq b_i \leq 1 ), a_1=0, b_n=1,
+I = \left\lbrace I_i \subset [0, 1] | I_i=[a_i, b_i] ( 0 \leq a_i \leq b_i \leq 1, 1 \leq i \leq n), a_1=0, b_n=1,
       i \neq j \Rightarrow I_i \cap I_j = \varnothing \right\rbrace
 $$
 
@@ -238,7 +238,7 @@ $$
 
 正規分布は以下のように構成する。
 
-+ すべての正規分布の平均値は、経路の $p = 0.5$ の点として与えられた点のX座標の値とする。
++ すべての正規分布の平均値は、経路で $p = 0.5$ の点として与えられた点のX座標の値とする。
 
 
 
