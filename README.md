@@ -246,7 +246,7 @@ $$
 
 なお、正規分布 $N( \mu, \sigma^2 )$ の累積分布関数 $\Phi_{\mu, \sigma}$ について、
 X座標が平均値 $\mu$ から標準偏差 $\sigma$ の $n$ 倍離れた位置の確率 $\Phi_{\mu, \sigma}( \mu + n \sigma )$ の値は
-$\sigma, \mu$ の値に関係なく、$n$ の値が決まれば一意に定まることから、
+$\mu, \sigma$ の値に関係なく、$n$ の値が決まれば一意に定まることから、
 
 
 #### 接続区間の構成 - Constructing connecting intervals
