@@ -272,6 +272,12 @@ $$
 
 連結ガウス分布の累積分布関数 $\Phi_{CGD}(x)$ の接続区間の部分は、以下のように、type 1, type 2, type 3a, type 3b の4つの場合に分けて構成する。
 
+以下、2つの独立区間 $I_i = [a_i, b_i], I_{i + 1} = [a_{i + 1}, b_{i + 1}]$ が互いに隣り合っており、
+それらの独立区間を負担する正規分布の平均値を $\mu$、標準偏差を $\sigma_i, \sigma_{i + 1}$ とし、累積分布関数を $\Phi_i( x ), \Phi_{x + 1}(x)$ とする。
+
++ type 1 - 接続区間 $( b_i, a_{i + 1} )$ が平均値 $\mu$ を含まず、標準偏差が $\sigma_i < \sigma_{i + 1}$ の場合
+
+
 ## 参考資料 - References
 
 ### 連結ガウス分布 (Connected Gaussian Distribution) に関する資料
