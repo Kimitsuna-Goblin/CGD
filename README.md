@@ -278,6 +278,15 @@ $$
 + type 1 - 接続区間 $( b_i, a_{i + 1} )$ が平均値 $\mu$ を含まず、標準偏差が $\sigma_i < \sigma_{i + 1}$ の場合
 
 
++ type 2 - 接続区間 $( b_i, a_{i + 1} )$ が平均値 $\mu$ を含まず、標準偏差が $\sigma_i > \sigma_{i + 1}$ の場合
+
+
++ type 3a - 接続区間 $( b_i, a_{i + 1} )$ が平均値 $\mu$ を含み、標準偏差が $\sigma_i < \sigma_{i + 1}$ の場合
+
+
++ type 3b - 接続区間 $( b_i, a_{i + 1} )$ が平均値 $\mu$ を含み、標準偏差が $\sigma_i > \sigma_{i + 1}$ の場合
+
+
 ## 参考資料 - References
 
 ### 連結ガウス分布 (Connected Gaussian Distribution) に関する資料
