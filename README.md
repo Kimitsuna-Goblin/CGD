@@ -203,7 +203,7 @@ $[\alpha_i, \beta_i], [\alpha_{i+1}, \beta_{i+1}]$ と書く
  ( $\alpha_i = \Phi_i^{-1}( a_i ), \beta_i = \Phi_i^{-1}( b_i ), \alpha_{i+1} = \Phi_{i+1}^{-1}( a_{i+1} ), \beta_{i+1} = \Phi_{i+1}^{-1}( b_{i+1} )$ )。
 
 3. $\Psi_i( \beta_i ) = b_i, \Psi_i( \alpha_{i+1} ) = a_{i+1}$ を満たすような、
-区間 $[\beta_i, \alpha_{i+1}]$ において連続で単調増加する関数 $\Psi_i(x) = f_i( x ) \Phi_i( x ) + g_i( x ) \Phi_{i+1}( x )$ を適当に定める。
+区間 $[\beta_i, \alpha_{i+1}]$ において単調増加する連続関数 $\Psi_i(x) = f_i( x ) \Phi_i( x ) + g_i( x ) \Phi_{i+1}( x )$ を適当に定める。
 このとき、連続関数 $f_i( x ), g_i( x )$ はできるだけシンプルな関数であることが望ましい。
 
 以上のように関数 $\Phi_i( x ), \Psi_i( x )$ を定めたとき、
