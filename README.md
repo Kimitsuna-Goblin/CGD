@@ -198,7 +198,7 @@ $\left\lbrace \Phi_i^{-1}( p \in I_i ) \right\rbrace ∩ \left\lbrace \Phi_j^{-1
 
 3. 隣り合う2つの閉区間 $I_i = [a_i, b_i], I_{i+1} = [a_{i+1}, b_{i+1}]$ に対し、
 2つの累積分布関数 $\Phi_i( x )$ と $\Phi_{i+1}( x )$ を用いて、
-$\Psi_i( b_i ) = \Phi_i( b_i ), \Psi_i( a_{i+1} ) = \Phi_{i+1}( a_{i+1} )$ を満たすような、
+$\Psi_i^{-1}( b_i ) = \Phi_i^{-1}( b_i ), \Psi_i^{-1}( a_{i+1} ) = \Phi_{i+1}^{-1}( a_{i+1} )$ を満たすような、
 区間 $[b_i, a_{i+1}]$ において連続で単調増加する関数 $\Psi_i(x) = f_i( x ) \Phi_i( x ) + g_i( x ) \Phi_{i+1}( x )$ を適当に定める $( 1 \leq i \leq n - 1 )$。
 このとき、連続関数 $f_i( x ), g_i( x )$ はできるだけシンプルな関数であることが望ましい。
 
