@@ -194,12 +194,16 @@ $\left\lbrace \Phi_i^{-1}( p \in I_i ) \right\rbrace ∩ \left\lbrace \Phi_j^{-1
 そのような正規分布を探して集めることによって、平均値が等しい正規分布のみで集合 $N$ を構成することができる。
 
 さて、これまでの工程によって、与えられた経路上の点をすべて通過する、累積分布関数の不連続な断片が構成できたので、あとは、それらの断片を連続になるように接続すればよい。
-そこで、最終的な工程として、
+そこで、最終的な工程として、次のように断片の接続を行う。
 
-3. 隣り合う2つの閉区間 $I_i = [a_i, b_i], I_{i+1} = [a_{i+1}, b_{i+1}]$ に対し、
-2つの累積分布関数 $\Phi_i( x )$ と $\Phi_{i+1}( x )$ を用いて、
-$\Psi_i^{-1}( b_i ) = \Phi_i^{-1}( b_i ), \Psi_i^{-1}( a_{i+1} ) = \Phi_{i+1}^{-1}( a_{i+1} )$ を満たすような、
-区間 $[b_i, a_{i+1}]$ において連続で単調増加する関数 $\Psi_i(x) = f_i( x ) \Phi_i( x ) + g_i( x ) \Phi_{i+1}( x )$ を適当に定める $( 1 \leq i \leq n - 1 )$。
+以下、記述を簡単にするために、
+隣り合う2つの閉区間 $I_i = [a_i, b_i], I_{i+1} = [a_{i+1}, b_{i+1}]$ に対し、
+それらの区間を負担する正規分布の累積分布関数 $\Phi_i( x )$ と $\Phi_{i+1}( x )$ の定義域を
+簡単のために $[\alpha_i, \beta_i], [\alpha_{i+1}, \beta_{i+1}]$ と書く
+ ( $\alpha_i = \Phi_i^{-1}( a_i ), \beta_i = \Phi_i^{-1}( b_i ), \alpha_{i+1} = \Phi_{i+1}^{-1}( a_{i+1} ), \beta_{i+1} = \Phi_{i+1}^{-1}( b_{i+1} )$ )。
+
+3. $\Psi_i( \beta_i ) = b_i, \Psi_i( \alpha_{i+1} ) = a_{i+1}$ を満たすような、
+区間 $[\beta_i, \alpha_{i+1}]$ において連続で単調増加する関数 $\Psi_i(x) = f_i( x ) \Phi_i( x ) + g_i( x ) \Phi_{i+1}( x )$ を適当に定める $( 1 \leq i \leq n - 1 )$。
 このとき、連続関数 $f_i( x ), g_i( x )$ はできるだけシンプルな関数であることが望ましい。
 
 以上のように関数 $\Phi_i( x ), \Psi_i( x )$ を定めたとき、
@@ -208,8 +212,8 @@ $\Psi_i^{-1}( b_i ) = \Phi_i^{-1}( b_i ), \Psi_i^{-1}( a_{i+1} ) = \Phi_{i+1}^{-
 $$
 \Phi_{CGD}(x)=
 \begin{cases}
-\Phi_i(x) & \textrm{where } x \in [a_i, b_i], \quad i = 1, \cdots, n \\
-\Psi_i(x) & \textrm{where } x \in (b_i, a_{i+1}), \quad i = 1, \cdots, n - 1
+\Phi_i(x) & \textrm{where } x \in [\alpha_i, \beta_i], \quad i = 1, \cdots, n \\
+\Psi_i(x) & \textrm{where } x \in (\beta_i, \alpha_{i+1}), \quad i = 1, \cdots, n - 1
 \end{cases}
 $$
 
