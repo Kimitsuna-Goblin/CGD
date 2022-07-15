@@ -200,7 +200,7 @@ $\left\lbrace \Phi_i^{-1}( p \in I_i ) \right\rbrace ∩ \left\lbrace \Phi_j^{-1
 閉区間 $I_i = [a_i, b_i]$ に対し、
 その区間を負担する正規分布の累積分布関数 $\Phi_i( x )$ の定義域を
 $[\alpha_i, \beta_i]$ と書く
- (つまり、$\alpha_i = \Phi_i^{-1}( a_i ), \beta_i = \Phi_i^{-1}( b_i )$ とする)。
+ (つまり、$\alpha_i = \Phi_i^{-1}( a_i ), \beta_i = \Phi_i^{-1}( b_i ), \alpha_{i+1} = \Phi_{i+1}^{-1}( a_{i+1} ), \beta_{i+1} = \Phi_{i+1}^{-1}( b_{i+1}i )$ とする)。
 
 3. 隣り合う2つの閉区間 $I_i = [a_i, b_i], I_{i+1} = [a_{i+1}, b_{i+1}] \quad ( 1 \leq i \leq n - 1 )$ に対し、
 $\Psi_i( \beta_i ) = b_i, \Psi_i( \alpha_{i+1} ) = a_{i+1}$ を満たすような、
