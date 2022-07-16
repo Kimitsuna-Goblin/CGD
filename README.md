@@ -148,7 +148,7 @@ Field "m.sd":
 つまり、
 
 $$
-I = \left\lbrace I_i \subset [0, 1] | I_i=[a_i, b_i] ( 1 \leq i \leq n, 0 \leq a_i \leq b_i \leq 1 ), a_1=0, b_n=1,
+I = \left\lbrace I_i \subset [0, 1] \mid I_i=[a_i, b_i] ( 1 \leq i \leq n, 0 \leq a_i \leq b_i \leq 1 ), a_1=0, b_n=1,
       i \neq j \Rightarrow I_i \cap I_j = \varnothing \right\rbrace
 $$
 
@@ -158,7 +158,7 @@ $$
 すなわち、$1 \leq i \leq n - 1$ に対して、$b_i ＜ a_{i+1}$ となるように構成しておくことが望ましい
  (以下、$I$ はそのように構成されているものとする)。
 
-ここで、累積分布関数の経路 (クォンタイル。以下、経路と言う) $W = \left\lbrace ( x_j, p_j ) \in ( \mathbb{R}, [0, 1] ) | 1 \leq j \leq m \right\rbrace$ が与えられているときは、
+ここで、累積分布関数の経路 (クォンタイル。以下、経路と言う) $W = \left\lbrace ( x_j, p_j ) \in ( \mathbb{R}, [0, 1] ) \mid 1 \leq j \leq m \right\rbrace$ が与えられているときは、
 その経路にあるすべての確率 $p_j ( 1 \leq j \leq m )$ の値が、いずれかの $I_i$ に必ず含まれるように取る
  (便宜上、確率 $\left\lbrace p_j \right\rbrace$ は昇順に並んでいるものとする)。
 このとき、$n = m$ として、1つの閉区間 $I_i ( 1 \leq i \leq n )$ に確率 $p_i$ が1つだけ含まれるように $I$ を構成すれば、後の工程も容易になる。
@@ -174,7 +174,7 @@ $$
 + 任意の2つの $N_i, N_j ( i \neq j )$ について、$N_i, N_j$ に割り当てられた閉区間 $I_i, I_j$ の範囲においては、
 $N_i, N_j$ の累積分布関数 $\Phi_i( x ), \Phi_j( x )$ の定義域が互いに重ならないこと。
 すなわち、
-$\left\lbrace \Phi_i^{-1}( p ) | p \in I_i \right\rbrace ∩ \left\lbrace \Phi_j^{-1}( p ) | p \in I_j \right\rbrace = \varnothing$
+$\left\lbrace \Phi_i^{-1}( p ) \mid p \in I_i \right\rbrace ∩ \left\lbrace \Phi_j^{-1}( p ) \mid p \in I_j \right\rbrace = \varnothing$
 であること。
 + 経路 $W = \left\lbrace ( x_j, p_j ) \right\rbrace$ が与えられており、
 経路の確率 $p_j$ が閉区間 $I_i$ に含まれているときは、
