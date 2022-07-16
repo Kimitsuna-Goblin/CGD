@@ -298,6 +298,15 @@ $$
 \Psi_i( x ) = \frac{ \alpha_{i+1} - x }{ \alpha_{i+1} - \beta_i } \Phi_i( x ) + \frac{ x - \beta_i }{ \alpha_{i+1} - \beta_i } \Phi_{i+1}( x )
 $$
 
+このとき、確率密度関数 $f( x )$ は上の式の右辺を $x$ で微分して、
+
+$$
+f( x ) = \frac{ \alpha_{i+1} - x }{ \alpha_{i+1} - \beta_i } f_i( x ) + \frac{ x - \beta_i }{ \alpha_{i+1} - \beta_i } f_{i+1}( x )
+            + \frac{ \Phi_{i+1}( x ) - \Phi_i( x ) }{ \alpha_{i+1} - \beta_i }
+$$
+
+となる。ただし、$f_i( x ), f_{i+1}( x )$ は正規分布 $N_i,N_{i+1}$ の確率密度関数である。
+
 + type 2 - 接続区間 $( b_i, a_{i + 1} )$ が平均値 $\mu$ を含まず、標準偏差が $\sigma_i > \sigma_{i + 1}$ となる場合
 
 
