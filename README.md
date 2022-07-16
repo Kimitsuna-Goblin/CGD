@@ -295,7 +295,7 @@ $$
 本ライブラリでは、単純に、以下の式で接続関数を構成する。
 
 $$
-\Psi_i( x ) = \freq{\alpha_{i+1} - x}{\alpha_{i+1} - \beta_i} \Phi_i( x ) + \freq{x - \beta_i}{\alpha_{i+1} - \beta_i} \Phi_i( x + 1 )
+\Psi_i( x ) = \frac{ \alpha_{i+1} - x }{ \alpha_{i+1} - \beta_i } \Phi_i( x ) + \frac{ x - \beta_i }{ \alpha_{i+1} - \beta_i } \Phi_i( x + 1 )
 $$
 
 + type 2 - 接続区間 $( b_i, a_{i + 1} )$ が平均値 $\mu$ を含まず、標準偏差が $\sigma_i > \sigma_{i + 1}$ となる場合
