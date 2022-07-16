@@ -298,7 +298,7 @@ $$
 \Psi_i( x ) = \frac{ \alpha_{i+1} - x }{ \alpha_{i+1} - \beta_i } \Phi_i( x ) + \frac{ x - \beta_i }{ \alpha_{i+1} - \beta_i } \Phi_{i+1}( x )
 $$
 
-このとき、確率密度関数 $f( x )$ は上の式の右辺を $x$ で微分すると得られ、
+このとき、確率密度関数 $f( x )$ は上の式を $x$ で微分すると得られ、
 
 $$
 f( x ) = \frac{ \alpha_{i+1} - x }{ \alpha_{i+1} - \beta_i } f_i( x ) + \frac{ x - \beta_i }{ \alpha_{i+1} - \beta_i } f_{i+1}( x )
