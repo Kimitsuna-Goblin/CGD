@@ -133,7 +133,7 @@ Field "m.sd":
 ということで、別に common.R は無くてもいいのですが、誰かの役に立つ関数があるかも知れないということもあって、おまけで公開しました。
 
 
-## 連結ガウス分布の構成方法 (一般の場合) - How to construct a Connected Gaussian Distribution (generally)
+## 連結ガウス分布の構成方法 (一般の場合)<BR> - How to construct a Connected Gaussian Distribution (generally)
 
 一般に、連結ガウス分布は次のようにして構成することができる。
 
@@ -227,7 +227,7 @@ $$
 また、接続区間 $Q_i$ を負担する関数 $\Psi_i(x)$ を「接続関数」と呼ぶ。
 
 
-## 本ライブラリにおける連結ガウス分布の構成方法 - The way to construct a Connected Gaussian Distribution in this library
+## 本ライブラリにおける連結ガウス分布の構成方法<BR> - The way to construct a Connected Gaussian Distribution in this library
 
 ### 独立区間と正規分布の構成 - Constructing indipendent intervals and normal distributions
 
@@ -397,6 +397,10 @@ $$
 となる。
 
 #### Type 3b - 接続区間 $Q_i = ( b_i, a_{i + 1} )$ が平均値 $\mu$ を含み、標準偏差が $\sigma_i > \sigma_{i + 1}$ となる場合
+
+この場合は、type 3a と対称的に、$x \in (\beta_i, \alpha_{i+1})$ に対して、$\Phi_i( x )$ は接続区間 $Q_i$ の範囲内に常に収まるが、
+$\Phi_{i+1}( x )$ は $\beta_i < x < \mu$ の範囲の前半部分で $\Phi_{i+1}( x ) < b_i$ となり、$Q_i$ の範囲外に出ることがある。
+そのため、接続関数 $\Psi_i( x )$ の値が $Q_i$ の範囲から出ないように注意して、以下のように $\Psi_i( x )$ を構成する。
 
 
 ## 参考資料 - References
