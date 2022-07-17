@@ -351,7 +351,7 @@ $$
 \frac{1}{2}( \Phi_i( x ) + b_i ) & \textrm{where } \Phi_{i+1}( x ) < b_i, \quad \Phi_i( x ) < a_{i+1} \\
 \frac{1}{2}( a_{i+1} + b_i ) & \textrm{where } \Phi_{i+1}( x ) < b_i, \quad \Phi_i( x ) \geq a_{i+1} \\
 \frac{1}{2}( \Phi_i( x ) + \Phi_{i+1}( x ) ) & \textrm{where } \Phi_{i+1}( x ) \geq b_i, \quad \Phi_i( x ) < a_{i+1} \\
-\frac{1}{2}( \Phi_{i+1}( x ) + a_{i+1} ) & \textrm{where } \Phi_{i+1}( x ) \geq b_i, \quad \Phi_i( x ) \geq a_{i+1} \\
+\frac{1}{2}( a_{i+1} + \Phi_{i+1}( x ) ) & \textrm{where } \Phi_{i+1}( x ) \geq b_i, \quad \Phi_i( x ) \geq a_{i+1} \\
 \end{cases}
 $$
 
