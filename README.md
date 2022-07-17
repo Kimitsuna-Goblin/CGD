@@ -420,7 +420,7 @@ f( x ) =
 \begin{cases}
 \dfrac{1}{2} f_i( x ) & \textrm{where} \quad x \leq \mu, \quad \Phi_{i+1}( x ) < b_i \\
 \dfrac{1}{2} ( f_i( x ) + f_{i+1}( x ) ) & \textrm{where} \quad x \leq \mu, \quad \Phi_i( x ) \geq b_i \\
-\f_{i+1}( x ) & \textrm{where} \quad x > \mu
+f_{i+1}( x ) & \textrm{where} \quad x > \mu
 \end{cases}
 $$
 
