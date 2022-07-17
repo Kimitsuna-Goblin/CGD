@@ -375,6 +375,28 @@ $$
 この場合は、$x \in (\beta_i, \alpha_{i+1})$ に対して、$\Phi_{i+1}( x )$ は接続区間 $Q_i$ の範囲内に常に収まるが、
 $\Phi_i( x )$ は $\mu < x < \alpha_{i+1}$ の範囲の後半部分で $\Phi_i( x ) > a_{i+1}$ となり、$Q_i$ の外に出ることがある。
 
+この場合も、接続関数 $\Psi_i( x )$ の値が $Q_i$ の範囲から出ないように注意して、以下のように $\Psi_i( x )$ を構成する。
+
+$$
+\Psi_i( x ) =
+\begin{cases}
+\Phi_i( x ) & \textrm{where} \quad x \leq \mu \\
+\dfrac{1}{2} ( \Phi_i( x ) + \Phi_{i+1}( x ) ) & \textrm{where} \quad x > \mu, \quad \Phi_i( x ) < a_{i+1} \\
+\dfrac{1}{2} ( a_{i+1} + \Phi_{i+1}( x ) ) & \textrm{where} x > \mu, \quad \Phi_{i+1}( x ) \geq a_{i+1}
+\end{cases}
+$$
+
+確率密度関数 $f( x )$ は
+
+$$
+f( x ) =
+\begin{cases}
+\f_i( x ) & \textrm{where} \quad x \leq \mu \\
+\dfrac{1}{2} ( f_i( x ) + f_{i+1}( x ) ) & \textrm{where} \quad x > \mu, \quad \Phi_i( x ) < a_{i+1} \\
+\dfrac{1}{2} f_{i+1}( x ) & \textrm{where} x > \mu, \quad \Phi_{i+1}( x ) \geq a_{i+1}
+\end{cases}
+$$
+
 + type 3b - 接続区間 $Q_i = ( b_i, a_{i + 1} )$ が平均値 $\mu$ を含み、標準偏差が $\sigma_i > \sigma_{i + 1}$ となる場合
 
 
