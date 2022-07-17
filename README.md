@@ -315,8 +315,8 @@ $$
 バージョン 1.0.0 の欠点を解消するためには、現在は未実装であるが、たとえば接続関数を
 
 $$
-\Psi_i( x ) = \frac{ \Phi_i( a_{i+1} ) - \Phi_i( x ) }{ \Phi_i( a_{i+1} ) - b_i } \Phi_i( x )
-                + \frac{ \Phi_{i+1}( x ) - \Phi_{i+1}( b_i ) }{ a_{i+1} - \Phi_{i+1}( b_i ) } \Phi_{i+1}( x )
+\Psi_i( x ) = \frac{ \Phi_i( \alpha_{i+1} ) - \Phi_i( x ) }{ \Phi_i( \alpha_{i+1} ) - b_i } \Phi_i( x )
+                + \frac{ \Phi_{i+1}( x ) - \Phi_{i+1}( \beta_i ) }{ a_{i+1} - \Phi_{i+1}( \beta_i ) } \Phi_{i+1}( x )
 $$
 
 のように定義するとよいであろう。
@@ -324,8 +324,8 @@ $$
 このとき、確率密度関数 $f( x )$ は
 
 $$
-f( x ) = \frac{ \Phi_i( a_{i+1} ) - 2\Phi_i( x ) }{ \Phi_i( a_{i+1} ) - b_i } f_i( x )
-                + \frac{ 2\Phi_{i+1}( x ) - \Phi_{i+1}( b_i ) }{ a_{i+1} - \Phi_{i+1}( b_i ) } f_{i+1}( x )
+f( x ) = \frac{ \Phi_i( \alpha_{i+1} ) - 2\Phi_i( x ) }{ \Phi_i( \alpha_{i+1} ) - b_i } f_i( x )
+                + \frac{ 2\Phi_{i+1}( x ) - \Phi_{i+1}( \beta_i ) }{ a_{i+1} - \Phi_{i+1}( \beta_i ) } f_{i+1}( x )
 $$
 
 となる。
