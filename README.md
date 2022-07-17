@@ -287,7 +287,7 @@ $$
 + type 1 - 接続区間 $Q_i = ( b_i, a_{i + 1} )$ が平均値 $\mu$ を含まず、標準偏差が $\sigma_i < \sigma_{i + 1}$ となる場合
 
 この場合は、すべての $x \in (\beta_i, \alpha_{i+1})$ に対して、
-累積分布関数 $\Phi_i( x ), \Phi_{i + 1}( x )$ の値が両方とも接続区間 $(b_i, a_{i+1})$ の範囲内に収まり、外に出ることがない。
+累積分布関数 $\Phi_i( x ), \Phi_{i + 1}( x )$ の値が両方とも接続区間 $Q_i$ の範囲内に収まり、外に出ることがない。
 そのため、4つの場合の中で最も自由に接続関数を構成することできる。
 
 本ライブラリでは、以下のように、単純に $\Phi_i( x )$ と $\Phi_{i+1}( x )$ を混合する。
@@ -339,9 +339,21 @@ $$
 
 + type 2 - 接続区間 $Q_i = ( b_i, a_{i + 1} )$ が平均値 $\mu$ を含まず、標準偏差が $\sigma_i > \sigma_{i + 1}$ となる場合
 
-この場合は、$\Phi_{i+1}( \beta_i )$ と $\Phi_i( \alpha_{i+1} )$ の値が、
-$Q_i = ( b_i, a_{i + 1} )$ の範囲の外に出てしまう。
+この場合は、一部の $x \in (\beta_i, \alpha_{i+1})$ に対して、$\Phi_i( x )$ と $\Phi_{i+1}(  )$ の値が、
+接続区間 $Q_i$ の範囲の外に出てしまう。
 このとき、$\Phi_{i+1}( \beta_i ) < b_i, \Phi_i( \alpha_{i+1} ) > a_{i + 1}$ となる。
+
+この場合は、以下のようにして接続関数を構成する。
+
+$$
+\Psi_i( x ) =
+\begin{cases}
+\frac{1}{2}( \Phi_i( x ) + b_i & \textrm{where } \Phi_{i+1}( x ) < b_i, \Phi_i( x ) < a_{i+1} \\
+\frac{1}{2}( a_{i+1} + b_i & \textrm{where } \Phi_{i+1}( x ) < b_i, \Phi_i( x ) \geq a_{i+1} \\
+\frac{1}{2}( \Phi_i( x ) + \Phi_{i+1}( x ) & \textrm{where } \Phi_{i+1}( x ) \geq b_i, \Phi_i( x ) < a_{i+1} \\
+\frac{1}{2}( \Phi_{i+1}( x ) + a_{i+1} & \textrm{where } \Phi_{i+1}( x ) \geq b_i, \Phi_i( x ) \geq a_{i+1} \\
+\end{cases}
+$$
 
 + type 3a - 接続区間 $Q_i = ( b_i, a_{i + 1} )$ が平均値 $\mu$ を含み、標準偏差が $\sigma_i < \sigma_{i + 1}$ となる場合
 
