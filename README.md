@@ -339,7 +339,7 @@ $$
 
 + type 2 - 接続区間 $Q_i = ( b_i, a_{i + 1} )$ が平均値 $\mu$ を含まず、標準偏差が $\sigma_i > \sigma_{i + 1}$ となる場合
 
-この場合は、一部の $x \in (\beta_i, \alpha_{i+1})$ に対して、$\Phi_i( x )$ と $\Phi_{i+1}(  )$ の値が、
+この場合は、一部の $x \in (\beta_i, \alpha_{i+1})$ に対して、$\Phi_i( x )$ と $\Phi_{i+1}( x )$ の値が、
 接続区間 $Q_i$ の範囲の外に出てしまう。
 このとき、$\Phi_{i+1}( \beta_i ) < b_i, \Phi_i( \alpha_{i+1} ) > a_{i + 1}$ となる。
 
@@ -348,10 +348,10 @@ $$
 $$
 \Psi_i( x ) =
 \begin{cases}
-\frac{1}{2}( \Phi_i( x ) + b_i & \textrm{where } \Phi_{i+1}( x ) < b_i, \Phi_i( x ) < a_{i+1} \\
-\frac{1}{2}( a_{i+1} + b_i & \textrm{where } \Phi_{i+1}( x ) < b_i, \Phi_i( x ) \geq a_{i+1} \\
-\frac{1}{2}( \Phi_i( x ) + \Phi_{i+1}( x ) & \textrm{where } \Phi_{i+1}( x ) \geq b_i, \Phi_i( x ) < a_{i+1} \\
-\frac{1}{2}( \Phi_{i+1}( x ) + a_{i+1} & \textrm{where } \Phi_{i+1}( x ) \geq b_i, \Phi_i( x ) \geq a_{i+1} \\
+\frac{1}{2}( \Phi_i( x ) + b_i ) & \textrm{where } \Phi_{i+1}( x ) < b_i, \Phi_i( x ) < a_{i+1} \\
+\frac{1}{2}( a_{i+1} + b_i ) & \textrm{where } \Phi_{i+1}( x ) < b_i, \Phi_i( x ) \geq a_{i+1} \\
+\frac{1}{2}( \Phi_i( x ) + \Phi_{i+1}( x ) ) & \textrm{where } \Phi_{i+1}( x ) \geq b_i, \Phi_i( x ) < a_{i+1} \\
+\frac{1}{2}( \Phi_{i+1}( x ) + a_{i+1} ) & \textrm{where } \Phi_{i+1}( x ) \geq b_i, \Phi_i( x ) \geq a_{i+1} \\
 \end{cases}
 $$
 
