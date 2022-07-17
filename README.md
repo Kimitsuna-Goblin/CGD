@@ -266,7 +266,7 @@ $x = q ( \neq \mu )$ のときに確率 $p$ を取る正規分布の標準偏差
 標準正規分布の累積分布関数 $\Phi( x )$ の逆関数を使って、
 
 $$
-\sigma = \frac{ q - \mu }{ \Phi^{-1}( p ) } \quad ( q \neq \mu, 0 < p < 1 )
+\sigma = \dfrac{ q - \mu }{ \Phi^{-1}( p ) } \quad ( q \neq \mu, 0 < p < 1 )
 $$
 
 で求められることが分かる。
@@ -293,19 +293,18 @@ $$
 本ライブラリでは、以下のように、単純に $\Phi_i( x )$ と $\Phi_{i+1}( x )$ を混合する。
 
 $$
-\Psi_i( x ) = \frac{ \alpha_{i+1} - x }{ \alpha_{i+1} - \beta_i } \Phi_i( x ) + \frac{ x - \beta_i }{ \alpha_{i+1} - \beta_i } \Phi_{i+1}( x )
+\Psi_i( x ) = \dfrac{ \alpha_{i+1} - x }{ \alpha_{i+1} - \beta_i } \Phi_i( x ) + \dfrac{ x - \beta_i }{ \alpha_{i+1} - \beta_i } \Phi_{i+1}( x )
 $$
 
 このとき、確率密度関数 $f( x )$ は上の式の右辺を $x$ で微分すると得られ、
 
 $$
-f( x ) = \frac{ \alpha_{i+1} - x }{ \alpha_{i+1} - \beta_i } f_i( x ) + \frac{ x - \beta_i }{ \alpha_{i+1} - \beta_i } f_{i+1}( x )
-            + \frac{ \Phi_{i+1}( x ) - \Phi_i( x ) }{ \alpha_{i+1} - \beta_i }
+f( x ) = \dfrac{ \alpha_{i+1} - x }{ \alpha_{i+1} - \beta_i } f_i( x ) + \dfrac{ x - \beta_i }{ \alpha_{i+1} - \beta_i } f_{i+1}( x )
+            + \dfrac{ \Phi_{i+1}( x ) - \Phi_i( x ) }{ \alpha_{i+1} - \beta_i }
 $$
 
 となる。ただし、$f_i( x ), f_{i+1}( x )$ は正規分布 $N_i,N_{i+1}$ の確率密度関数である。
-
-右辺の第3項のために、確率密度関数 $f( x )$ は $x = \beta_i, \alpha_{i+1}$ の2点で不連続になる。
+確率密度関数 $f( x )$ は $x = \beta_i, \alpha_{i+1}$ の2点で不連続になる。
 
 それから、この式では、独立区間が $P_1 = [0, 0]$ または $P_n = [1, 1]$ のとき、係数の分母が $\pm\infty$ になるので、確率密度が計算できない。
 これは現バージョン (1.0.0) の欠点である。
@@ -316,8 +315,8 @@ $$
 バージョン 1.0.0 の欠点を解消するためには、現在は未実装であるが、たとえば接続関数を
 
 $$
-\Psi_i( x ) = \frac{ \Phi_i( \alpha_{i+1} ) - \Phi_i( x ) }{ \Phi_i( \alpha_{i+1} ) - b_i } \Phi_i( x )
-                + \frac{ \Phi_{i+1}( x ) - \Phi_{i+1}( \beta_i ) }{ a_{i+1} - \Phi_{i+1}( \beta_i ) } \Phi_{i+1}( x )
+\Psi_i( x ) = \dfrac{ \Phi_i( \alpha_{i+1} ) - \Phi_i( x ) }{ \Phi_i( \alpha_{i+1} ) - b_i } \Phi_i( x )
+                + \dfrac{ \Phi_{i+1}( x ) - \Phi_{i+1}( \beta_i ) }{ a_{i+1} - \Phi_{i+1}( \beta_i ) } \Phi_{i+1}( x )
 $$
 
 のように定義するとよいであろう。
@@ -325,8 +324,8 @@ $$
 このとき、確率密度関数 $f( x )$ は
 
 $$
-f( x ) = \frac{ \Phi_i( \alpha_{i+1} ) - 2\Phi_i( x ) }{ \Phi_i( \alpha_{i+1} ) - b_i } f_i( x )
-                + \frac{ 2\Phi_{i+1}( x ) - \Phi_{i+1}( \beta_i ) }{ a_{i+1} - \Phi_{i+1}( \beta_i ) } f_{i+1}( x )
+f( x ) = \dfrac{ \Phi_i( \alpha_{i+1} ) - 2\Phi_i( x ) }{ \Phi_i( \alpha_{i+1} ) - b_i } f_i( x )
+                + \dfrac{ 2\Phi_{i+1}( x ) - \Phi_{i+1}( \beta_i ) }{ a_{i+1} - \Phi_{i+1}( \beta_i ) } f_{i+1}( x )
 $$
 
 となる。
@@ -350,10 +349,10 @@ $$
 $$
 \Psi_i( x ) =
 \begin{cases}
-\frac{1}{2} ( \Phi_i( x ) + b_i ) & \textrm{where} \quad \Phi_i( x ) < a_{i+1}, \quad \Phi_{i+1}( x ) < b_i \\
-\frac{1}{2} ( a_{i+1} + b_i ) & \textrm{where} \quad \Phi_i( x ) \geq a_{i+1}, \quad \Phi_{i+1}( x ) < b_i \\
-\frac{1}{2} ( \Phi_i( x ) + \Phi_{i+1}( x ) ) & \textrm{where} \quad \Phi_i( x ) < a_{i+1}, \quad \Phi_{i+1}( x ) \geq b_i \\
-\frac{1}{2} ( a_{i+1} + \Phi_{i+1}( x ) ) & \textrm{where} \quad \Phi_i( x ) \geq a_{i+1}, \quad \Phi_{i+1}( x ) \geq b_i \\
+\dfrac{1}{2} ( \Phi_i( x ) + b_i ) & \textrm{where} \quad \Phi_i( x ) < a_{i+1}, \quad \Phi_{i+1}( x ) < b_i \\
+\dfrac{1}{2} ( a_{i+1} + b_i ) & \textrm{where} \quad \Phi_i( x ) \geq a_{i+1}, \quad \Phi_{i+1}( x ) < b_i \\
+\dfrac{1}{2} ( \Phi_i( x ) + \Phi_{i+1}( x ) ) & \textrm{where} \quad \Phi_i( x ) < a_{i+1}, \quad \Phi_{i+1}( x ) \geq b_i \\
+\dfrac{1}{2} ( a_{i+1} + \Phi_{i+1}( x ) ) & \textrm{where} \quad \Phi_i( x ) \geq a_{i+1}, \quad \Phi_{i+1}( x ) \geq b_i
 \end{cases}
 $$
 
@@ -362,10 +361,10 @@ $$
 $$
 f( x ) =
 \begin{cases}
-\frac{1}{2} f_i( x ) & \textrm{where} \quad \Phi_i( x ) < a_{i+1}, \quad \Phi_{i+1}( x ) < b_i \\
+\dfrac{1}{2} f_i( x ) & \textrm{where} \quad \Phi_i( x ) < a_{i+1}, \quad \Phi_{i+1}( x ) < b_i \\
 0 & \textrm{where} \quad \Phi_i( x ) \geq a_{i+1}, \quad \Phi_{i+1}( x ) < b_i \\
-\frac{1}{2} ( f_i( x ) + f_{i+1}( x ) ) & \textrm{where} \quad \Phi_i( x ) < a_{i+1}, \quad \Phi_{i+1}( x ) \geq b_i \\
-\frac{1}{2} f_{i+1}( x ) & \textrm{where} \quad \Phi_i( x ) \geq a_{i+1}, \quad \Phi_{i+1}( x ) \geq b_i \\
+\dfrac{1}{2} ( f_i( x ) + f_{i+1}( x ) ) & \textrm{where} \quad \Phi_i( x ) < a_{i+1}, \quad \Phi_{i+1}( x ) \geq b_i \\
+\dfrac{1}{2} f_{i+1}( x ) & \textrm{where} \quad \Phi_i( x ) \geq a_{i+1}, \quad \Phi_{i+1}( x ) \geq b_i
 \end{cases}
 $$
 
