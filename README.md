@@ -402,7 +402,29 @@ $$
 この場合は type 3a と対称的である。
 すなわち、$x \in (\beta_i, \alpha_{i+1})$ に対して、$\Phi_i( x )$ は接続区間 $Q_i$ の範囲内に常に収まるが、
 $\Phi_{i+1}( x )$ は $\beta_i < x < \mu$ の範囲の前半部分で $\Phi_{i+1}( x ) < b_i$ となり、$Q_i$ の範囲外に出ることがある。
-そのため、接続関数 $\Psi_i( x )$ の値が $Q_i$ の範囲から出ないように注意して、以下のように $\Psi_i( x )$ を構成する。
+接続関数 $\Psi_i( x )$ は、その値が $Q_i$ の範囲から出ないように、以下のように構成する。
+
+$$
+\Psi_i( x ) =
+\begin{cases}
+\dfrac{1}{2} ( \Phi_i( x ) + b_i ) & \textrm{where} \quad x \leq \mu, \quad \Phi_{i+1}( x ) < b_i \\
+\dfrac{1}{2} ( \Phi_i( x ) + \Phi_{i+1}( x ) ) & \textrm{where} \quad x \leq \mu, \quad \Phi_i( x ) \geq b_i \\
+\Phi_{i+1}( x ) & \textrm{where} \quad x > \mu
+\end{cases}
+$$
+
+このとき、確率密度関数 $f( x )$ は
+
+$$
+f( x ) =
+\begin{cases}
+\dfrac{1}{2} f_i( x ) & \textrm{where} \quad x \leq \mu, \quad \Phi_{i+1}( x ) < b_i \\
+\dfrac{1}{2} ( f_i( x ) + f_{i+1}( x ) ) & \textrm{where} \quad x \leq \mu, \quad \Phi_i( x ) \geq b_i \\
+\f_{i+1}( x ) & \textrm{where} \quad x > \mu
+\end{cases}
+$$
+
+となる。
 
 
 ## 参考資料 - References
