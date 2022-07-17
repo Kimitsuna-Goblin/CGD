@@ -341,17 +341,17 @@ $$
 
 この場合は、一部の $x \in (\beta_i, \alpha_{i+1})$ に対して、$\Phi_i( x )$ と $\Phi_{i+1}( x )$ の値が、
 接続区間 $Q_i$ の範囲の外に出てしまう。
-このとき、$\Phi_{i+1}( \beta_i ) < b_i, \Phi_i( \alpha_{i+1} ) > a_{i + 1}$ となる。
+このとき、$\Phi_i( \alpha_{i+1} ) > a_{i + 1}, \Phi_{i+1}( \beta_i ) < b_i$ となる。
 
 この場合は、以下のようにして接続関数を構成する。
 
 $$
 \Psi_i( x ) =
 \begin{cases}
-\frac{1}{2}( \Phi_i( x ) + b_i ) & \textrm{where} \quad \Phi_{i+1}( x ) < b_i, \quad \Phi_i( x ) < a_{i+1} \\
-\frac{1}{2}( a_{i+1} + b_i ) & \textrm{where} \quad \Phi_{i+1}( x ) < b_i, \quad \Phi_i( x ) \geq a_{i+1} \\
-\frac{1}{2}( \Phi_i( x ) + \Phi_{i+1}( x ) ) & \textrm{where} \quad \Phi_{i+1}( x ) \geq b_i, \quad \Phi_i( x ) < a_{i+1} \\
-\frac{1}{2}( a_{i+1} + \Phi_{i+1}( x ) ) & \textrm{where} \quad \Phi_{i+1}( x ) \geq b_i, \quad \Phi_i( x ) \geq a_{i+1} \\
+\frac{1}{2}( \Phi_i( x ) + b_i ) & \textrm{where} \quad \Phi_i( x ) < a_{i+1}, \quad \Phi_{i+1}( x ) < b_i \\
+\frac{1}{2}( a_{i+1} + b_i ) & \textrm{where} \quad \Phi_i( x ) \geq a_{i+1}, \quad \Phi_{i+1}( x ) < b_i \\
+\frac{1}{2}( \Phi_i( x ) + \Phi_{i+1}( x ) ) & \textrm{where} \quad \Phi_i( x ) < a_{i+1}, \quad \Phi_{i+1}( x ) \geq b_i \\
+\frac{1}{2}( a_{i+1} + \Phi_{i+1}( x ) ) & \textrm{where} \quad \Phi_i( x ) \geq a_{i+1}, \quad \Phi_{i+1}( x ) \geq b_i \\
 \end{cases}
 $$
 
