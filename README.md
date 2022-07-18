@@ -162,7 +162,7 @@ $W = \left\lbrace ( x_j, p_j ) \in ( \mathbb{R}, [0, 1] ) \mid 1 \leq j \leq m \
 その経路上のすべての確率 $p_j ( 1 \leq j \leq m )$ の値が、いずれかの $P_i$ に必ず含まれるように取る
  (便宜上、経路 $W$ の確率 $\left\lbrace p_j \right\rbrace$ は昇順に並んでいるものとする)。
 
-この際、$n$ を $m$ と等しく取り、それぞれ1つの閉区間 $P_i ( 1 \leq i \leq n )$ に確率 $p_i$ が1つだけ含まれるように $P$ を構成すれば、後の工程が確実に実行できる。
+この際、$n$ を $m$ と等しく取り、それぞれ1つの閉区間 $P_i ( 1 \leq i \leq n = m )$ に確率 $p_i$ が1つだけ含まれるように $P$ を構成すれば、後の工程が確実に実行できる。
 ただし、後の工程が実行可能であれば、1つの閉区間 $P_i$ に複数の確率 $p_j, p_{j+1}, p_{j+2}, \cdots$ が含まれるように構成してもよい。
 
 
@@ -183,7 +183,7 @@ $\left\lbrace \Phi_i^{-1}( p ) \mid p \in P_i \right\rbrace ∩ \left\lbrace \Ph
 + 経路 $W = \left\lbrace ( x_j, p_j ) \right\rbrace$ が与えられており、
 経路上の確率 $p_j$ が閉区間 $P_i$ に含まれているときは、
 その区間が割り当てられている確率分布 $N_i$ の累積分布関数 $\Phi_i$ が、必ずその経路上の点 $( x_j, p_j )$ を通過すること。
-すなわち、$p_j \in P_i ⇒ \Phi_i( x_j ) = p_j$ が成り立つこと。
+すなわち、$p_j \in P_i \Rightarrow \Phi_i( x_j ) = p_j$ が成り立つこと。
 
 なお、集合 $N$ の要素の中には、$N_i = N_j ( i \neq j )$ なる同一の分布が存在してもよい。
 
