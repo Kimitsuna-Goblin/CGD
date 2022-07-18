@@ -184,7 +184,7 @@ $\left\lbrace \Phi_i^{-1}( p ) \mid p \in P_i \right\rbrace ∩ \left\lbrace \Ph
 + 経路 $W = \left\lbrace ( x_j, p_j ) \right\rbrace$ が与えられており、
 経路上の確率 $p_j$ が閉区間 $P_i$ に含まれているときは、
 その区間が割り当てられている確率分布 $N_i$ の累積分布関数 $\Phi_i$ が、必ずその経路上の点 $( x_j, p_j )$ を通過すること。
-すなわち、$p_j \in P_i \Rightarrow \Phi_i( x_j ) = p_j$ が成り立つこと。
+逆関数を使って言い換えれば、$p_j \in P_i \Rightarrow \Phi_i( x_j ) = p_j$ が成り立つこと。
 
 なお、集合 $N$ の要素の中には、$N_i = N_j ( i \neq j )$ なる同一の分布が存在してもよい。
 
