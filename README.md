@@ -177,7 +177,7 @@ $W = \left\lbrace ( x_j, p_j ) \in ( \mathbb{R}, [0, 1] ) \mid 1 \leq j \leq m \
 $N_i, N_j$ に閉区間 $P_i, P_j$ が割り当てられているとき、
 $N_i, N_j$ の累積分布関数 $\Phi_i( x ), \Phi_j( x )$ について、
 それぞれの区間に対する定義域 $\lbrace x \mid \Phi_i( x ) \in P_i \rbrace$ と
-$\lbrace x \mid \Phi_j( x ) \in P_j \rbrace$ が、互いに重ならないこと。
+$\lbrace x \mid \Phi_j( x ) \in P_j \rbrace$ が互いに重ならないこと。
 逆関数を使って言い換えれば、
 $\left\lbrace \Phi_i^{-1}( p ) \mid p \in P_i \right\rbrace ∩ \left\lbrace \Phi_j^{-1}( p ) \mid p \in P_j \right\rbrace = \varnothing$
 であること。
