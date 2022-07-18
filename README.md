@@ -385,7 +385,7 @@ $$
 \begin{cases}
 \Phi_i( x ) & \textrm{where} \quad x \leq \mu \\
 \dfrac{1}{2} ( \Phi_i( x ) + \Phi_{i+1}( x ) ) & \textrm{where} \quad x > \mu, \quad \Phi_i( x ) < a_{i+1} \\
-\dfrac{1}{2} ( a_{i+1} + \Phi_{i+1}( x ) ) & \textrm{where} \quad x > \mu, \quad \Phi_{i+1}( x ) \geq a_{i+1}
+\dfrac{1}{2} ( a_{i+1} + \Phi_{i+1}( x ) ) & \textrm{where} \quad x > \mu, \quad \Phi_i( x ) \geq a_{i+1}
 \end{cases}
 $$
 
@@ -396,7 +396,7 @@ f( x ) =
 \begin{cases}
 f_i( x ) & \textrm{where} \quad x \leq \mu \\
 \dfrac{1}{2} ( f_i( x ) + f_{i+1}( x ) ) & \textrm{where} \quad x > \mu, \quad \Phi_i( x ) < a_{i+1} \\
-\dfrac{1}{2} f_{i+1}( x ) & \textrm{where} \quad x > \mu, \quad \Phi_{i+1}( x ) \geq a_{i+1}
+\dfrac{1}{2} f_{i+1}( x ) & \textrm{where} \quad x > \mu, \quad \Phi_i( x ) \geq a_{i+1}
 \end{cases}
 $$
 
@@ -413,7 +413,7 @@ $$
 \Psi_i( x ) =
 \begin{cases}
 \dfrac{1}{2} ( \Phi_i( x ) + b_i ) & \textrm{where} \quad x \leq \mu, \quad \Phi_{i+1}( x ) < b_i \\
-\dfrac{1}{2} ( \Phi_i( x ) + \Phi_{i+1}( x ) ) & \textrm{where} \quad x \leq \mu, \quad \Phi_i( x ) \geq b_i \\
+\dfrac{1}{2} ( \Phi_i( x ) + \Phi_{i+1}( x ) ) & \textrm{where} \quad x \leq \mu, \quad \Phi_{i+1}( x ) \geq b_i \\
 \Phi_{i+1}( x ) & \textrm{where} \quad x > \mu
 \end{cases}
 $$
@@ -424,7 +424,7 @@ $$
 f( x ) =
 \begin{cases}
 \dfrac{1}{2} f_i( x ) & \textrm{where} \quad x \leq \mu, \quad \Phi_{i+1}( x ) < b_i \\
-\dfrac{1}{2} ( f_i( x ) + f_{i+1}( x ) ) & \textrm{where} \quad x \leq \mu, \quad \Phi_i( x ) \geq b_i \\
+\dfrac{1}{2} ( f_i( x ) + f_{i+1}( x ) ) & \textrm{where} \quad x \leq \mu, \quad \Phi_{i+1}( x ) \geq b_i \\
 f_{i+1}( x ) & \textrm{where} \quad x > \mu
 \end{cases}
 $$
