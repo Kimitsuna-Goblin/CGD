@@ -2,7 +2,7 @@
 # 連結ガウス分布 (Connected Gaussian Distribution) クラス
 #  (他のライブラリから関数をコピーして、単独ファイルで使えるようにしています)
 # @file			CGD.stand-alone.R
-# @version		1.1.0
+# @version		1.1.1
 # @author		Kimitsuna-Goblin
 # @copyright	Copyright (C) 2022 Ura Kimitsuna
 # @license		Released under the MIT license.
@@ -140,7 +140,6 @@ CGD <- setRefClass(
 # 累積分布関数の経路 (クォンタイル) を設定する
 # @param	waypoints		経路の data.frame( q = 経路のX座標 (クォンタイル), p = その点における確率 )
 #							X座標 (クォンタイル) は昇順にソートしておくこと。平均値は p = 0.5 の行に設定すること
-# @return	計算結果
 ###############################################################################
 		set.waypoints = function( waypoints )
 		{
