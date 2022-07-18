@@ -2,7 +2,7 @@
 # 連結ガウス分布 (Connected Gaussian Distribution) クラス
 #  (他のライブラリから関数をコピーして、単独ファイルで使えるようにしています)
 # @file			CGD.stand-alone.R
-# @version		1.0.0
+# @version		1.1.0
 # @author		Kimitsuna-Goblin
 # @copyright	Copyright (C) 2022 Ura Kimitsuna
 # @license		Released under the MIT license.
@@ -87,6 +87,7 @@ CGD <- setRefClass(
 	fields = list(
 		mean = "numeric",			# 平均値
 		intervals = "list",			# 連結区間
+		type1.type = "numeric",		# type 1 の計算方法
 		m.sd = "numeric"			# 計算済みの標準偏差
 	),
 
@@ -96,9 +97,9 @@ CGD <- setRefClass(
 # コンストラクタ
 # @param	mean = NULL			平均値
 # @param	intervals = NULL	連結区間
-# @return	計算結果
+# @param	type1.type = 1		type 1 の計算方法 (1 または 2 を指定すること)
 ###############################################################################
-		initialize = function( mean = NULL, intervals = NULL )
+		initialize = function( mean = NULL, intervals = NULL, type1.type = 1 )
 		{
 			if ( is.null( mean ) )
 			{
@@ -120,6 +121,16 @@ CGD <- setRefClass(
 			else
 			{
 				intervals <<- intervals
+			}
+
+			if ( type1.type == 1 || type1.type == 2 )
+			{
+				type1.type <<- type1.type
+			}
+			else
+			{
+				warning( paste( "Warning: type1.type" , type1.type , "is undefined." ) )
+				type1.type <<- 1
 			}
 
 			m.sd <<- -Inf
@@ -175,6 +186,10 @@ CGD <- setRefClass(
 			if ( !is.set.mean )
 			{
 				warning( "Warning: q for mean (p = 0.5) is not given." )
+			}
+			if ( nrow( wp ) == 0 )
+			{
+				warning( "Warning: no waypoints other than (p = 0, 0.5, 1) are given." )
 			}
 
 			# 経路上の点を通る標準偏差を取得
@@ -340,10 +355,22 @@ CGD <- setRefClass(
 							if ( d.2$sd >= d.1$sd )
 							{
 								# type 1
-								results[i] <- (	dnorm( x[i], mean, d.1$sd ) * ( x.conn[2] - x[i] ) +
-												dnorm( x[i], mean, d.2$sd ) * ( x[i] - x.conn[1] ) +
-												pnorm( x[i], mean, d.2$sd ) - pnorm( x[i], mean, d.1$sd ) ) /
-												( x.conn[2] - x.conn[1] )
+								if ( type1.type == 1 )
+								{
+									results[i] <- (	dnorm( x[i], mean, d.1$sd ) * ( x.conn[2] - x[i] ) +
+													dnorm( x[i], mean, d.2$sd ) * ( x[i] - x.conn[1] ) +
+													pnorm( x[i], mean, d.2$sd ) - pnorm( x[i], mean, d.1$sd ) ) /
+													( x.conn[2] - x.conn[1] )
+								}
+								else # if ( type1.type == 2 )
+								{
+									p1.conn2 <- pnorm( x.conn[2], mean, d.1$sd )
+									p2.conn1 <- pnorm( x.conn[1], mean, d.2$sd )
+									results[i] <- ( p1.conn2 - 2 * pnorm( x[i], mean, d.1$sd ) ) /
+													( p1.conn2 - d.1$p.conn.next[1] ) * dnorm( x[i], mean, d.1$sd ) +
+													( 2 * pnorm( x[i], mean, d.2$sd ) - p2.conn1 ) /
+													( d.1$p.conn.next[2] - p2.conn1 ) * dnorm( x[i], mean, d.2$sd )
+								}
 							}
 							else
 							{
@@ -462,10 +489,22 @@ CGD <- setRefClass(
 						else
 						{
 							# type 1
-							results[i] <- (	dnorm( x[i], mean, d.1$sd ) * ( x.conn[2] - x[i] ) +
-											dnorm( x[i], mean, d.2$sd ) * ( x[i] - x.conn[1] ) +
-											pnorm( x[i], mean, d.2$sd ) - pnorm( x[i], mean, d.1$sd ) ) /
-											( x.conn[2] - x.conn[1] )
+							if ( type1.type == 1 )
+							{
+								results[i] <- (	dnorm( x[i], mean, d.1$sd ) * ( x.conn[2] - x[i] ) +
+												dnorm( x[i], mean, d.2$sd ) * ( x[i] - x.conn[1] ) +
+												pnorm( x[i], mean, d.2$sd ) - pnorm( x[i], mean, d.1$sd ) ) /
+												( x.conn[2] - x.conn[1] )
+							}
+							else # if ( type1.type == 2 )
+							{
+								p1.conn2 <- pnorm( x.conn[2], mean, d.1$sd )
+								p2.conn1 <- pnorm( x.conn[1], mean, d.2$sd )
+								results[i] <- ( p1.conn2 - 2 * pnorm( x[i], mean, d.1$sd ) ) /
+												( p1.conn2 - d.1$p.conn.next[1] ) * dnorm( x[i], mean, d.1$sd ) +
+												( 2 * pnorm( x[i], mean, d.2$sd ) - p2.conn1 ) /
+												( d.1$p.conn.next[2] - p2.conn1 ) * dnorm( x[i], mean, d.2$sd )
+							}
 						}
 					}
 				}
@@ -548,9 +587,21 @@ CGD <- setRefClass(
 							if ( d.2$sd >= d.1$sd )
 							{
 								# type 1
-								results[i] <- (	pnorm( q[i], mean, d.1$sd ) * ( x.conn[2] - q[i] ) +
-												pnorm( q[i], mean, d.2$sd ) * ( q[i] - x.conn[1] ) ) /
-												( x.conn[2] - x.conn[1] )
+								if ( type1.type == 1 )
+								{
+									results[i] <- (	pnorm( q[i], mean, d.1$sd ) * ( x.conn[2] - q[i] ) +
+													pnorm( q[i], mean, d.2$sd ) * ( q[i] - x.conn[1] ) ) /
+													( x.conn[2] - x.conn[1] )
+								}
+								else # if ( type1.type == 2 )
+								{
+									p1.conn2 <- pnorm( x.conn[2], mean, d.1$sd )
+									p2.conn1 <- pnorm( x.conn[1], mean, d.2$sd )
+									results[i] <- ( p1.conn2 - pnorm( q[i], mean, d.1$sd ) ) /
+													( p1.conn2 - d.1$p.conn.next[1] ) * pnorm( q[i], mean, d.1$sd ) +
+													( pnorm( q[i], mean, d.2$sd ) - p2.conn1 ) /
+													( d.1$p.conn.next[2] - p2.conn1 ) * pnorm( q[i], mean, d.2$sd )
+								}
 							}
 							else
 							{
@@ -669,9 +720,21 @@ CGD <- setRefClass(
 						else
 						{
 							# type 1
-							results[i] <- (	pnorm( q[i], mean, d.1$sd ) * ( x.conn[2] - q[i] ) +
-											pnorm( q[i], mean, d.2$sd ) * ( q[i] - x.conn[1] ) ) /
-											( x.conn[2] - x.conn[1] )
+							if ( type1.type == 1 )
+							{
+								results[i] <- (	pnorm( q[i], mean, d.1$sd ) * ( x.conn[2] - q[i] ) +
+												pnorm( q[i], mean, d.2$sd ) * ( q[i] - x.conn[1] ) ) /
+												( x.conn[2] - x.conn[1] )
+							}
+							else # if ( type1.type == 2 )
+							{
+								p1.conn2 <- pnorm( x.conn[2], mean, d.1$sd )
+								p2.conn1 <- pnorm( x.conn[1], mean, d.2$sd )
+								results[i] <- ( p1.conn2 - pnorm( q[i], mean, d.1$sd ) ) /
+												( p1.conn2 - d.1$p.conn.next[1] ) * pnorm( q[i], mean, d.1$sd ) +
+												( pnorm( q[i], mean, d.2$sd ) - p2.conn1 ) /
+												( d.1$p.conn.next[2] - p2.conn1 ) * pnorm( q[i], mean, d.2$sd )
+							}
 						}
 					}
 				}
