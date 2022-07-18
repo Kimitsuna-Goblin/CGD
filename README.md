@@ -178,13 +178,13 @@ $N_i, N_j$ に閉区間 $P_i, P_j$ が割り当てられているとき、
 $N_i, N_j$ の累積分布関数 $\Phi_i( x ), \Phi_j( x )$ について、
 それぞれの区間に対する定義域 $\lbrace x \mid \Phi_i( x ) \in P_i \rbrace$ と
 $\lbrace x \mid \Phi_j( x ) \in P_j \rbrace$ が、互いに重ならないこと。
-すなわち、
+逆関数を使って言い換えれば、
 $\left\lbrace \Phi_i^{-1}( p ) \mid p \in P_i \right\rbrace ∩ \left\lbrace \Phi_j^{-1}( p ) \mid p \in P_j \right\rbrace = \varnothing$
 であること。
 + 経路 $W = \left\lbrace ( x_j, p_j ) \right\rbrace$ が与えられており、
 経路上の確率 $p_j$ が閉区間 $P_i$ に含まれているときは、
 その区間が割り当てられている確率分布 $N_i$ の累積分布関数 $\Phi_i$ が、必ずその経路上の点 $( x_j, p_j )$ を通過すること。
-逆関数を使って言い換えれば、$p_j \in P_i \Rightarrow \Phi_i( x_j ) = p_j$ が成り立つこと。
+すなわち、$p_j \in P_i \Rightarrow \Phi_i( x_j ) = p_j$ が成り立つこと。
 
 なお、集合 $N$ の要素の中には、$N_i = N_j ( i \neq j )$ なる同一の分布が存在してもよい。
 
