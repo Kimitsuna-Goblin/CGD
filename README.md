@@ -127,7 +127,8 @@ Field "m.sd":
 
 [CGD.stand-alone.R](https://github.com/Kimitsuna-Goblin/CGD/blob/master/CGD.stand-alone.R) - メインのR言語のソースファイルです。単独で動きます。
 
-[CGD.need-nleqslv.R](https://github.com/Kimitsuna-Goblin/CGD/blob/master/CGD.need-nleqslv.R) - 同じく、メインのR言語のソースファイルです。連続な確率密度関数を持つ連結ガウス分布を生成できます。 nleqslv ライブラリが必要です。
+[CGD.need-nleqslv.R](https://github.com/Kimitsuna-Goblin/CGD/blob/master/CGD.need-nleqslv.R) - 同じく、メインのR言語のソースファイルです。
+非線形連立方程式の nleqslv ライブラリが必要です。連続な確率密度関数を持つ連結ガウス分布を生成できます。
 
 [common.R](https://github.com/Kimitsuna-Goblin/CGD/blob/master/common.R) - おまけの自作ライブラリ (抜粋公開版) です。
 
@@ -319,10 +320,9 @@ $$
 このとき、連結ガウス分布の確率密度関数 $f( x )$ は $x = \beta_i, \alpha_{i+1}$ の2点で不連続になる。
 
 それから、この式では、独立区間が $P_1 = [0, 0]$ または $P_n = [1, 1]$ のとき、係数の分母が $\pm\infty$ になるので、確率密度が計算できない。
-このことは、バージョン 1.0.0 の欠点である。
 
 この欠点を解消するために、
-バージョン 1.1.x では、コンストラクタ new() の引数に type1.type = 2 を指定することで、
+バージョン 1.1.x 以上では、コンストラクタ new() の引数に type1.type = 2 を指定することで、
 接続関数が
 
 $$
@@ -350,7 +350,7 @@ $$
 与えられた経路の点は、独立区間内ではなく、接続区間内に入る。
 そのため、不連続な場合と比べて構成するのが難しく、経路の条件によっては、構成不可能な場合もある。
 
-本ライブラリでは、非線形連立方程式ライブラリの nleqslv を使用して、
+CGD.need-nleqslv.R では、非線形連立方程式ライブラリの nleqslv を使用して、
 連続な確率密度関数を持つ連結ガウス分布を構成している。
 
 #### Type 2 - 接続区間 $Q_i = ( b_i, a_{i + 1} )$ が平均値 $\mu$ を含まない場合 その2
