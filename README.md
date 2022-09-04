@@ -321,7 +321,7 @@ $$
 接続関数が
 
 $$
-\Psi_i( x ) = \dfrac{ \overline{\Phi_i}( \alpha_{i+1} ) - \overline{\Phi_i}( x ) }{ \overline{\Phi_i}( \alpha_{i+1} ) - \overline{\Phi_i}( v ) } \Phi_i( x )
+\Psi_i( x ) = \dfrac{ \overline{\Phi_i}( \alpha_{i+1} ) - \overline{\Phi_i}( x ) }{ \overline{\Phi_i}( \alpha_{i+1} ) - \overline{\Phi_i}( \beta_i ) } \Phi_i( x )
                 + \dfrac{ \overline{\Phi_i}( x ) - \overline{\Phi_i}( \beta_i ) }{ \overline{\Phi_i}( \alpha_{i+1} ) - \overline{\Phi_i}( \beta_i ) } \Phi_{i+1}( x )
 $$
 
