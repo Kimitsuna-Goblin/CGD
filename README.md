@@ -334,7 +334,7 @@ $$
 g_i( x ) = \dfrac{1}{ \bar{\Phi}_i( \alpha_{i+1} ) - \bar{\Phi}_i( \beta_i ) }
                 \{ ( \bar{\Phi}_i( \alpha_{i+1} ) - \bar{\Phi}_i( x ) )f_i( x )
                     + \bar{\Phi}_i( x ) - \bar{\Phi}_i( \beta_i ) )f_{i+1}( x )
-                    + \Phi_{i+1}( x ) - \Phi_i( x ) )\bar{f}_i( x )
+                    + \Phi_{i+1}( x ) - \Phi_i( x ) )\bar{f}_i( x ) \}
 $$
 
 となる。
@@ -345,10 +345,12 @@ $$
 連続な確率密度関数は、
 経路の構成点が3点のときに、 set.waypoints() の引数に continuous = TRUE を指定すると作られる。
 そのとき、累積分布関数 $\Psi( x )$ と確率密度関数 $g(x)$ は
+
 $$
 Psi( x ) = \Phi_1( x ) + \dfrac{1}{2} \Phi_1( x )^2 + \dfrac{1}{2} \Phi_2( x )^2
 g( x ) = ( 1 - \Phi_1( x ) )f_1( x ) + \Phi_2( x ) f_2( x )
 $$
+
 となる。
 
 [CGD.need-nleqslv.R](https://github.com/Kimitsuna-Goblin/CGD/blob/master/CGD.need-nleqslv.R) を使うと、
@@ -455,16 +457,19 @@ $$
 となる。
 
 バージョン 1.2.x 以上では、
-コンストラクタ new() の引数に type1.type = 1 を指定して、
+コンストラクタ new() の引数に type1.type = 1 を指定し、
 set.waypoints() の引数に continuous = TRUE を指定すると、
-可能であれば、全区間 $(-\infty, \infty)$ で連続な確率密度関数が作られる。
+可能であれば、
+全区間 $(-\infty, \infty)$ で連続な確率密度関数 (2つの確率密度関数の平均) が作られる。
 
 このとき、
 累積分布関数 $\Psi( x )$ と確率密度関数 $g(x)$ は
+
 $$
 Psi( x ) = \dfrac{1}{2} ( \Phi_1( x ) + \Phi_2( x ) )
 g( x ) = \dfrac{1}{2} ( f_1( x ) + f_2( x ) )
 $$
+
 となる。
 
 ## 参考資料 - References
