@@ -331,10 +331,9 @@ $$
 このとき、確率密度関数 $g_i( x )$ は
 
 $$
-g_i( x ) = \dfrac{1}{ \overline{\Phi_i}( \alpha_{i+1} ) - \overline{\Phi_i}( \beta_i ) }
-                \lbrace ( \overline{\Phi_i}( \alpha_{i+1} ) - \overline{\Phi_i}( x ) )f_i( x )
-                    + \overline{\Phi_i}( x ) - \overline{\Phi_i}( \beta_i ) )f_{i+1}( x )
-                    + \Phi_{i+1}( x ) - \Phi_i( x ) )\overline{f_i}( x ) \rbrace
+g_i( x ) = \dfrac{ \overline{\Phi_i}( \alpha_{i+1} ) - \overline{\Phi_i}( x ) }{ \overline{\Phi_i}( \alpha_{i+1} ) - \overline{\Phi_i}( \beta_i ) } f_i( x )
+            + dfrac{ \overline{\Phi_i}( x ) - \overline{\Phi_i}( \beta_i ) }{ \overline{\Phi_i}( \alpha_{i+1} ) - \overline{\Phi_i}( \beta_i ) } f_{i+1}( x )
+            + dfrac{ \Phi_{i+1}( x ) - \Phi_i( x ) ) }{ \overline{\Phi_i}( \alpha_{i+1} ) - \overline{\Phi_i}( \beta_i ) } \overline{f_i}( x )
 $$
 
 となる。
