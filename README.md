@@ -27,7 +27,7 @@
 ## 使い方 - How to use
 
 <pre>
-> source( "CGD.stand-alone.R" )    # ソースファイルを読み込みます
+> source( "CGD.need-nleqslv.R" )    # ソースファイルを読み込みます
 > a <- CGD$new()    # 連結ガウス分布クラスのオブジェクトを生成します
 >
 >    # 連結分布の構成が既知の場合は (ほとんど無いと思いますが)
@@ -125,10 +125,8 @@ Field "m.sd":
 <br>
 なお、以下のソースファイルはすべて4文字タブで整形しています。
 
-[CGD.stand-alone.R](https://github.com/Kimitsuna-Goblin/CGD/blob/master/CGD.stand-alone.R) - メインのR言語のソースファイルです。単独で動きます。
-
-[CGD.need-nleqslv.R](https://github.com/Kimitsuna-Goblin/CGD/blob/master/CGD.need-nleqslv.R) - 同じく、メインのR言語のソースファイルです。
-非線形連立方程式の nleqslv ライブラリが必要です。連続な確率密度関数を持つ連結ガウス分布を構成できます。
+[CGD.need-nleqslv.R](https://github.com/Kimitsuna-Goblin/CGD/blob/master/CGD.need-nleqslv.R) - メインのR言語のソースファイルです。
+非線形連立方程式の nleqslv ライブラリが必要です。
 
 [common.R](https://github.com/Kimitsuna-Goblin/CGD/blob/master/common.R) - おまけの自作ライブラリ (抜粋公開版) です。
 
@@ -308,10 +306,10 @@ $$
 \Psi_i( x ) = \dfrac{ \alpha_{i+1} - x }{ \alpha_{i+1} - \beta_i } \Phi_i( x ) + \dfrac{ x - \beta_i }{ \alpha_{i+1} - \beta_i } \Phi_{i+1}( x )
 $$
 
-このとき、確率密度関数 $f( x )$ は上の式の右辺を $x$ で微分すると得られ、
+このとき、確率密度関数 $g_i( x )$ は上の式の右辺を $x$ で微分すると得られ、
 
 $$
-f( x ) = \dfrac{ \alpha_{i+1} - x }{ \alpha_{i+1} - \beta_i } f_i( x ) + \dfrac{ x - \beta_i }{ \alpha_{i+1} - \beta_i } f_{i+1}( x )
+g_i( x ) = \dfrac{ \alpha_{i+1} - x }{ \alpha_{i+1} - \beta_i } f_i( x ) + \dfrac{ x - \beta_i }{ \alpha_{i+1} - \beta_i } f_{i+1}( x )
             + \dfrac{ \Phi_{i+1}( x ) - \Phi_i( x ) }{ \alpha_{i+1} - \beta_i }
 $$
 
@@ -319,29 +317,39 @@ $$
 
 このとき、連結ガウス分布の確率密度関数 $f( x )$ は $x = \beta_i, \alpha_{i+1}$ の2点で不連続になる。
 
-それから、この式では、独立区間が $P_1 = [0, 0]$ または $P_n = [1, 1]$ のとき、係数の分母が $\pm\infty$ になるので、確率密度が計算できない。
-
-この欠点を解消するために、
-バージョン 1.1.x 以上では、コンストラクタ new() の引数に type1.type = 2 を指定することで、
+バージョン 1.2.x 以上では、コンストラクタ new() の引数に type1.type = 2 を指定することで、
 接続関数が
 
 $$
-\Psi_i( x ) = \dfrac{ \Phi_i( \alpha_{i+1} ) - \Phi_i( x ) }{ \Phi_i( \alpha_{i+1} ) - b_i } \Phi_i( x )
-                + \dfrac{ \Phi_{i+1}( x ) - \Phi_{i+1}( \beta_i ) }{ a_{i+1} - \Phi_{i+1}( \beta_i ) } \Phi_{i+1}( x )
+\Psi_i( x ) = \dfrac{ \bar{\Phi}_i( \alpha_{i+1} ) - \bar{\Phi}_i( x ) }{ \bar{\Phi}_i( \alpha_{i+1} ) - \bar{\Phi}_i( v ) } \Phi_i( x )
+                + \dfrac{ \bar{\Phi}_i( x ) - \bar{\Phi}_i( \beta_i ) }{ \bar{\Phi}_i( \alpha_{i+1} ) - \bar{\Phi}_i( \beta_i ) } \Phi_{i+1}( x )
 $$
 
 のように定義される。
+ただし、 $\bar{\Phi}_i( x ) = ( \Phi_i( x ) + \Phi_{i+1}( x ) ) / 2$ である。
 
-このとき、確率密度関数 $f( x )$ は
+このとき、確率密度関数 $g_i( x )$ は
 
 $$
-f( x ) = \dfrac{ \Phi_i( \alpha_{i+1} ) - 2\Phi_i( x ) }{ \Phi_i( \alpha_{i+1} ) - b_i } f_i( x )
-                + \dfrac{ 2\Phi_{i+1}( x ) - \Phi_{i+1}( \beta_i ) }{ a_{i+1} - \Phi_{i+1}( \beta_i ) } f_{i+1}( x )
+g_i( x ) = \dfrac{1}{ \bar{\Phi}_i( \alpha_{i+1} ) - \bar{\Phi}_i( \beta_i ) }
+                \{ ( \bar{\Phi}_i( \alpha_{i+1} ) - \bar{\Phi}_i( x ) )f_i( x )
+                    + \bar{\Phi}_i( x ) - \bar{\Phi}_i( \beta_i ) )f_{i+1}( x )
+                    + \Phi_{i+1}( x ) - \Phi_i( x ) )\bar{f}_i( x )
 $$
 
 となる。
-このように定義すると、独立区間が $P_1 = [0, 0], P_2 = [1, 1]$ の2個のみの場合には、
+ただし、 $\bar{f}_i( x ) = ( f_i( x ) + f_{i+1}( x ) ) / 2$ である。
+このように定義すると、独立区間が $P_1 = [0, 0], P_2 = [1, 1]$ の2個のみの場合は、
 全区間 $(-\infty, \infty)$ で連続な確率密度関数を作ることができる。
+
+連続な確率密度関数は、
+経路の構成点が3点のときに、 set.waypoints() の引数に continuous = TRUE を指定すると作られる。
+そのとき、累積分布関数 $\Psi( x )$ と確率密度関数 $g(x)$ は
+$$
+Psi( x ) = \Phi_1( x ) + \dfrac{1}{2} \Phi_1( x )^2 + \dfrac{1}{2} \Phi_2( x )^2
+g( x ) = ( 1 - \Phi_1( x ) )f_1( x ) + \Phi_2( x ) f_2( x )
+$$
+となる。
 
 [CGD.need-nleqslv.R](https://github.com/Kimitsuna-Goblin/CGD/blob/master/CGD.need-nleqslv.R) を使うと、
 連続な確率密度関数を作ることができる。
@@ -373,10 +381,10 @@ $$
 \end{cases}
 $$
 
-このとき、確率密度関数 $f( x )$ は
+このとき、確率密度関数 $g_i( x )$ は
 
 $$
-f( x ) =
+g_i( x ) =
 \begin{cases}
 \dfrac{1}{2} f_i( x ) & \textrm{where} \quad \Phi_i( x ) < a_{i+1}, \quad \Phi_{i+1}( x ) < b_i \\
 0 & \textrm{where} \quad \Phi_i( x ) \geq a_{i+1}, \quad \Phi_{i+1}( x ) < b_i \\
@@ -403,10 +411,10 @@ $$
 \end{cases}
 $$
 
-このとき、確率密度関数 $f( x )$ は
+このとき、確率密度関数 $g_i( x )$ は
 
 $$
-f( x ) =
+g_i( x ) =
 \begin{cases}
 f_i( x ) & \textrm{where} \quad x \leq \mu \\
 \dfrac{1}{2} ( f_i( x ) + f_{i+1}( x ) ) & \textrm{where} \quad x > \mu, \quad \Phi_i( x ) < a_{i+1} \\
@@ -433,10 +441,10 @@ $$
 \end{cases}
 $$
 
-このとき、確率密度関数 $f( x )$ は
+このとき、確率密度関数 $g_i( x )$ は
 
 $$
-f( x ) =
+g_i( x ) =
 \begin{cases}
 \dfrac{1}{2} f_i( x ) & \textrm{where} \quad x \leq \mu, \quad \Phi_{i+1}( x ) < b_i \\
 \dfrac{1}{2} ( f_i( x ) + f_{i+1}( x ) ) & \textrm{where} \quad x \leq \mu, \quad \Phi_{i+1}( x ) \geq b_i \\
@@ -446,6 +454,18 @@ $$
 
 となる。
 
+バージョン 1.2.x 以上では、
+コンストラクタ new() の引数に type1.type = 1 を指定して、
+set.waypoints() の引数に continuous = TRUE を指定すると、
+可能であれば、全区間 $(-\infty, \infty)$ で連続な確率密度関数が作られる。
+
+このとき、
+累積分布関数 $\Psi( x )$ と確率密度関数 $g(x)$ は
+$$
+Psi( x ) = \dfrac{1}{2} ( \Phi_1( x ) + \Phi_2( x ) )
+g( x ) = \dfrac{1}{2} ( f_1( x ) + f_2( x ) )
+$$
+となる。
 
 ## 参考資料 - References
 
