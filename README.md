@@ -332,9 +332,9 @@ $$
 
 $$
 g_i( x ) = \dfrac{1}{ \overline{\Phi_i}( \alpha_{i+1} ) - \overline{\Phi_i}( \beta_i ) }
-                { ( \overline{\Phi_i}( \alpha_{i+1} ) - \overline{\Phi_i}( x ) )f_i( x )
+                \lbrace ( \overline{\Phi_i}( \alpha_{i+1} ) - \overline{\Phi_i}( x ) )f_i( x )
                     + \overline{\Phi_i}( x ) - \overline{\Phi_i}( \beta_i ) )f_{i+1}( x )
-                    + \Phi_{i+1}( x ) - \Phi_i( x ) )\overline{f_i}( x ) }
+                    + \Phi_{i+1}( x ) - \Phi_i( x ) )\overline{f_i}( x ) \rbrace
 $$
 
 となる。
