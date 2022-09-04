@@ -334,11 +334,11 @@ $$
 g_i( x ) = \dfrac{1}{ \bar{\Phi_i}( \alpha_{i+1} ) - \bar{\Phi_i}( \beta_i ) }
                 \{ ( \bar{\Phi_i}( \alpha_{i+1} ) - \bar{\Phi_i}( x ) )f_i( x )
                     + \bar{\Phi_i}( x ) - \bar{\Phi_i}( \beta_i ) )f_{i+1}( x )
-                    + \Phi_{i+1}( x ) - \Phi_i( x ) )\bar{f}_i( x ) \}
+                    + \Phi_{i+1}( x ) - \Phi_i( x ) )\bar{f_i}( x ) \}
 $$
 
 となる。
-ただし、 $\bar{f}_i( x ) = ( f_i( x ) + f_{i+1}( x ) ) / 2$ である。
+ただし、 $\bar{f_i}( x ) = ( f_i( x ) + f_{i+1}( x ) ) / 2$ である。
 このように定義すると、独立区間が $P_1 = [0, 0], P_2 = [1, 1]$ の2個のみの場合は、
 全区間 $(-\infty, \infty)$ で連続な確率密度関数を作ることができる。
 
@@ -347,8 +347,8 @@ $$
 そのとき、累積分布関数 $\Psi( x )$ と確率密度関数 $g(x)$ は
 
 $$
-Psi( x ) = \Phi_1( x ) + \dfrac{1}{2} \Phi_1( x )^2 + \dfrac{1}{2} \Phi_2( x )^2
-g( x ) = ( 1 - \Phi_1( x ) )f_1( x ) + \Phi_2( x ) f_2( x )
+\Psi( x ) & = & \Phi_1( x ) + \dfrac{1}{2} \Phi_1( x )^2 + \dfrac{1}{2} \Phi_2( x )^2 \\
+g( x ) & = & ( 1 - \Phi_1( x ) )f_1( x ) + \Phi_2( x ) f_2( x )
 $$
 
 となる。
@@ -466,8 +466,8 @@ set.waypoints() の引数に continuous = TRUE を指定すると、
 累積分布関数 $\Psi( x )$ と確率密度関数 $g(x)$ は
 
 $$
-Psi( x ) = \dfrac{1}{2} ( \Phi_1( x ) + \Phi_2( x ) )
-g( x ) = \dfrac{1}{2} ( f_1( x ) + f_2( x ) )
+\Psi( x ) & = & \dfrac{1}{2} ( \Phi_1( x ) + \Phi_2( x ) ) \\
+g( x ) & = & \dfrac{1}{2} ( f_1( x ) + f_2( x ) )
 $$
 
 となる。
