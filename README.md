@@ -321,24 +321,24 @@ $$
 接続関数が
 
 $$
-\Psi_i( x ) = \dfrac{ \overline{\Phi}_i( \alpha_{i+1} ) - \overline{\Phi}_i( x ) }{ \overline{\Phi}_i( \alpha_{i+1} ) - \overline{\Phi}_i( v ) } \Phi_i( x )
-                + \dfrac{ \overline{\Phi}_i( x ) - \overline{\Phi}_i( \beta_i ) }{ \overline{\Phi}_i( \alpha_{i+1} ) - \overline{\Phi}_i( \beta_i ) } \Phi_{i+1}( x )
+\Psi_i( x ) = \dfrac{ \overline{\Phi_i}( \alpha_{i+1} ) - \overline{\Phi_i}( x ) }{ \overline{\Phi_i}( \alpha_{i+1} ) - \overline{\Phi_i}( v ) } \Phi_i( x )
+                + \dfrac{ \overline{\Phi_i}( x ) - \overline{\Phi_i}( \beta_i ) }{ \overline{\Phi_i}( \alpha_{i+1} ) - \overline{\Phi_i}( \beta_i ) } \Phi_{i+1}( x )
 $$
 
 のように定義される。
-ただし、 $\overline{\Phi}_i( x ) = ( \Phi_i( x ) + \Phi_{i+1}( x ) ) / 2$ である。
+ただし、 $\overline{\Phi_i}( x ) = ( \Phi_i( x ) + \Phi_{i+1}( x ) ) / 2$ である。
 
 このとき、確率密度関数 $g_i( x )$ は
 
 $$
-g_i( x ) = \dfrac{1}{ \overline{\Phi}_i( \alpha_{i+1} ) - \overline{\Phi}_i( \beta_i ) }
-                \{ ( \overline{\Phi}_i( \alpha_{i+1} ) - \overline{\Phi}_i( x ) )f_i( x )
-                    + \overline{\Phi}_i( x ) - \overline{\Phi}_i( \beta_i ) )f_{i+1}( x )
-                    + \Phi_{i+1}( x ) - \Phi_i( x ) )\overline{f}_i( x ) \}
+g_i( x ) = \dfrac{1}{ \overline{\Phi_i}( \alpha_{i+1} ) - \overline{\Phi_i}( \beta_i ) }
+                \{ ( \overline{\Phi_i}( \alpha_{i+1} ) - \overline{\Phi_i}( x ) )f_i( x )
+                    + \overline{\Phi_i}( x ) - \overline{\Phi_i}( \beta_i ) )f_{i+1}( x )
+                    + \Phi_{i+1}( x ) - \Phi_i( x ) )\overline{f_i}( x ) \}
 $$
 
 となる。
-ただし、 $\overline{f}_i( x ) = ( f_i( x ) + f_{i+1}( x ) ) / 2$ である。
+ただし、 $\overline{f_i}( x ) = ( f_i( x ) + f_{i+1}( x ) ) / 2$ である。
 このように定義すると、独立区間が $P_1 = [0, 0], P_2 = [1, 1]$ の2個のみの場合は、
 全区間 $(-\infty, \infty)$ で連続な確率密度関数を作ることができる。
 
