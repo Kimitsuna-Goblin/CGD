@@ -321,19 +321,19 @@ $$
 接続関数が
 
 $$
-\Psi_i( x ) = \dfrac{ \bar{\Phi}_i( \alpha_{i+1} ) - \bar{\Phi}_i( x ) }{ \bar{\Phi}_i( \alpha_{i+1} ) - \bar{\Phi}_i( v ) } \Phi_i( x )
-                + \dfrac{ \bar{\Phi}_i( x ) - \bar{\Phi}_i( \beta_i ) }{ \bar{\Phi}_i( \alpha_{i+1} ) - \bar{\Phi}_i( \beta_i ) } \Phi_{i+1}( x )
+\Psi_i( x ) = \dfrac{ \bar{\Phi_i}( \alpha_{i+1} ) - \bar{\Phi_i}( x ) }{ \bar{\Phi_i}( \alpha_{i+1} ) - \bar{\Phi_i}( v ) } \Phi_i( x )
+                + \dfrac{ \bar{\Phi_i}( x ) - \bar{\Phi_i}( \beta_i ) }{ \bar{\Phi_i}( \alpha_{i+1} ) - \bar{\Phi_i}( \beta_i ) } \Phi_{i+1}( x )
 $$
 
 のように定義される。
-ただし、 $\bar{\Phi}_i( x ) = ( \Phi_i( x ) + \Phi_{i+1}( x ) ) / 2$ である。
+ただし、 $\bar{\Phi_i}( x ) = ( \Phi_i( x ) + \Phi_{i+1}( x ) ) / 2$ である。
 
 このとき、確率密度関数 $g_i( x )$ は
 
 $$
-g_i( x ) = \dfrac{1}{ \bar{\Phi}_i( \alpha_{i+1} ) - \bar{\Phi}_i( \beta_i ) }
-                \{ ( \bar{\Phi}_i( \alpha_{i+1} ) - \bar{\Phi}_i( x ) )f_i( x )
-                    + \bar{\Phi}_i( x ) - \bar{\Phi}_i( \beta_i ) )f_{i+1}( x )
+g_i( x ) = \dfrac{1}{ \bar{\Phi_i}( \alpha_{i+1} ) - \bar{\Phi_i}( \beta_i ) }
+                \{ ( \bar{\Phi_i}( \alpha_{i+1} ) - \bar{\Phi_i}( x ) )f_i( x )
+                    + \bar{\Phi_i}( x ) - \bar{\Phi_i}( \beta_i ) )f_{i+1}( x )
                     + \Phi_{i+1}( x ) - \Phi_i( x ) )\bar{f}_i( x ) \}
 $$
 
