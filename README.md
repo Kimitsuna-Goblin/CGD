@@ -346,7 +346,7 @@ $$
 この場合、累積分布関数 $\Psi( x )$ と確率密度関数 $g(x)$ は
 
 $$
-\Psi( x ) = \Phi_1( x ) + \dfrac{1}{2} \Phi_1( x )^2 + \dfrac{1}{2} \Phi_2( x )^2
+\Psi( x ) = \Phi_1( x ) - \dfrac{1}{2} \Phi_1( x )^2 + \dfrac{1}{2} \Phi_2( x )^2
 $$
 
 $$
