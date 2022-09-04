@@ -333,7 +333,7 @@ $$
 $$
 g_i( x ) = \dfrac{ \overline{\Phi_i}( \alpha_{i+1} ) - \overline{\Phi_i}( x ) }{ \overline{\Phi_i}( \alpha_{i+1} ) - \overline{\Phi_i}( \beta_i ) } f_i( x )
             + \dfrac{ \overline{\Phi_i}( x ) - \overline{\Phi_i}( \beta_i ) }{ \overline{\Phi_i}( \alpha_{i+1} ) - \overline{\Phi_i}( \beta_i ) } f_{i+1}( x )
-            + \dfrac{ \Phi_{i+1}( x ) - \Phi_i( x ) ) }{ \overline{\Phi_i}( \alpha_{i+1} ) - \overline{\Phi_i}( \beta_i ) } \overline{f_i}( x )
+            + \dfrac{ \Phi_{i+1}( x ) - \Phi_i( x ) }{ \overline{\Phi_i}( \alpha_{i+1} ) - \overline{\Phi_i}( \beta_i ) } \overline{f_i}( x )
 $$
 
 となる。
