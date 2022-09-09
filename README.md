@@ -299,21 +299,19 @@ $$
 累積分布関数 $\Phi_i( x ), \Phi_{i + 1}( x )$ の値が両方とも接続区間 $Q_i$ の範囲内に収まり、範囲外に出ることがない。
 そのため、4つの場合の中で、最も自由に接続関数を構成することできる。
 
-本ライブラリでは、各オプションに応じて、以下のように接続関数を構成するよう試みる
+本ライブラリでは、各オプションに応じて、以下の表のように接続関数を構成するよう試みる
 (経路の条件があるものは、経路によっては、構成に失敗することがある)。
+なお、表中の式で、 $\Phi_i( x ), \Phi_{i+1}( x )$ は正規分布 $N_i,N_{i+1}$ の累積分布関数、 $f_i( x ), f_{i+1}( x )$ はそれらの分布の確率密度関数、 $\bar \Phi_i( x ) = ( \Phi_i( x ) + \Phi_{i+1}( x ) ) / 2$ である。
 
-
-| オプション  | 接続関数 $\Psi_i(x)$ ・確率密度関数 $g(x)$ | 適用可能な経路の条件 | 独立区間 |確率密度関数の連続性 |
+| オプション  | 接続関数 $\Psi_i(x)$ ・確率密度関数 $g_i(x)$ | 適用可能な経路の条件 | 独立区間 |確率密度関数の連続性 |
 | :--------: | :--------------------------------------- | :------: | :----: | :----------------: |
 | type1.type = 1 | $\Psi_i( x ) = \dfrac{ \alpha_{i+1} - x }{ \alpha_{i+1} - \beta_i } \Phi_i( x ) + \dfrac{ x - \beta_i }{ \alpha_{i+1} - \beta_i } \Phi_{i+1}( x )$ <br> $g_i( x ) = \dfrac{ \alpha_{i+1} - x }{ \alpha_{i+1} - \beta_i } f_i( x ) + \dfrac{ x - \beta_i }{ \alpha_{i+1} - \beta_i } f_{i+1}( x ) + \dfrac{ \Phi_{i+1}( x ) - \Phi_i( x ) }{ \alpha_{i+1} - \beta_i }$ | なし | 任意 | 不連続 |
-| type1.type = 1 <br> continuous = TRUE | $\Psi( x ) = \dfrac{1}{2} ( \Phi_1( x ) + \Phi_2( x ) )$ <br> $g( x ) = \dfrac{1}{2} ( f_1( x ) + f_2( x ) )$ | 経路が3点<br> ( $x = \mu$ の1点と $x \neq -\infty, \mu, \infty$ に2点) | $[0, 0]$, $[1, 1]$ の2点 | $( -\infty, \infty )$ で連続 <br> ( $C^\infty$ 級) |
+| type1.type = 1 <br> continuous = TRUE | $\Psi( x ) = \dfrac{1}{2} ( \Phi_1( x ) + \Phi_2( x ) )$ <br> $g( x ) = \dfrac{1}{2} ( f_1( x ) + f_2( x ) )$ | 経路が3点<br> ( $x = \mu$ の1点と $x \neq -\infty, \mu, \infty$ の2点) | $[0, 0]$, $[1, 1]$ の2点 | 連続<br>( $C^\infty$ 級) |
 | type1.type = 2  | $\Psi_i( x ) = \dfrac{ \bar \Phi_i( \alpha_{i+1} ) - \bar \Phi_i( x ) }{ \bar \Phi_i( \alpha_{i+1} ) - \bar \Phi_i( \beta_i ) } \Phi_i( x ) + \dfrac{ \bar \Phi_i( x ) - \bar \Phi_i( \beta_i ) }{ \bar \Phi_i( \alpha_{i+1} ) - \bar \Phi_i( \beta_i ) } \Phi_{i+1}( x )$ <br> $g_i( x ) = \dfrac{ \bar \Phi_i( \alpha_{i+1} ) -\Phi_i( x ) }{ \bar \Phi_i( \alpha_{i+1} ) - \bar \Phi_i( \beta_i ) } f_i( x ) + \dfrac{ \Phi_{i+1}( x ) - \bar \Phi_i( \beta_i ) }{ \bar \Phi_i( \alpha_{i+1} ) - \bar \Phi_i( \beta_i ) } f_{i+1}( x )$ | なし | 任意 | 不連続 |
-| type1.type = 2 <br> continuous = TRUE | $\Psi( x ) = \Phi_1( x ) - \dfrac{1}{2} \Phi_1( x )^2 + \dfrac{1}{2} \Phi_2( x )^2$ <br> $g( x ) = ( 1 - \Phi_1( x ) )f_1( x ) + \Phi_2( x ) f_2( x )$ | 経路が3点<br> ( $x = \mu$ の1点と $x \neq -\infty, \mu, \infty$ に2点) | $[0, 0]$, $[1, 1]$ の2点 | $( -\infty, \infty )$ で連続 <br> ( $C^\infty$ 級) |
-| type1.type = 2 <br> symmetric = TRUE | $\Psi( x ) = $ <br> $g( x ) = $ | 経路が3点<br> ( $x = \mu$ の1点と $x \neq -\infty, \mu, \infty$ に2点) | $[0, 0]$, $[0.5, 0.5]$, $[1, 1]$ の3点 | $( -\infty, \infty )$ で連続 |
-| type1.type = 3 | $\Psi( x ) = $ <br> $g( x ) = $ | 経路が5点<br> ( $x = \mu$ の1点と $-\infty < x < \mu$ に2点、 $\mu < x < \infty$ に2点) | $[0, 0]$, $[0.5, 0.5]$, $[1, 1]$ の3点 | $( -\infty, \mu )$, $( \mu, \infty )$ で連続 <br> ( $C^\infty$ 級) |
-| type1.type = 3 <br> continuous = TRUE | $\Psi( x ) = $ <br> $g( x ) = $ | 経路が3点<br> ( $x = \mu$ の1点と $x \neq -\infty, \mu, \infty$ に2点) | $[0, 0]$, $[0.5, 0.5]$, $[1, 1]$ の3点 | $( -\infty, \infty )$ で連続 <br> ( $C^\infty$ 級) |
-
-ただし、 $f_i( x ), f_{i+1}( x )$ は正規分布 $N_i,N_{i+1}$ の確率密度関数である。
+| type1.type = 2 <br> continuous = TRUE | $\Psi( x ) = \Phi_1( x ) - \dfrac{1}{2} \Phi_1( x )^2 + \dfrac{1}{2} \Phi_2( x )^2$ <br> $g( x ) = ( 1 - \Phi_1( x ) )f_1( x ) + \Phi_2( x ) f_2( x )$ | 経路が3点<br> ( $x = \mu$ の1点と $x \neq -\infty, \mu, \infty$ の2点) | $[0, 0]$, $[1, 1]$ の2点 | 連続<br>( $C^\infty$ 級) |
+| type1.type = 2 <br> symmetric = TRUE | $\Psi_1( x ) = \Phi_1( x ) - \Phi_1( x )^2 + \Phi_2( x )^2$ <br> $\Psi_2( x ) = 1 - \Psi_1( 2\mu - x )$ <br> $g_1( x ) = ( 1 - 2\Phi_1( x ) ) f_1( x ) + 2\Phi_2( x ) f_2( x )$ <br> $g_2( x ) = g_1( 2\mu - x )$ | 経路が3点<br> ( $x = \mu$ の1点と $x \neq -\infty, \mu, \infty$ の2点) | $[0, 0]$, $[0.5, 0.5]$, $[1, 1]$ の3点 | 連続<br>( $C^0$ 級) |
+| type1.type = 3 | $\Psi_i( x ) = \Phi_i( x ) - ( 4 f_i( \mu ) \sqrt{ \pi \sigma_i^2 } )^{-1} \mathrm{erf}( \dfrac{ x - \mu }{ \sigma_i } ) + ( 4 f_{i+1}( \mu ) \sqrt{ \pi \sigma_{i+1}^2 } )^{-1} \mathrm{erf}( \dfrac{ x - \mu }{ \sigma_{i+1} } )$ <br> $g_i( x ) = \dfrac{ f_i( \mu ) - f_i( x ) }{ f_i( \mu ) } f_i( x ) + \dfrac{ f_{i+1}( x )^2 }{ f_{i+1}( \mu ) }$ <br> (ただし $i \leq 2$ ) | 経路が5点以下<br> ( $x = \mu$ の1点および、 $-\infty < x < \mu$ と $\mu < x < \infty$ の各2点以下) | $[0, 0]$, $[0.5, 0.5]$, $[1, 1]$, $[0, 0.5]$, $[0.5, 1]$, $[0, 1]$ のいずれか | $x = \mu$ 以外で連続 |
+| type1.type = 3 <br> symmetric = TRUE | $\Psi( x ) = $ <br> $g( x ) = $ | 経路が3点<br> ( $x = \mu$ の1点と $x \neq -\infty, \mu, \infty$ の2点) | $[0, 0]$, $[0.5, 0.5]$, $[1, 1]$ の3点 | 連続<br>( $C^\infty$ 級) |
 
 #### Type 2 - 接続区間 $Q_i = ( b_i, a_{i + 1} )$ が平均値 $\mu$ を含まない場合 その2
 + 接続区間 $Q_i$ の範囲が平均値 $\mu$ よりも小さく、標準偏差が $\sigma_i \geq \sigma_{i + 1}$ の場合
