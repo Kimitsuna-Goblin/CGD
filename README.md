@@ -299,66 +299,17 @@ $$
 累積分布関数 $\Phi_i( x ), \Phi_{i + 1}( x )$ の値が両方とも接続区間 $Q_i$ の範囲内に収まり、範囲外に出ることがない。
 そのため、4つの場合の中で、最も自由に接続関数を構成することできる。
 
-本ライブラリのバージョン 1.0.0 では、
-以下のように、単純に $\Phi_i( x )$ と $\Phi_{i+1}( x )$ を混合する。
+本ライブラリでは、各オプションに応じて、以下のように接続関数を構成するよう試みる
+(適用条件があるものは、構成に失敗することがある。失敗した場合は、適用条件のない式を使って構成する)。
 
-$$
-\Psi_i( x ) = \dfrac{ \alpha_{i+1} - x }{ \alpha_{i+1} - \beta_i } \Phi_i( x ) + \dfrac{ x - \beta_i }{ \alpha_{i+1} - \beta_i } \Phi_{i+1}( x )
-$$
 
-このとき、確率密度関数 $g_i( x )$ は上の式の右辺を $x$ で微分すると得られ、
+| オプション  | 接続関数 $\Psi_i(x)$ ・確率密度関数 $g(x)$ | 適用条件 | 確率密度関数の連続性 |
+| :--------: | :--------------------------------------- | :------: | :----------------: |
+| type1.type = 1 | $\Psi_i( x ) = \dfrac{ \alpha_{i+1} - x }{ \alpha_{i+1} - \beta_i } \Phi_i( x ) + \dfrac{ x - \beta_i }{ \alpha_{i+1} - \beta_i } \Phi_{i+1}( x )$ <br> $g_i( x ) = \dfrac{ \alpha_{i+1} - x }{ \alpha_{i+1} - \beta_i } f_i( x ) + \dfrac{ x - \beta_i }{ \alpha_{i+1} - \beta_i } f_{i+1}( x ) + \dfrac{ \Phi_{i+1}( x ) - \Phi_i( x ) }{ \alpha_{i+1} - \beta_i }$ | なし | 不連続 |
+| type1.type = 2  | $\Psi_i( x ) = \dfrac{ \bar \Phi_i( \alpha_{i+1} ) - \bar \Phi_i( x ) }{ \bar \Phi_i( \alpha_{i+1} ) - \bar \Phi_i( \beta_i ) } \Phi_i( x ) + \dfrac{ \bar \Phi_i( x ) - \bar \Phi_i( \beta_i ) }{ \bar \Phi_i( \alpha_{i+1} ) - \bar \Phi_i( \beta_i ) } \Phi_{i+1}( x )$ <br> $g_i( x ) = \dfrac{ \bar \Phi_i( \alpha_{i+1} ) -\Phi_i( x ) }{ \bar \Phi_i( \alpha_{i+1} ) - \bar \Phi_i( \beta_i ) } f_i( x ) + \dfrac{ \Phi_{i+1}( x ) - \bar \Phi_i( \beta_i ) }{ \bar \Phi_i( \alpha_{i+1} ) - \bar \Phi_i( \beta_i ) } f_{i+1}( x )$ | なし | 不連続 |
+| type1.type = 2 <br> continuous = TRUE | $\Psi( x ) = \Phi_1( x ) - \dfrac{1}{2} \Phi_1( x )^2 + \dfrac{1}{2} \Phi_2( x )^2$ <br> $g( x ) = ( 1 - \Phi_1( x ) )f_1( x ) + \Phi_2( x ) f_2( x )$ | 経路の構成点が3点のみ | $( -\infty, \infty )$ で連続 <br> ( $C^\infty$ 級) |
 
-$$
-g_i( x ) = \dfrac{ \alpha_{i+1} - x }{ \alpha_{i+1} - \beta_i } f_i( x ) + \dfrac{ x - \beta_i }{ \alpha_{i+1} - \beta_i } f_{i+1}( x )
-            + \dfrac{ \Phi_{i+1}( x ) - \Phi_i( x ) }{ \alpha_{i+1} - \beta_i }
-$$
-
-となる。ただし、 $f_i( x ), f_{i+1}( x )$ は正規分布 $N_i,N_{i+1}$ の確率密度関数である。
-
-このとき、連結ガウス分布の確率密度関数 $f( x )$ は $x = \beta_i, \alpha_{i+1}$ の2点で不連続になる。
-
-バージョン 1.2.x 以上では、コンストラクタ new() の引数に type1.type = 2 を指定することで、
-接続関数が
-
-$$
-\Psi_i( x ) = \dfrac{ \bar \Phi_i( \alpha_{i+1} ) - \bar \Phi_i( x ) }{ \bar \Phi_i( \alpha_{i+1} ) - \bar \Phi_i( \beta_i ) } \Phi_i( x )
-                + \dfrac{ \bar \Phi_i( x ) - \bar \Phi_i( \beta_i ) }{ \bar \Phi_i( \alpha_{i+1} ) - \bar \Phi_i( \beta_i ) } \Phi_{i+1}( x )
-$$
-
-のように定義される。
-ただし、 $\bar \Phi_i( x ) = ( \Phi_i( x ) + \Phi_{i+1}( x ) ) / 2$ である。
-
-このとき、確率密度関数 $g_i( x )$ は
-
-$$
-\begin{eqnarray}
-g_i( x ) &=& \dfrac{ \bar \Phi_i( \alpha_{i+1} ) - \bar \Phi_i( x ) }{ \bar \Phi_i( \alpha_{i+1} ) - \bar \Phi_i( \beta_i ) } f_i( x )
-            + \dfrac{ \bar \Phi_i( x ) - \bar \Phi_i( \beta_i ) }{ \bar \Phi_i( \alpha_{i+1} ) - \bar \Phi_i( \beta_i ) } f_{i+1}( x )
-            + \dfrac{ \Phi_{i+1}( x ) - \Phi_i( x ) }{ \bar \Phi_i( \alpha_{i+1} ) - \bar \Phi_i( \beta_i ) } \bar f_i( x ) \\
-         &=& \dfrac{ \bar \Phi_i( \alpha_{i+1} ) -\Phi_i( x ) }{ \bar \Phi_i( \alpha_{i+1} ) - \bar \Phi_i( \beta_i ) } f_i( x )
-            + \dfrac{ \Phi_{i+1}( x ) - \bar \Phi_i( \beta_i ) }{ \bar \Phi_i( \alpha_{i+1} ) - \bar \Phi_i( \beta_i ) } f_{i+1}( x )
-\end{eqnarray}
-$$
-
-となる。
-ただし、 $\bar f_i( x ) = ( f_i( x ) + f_{i+1}( x ) ) / 2$ である。
-なお、1行目と2行目の違い、すなわち $\Phi$ の上のバーの有無や添字に注意せよ。
-このように定義すると、独立区間が $P_1 = [0, 0], P_2 = [1, 1]$ の2個のみの場合は、
-全区間 $(-\infty, \infty)$ で連続な確率密度関数を作ることができる。
-
-連続な確率密度関数は、
-経路の構成点が3点のときに、 set.waypoints() の引数に continuous = TRUE を指定すると作られる。
-この場合、累積分布関数 $\Psi( x )$ と確率密度関数 $g(x)$ は
-
-$$
-\Psi( x ) = \Phi_1( x ) - \dfrac{1}{2} \Phi_1( x )^2 + \dfrac{1}{2} \Phi_2( x )^2
-$$
-
-$$
-g( x ) = ( 1 - \Phi_1( x ) )f_1( x ) + \Phi_2( x ) f_2( x )
-$$
-
-となる。
+ただし、 $f_i( x ), f_{i+1}( x )$ は正規分布 $N_i,N_{i+1}$ の確率密度関数である。
 
 #### Type 2 - 接続区間 $Q_i = ( b_i, a_{i + 1} )$ が平均値 $\mu$ を含まない場合 その2
 + 接続区間 $Q_i$ の範囲が平均値 $\mu$ よりも小さく、標準偏差が $\sigma_i \geq \sigma_{i + 1}$ の場合
