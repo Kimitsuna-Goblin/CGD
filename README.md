@@ -300,14 +300,18 @@ $$
 そのため、4つの場合の中で、最も自由に接続関数を構成することできる。
 
 本ライブラリでは、各オプションに応じて、以下のように接続関数を構成するよう試みる
-(適用条件があるものは、構成に失敗することがある。失敗した場合は、適用条件のない式を使って構成する)。
+(経路の条件があるものは、経路によっては、構成に失敗することがある)。
 
 
-| オプション  | 接続関数 $\Psi_i(x)$ ・確率密度関数 $g(x)$ | 適用条件 | 確率密度関数の連続性 |
-| :--------: | :--------------------------------------- | :------: | :----------------: |
-| type1.type = 1 | $\Psi_i( x ) = \dfrac{ \alpha_{i+1} - x }{ \alpha_{i+1} - \beta_i } \Phi_i( x ) + \dfrac{ x - \beta_i }{ \alpha_{i+1} - \beta_i } \Phi_{i+1}( x )$ <br> $g_i( x ) = \dfrac{ \alpha_{i+1} - x }{ \alpha_{i+1} - \beta_i } f_i( x ) + \dfrac{ x - \beta_i }{ \alpha_{i+1} - \beta_i } f_{i+1}( x ) + \dfrac{ \Phi_{i+1}( x ) - \Phi_i( x ) }{ \alpha_{i+1} - \beta_i }$ | なし | 不連続 |
-| type1.type = 2  | $\Psi_i( x ) = \dfrac{ \bar \Phi_i( \alpha_{i+1} ) - \bar \Phi_i( x ) }{ \bar \Phi_i( \alpha_{i+1} ) - \bar \Phi_i( \beta_i ) } \Phi_i( x ) + \dfrac{ \bar \Phi_i( x ) - \bar \Phi_i( \beta_i ) }{ \bar \Phi_i( \alpha_{i+1} ) - \bar \Phi_i( \beta_i ) } \Phi_{i+1}( x )$ <br> $g_i( x ) = \dfrac{ \bar \Phi_i( \alpha_{i+1} ) -\Phi_i( x ) }{ \bar \Phi_i( \alpha_{i+1} ) - \bar \Phi_i( \beta_i ) } f_i( x ) + \dfrac{ \Phi_{i+1}( x ) - \bar \Phi_i( \beta_i ) }{ \bar \Phi_i( \alpha_{i+1} ) - \bar \Phi_i( \beta_i ) } f_{i+1}( x )$ | なし | 不連続 |
-| type1.type = 2 <br> continuous = TRUE | $\Psi( x ) = \Phi_1( x ) - \dfrac{1}{2} \Phi_1( x )^2 + \dfrac{1}{2} \Phi_2( x )^2$ <br> $g( x ) = ( 1 - \Phi_1( x ) )f_1( x ) + \Phi_2( x ) f_2( x )$ | 経路の構成点が3点のみ | $( -\infty, \infty )$ で連続 <br> ( $C^\infty$ 級) |
+| オプション  | 接続関数 $\Psi_i(x)$ ・確率密度関数 $g(x)$ | 適用可能な経路の条件 | 独立区間 |確率密度関数の連続性 |
+| :--------: | :--------------------------------------- | :------: | :----: | :----------------: |
+| type1.type = 1 | $\Psi_i( x ) = \dfrac{ \alpha_{i+1} - x }{ \alpha_{i+1} - \beta_i } \Phi_i( x ) + \dfrac{ x - \beta_i }{ \alpha_{i+1} - \beta_i } \Phi_{i+1}( x )$ <br> $g_i( x ) = \dfrac{ \alpha_{i+1} - x }{ \alpha_{i+1} - \beta_i } f_i( x ) + \dfrac{ x - \beta_i }{ \alpha_{i+1} - \beta_i } f_{i+1}( x ) + \dfrac{ \Phi_{i+1}( x ) - \Phi_i( x ) }{ \alpha_{i+1} - \beta_i }$ | なし | 任意 | 不連続 |
+| type1.type = 1 <br> continuous = TRUE | $\Psi( x ) = \dfrac{1}{2} ( \Phi_1( x ) + \Phi_2( x ) )$ <br> $g( x ) = \dfrac{1}{2} ( f_1( x ) + f_2( x ) )$ | 経路が3点<br> ( $x = \mu$ の1点と $x \neq -\infty, \mu, \infty$ に2点) | $[0, 0]$, $[1, 1]$ の2点 | $( -\infty, \infty )$ で連続 <br> ( $C^\infty$ 級) |
+| type1.type = 2  | $\Psi_i( x ) = \dfrac{ \bar \Phi_i( \alpha_{i+1} ) - \bar \Phi_i( x ) }{ \bar \Phi_i( \alpha_{i+1} ) - \bar \Phi_i( \beta_i ) } \Phi_i( x ) + \dfrac{ \bar \Phi_i( x ) - \bar \Phi_i( \beta_i ) }{ \bar \Phi_i( \alpha_{i+1} ) - \bar \Phi_i( \beta_i ) } \Phi_{i+1}( x )$ <br> $g_i( x ) = \dfrac{ \bar \Phi_i( \alpha_{i+1} ) -\Phi_i( x ) }{ \bar \Phi_i( \alpha_{i+1} ) - \bar \Phi_i( \beta_i ) } f_i( x ) + \dfrac{ \Phi_{i+1}( x ) - \bar \Phi_i( \beta_i ) }{ \bar \Phi_i( \alpha_{i+1} ) - \bar \Phi_i( \beta_i ) } f_{i+1}( x )$ | なし | 任意 | 不連続 |
+| type1.type = 2 <br> continuous = TRUE | $\Psi( x ) = \Phi_1( x ) - \dfrac{1}{2} \Phi_1( x )^2 + \dfrac{1}{2} \Phi_2( x )^2$ <br> $g( x ) = ( 1 - \Phi_1( x ) )f_1( x ) + \Phi_2( x ) f_2( x )$ | 経路が3点<br> ( $x = \mu$ の1点と $x \neq -\infty, \mu, \infty$ に2点) | $[0, 0]$, $[1, 1]$ の2点 | $( -\infty, \infty )$ で連続 <br> ( $C^\infty$ 級) |
+| type1.type = 2 <br> symmetric = TRUE | $\Psi( x ) = $ <br> $g( x ) = $ | 経路が3点<br> ( $x = \mu$ の1点と $x \neq -\infty, \mu, \infty$ に2点) | $[0, 0]$, $[0.5, 0.5]$, $[1, 1]$ の3点 | $( -\infty, \infty )$ で連続 |
+| type1.type = 3 | $\Psi( x ) = $ <br> $g( x ) = $ | 経路が5点<br> ( $x = \mu$ の1点と $-\infty < x < \mu$ に2点、 $\mu < x < \infty$ に2点) | $[0, 0]$, $[0.5, 0.5]$, $[1, 1]$ の3点 | $( -\infty, \mu )$, $( \mu, \infty )$ で連続 <br> ( $C^\infty$ 級) |
+| type1.type = 3 <br> continuous = TRUE | $\Psi( x ) = $ <br> $g( x ) = $ | 経路が3点<br> ( $x = \mu$ の1点と $x \neq -\infty, \mu, \infty$ に2点) | $[0, 0]$, $[0.5, 0.5]$, $[1, 1]$ の3点 | $( -\infty, \infty )$ で連続 <br> ( $C^\infty$ 級) |
 
 ただし、 $f_i( x ), f_{i+1}( x )$ は正規分布 $N_i,N_{i+1}$ の確率密度関数である。
 
@@ -401,24 +405,6 @@ g_i( x ) =
 \dfrac{1}{2} ( f_i( x ) + f_{i+1}( x ) ) & \textrm{where} \quad x \leq \mu, \quad \Phi_{i+1}( x ) \geq b_i \\
 f_{i+1}( x ) & \textrm{where} \quad x > \mu
 \end{cases}
-$$
-
-となる。
-
-バージョン 1.2.x 以上では、
-コンストラクタ new() の引数に type1.type = 1 を指定し、
-set.waypoints() の引数に continuous = TRUE を指定すると、
-可能であれば、
-全区間 $(-\infty, \infty)$ で連続な確率密度関数 (2つの確率密度関数の平均) が作られる。
-
-このとき、
-累積分布関数 $\Psi( x )$ と確率密度関数 $g(x)$ は
-
-$$
-\begin{eqnarray}
-\Psi( x ) &=& \dfrac{1}{2} ( \Phi_1( x ) + \Phi_2( x ) ) \\
-g( x ) &=& \dfrac{1}{2} ( f_1( x ) + f_2( x ) )
-\end{eqnarray}
 $$
 
 となる。
