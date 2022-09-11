@@ -1,7 +1,7 @@
 ##############################################################################
 # 連結ガウス分布 (Connected Gaussian Distribution) クラス (nleqslv 使用)
 # @file			CGD.need-nleqslv.R
-# @version		1.1.9902
+# @version		1.1.9903
 # @author		Kimitsuna-Goblin
 # @copyright	Copyright (C) 2022 Ura Kimitsuna
 # @license		Released under the MIT license.
@@ -151,7 +151,8 @@ CGD <- setRefClass(
 #'				type1.type = 1 では、
 #'				set.waypoints() の引数で continuous または symmetric を TRUE にした場合、
 #'				独立区間は [0, 0], [1, 1] の2点になり、
-#'				接続区間の累積分布関数は Ψ(x) = ( Φ_i(x) + Φ_{i+1}(x) ) / 2 となる。
+#'				接続区間の累積分布関数は Ψ(x) = ( Φ_i(x) + Φ_{i+1}(x) ) / 2 となる
+#'				  (この場合、独立区間を [0, 0], [0.5, 0.5], [1, 1] の3点と見做しても結果は同じ)。
 #'
 #'				type1.type = 2 では、
 #'				set.waypoints() の引数で continuous を TRUE にした場合、
@@ -221,8 +222,11 @@ CGD$methods(
 #' @param	waypoints		経路の data.frame( q = 経路のX座標 (クォンタイル), p = その点における確率 )
 #'							X座標 (クォンタイル) は昇順にソートしておくこと。
 #'							平均値は p = 0.5 の点のX座標として与えること (p = 0.5 の点は必須)
-#' @param	continuous		確率密度関数が全区間 (-∞, ∞) で連続になるように分布構成を試みる (デフォルト: FALSE)
-#' @param	symmetric		確率密度関数が全区間 (-∞, ∞) で連続で、かつ左右対称になるように試みる  (デフォルト: FALSE)
+#' @param	continuous		独立区間を [0, 0] と [1, 1] の2点にして、
+#'							確率密度関数が全区間 (-∞, ∞) で連続になるように分布構成を試みる (デフォルト: FALSE)
+#' @param	symmetric		独立区間を [0, 0], [0.5, 0.5], [1, 1] の3点にして、
+#'							1番目と3番目の確率分布を同一にすることにより、
+#'							確率密度関数が全区間 (-∞, ∞) で連続で、かつ左右対称になるように試みる  (デフォルト: FALSE)
 #'							 (continuous または symmetric を TRUE にする場合、
 #'							  前提として、経路は確率 0.5 の点が1点と、確率 0, 0.5, 1 以外の点が 2点 の、
 #'							  合計 3点 から成っていること。
@@ -795,7 +799,8 @@ CGD$methods(
 							intervals[[1]]$p.conn.next[2] == 0.5 &&
 							intervals[[length( intervals )]]$p.conn.prev[1] == 0.5 &&
 							intervals[[length( intervals )]]$p.conn.prev[2] == 1 &&
-							intervals[[1]]$sd == intervals[[length( intervals )]]$sd ) )
+							intervals[[1]]$sd == intervals[[length( intervals )]]$sd )
+					|| ( type1.type == 3 && intervals[[1]]$sd == intervals[[length( intervals )]]$sd ) )
 	}
 )
 
@@ -820,7 +825,23 @@ CGD$methods(
 
 		for ( i in 1:length( x ) )
 		{
-			if ( is.continuous() )
+			if ( type1.type == 3 )
+			{
+				# type1.type == 3 の場合の計算は symmetric であってもなくても同じ
+				if ( x <= mean )
+				{
+					results[i] <- ( 1 - dnorm( x[i], mean, intervals[[1]]$sd ) / dnorm( mean, mean, intervals[[1]]$sd ) ) *
+										dnorm( x[i], mean, intervals[[1]]$sd ) +
+									dnorm( x[i], mean, intervals[[2]]$sd )^2 / dnorm( mean, mean, intervals[[2]]$sd )
+				}
+				else
+				{
+					results[i] <- ( 1 - dnorm( x[i], mean, intervals[[3]]$sd ) / dnorm( mean, mean, intervals[[3]]$sd ) ) *
+										dnorm( x[i], mean, intervals[[3]]$sd ) +
+									dnorm( x[i], mean, intervals[[2]]$sd )^2 / dnorm( mean, mean, intervals[[2]]$sd )
+				}
+			}
+			else if ( is.continuous() )
 			{
 				# continuous の場合
 				if ( type1.type == 1 )
@@ -1091,7 +1112,23 @@ CGD$methods(
 
 		for ( i in 1:length( q ) )
 		{
-			if ( is.continuous() )
+			if ( type1.type == 3 )
+			{
+				# type1.type == 3 の場合の計算は symmetric であってもなくても同じ
+				if ( x <= mean )
+				{
+					results[i] <- pnorm( q[i], mean, intervals[[1]]$sd ) -
+									pnorm( q[i], mean, intervals[[1]]$sd / sqrt( 2 ) ) / sqrt( 2 ) +
+									pnorm( q[i], mean, intervals[[2]]$sd / sqrt( 2 ) ) / sqrt( 2 )
+				}
+				else
+				{
+					results[i] <- pnorm( q[i], mean, intervals[[3]]$sd ) -
+									pnorm( q[i], mean, intervals[[3]]$sd / sqrt( 2 ) ) / sqrt( 2 ) +
+									pnorm( q[i], mean, intervals[[2]]$sd / sqrt( 2 ) ) / sqrt( 2 )
+				}
+			}
+			else if ( is.continuous() )
 			{
 				# continuous の場合
 				if ( type1.type == 1 )
@@ -1376,7 +1413,32 @@ CGD$methods(
 				next
 			}
 
-			if ( is.continuous() || is.symmetric() )
+			if ( type1.type == 3 )
+			{
+				if ( prob[i] == 0 )
+				{
+					results[i] <- -Inf
+				}
+				else if ( prob[i] == 1 )
+				{
+					results[i] <- Inf
+				}
+				else if ( prob[i] == 0.5 )
+				{
+					results[i] <- mean
+				}
+				else if ( prob[1] < 0.5 )
+				{
+					results[i] <- uniroot( function( x ) { p( x ) - prob[i] },
+											c( qnorm( prob[i], mean, intervals[[1]]$sd + intervals[[2]]$sd ), mean ) )$root
+				}
+				else
+				{
+					results[i] <- uniroot( function( x ) { p( x ) - prob[i] },
+											c( mean, qnorm( prob[i], mean, intervals[[3]]$sd + intervals[[2]]$sd ) ) )$root
+				}
+			}
+			else if ( is.continuous() || is.symmetric() )
 			{
 				# continuous or symmetric ⇒ 累積分布関数は至る所で微分可能なので、場合分けしなくても収束する
 				if ( prob[i] == 0 )
