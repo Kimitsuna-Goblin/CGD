@@ -1,7 +1,7 @@
 ##############################################################################
 # 連結ガウス分布 (Connected Gaussian Distribution) クラス (nleqslv 使用)
 # @file			CGD.need-nleqslv.R
-# @version		1.1.9901
+# @version		1.1.9902
 # @author		Kimitsuna-Goblin
 # @copyright	Copyright (C) 2022 Ura Kimitsuna
 # @license		Released under the MIT license.
@@ -130,10 +130,10 @@ CGD <- setRefClass(
 #' @name	CGD_initialize
 #' @param	mean			平均値 (デフォルト: NULL)
 #' @param	intervals		連結区間 (CGDInterval クラスのリスト) (デフォルト: NULL)
-#' @param	type1.type		type 1 の場合の計算方法 (1 または 2 を指定すること) (デフォルト: 1)
+#' @param	type1.type		type 1 の場合の計算方法 (1、2、3 のいずれかを指定すること) (デフォルト: 1)
 #'
 #'				type1.type の値によって、接続区間 (β_i, α_{i+1}) が type 1 の場合、
-#'				累積分布関数 Ψ_i(x) を以下のように計算する。
+#'				接続区間の累積分布関数 Ψ_i(x) を以下のように計算する。
 #'
 #'				1: Ψ_i(x) = ( α_{i+1} - x ) / ( α_{i+1} - β_i ) * Φ_i(x) +
 #'							 ( x - β_i ) / ( α_{i+1} - β_i ) * Φ_{i+1}(x)
@@ -141,19 +141,37 @@ CGD <- setRefClass(
 #'				2: Ψ_i(x) = ( Φ~_i(α_{i+1}) - Φ~_i(x) ) / ( Φ~_i(α_{i+1}) - Φ~_i(β_i) ) * Φ_i(x) +
 #'							 ( Φ~_i(x) - Φ~_i(β_i) ) / ( Φ~_i(α_{i+1}) - Φ~_i(β_i) ) * Φ_{i+1}(x)
 #'
+#'				3: Ψ_i(x) = ∫_{-∞}^x { ( 1 - f_i(t) / f_i(μ) ) f_i(t) + f_{i+1}(t)^2 / f_{i+1}(μ) } dt
+#'
 #'				ただし、Φ_i, Φ_{i+1} は接続区間の前後の独立区間における累積分布関数。
 #'				Φ~_i(x) = ( Φ_i(x) + Φ_{i+1}(x) ) / 2。
 #'
+#'				f_i, f_{i+1} は接続区間の前後の独立区間における確率密度関数。μ は平均値。
+#'
 #'				type1.type = 1 では、
 #'				set.waypoints() の引数で continuous または symmetric を TRUE にした場合、
-#'				Ψ(x) = ( Φ_i(x) + Φ_{i+1}(x) ) / 2 となる。
+#'				独立区間は [0, 0], [1, 1] の2点になり、
+#'				接続区間の累積分布関数は Ψ(x) = ( Φ_i(x) + Φ_{i+1}(x) ) / 2 となる。
 #'
 #'				type1.type = 2 では、
 #'				set.waypoints() の引数で continuous を TRUE にした場合、
-#'				Ψ(x) は上の 2 の式となる。
+#'				独立区間は [0, 0], [1, 1] の2点になり、
+#'				接続区間の累積分布関数は上の 2 の式になる。
 #'				set.waypoints() の引数で symmetric を TRUE にした場合、
-#'				接続区間 (-∞, μ) の累積分布関数 Ψ_1(x) は上の 2 の式となり、
-#'				接続区間 (μ, ∞) の累積分布関数 Ψ_2(x) は Ψ_2(x) = 1 - Ψ_1(2μ - x) となる。
+#'				独立区間は [0, 0], [0.5, 0.5], [1, 1] の3点になり、
+#'				接続区間 (0, 0.5) の累積分布関数 Ψ_1(x) は上の 2 の式で、
+#'				接続区間 (0.5, 1) の累積分布関数 Ψ_2(x) は Ψ_2(x) = 1 - Ψ_1(2μ - x) となる。
+#'
+#'				type1.type = 3 では、
+#'				独立区間は [0, 0], [0.5, 0.5], [1, 1], [0, 0.5], [0.5, 1], [0, 1] の6種類しか取り得ない。
+#'				set.waypoints() の引数の continuous は無効になる。
+#'				set.waypoints() の引数で symmetric を TRUE にした場合、
+#'				独立区間は [0, 0], [0.5, 0.5], [1, 1] の3点になり、
+#'				2つの接続区間 (0, 0.5), (0.5, 1) の累積分布関数はどちらも同じ、上の 3 の式になる。
+#'
+#'				type1.type = 2 と type1.type = 3 でsymmetric を TRUE にした場合、
+#'				[0, 0] と [1, 1] の2点が1つめの正規分布 N_1 の独立区間、
+#'				[0.5, 0.5] が2つめの正規分布 N_2 の独立区間となる。
 ###############################################################################
 NULL
 CGD$methods(
@@ -181,7 +199,7 @@ CGD$methods(
 			intervals <<- intervals
 		}
 
-		if ( type1.type == 1 || type1.type == 2 )
+		if ( type1.type == 1 || type1.type == 2 || type1.type == 3 )
 		{
 			type1.type <<- type1.type
 		}
@@ -224,29 +242,31 @@ CGD$methods(
 		intervals <<- list()
 		m.sd <<- -Inf
 
-		wp <- data.frame( q = numeric(), p = numeric() )	# 平均値を除いた経路
+		wp <- data.frame( q = numeric(), p = numeric() )	# 平均値を除き、昇順に並べた経路
 
 		# 平均値および、平均値を除いた経路の data.frame を取得
 		j <- 1
 		is.set.mean <- FALSE
+		wp.order <- order( waypoints$p )
 		for ( i in 1:nrow( waypoints ) )
 		{
-			if ( waypoints$p[i] == 0.5 )
+			oi <- wp.order[i]
+			if ( waypoints$p[oi] == 0.5 )
 			{
 				# 平均値を取得
-				mean <<- waypoints[i,]$q
+				mean <<- waypoints[oi,]$q
 				is.set.mean <- TRUE
 			}
-			else if ( waypoints$p[i] < 0 || waypoints$p[i] > 1 )
+			else if ( waypoints$p[oi] < 0 || waypoints$p[oi] > 1 )
 			{
 				# 確率が負または1を超えている
-				warning( paste( "Warning: probability" , waypoints$p[i] , "is out of range [0, 1]." ) )
+				warning( paste( "Warning: probability" , waypoints$p[oi] , "is out of range [0, 1]." ) )
 			}
-			else if ( waypoints$q[i] == -Inf || waypoints$q[i] == Inf )
+			else if ( waypoints$q[oi] == -Inf || waypoints$q[oi] == Inf )
 			{
 				# X座標が±∞の点は無視 (ただし、確率が 0 または 1 でない場合は警告)
-				if ( ( waypoints$q[i] == -Inf &&  waypoints$p[i] != 0 ) ||
-						( waypoints$q[i] == Inf && waypoints$p[i] != 1 ) )
+				if ( ( waypoints$q[oi] == -Inf &&  waypoints$p[oi] != 0 ) ||
+						( waypoints$q[oi] == Inf && waypoints$p[oi] != 1 ) )
 				{
 					warning( "Warning: q is infinite (-Inf or Inf) but probability is not 0 or 1." )
 				}
@@ -254,23 +274,32 @@ CGD$methods(
 			else
 			{
 				# 経路を取得
-				wp[j,]$q <- waypoints[i,]$q
-				wp[j,]$p <- waypoints[i,]$p
+				wp[j,]$q <- waypoints[oi,]$q
+				wp[j,]$p <- waypoints[oi,]$p
+				if ( j > 1 )
+				{
+					# X座標が確率に対して昇順に並んでいなければエラー
+					if ( wp[j - 1,]$q >= wp[j,]$q )
+					{
+						stop( "Error: order of q is not along with that of p" )
+					}
+				}
+
 				j <- j + 1
 			}
 		}
 		if ( !is.set.mean )
 		{
-			warning( "Warning: q for mean (p = 0.5) is not given." )
+			stop( "Error: q for mean (p = 0.5) is not given." )
 		}
 		if ( nrow( wp ) == 0 )
 		{
 			warning( "Warning: no waypoints other than (p = 0, 0.5, 1) are given." )
 		}
 
-		# 引数と type1.type と経路上の点の数の条件が満たされる場合、確率密度関数が全区間 (-∞, ∞) で連続になるように試みる
 		if ( nrow( wp ) == 2 )
 		{
+			# 引数と type1.type と経路上の点の数の条件が満たされる場合、確率密度関数がなるべく連続になるように試みる
 			if ( type1.type == 1 && ( continuous || symmetric ) )
 			{
 				sds <- c( 0.9, 1.1 )
@@ -283,12 +312,12 @@ CGD$methods(
 														} ), silent = TRUE )
 				if ( class( e ) == "try-error" )
 				{
-					warning( "Warning: failed to make up a continuous probability density function." )
+					stop( "Error: failed to make up a continuous probability density function." )
 				}
 				else if ( result$termcd != 1 )
 				{
-					warning( "Warning: failed to make up a continuous probability density function." )
 					message( paste( "nleqslv is failed. message:", result$message ) )
+					stop( "Error: failed to make up a continuous probability density function." )
 				}
 				else
 				{
@@ -320,12 +349,12 @@ CGD$methods(
 														} ), silent = TRUE )
 				if ( class( e ) == "try-error" )
 				{
-					warning( "Warning: failed to make up a continuous probability density function." )
+					stop( "Error: failed to make up a continuous probability density function." )
 				}
 				else if ( result$termcd != 1 )
 				{
-					warning( "Warning: failed to make up a continuous probability density function." )
 					message( paste( "nleqslv is failed. message:", result$message ) )
+					stop( "Error: failed to make up a continuous probability density function." )
 				}
 				else
 				{
@@ -357,12 +386,58 @@ CGD$methods(
 														} ), silent = TRUE )
 				if ( class( e ) == "try-error" )
 				{
-					warning( "Warning: failed to make up a symmetric probability density function." )
+					stop( "Error: failed to make up a symmetric probability density function." )
 				}
 				else if ( result$termcd != 1 )
 				{
-					warning( "Warning: failed to make up a symmetric probability density function." )
 					message( paste( "nleqslv is failed. message:", result$message ) )
+					stop( "Error: failed to make up a symmetric probability density function." )
+				}
+				else
+				{
+					intervals <<- list( CGDInterval$new(
+											sd = result$x[1],
+											q.ind = c( -Inf, -Inf ),
+											q.conn.prev = c( -Inf, -Inf ), q.conn.next= c( 0, mean ),
+											p.ind = c( 0, 0 ),
+											p.conn.prev = c( 0, 0 ), p.conn.next = c( 0, 0.5 ) ),
+										CGDInterval$new(
+											sd = result$x[2],
+											q.ind = c( mean, mean ),
+											q.conn.prev = c( 0, mean ), q.conn.next= c( mean, Inf ),
+											p.ind = c( 0.5, 0.5 ),
+											p.conn.prev = c( 0, 0.5 ), p.conn.next = c( 0.5, 1 ) ),
+										CGDInterval$new(
+											sd = result$x[1],
+											q.ind = c( Inf, Inf ),
+											q.conn.prev = c( mean, Inf ), q.conn.next= c( Inf, Inf ),
+											p.ind = c( 1, 1 ),
+											p.conn.prev = c( 0.5, 1 ), p.conn.next = c( 1, 1 ) ) )
+				}
+			}
+			else if ( type1.type == 3 && symmetric )
+			{
+				sds <- c( 1, 1 )
+				e <- try( result <- nleqslv( sds, f <- function( x )
+														{
+															p1.1 <- pnorm( wp$q[1], mean, x[1] )
+															p1.a1 <- pnorm( wp$q[1], mean, x[1] / sqrt( 2 ) )
+															p1.a2 <- pnorm( wp$q[1], mean, x[2] / sqrt( 2 ) )
+															p2.1 <- pnorm( wp$q[2], mean, x[1] )
+															p2.a1 <- pnorm( wp$q[2], mean, x[1] / sqrt( 2 ) )
+															p2.a2 <- pnorm( wp$q[2], mean, x[2] / sqrt( 2 ) )
+
+															c( p1.1 - p1.a1 / sqrt( 2 ) + p1.a2 / sqrt( 2 ) - wp$p[1],
+																p2.1 - p2.a1 / sqrt( 2 ) + p2.a2 / sqrt( 2 ) - wp$p[2] )
+														} ), silent = TRUE )
+				if ( class( e ) == "try-error" )
+				{
+					stop( "Error: failed to make up a symmetric probability density function." )
+				}
+				else if ( result$termcd != 1 )
+				{
+					message( paste( "nleqslv is failed. message:", result$message ) )
+					stop( "Error: failed to make up a symmetric probability density function." )
 				}
 				else
 				{
@@ -387,6 +462,206 @@ CGD$methods(
 				}
 			}
 		}
+
+		if ( type1.type == 3 && !symmetric )
+		{
+			if ( nrow( wp ) < 2 || nrow( wp ) > 4 )
+			{
+				# type1.type == 3 の場合、経路3点または4点以外は場合はエラーとする
+				stop( "Error: number of waypoints must be 3 or 4 if type1.type is 3." )
+			}
+
+			wp.lower <- data.frame( q = numeric(), p = numeric() )	# p < 0.5 の経路
+			wp.upper <- data.frame( q = numeric(), p = numeric() )	# p > 0.5 の経路
+			j.lower <- 1
+			j.upper <- 1
+			for ( i in 1:nrow( wp ) )
+			{
+				if ( wp$p[i] < 0.5 )
+				{
+					wp.lower[j.lower,]$q <- wp[i,]$q
+					wp.lower[j.lower,]$p <- wp[i,]$p
+					j.lower <- j.lower + 1
+				}
+				else
+				{
+					wp.upper[j.upper,]$q <- wp[i,]$q
+					wp.upper[j.upper,]$p <- wp[i,]$p
+					j.upper <- j.upper + 1
+				}
+			}
+
+			if ( j.lower > 3 || j.upper > 3 )
+			{
+				# 一方の経路に3点以上ある場合はエラーとする
+				stop( "Error: number of waypoints which p is lower/upper than 0.5 must be less than 3 if type1.type is 3." )
+			}
+
+			# 場合分けして累積分布関数を構成
+			if ( j.lower == 2 && j.upper == 2 )
+			{
+				# ( #lower, #upper ) = ( 1, 1 )
+				sds <- c( 1, 1 )
+				e <- try( result <- nleqslv( sds, f <- function( x )
+														{
+															x.ave <- ( x[1] + x[2] ) / 2
+															p1.1 <- pnorm( wp$q[1], mean, x[1] )
+															p1.a1 <- pnorm( wp$q[1], mean, x[1] / sqrt( 2 ) )
+															p1.a2 <- pnorm( wp$q[1], mean, x.ave / sqrt( 2 ) )
+															p2.1 <- pnorm( wp$q[2], mean, x[2] / 2 )
+															p2.a1 <- pnorm( wp$q[2], mean, x[2] / sqrt( 2 ) )
+															p2.a2 <- pnorm( wp$q[2], mean, x.ave / sqrt( 2 ) )
+
+															c( p1.1 - p1.a1 / sqrt( 2 ) + p1.a2 / sqrt( 2 ) - wp$p[1],
+																p2.1 - p2.a1 / sqrt( 2 ) + p2.a2 / sqrt( 2 ) - wp$p[2] )
+														} ), silent = TRUE )
+				if ( class( e ) == "try-error" )
+				{
+					stop( "Error: failed to make up a probability density function." )
+				}
+				else if ( result$termcd != 1 )
+				{
+					message( paste( "nleqslv is failed. message:", result$message ) )
+					stop( "Error: failed to make up a probability density function." )
+				}
+				else
+				{
+					sds[1] <- result$x[1]
+					sds[2] <- ( result$x[1] + result$x[2] ) / 2
+					sds[3] <- result$x[2]
+				}
+			}
+			else if ( j.lower == 3 && j.upper == 1 )
+			{
+				# ( #lower, #upper ) = ( 2, 0 )
+				sds <- c( 1, 1 )
+				e <- try( result <- nleqslv( sds, f <- function( x )
+														{
+															x.ave <- ( x[1] + x[2] ) / 2
+															p1.1 <- pnorm( wp$q[1], mean, x[1] )
+															p1.a1 <- pnorm( wp$q[1], mean, x[1] / sqrt( 2 ) )
+															p1.a2 <- pnorm( wp$q[1], mean, x.ave / sqrt( 2 ) )
+															p2.1 <- pnorm( wp$q[2], mean, x[2] / 2 )
+															p2.a1 <- pnorm( wp$q[2], mean, x[2] / sqrt( 2 ) )
+															p2.a2 <- pnorm( wp$q[2], mean, x.ave / sqrt( 2 ) )
+
+															c( p1.1 - p1.a1 / sqrt( 2 ) + p1.a2 / sqrt( 2 ) - wp$p[1],
+																p2.1 - p2.a1 / sqrt( 2 ) + p2.a2 / sqrt( 2 ) - wp$p[2] )
+														} ), silent = TRUE )
+				if ( class( e ) == "try-error" )
+				{
+					stop( "Error: failed to make up a probability density function." )
+				}
+				else if ( result$termcd != 1 )
+				{
+					message( paste( "nleqslv is failed. message:", result$message ) )
+					stop( "Error: failed to make up a probability density function." )
+				}
+				else
+				{
+					sds[1] <- result$x[1]
+					sds[2] <- result$x[2]
+					sds[3] <- result$x[2]
+				}
+			}
+			else if ( j.lower == 1 && j.upper == 3 )
+			{
+				# ( #lower, #upper ) = ( 0, 2 )
+				sds <- c( 1, 1 )
+				e <- try( result <- nleqslv( sds, f <- function( x )
+														{
+															x.ave <- ( x[1] + x[2] ) / 2
+															p1.1 <- pnorm( wp$q[1], mean, x[1] )
+															p1.a1 <- pnorm( wp$q[1], mean, x[1] / sqrt( 2 ) )
+															p1.a2 <- pnorm( wp$q[1], mean, x.ave / sqrt( 2 ) )
+															p2.1 <- pnorm( wp$q[2], mean, x[2] / 2 )
+															p2.a1 <- pnorm( wp$q[2], mean, x[2] / sqrt( 2 ) )
+															p2.a2 <- pnorm( wp$q[2], mean, x.ave / sqrt( 2 ) )
+
+															c( p1.1 - p1.a1 / sqrt( 2 ) + p1.a2 / sqrt( 2 ) - wp$p[1],
+																p2.1 - p2.a1 / sqrt( 2 ) + p2.a2 / sqrt( 2 ) - wp$p[2] )
+														} ), silent = TRUE )
+				if ( class( e ) == "try-error" )
+				{
+					stop( "Error: failed to make up a probability density function." )
+				}
+				else if ( result$termcd != 1 )
+				{
+					message( paste( "nleqslv is failed. message:", result$message ) )
+					stop( "Error: failed to make up a probability density function." )
+				}
+				else
+				{
+					sds[1] <- result$x[1]
+					sds[2] <- result$x[1]
+					sds[3] <- result$x[2]
+				}
+			}
+			else
+			{
+				# ( #lower, #upper ) = ( 2, 1 ) or ( 1, 2 )
+				sds <- c( 1, 1, 1 )
+				e <- try( result <- nleqslv( sds, f <- function( x )
+														{
+															x.ave <- ( x[1] + x[2] ) / 2
+															p1.1 <- pnorm( wp$q[1], mean, x[1] )
+															p1.a1 <- pnorm( wp$q[1], mean, x[1] / sqrt( 2 ) )
+															p1.a2 <- pnorm( wp$q[1], mean, x[2] / sqrt( 2 ) )
+															if ( wp$p[2] < 0.5 )
+															{
+																p2.1 <- pnorm( wp$q[2], mean, x[1] / 2 )
+																p2.a1 <- pnorm( wp$q[2], mean, x[1] / sqrt( 2 ) )
+																p2.a2 <- pnorm( wp$q[2], mean, x[2] / sqrt( 2 ) )
+															}
+															else
+															{
+																p2.1 <- pnorm( wp$q[2], mean, x[3] / 2 )
+																p2.a1 <- pnorm( wp$q[2], mean, x[3] / sqrt( 2 ) )
+																p2.a2 <- pnorm( wp$q[2], mean, x[2] / sqrt( 2 ) )
+															}
+															p3.1 <- pnorm( wp$q[2], mean, x[3] / 2 )
+															p3.a1 <- pnorm( wp$q[2], mean, x[3] / sqrt( 2 ) )
+															p3.a2 <- pnorm( wp$q[2], mean, x[2] / sqrt( 2 ) )
+
+															c( p1.1 - p1.a1 / sqrt( 2 ) + p1.a2 / sqrt( 2 ) - wp$p[1],
+																p2.1 - p2.a1 / sqrt( 2 ) + p2.a2 / sqrt( 2 ) - wp$p[2],
+																p3.1 - p3.a1 / sqrt( 2 ) + p3.a2 / sqrt( 2 ) - wp$p[3] )
+														} ), silent = TRUE )
+				if ( class( e ) == "try-error" )
+				{
+					stop( "Error: failed to make up a probability density function." )
+				}
+				else if ( result$termcd != 1 )
+				{
+					message( paste( "nleqslv is failed. message:", result$message ) )
+					stop( "Error: failed to make up a probability density function." )
+				}
+				else
+				{
+					sds <- result$x
+				}
+			}
+
+			intervals <<- list( CGDInterval$new(
+									sd = sds[1],
+									q.ind = c( -Inf, -Inf ),
+									q.conn.prev = c( -Inf, -Inf ), q.conn.next= c( 0, mean ),
+									p.ind = c( 0, 0 ),
+									p.conn.prev = c( 0, 0 ), p.conn.next = c( 0, 0.5 ) ),
+								CGDInterval$new(
+									sd = sds[2],
+									q.ind = c( mean, mean ),
+									q.conn.prev = c( 0, mean ), q.conn.next= c( mean, Inf ),
+									p.ind = c( 0.5, 0.5 ),
+									p.conn.prev = c( 0, 0.5 ), p.conn.next = c( 0.5, 1 ) ),
+								CGDInterval$new(
+									sd = sds[3],
+									q.ind = c( Inf, Inf ),
+									q.conn.prev = c( mean, Inf ), q.conn.next= c( Inf, Inf ),
+									p.ind = c( 1, 1 ),
+									p.conn.prev = c( 0.5, 1 ), p.conn.next = c( 1, 1 ) ) )
+		}
+
 		if ( length( intervals ) > 0 )
 		{
 			return ( result )
