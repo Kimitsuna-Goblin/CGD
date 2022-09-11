@@ -316,7 +316,7 @@ $$
 | type1.type = 3 <br> continuous = TRUE | 無効 (type1.type = 3 のデフォルトと同じ) | - | - | - | 未実装 |
 | type1.type = 1 <br> symmetric = TRUE | $\Psi( x ) = \dfrac{1}{2} ( \Phi_1( x ) + \Phi_2( x ) )$ <br> $g( x ) = \dfrac{1}{2} ( f_1( x ) + f_2( x ) )$ | 経路が3点<br> ( $x = \mu$ の1点と $x \neq -\infty, \mu, \infty$ の2点) | $[0, 0]$, $[1, 1]$ の2点 | 連続<br>( $C^\infty$ 級) | 1.1.9901 |
 | type1.type = 2 <br> symmetric = TRUE | $\Psi_1( x ) = \Phi_1( x ) - \Phi_1( x )^2 + \Phi_2( x )^2$ <br> $\Psi_2( x ) = 1 - \Psi_1( 2\mu - x )$ <br> $g_1( x ) = ( 1 - 2\Phi_1( x ) ) f_1( x ) + 2\Phi_2( x ) f_2( x )$ <br> $g_2( x ) = g_1( 2\mu - x )$ | 経路が3点<br> ( $x = \mu$ の1点と $x \neq -\infty, \mu, \infty$ の2点) | $[0, 0]$, $[0.5, 0.5]$, $[1, 1]$ の3点 | 連続<br>( $C^0$ 級) | 1.1.90 |
-| type1.type = 3 <br> symmetric = TRUE |  $\Psi_i( x ) = \int_{-\infty}^x \lbrace \( 1 - \dfrac{ f_1( t ) }{ f_1( \mu ) } ) f_1( t ) + \dfrac{ f_2( t ) }{ f_2( \mu ) } f_2( t ) \rbrace dt$ <br> $g( x ) = ( 1 - \dfrac{ f_1( x ) }{ f_1( \mu ) } ) f_1( x ) + \dfrac{ f_2( x ) }{ f_2( \mu ) } f_2( x )$ | 経路が3点<br> ( $x = \mu$ の1点と $x \neq -\infty, \mu, \infty$ の2点) | $[0, 0]$, $[0.5, 0.5]$, $[1, 1]$ の3点 | 連続<br>( $C^\infty$ 級) | 未実装 |
+| type1.type = 3 <br> symmetric = TRUE |  $\Psi( x ) = \int_{-\infty}^x \lbrace \( 1 - \dfrac{ f_1( t ) }{ f_1( \mu ) } ) f_1( t ) + \dfrac{ f_2( t ) }{ f_2( \mu ) } f_2( t ) \rbrace dt$ <br> $g( x ) = ( 1 - \dfrac{ f_1( x ) }{ f_1( \mu ) } ) f_1( x ) + \dfrac{ f_2( x ) }{ f_2( \mu ) } f_2( x )$ | 経路が3点<br> ( $x = \mu$ の1点と $x \neq -\infty, \mu, \infty$ の2点) | $[0, 0]$, $[0.5, 0.5]$, $[1, 1]$ の3点 | 連続<br>( $C^\infty$ 級) | 未実装 |
 
 #### Type 2 - 接続区間 $Q_i = ( b_i, a_{i + 1} )$ が平均値 $\mu$ を含まない場合 その2
 + 接続区間 $Q_i$ の範囲が平均値 $\mu$ よりも小さく、標準偏差が $\sigma_i \geq \sigma_{i + 1}$ の場合
