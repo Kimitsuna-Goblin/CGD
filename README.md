@@ -34,10 +34,8 @@
 >    # new() の引数に
 >    #       mean = 平均値,
 >    #       intervals = 連結分布の構成 (CGDInterval オブジェクトの list)
+>    #       type1.type = type 1 の場合の計算方法
 >    # を与えてください
->    #
->    # new() の引数に type1.type = 2 を指定すると、
->    # 確率密度関数のひずみの形が少しだけマシになるかも知れません
 >
 > a$set.waypoints(
 >   data.frame(
