@@ -32,9 +32,9 @@
 >
 >    # 連結分布の構成が既知の場合は (ほとんど無いと思いますが)
 >    # new() の引数に
->    #       mean = 平均値,
+>    #       mean = 平均値
 >    #       intervals = 連結分布の構成 (CGDInterval オブジェクトの list)
->    #       type1.type = type 1 の場合の計算方法
+>    #       type1.type = 接続区間が type 1 の場合の計算方法
 >    # を与えてください
 >
 > a$set.waypoints(
