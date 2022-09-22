@@ -36,7 +36,7 @@
 ## 使い方 - How to use
 
 <pre>
-> source( "CGD.need-nleqslv.R" )    # ソースファイルを読み込みます
+> library( cgd )    # ソースファイルを読み込みます
 > a <- CGD$new()    # 連結ガウス分布クラスのオブジェクトを生成します
 >
 >    # 連結分布の構成が既知の場合は (ほとんど無いと思いますが)
@@ -255,38 +255,37 @@ $$
     + 区間 $[0, 1]$ の両端である点 0 および点 1 は、1点のみからなる独立区間 $[0, 0], [1, 1]$ とはせずに、
       少なくとも、他の1つの経路上の確率を含む区間 $[0, b_1], [a_n, 1] ( b_1 > 0, a_n < 1 )$ とする。
 
-    + 2つの連続する経路の点が、同じ正規分布の累積分布関数上の点となる場合は、
+    + 2つの連続する経路の点が、同じ正規分布の累積分布関数上の点となり得る場合は、
       それら2つの点の確率を1つの独立区間に含める。ただし、独立区間の始点と終点は、いずれかの経路の確率 (または 0 か 1) とする。
 
 独立区間を負担する正規分布は、以下のように構成する。
 
 + すべての正規分布の平均値は、経路で与えられた点 $( x, 0.5 )$ の $x$ の値とする。
 
-+ 先頭の独立区間 $[0, b_1]$ に対しては、累積分布関数が $b_1$ とそのときのX座標 $x_{b_1}$ を通る正規分布を採用し、
-それ以外の独立区間 $[a_i, b_i]$ に対しては、累積分布関数が $a_i$ とそのときのX座標 $x_{a_i}$ を通る正規分布を採用する。
++ 先頭の独立区間 $[0, b_1]$ に対しては、累積分布関数が経路上の点 $( \beta_1, b_1 )$ を通るような正規分布を採用し、
+それ以外の独立区間 $[a_i, b_i]$ に対しては、 累積分布関数が経路上の点 $( \alpha_i, a_i )$ を通るような正規分布を採用する (その累積分布関数は必ず点 $( \beta_i, b_i )$ も通る)。
 
-ところで、正規分布 $N( \mu, \sigma^2 )$ の累積分布関数 $\Phi_{\mu, \sigma^2}( x )$ について、
-X座標が平均値 $\mu$ から標準偏差 $\sigma$ の $n$ 倍離れた位置の確率 $\Phi_{\mu, \sigma^2}( \mu + n \sigma )$ の値は、
-$\mu, \sigma$ の値に関係なく、任意の有限の $n$ の値 $( n \neq 0 )$ に対して一意に定まる
- (誤差関数 $\mathrm{erf}( x )$ を使って書いた正規分布の累積分布関数の式に
-  $x = \mu + n \sigma$ を代入すると、 $\mu$ と $\sigma$ が消去できる。
-  誤差関数の式はウィキペディアの [「正規分布」](https://ja.wikipedia.org/wiki/%E6%AD%A3%E8%A6%8F%E5%88%86%E5%B8%83) を参照)。
+ここで、ある平均値 $\mu$ の正規分布があって、点 $x = q$ で確率 $p$ を取るときに、その分布の標準偏差 $\sigma$ を $\mu, q, p$ を使って表すことを考える。
+点 $x = q$ における、正規分布 $N( \mu, \sigma )$ の確率 $p$ は
 
-したがって、ある確率 $p \in [0, 1]$ が与えられたとき、 $\Phi_{\mu, \sigma^2}( x ) = p$ を満たす $x$ が、
-平均値 $\mu$ から標準偏差 $\sigma$ の何倍離れているかという問題の解、
-つまり、 $x = \mu + n \sigma$ と置いたとき、 $\Phi_{\mu, \sigma^2}( \mu + n \sigma ) = p$ となるような $n$ の値は、
-$\mu, \sigma$ の値とは無関係であり、
-標準正規分布 $N( 0, 1 )$ の累積分布関数 $\Phi( x )$ の逆関数を使うと、 $n = \Phi^{-1}( p )$ と表せる。
+$$
+p = \dfrac{1}{ \sqrt{ 2 \pi \sigma^2 } } \int_{-\infty}^{q} \exp( -\dfrac{ ( x - \mu )^2 }{ 2 \sigma^2 } ) dx
+$$
 
-このことを利用すれば、正規分布の平均値 $\mu$ を1つの値に固定したとき、
-$x = q ( \neq \mu )$ のときに確率 $p$ を取る正規分布の標準偏差 $\sigma$ は、
-標準正規分布の累積分布関数 $\Phi( x )$ の逆関数を使って、
+という式で表される。この式の右辺を $t = \dfrac{ x - \mu }{ \sigma }$ と置いて変換すると、
+
+$$
+p = \dfrac{1}{ \sqrt{ 2 \pi } } \int_{-\infty}^{ \dfrac{ q - \mu }{ \sigma } } \exp( -\dfrac{ t^2 }{ 2 } ) dt = \Phi( \dfrac{ q - \mu }{ \sigma } )
+$$
+
+となる。ただし、 $\Phi( x )$ は標準正規分布 $N( 0, 1 )$ の累積分布関数である。
+この式から、 $\Phi( x )$ の逆関数 $\Phi^{-1}( x )$ を使って変形すると、
 
 $$
 \sigma = \dfrac{ q - \mu }{ \Phi^{-1}( p ) } \quad ( q \neq \mu, 0 < p < 1 )
 $$
 
-で求められることが分かる。
+という式が得られ、標準偏差 $\sigma$ を $\mu, q, p$ を使って表すことができた。
 この式を使えば、平均値を固定したとき、累積分布関数がある1点を通るような正規分布の標準偏差が直に得られるので、
 上に述べたような正規分布を容易に見つけることができる。
 本ライブラリでは、この式を使って正規分布を構成し、連結ガウス分布の累積分布関数 $\Phi_{CGD}(x)$ の独立区間の部分を得る。
@@ -317,13 +316,13 @@ $$
 | :--------: | :--------------------------------------- | :------: | :----: | :----------------: | :-----: |
 | type1.type = 1 | $\Psi_i( x ) = \dfrac{ \alpha_{i+1} - x }{ \alpha_{i+1} - \beta_i } \Phi_i( x ) + \dfrac{ x - \beta_i }{ \alpha_{i+1} - \beta_i } \Phi_{i+1}( x )$ <br> $g_i( x ) = \dfrac{ \alpha_{i+1} - x }{ \alpha_{i+1} - \beta_i } f_i( x ) + \dfrac{ x - \beta_i }{ \alpha_{i+1} - \beta_i } f_{i+1}( x ) + \dfrac{ \Phi_{i+1}( x ) - \Phi_i( x ) }{ \alpha_{i+1} - \beta_i }$ | なし | 任意 | 不連続 | 1.0.0 |
 | type1.type = 2  | $\Psi_i( x ) = \dfrac{ \bar \Phi_i( \alpha_{i+1} ) - \bar \Phi_i( x ) }{ \bar \Phi_i( \alpha_{i+1} ) - \bar \Phi_i( \beta_i ) } \Phi_i( x ) + \dfrac{ \bar \Phi_i( x ) - \bar \Phi_i( \beta_i ) }{ \bar \Phi_i( \alpha_{i+1} ) - \bar \Phi_i( \beta_i ) } \Phi_{i+1}( x )$ <br> $g_i( x ) = \dfrac{ \bar \Phi_i( \alpha_{i+1} ) -\Phi_i( x ) }{ \bar \Phi_i( \alpha_{i+1} ) - \bar \Phi_i( \beta_i ) } f_i( x ) + \dfrac{ \Phi_{i+1}( x ) - \bar \Phi_i( \beta_i ) }{ \bar \Phi_i( \alpha_{i+1} ) - \bar \Phi_i( \beta_i ) } f_{i+1}( x )$ | なし | 任意 | 不連続 | 1.1.0 |
-| type1.type = 3 | $\Psi_1( x ) = \Phi_1( x ) - \dfrac{1}{ \sqrt{2} } \Phi^\ast_1( x ) + \dfrac{1}{ \sqrt{2} } \Phi^\ast_2( x ) \quad ( x \leq \mu )$ <br> $\Psi_2( x ) = \Phi_3( x ) - \dfrac{1}{ \sqrt{2} } \Phi^\ast_3( x ) + \dfrac{1}{ \sqrt{2} } \Phi^\ast_2( x ) \quad ( x > \mu )$ <br> $g_1( x ) = ( 1 - \dfrac{ f_1( x ) }{ f_1( \mu ) } ) f_1( x ) + \dfrac{ f_2( x ) }{ f_2( \mu ) } f_2( x ) \quad ( x \leq \mu )$ <br> $g_2( x ) = ( 1 - \dfrac{ f_3( x ) }{ f_3( \mu ) } ) f_3( x ) + \dfrac{ f_2( x ) }{ f_2( \mu ) } f_2( x ) \quad ( x < \mu )$ | 経路が3～4点<br> ( $x = \mu$ の1点および、 $x \neq -\infty, \mu, \infty$ の2～3点) | $[0, 0]$, $[0.5, 0.5]$, $[1, 1]$, $[0, 0.5]$, $[0.5, 1]$, $[0, 1]$ のいずれか | 連続<br>( $C^\infty$ 級) | 1.1.9906 |
-| type1.type = 1 <br> continuous = TRUE | $\Psi( x ) = \dfrac{1}{2} ( \Phi_1( x ) + \Phi_2( x ) )$ <br> $g( x ) = \dfrac{1}{2} ( f_1( x ) + f_2( x ) )$ | 経路が3点<br> ( $x = \mu$ の1点と $x \neq -\infty, \mu, \infty$ の2点) | $[0, 0]$, $[1, 1]$ の2点 | 連続<br>( $C^\infty$ 級) | 1.1.9901 |
-| type1.type = 2 <br> continuous = TRUE <br> (横方向グラデーション) | $\Psi( x ) = \Phi_1( x ) - \dfrac{1}{2} \Phi_1( x )^2 + \dfrac{1}{2} \Phi_2( x )^2$ <br> $g( x ) = ( 1 - \Phi_1( x ) )f_1( x ) + \Phi_2( x ) f_2( x )$ | 経路が3点<br> ( $x = \mu$ の1点と $x \neq -\infty, \mu, \infty$ の2点) | $[0, 0]$, $[1, 1]$ の2点 | 連続<br>( $C^\infty$ 級) | 1.1.90 |
-| type1.type = 3 <br> continuous = TRUE | 無効 (type1.type = 3 のデフォルトと同じ) | - | - | - | 1.1.9906 |
-| type1.type = 1 <br> symmetric = TRUE | $\Psi( x ) = \dfrac{1}{2} ( \Phi_1( x ) + \Phi_2( x ) )$ <br> $g( x ) = \dfrac{1}{2} ( f_1( x ) + f_2( x ) )$ | 経路が3点<br> ( $x = \mu$ の1点と $x \neq -\infty, \mu, \infty$ の2点) | $[0, 0]$, $[1, 1]$ の2点 | 連続<br>( $C^\infty$ 級) | 1.1.9901 |
-| type1.type = 2 <br> symmetric = TRUE | $\Psi_1( x ) = \Phi_1( x ) - \Phi_1( x )^2 + \Phi_2( x )^2 \qquad \qquad ( x \leq \mu )$ <br> $\Psi_2( x ) = 1 - \Psi_1( 2\mu - x ) \qquad \qquad \qquad \qquad \  ( x > \mu )$ <br> $g_1( x ) = ( 1 - 2\Phi_1( x ) ) f_1( x ) + 2\Phi_2( x ) f_2( x ) \quad ( x \leq \mu )$ <br> $g_2( x ) = g_1( 2\mu - x ) \qquad \qquad \qquad \qquad \qquad \  \  \  ( x > \mu )$ | 経路が3点<br> ( $x = \mu$ の1点と $x \neq -\infty, \mu, \infty$ の2点) | $[0, 0]$, $[0.5, 0.5]$, $[1, 1]$ の3点 | 連続 | 1.1.90 |
-| type1.type = 3 <br> symmetric = TRUE <br> (縦方向グラデーション) |  $\Psi( x ) = \Phi_1( x ) - \dfrac{1}{ \sqrt{2} } \Phi^\ast_1( x ) + \dfrac{1}{ \sqrt{2} } \Phi^\ast_2( x )$ <br> $g( x ) = ( 1 - \dfrac{ f_1( x ) }{ f_1( \mu ) } ) f_1( x ) + \dfrac{ f_2( x ) }{ f_2( \mu ) } f_2( x )$ | 経路が3点<br> ( $x = \mu$ の1点と $x \neq -\infty, \mu, \infty$ の2点) | $[0, 0]$, $[0.5, 0.5]$, $[1, 1]$ の3点 | 連続<br>( $C^\infty$ 級) | 1.1.9906 |
+| type1.type = 3 | $\Psi_1( x ) = \Phi_1( x ) - \dfrac{1}{ \sqrt{2} } \Phi^\ast_1( x ) + \dfrac{1}{ \sqrt{2} } \Phi^\ast_2( x ) \quad ( x \leq \mu )$ <br> $\Psi_2( x ) = \Phi_3( x ) - \dfrac{1}{ \sqrt{2} } \Phi^\ast_3( x ) + \dfrac{1}{ \sqrt{2} } \Phi^\ast_2( x ) \quad ( x > \mu )$ <br> $g_1( x ) = ( 1 - \dfrac{ f_1( x ) }{ f_1( \mu ) } ) f_1( x ) + \dfrac{ f_2( x ) }{ f_2( \mu ) } f_2( x ) \quad ( x \leq \mu )$ <br> $g_2( x ) = ( 1 - \dfrac{ f_3( x ) }{ f_3( \mu ) } ) f_3( x ) + \dfrac{ f_2( x ) }{ f_2( \mu ) } f_2( x ) \quad ( x < \mu )$ | 経路が3～4点<br> ( $x = \mu$ の1点および、 $x \neq -\infty, \mu, \infty$ の2～3点) | $[0, 0]$, $[0.5, 0.5]$, $[1, 1]$, $[0, 0.5]$, $[0.5, 1]$, $[0, 1]$ のいずれか | 連続<br>( $C^\infty$ 級) | 1.2.0 |
+| type1.type = 1 <br> continuous = TRUE | $\Psi( x ) = \dfrac{1}{2} ( \Phi_1( x ) + \Phi_2( x ) )$ <br> $g( x ) = \dfrac{1}{2} ( f_1( x ) + f_2( x ) )$ | 経路が3点<br> ( $x = \mu$ の1点と $x \neq -\infty, \mu, \infty$ の2点) | $[0, 0]$, $[1, 1]$ の2点 | 連続<br>( $C^\infty$ 級) | 1.2.0 |
+| type1.type = 2 <br> continuous = TRUE <br> (横方向グラデーション) | $\Psi( x ) = \Phi_1( x ) - \dfrac{1}{2} \Phi_1( x )^2 + \dfrac{1}{2} \Phi_2( x )^2$ <br> $g( x ) = ( 1 - \Phi_1( x ) )f_1( x ) + \Phi_2( x ) f_2( x )$ | 経路が3点<br> ( $x = \mu$ の1点と $x \neq -\infty, \mu, \infty$ の2点) | $[0, 0]$, $[1, 1]$ の2点 | 連続<br>( $C^\infty$ 級) | 1.2.0 |
+| type1.type = 3 <br> continuous = TRUE | 無効 (type1.type = 3 のデフォルトと同じ) | - | - | - | 1.2.0 |
+| type1.type = 1 <br> symmetric = TRUE | $\Psi( x ) = \dfrac{1}{2} ( \Phi_1( x ) + \Phi_2( x ) )$ <br> $g( x ) = \dfrac{1}{2} ( f_1( x ) + f_2( x ) )$ | 経路が3点<br> ( $x = \mu$ の1点と $x \neq -\infty, \mu, \infty$ の2点) | $[0, 0]$, $[1, 1]$ の2点 | 連続<br>( $C^\infty$ 級) | 1.2.0 |
+| type1.type = 2 <br> symmetric = TRUE | $\Psi_1( x ) = \Phi_1( x ) - \Phi_1( x )^2 + \Phi_2( x )^2 \qquad \qquad ( x \leq \mu )$ <br> $\Psi_2( x ) = 1 - \Psi_1( 2\mu - x ) \qquad \qquad \qquad \qquad \  ( x > \mu )$ <br> $g_1( x ) = ( 1 - 2\Phi_1( x ) ) f_1( x ) + 2\Phi_2( x ) f_2( x ) \quad ( x \leq \mu )$ <br> $g_2( x ) = g_1( 2\mu - x ) \qquad \qquad \qquad \qquad \qquad \  \  \  ( x > \mu )$ | 経路が3点<br> ( $x = \mu$ の1点と $x \neq -\infty, \mu, \infty$ の2点) | $[0, 0]$, $[0.5, 0.5]$, $[1, 1]$ の3点 | 連続 | 1.2.0 |
+| type1.type = 3 <br> symmetric = TRUE <br> (縦方向グラデーション) |  $\Psi( x ) = \Phi_1( x ) - \dfrac{1}{ \sqrt{2} } \Phi^\ast_1( x ) + \dfrac{1}{ \sqrt{2} } \Phi^\ast_2( x )$ <br> $g( x ) = ( 1 - \dfrac{ f_1( x ) }{ f_1( \mu ) } ) f_1( x ) + \dfrac{ f_2( x ) }{ f_2( \mu ) } f_2( x )$ | 経路が3点<br> ( $x = \mu$ の1点と $x \neq -\infty, \mu, \infty$ の2点) | $[0, 0]$, $[0.5, 0.5]$, $[1, 1]$ の3点 | 連続<br>( $C^\infty$ 級) | 1.2.0 |
 
 #### Type 2 - 接続区間 $Q_i = ( b_i, a_{i + 1} )$ が平均値 $\mu$ を含まない場合 その2
 + 接続区間 $Q_i$ の範囲が平均値 $\mu$ よりも小さく、標準偏差が $\sigma_i \geq \sigma_{i + 1}$ の場合
