@@ -60,7 +60,7 @@ devtools::install_github( "Kimitsuna-Goblin/cgd" )
 ## ライブラリの使い方 - How to use library
 
 <pre>
-> library( cgd )    # ソースファイルを読み込みます
+> library( cgd )    # ライブラリを読み込みます
 > a <- CGD$new()    # 連結ガウス分布クラスのオブジェクトを生成します
 >
 >    # 連結分布の構成が既知の場合は (ほとんど無いと思いますが)
