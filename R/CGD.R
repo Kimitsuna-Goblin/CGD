@@ -1,52 +1,45 @@
 ##############################################################################
-# 連結ガウス分布 (Connected Gaussian Distribution) クラス (nleqslv 使用)
-# @file			CGD.need-nleqslv.R
-# @version		1.1.9906
+# 連結ガウス分布 (Connected Gaussian Distribution) クラス
+# @file			CGD.R
+# @version		1.2.0
 # @author		Kimitsuna-Goblin
 # @copyright	Copyright (C) 2022 Ura Kimitsuna
 # @license		Released under the MIT license.
 #				see https://opensource.org/licenses/MIT/
 ##############################################################################
 
-library( nleqslv )
-
-# ▼ 他のライブラリ (common.R) からのコピー (ここから) ▼
-
-# common.R
-# version 0.1.0
-# Copyright (C) 2022 Ura Kimitsuna
-# Released under the MIT license.
+#library( nleqslv )
 
 ###############################################################################
-# 与えられた確率における、平均値からのσ単位の相対位置を得る
-# @param	p		確率
-# @param	...		qnorm の引数
-# @return	平均値からの相対位置(σ単位)
+#' 正規分布において、与えられた確率が、平均値から何σ離れているかを得る
+#' @export
+#' @param	p			確率
+#' @return	平均値からの相対位置(σ単位)
 ###############################################################################
-sqnorm <- function( p, lower.tail = TRUE, log.p = FALSE )
+sqnorm <- function( p )
 {
-	return ( qnorm( p, 0, 1, lower.tail, log.p ) )
+	return ( qnorm( p, 0, 1 ) )
 }
 
 ###############################################################################
-# 与えられた平均値を取り、1点における確率を満たす正規分布の標準偏差を得る
-# @param	mean	平均値
-# @param	q		X座標 (クォンタイル)
-# @param	p		その点における確率
-# @return	標準偏差
+#' 与えられた平均値を取り、1点における確率を満たす正規分布の標準偏差を得る
+#' @export
+#' @param	mean		平均値
+#' @param	q			X座標 (クォンタイル)
+#' @param	p			その点における確率
+#' @return	標準偏差
 ###############################################################################
 sd.mqp.norm <- function( mean, q, p )
 {
 	return ( ( q - mean ) / sqnorm( p ) )
 }
 
-# ▲ 他のライブラリ (common.R) からのコピー (ここまで) ▲
-
 ###############################################################################
 #' 連結ガウス分布区間クラス
 #'
 #' 連結ガウス分布で使用する区間を表すクラス
-#' @export
+#' @export		CGDInterval
+#' @exportClass	CGDInterval
 #' @field	sd				標準偏差
 #' @field	q.ind			独立区間におけるX座標 (クォンタイル)
 #' @field	q.conn.prev		前の区間との接続区間の確率内に収まる、この標準偏差のX座標 (クォンタイル)
@@ -54,6 +47,7 @@ sd.mqp.norm <- function( mean, q, p )
 #' @field	p.ind			独立区間における確率
 #' @field	p.conn.prev		前の区間との接続区間の確率
 #' @field	p.conn.next		次の区間との接続区間の確率
+#' @seealso	[CGD-class]
 ###############################################################################
 CGDInterval <- setRefClass(
 
@@ -77,7 +71,9 @@ CGDInterval <- setRefClass(
 #' 負担区間取得
 #'
 #' 負担区間 (前の区間との接続区間～次の区間との接続区間) のX座標 (クォンタイル) を取得する
-#' @name CGDInterval_q
+#' @name CGDInterval_q.manage
+#' @usage	a <- CGD$new()
+#'			a$intervals[[1]]$q.manage()
 #' @return	負担区間のX座標 (クォンタイル)
 ###############################################################################
 NULL
@@ -101,21 +97,25 @@ CGDInterval$methods(
 #' 連結ガウス分布を使って滑らかなグラフを得るには、
 #' ランダムサンプルを取得して、そのヒストグラムを描画するとよい。
 #'
-#' また、クォンタイルが3点 (50％の点が1点と、それ以外の確率の点が2点) の場合は、
-#' クォンタイルの位置が過度にいびつでなければ、確率密度関数を連続にできる。
-#' ただし、その場合でも、確率密度関数は歪んだり、中央が尖ったりする。
-#' @export
+#' クォンタイルが4点以下 (確率50％の点が1点、それ以外の点が3点以下) の場合は、
+#' クォンタイルの位置が過度にいびつでなければ、連続で滑らかな確率密度関数を持つ
+#' 確率分布を構成することができる。
+#' @export		CGD
+#' @exportClass	CGD
 #' @field	mean			平均値
 #' @field	intervals		連結区間 (CGDInterval クラスのリスト)
-#' @field	type1.type		接続区間が type 1 の場合の計算方法
+#' @field	type1.type		接続区間が type 1 の場合の計算方法 (詳細は [set.waypoints()] を参照)
 #' @field	m.sd			計算済みの標準偏差 (クラス外からは直接参照しないこと)
+#' @seealso	[CGDInterval-class]
+#' @seealso	[CGD_set.waypoints()]
+#' @seealso	\href{https://github.com/Kimitsuna-Goblin/CGD}{README.md} (GitHub)
 ###############################################################################
 CGD <- setRefClass(
 
 	# クラス名
 	Class = "CGD",
 
-	# プロパティ
+	# フィールド
 	fields = list(
 		mean = "numeric",			# 平均値
 		intervals = "list",			# 連結区間 (CGDInterval クラスのリスト)
@@ -129,12 +129,14 @@ CGD <- setRefClass(
 #' コンストラクタ
 #'
 #' コンストラクタの引数は予め連結区間の構成が分かっている場合に指定する。
-#' 詳細については、 set.waypoints() の説明を参照。
+#' 詳細については、 set.waypoints() を参照。
 #' @name	CGD_initialize
+#' @usage	a <- CGD$new(mean = NULL, intervals = NULL, type1.type = 1)
 #' @param	mean			平均値 (デフォルト: NULL)
 #' @param	intervals		連結区間 (CGDInterval クラスのリスト) (デフォルト: NULL)
 #' @param	type1.type		type 1 の場合の計算方法 (1、2、3 のいずれかを指定する) (デフォルト: 1)
-#'
+#' @seealso	[CGDInterval-class]
+#' @seealso	[CGD_set.waypoints()]
 ###############################################################################
 NULL
 CGD$methods(
@@ -181,6 +183,8 @@ CGD$methods(
 #'
 #' 累積分布関数の経路 (クォンタイル) を設定する
 #' @name	CGD_set.waypoints
+#' @usage	a <- CGD$new()
+#'			a$set.waypoints(waypoints, continuous = FALSE, symmetric = FALSE, this.type1.type = NULL)
 #' @param	waypoints			経路の data.frame( q = 経路のX座標 (クォンタイル), p = その点における確率 )
 #'								X座標 (クォンタイル) は昇順にソートしておくこと。
 #'								平均値は p = 0.5 の点のX座標として与えること (p = 0.5 の点は必須)
@@ -189,12 +193,22 @@ CGD$methods(
 #' @param	symmetric			独立区間を [0, 0], [0.5, 0.5], [1, 1] の3点にして、
 #'								1番目と3番目の確率分布を同一にすることにより、
 #'								確率密度関数が全区間 (-∞, ∞) で連続で、かつ左右対称になるように試みる  (デフォルト: FALSE)
-#'								 (continuous または symmetric を TRUE にする場合、
-#'								  前提として、経路は確率 0.5 の点が1点と、確率 0, 0.5, 1 以外の点が 2点 の、
-#'								  合計 3点 から成っていること。
-#'								  例: waypoints = data.frame( p = c( 0.2, 0.5, 0.7 ), q = c( -1.6, 0, 0.4 ) ) )
+#'
+#'				continuous または symmetric を TRUE にする場合、経路の構成点は一定の個数でなければならない。
+#'				具体的には、構成点の個数は以下のようにする必要がある (構成点の個数には、確率 0.5 の点の分を含む)。
+#'
+#'				・continuous = TRUE : type1.type = 1 or 2 ⇒ 3点 (type1.type = 3 では無効)
+#'
+#'				・symmetric = TRUE : type1.type = 1 or 2 ⇒ 3点、type1.type = 3 ⇒ 3点 or 4点
+#'
 #' @param	this.type1.type		フィールドの type1.type に設定する値 (1、2、3 のいずれかを指定すること) (デフォルト: NULL)
 #'								NULL の場合は type1.type の値を変更しない
+#'
+#'				type1.type = 1 は、最も単純な連結である。2つの正規分布の平均が構成可能である。
+#'
+#'				type1.type = 2 は、2つの確率密度関数の横方向グラデーションが構成可能である。
+#'
+#'				type1.type = 3 は、2つの確率密度関数の縦方向グラデーションが構成可能である。
 #'
 #'				type1.type の値によって、接続区間 (β_i, α_{i+1}) が type 1 の場合、
 #'				接続区間の累積分布関数 Ψ_i(x) を以下のように計算する。
@@ -211,16 +225,16 @@ CGD$methods(
 #'				ただし、Φ_i, Φ_{i+1} は接続区間の前後の独立区間における累積分布関数。
 #'				Φ~_i(x) = ( Φ_i(x) + Φ_{i+1}(x) ) / 2。
 #'				f_i, f_{i+1} は接続区間の前後の独立区間における確率密度関数。μ は平均値。
-#'				Φ^*_i は正規分布 N(μ, σ_i / √2) の累積分布関数。
+#'				Φ^*_i は正規分布 N(μ, (σ_i / √2)^2 ) の累積分布関数。
 #'
 #'				type1.type = 1 では、
-#'				set.waypoints() の引数で continuous または symmetric を TRUE にした場合、
+#'				set.waypoints() の引数で continuous または symmetric を TRUE にした場合 (2つの正規分布の平均)、
 #'				独立区間は [0, 0], [1, 1] の2点になり、
 #'				接続区間の累積分布関数は Ψ(x) = ( Φ_i(x) + Φ_{i+1}(x) ) / 2 となる
-#'				  (この場合、独立区間を [0, 0], [0.5, 0.5], [1, 1] の3点と見做しても結果は同じ)。
+#'				 (この場合、独立区間を [0, 0], [0.5, 0.5], [1, 1] の3点と見做してもよい)。
 #'
 #'				type1.type = 2 では、
-#'				set.waypoints() の引数で continuous を TRUE にした場合、
+#'				set.waypoints() の引数で continuous を TRUE にした場合 (横方向グラデーション)、
 #'				独立区間は [0, 0], [1, 1] の2点になり、
 #'				接続区間の累積分布関数は上の 2 の式になる。
 #'				set.waypoints() の引数で symmetric を TRUE にした場合、
@@ -231,9 +245,9 @@ CGD$methods(
 #'				type1.type = 3 では、
 #'				独立区間は [0, 0], [0.5, 0.5], [1, 1], [0, 0.5], [0.5, 1], [0, 1] の6種類しか取り得ない。
 #'				set.waypoints() の引数の continuous は無効になる。
-#'				set.waypoints() の引数で symmetric を TRUE にした場合、
+#'				set.waypoints() の引数で symmetric を TRUE にした場合 (縦方向グラデーション)、
 #'				独立区間は [0, 0], [0.5, 0.5], [1, 1] の3点になり、
-#'				2つの接続区間 (0, 0.5), (0.5, 1) の累積分布関数はどちらも同じ、上の 3 の式になる。
+#'				接続区間 (0, 0.5), (0.5, 1) の累積分布関数はどちらも同じ、上の 3 の式になる。
 #'
 #'				type1.type = 2 と type1.type = 3 で symmetric を TRUE にした場合、
 #'				[0, 0] と [1, 1] の2点が1つめの正規分布 N_1 の独立区間、
@@ -241,6 +255,7 @@ CGD$methods(
 #'
 #' @return	nleqslv() を内部で実行した場合はその結果、それ以外は NULL
 #' @importFrom	nleqslv		nleqslv
+#' @seealso	\href{https://github.com/Kimitsuna-Goblin/CGD}{README.md} (GitHub)
 ###############################################################################
 NULL
 CGD$methods(
@@ -319,6 +334,8 @@ CGD$methods(
 			warning( "Warning: no waypoints other than (p = 0, 0.5, 1) are given." )
 		}
 
+		####################################
+		# 確率密度関数が連続な分布を構成
 		if ( nrow( wp ) == 2 )
 		{
 			# 引数と type1.type と経路上の点の数の条件が満たされる場合、確率密度関数がなるべく連続になるように試みる
@@ -684,6 +701,9 @@ CGD$methods(
 			return ( result )
 		}
 
+		####################################
+		# 確率密度関数が非連続な分布を構成
+
 		# 経路上の点を通る標準偏差を取得
 		sds <- sd.mqp.norm( rep( mean, nrow( wp ) ), wp$q, wp$p )
 
@@ -707,7 +727,7 @@ CGD$methods(
 			{
 				# 前の区間との接続区間を取得
 				p.conn.prev <- intervals[[length( intervals )]]$p.conn.next
-				q.conn.prev <- c( qnorm( intervals[[length( intervals )]]$p.conn.next[1], mean, sds[i] ), wp[( i ),]$q )
+				q.conn.prev <- c( qnorm( intervals[[length( intervals )]]$p.conn.next[1], mean, sds[i] ), wp[i,]$q )
 
 				# 独立区間の始点は前の区間との接続区間の終点
 				p.ind <- c( p.conn.prev[2], 1 )
@@ -725,8 +745,8 @@ CGD$methods(
 					{
 						# 標準偏差が次の経路上の点を通る分布の標準偏差と等しい場合
 						# 独立区間を次の経路上の点まで延長
-						q.ind[2] <- wp[j,]$q
-						p.ind[2] <- pnorm( wp[j,]$q, mean, sds[i] )
+						p.ind[2] <- wp[j,]$p
+						q.ind[2] <- qnorm( wp[j,]$p, mean, sds[i] )
 						extended.to <- j
 
 						j <- j + 1
@@ -757,8 +777,8 @@ CGD$methods(
 			}
 			else
 			{
-				p.conn.next <- c( pnorm( wp[i,]$q, mean, sds[i] ), pnorm( wp[( i + 1 ),]$q, mean, sds[i + 1] ) )
-				q.conn.next <- c( wp[i,]$q, qnorm( p.conn.next[2], mean, sds[i] ) )
+				p.conn.next <- c( wp[i,]$p, wp[i + 1,]$p )
+				q.conn.next <- c( qnorm( wp[i,]$p, mean, sds[i] ), qnorm( wp[i + 1,]$p, mean, sds[i] ) )
 
 				# 独立区間の終点は次の区間との接続区間の始点
 				p.ind[2] <- p.conn.next[1]
@@ -781,8 +801,10 @@ CGD$methods(
 #' continuous 判定
 #'
 #' continuous かどうかを調べる
+#' @usage	a <- CGD$new()
+#'			a$is.continuous()
 #' @name	CGD_is.continuous
-#' @return	continuous = TRUE で構成されていれば TRUE、そうでなければ FALSE
+#' @return	continuous = TRUE として構成されていれば TRUE、そうでなければ FALSE
 ###############################################################################
 NULL
 CGD$methods(
@@ -797,7 +819,9 @@ CGD$methods(
 #'
 #' symmetric かどうかを調べる
 #' @name	CGD_is.symmetric
-#' @return	symmetric = TRUE で構成されていれば TRUE、そうでなければ FALSE
+#' @usage	a <- CGD$new()
+#'			a$is.symmetric()
+#' @return	symmetric = TRUE として構成されていれば TRUE、そうでなければ FALSE
 ###############################################################################
 NULL
 CGD$methods(
@@ -818,10 +842,232 @@ CGD$methods(
 )
 
 ###############################################################################
+#' 独立区間判定 (確率)
+#'
+#' 指定された確率が独立区間に入っているかどうかを調べる
+#' @name	CGD_is.ind.p
+#' @usage	a <- CGD$new()
+#'			a$is.ind.p(p)
+#' @param	p		確率のベクトル
+#' @return	第1要素 (bool) に、独立区間に入っていれば TRUE、入っていなければ FALSE、
+#'			第2要素 (i) に、当該 intervals のインデックス (bool = FALSE の場合は NaN) が入ったリスト
+###############################################################################
+NULL
+CGD$methods(
+	is.ind.p = function( p )
+	{
+		bool <- rep( FALSE, length( p ) )
+		i.result <- rep( NaN, length( p ) )
+
+		for ( i in 1:length( p ) )
+		{
+			if ( p[i] < 0 || p[i] > 1 )
+			{
+				# 確率が負または1を超えている
+				warning( paste( "Warning: probability" , p[i] , "is out of range [0, 1]." ) )
+				next
+			}
+
+			for ( j in 1:length( intervals ) )
+			{
+				if ( p[i] >= intervals[[j]]$p.ind[1] && p[i] <= intervals[[j]]$p.ind[2] )
+				{
+					bool[i] <- TRUE
+					i.result[i] <- j
+					break
+				}
+			}
+		}
+
+		return ( list( bool = bool, i = i.result ) )
+	}
+)
+
+###############################################################################
+#' 接続区間判定 (確率)
+#'
+#' 指定された確率が接続区間に入っているかどうかを調べる
+#' @name	CGD_is.conn.p
+#' @usage	a <- CGD$new()
+#'			a$is.conn.p(p)
+#' @param	p		確率のベクトル
+#' @return	第1要素 (bool) に、接続区間に入っていれば TRUE、入っていなければ FALSE、
+#'			第2要素 (i.1) に、前の intervals のインデックス
+#'			 (bool = FALSE の場合は 独立区間の intervals のインデックス)、
+#'			第3要素 (i.2) に、後の intervals のインデックス (i.1 + 1, bool = FALSE の場合は NaN) が入ったリスト
+###############################################################################
+NULL
+CGD$methods(
+	is.conn.p = function( p )
+	{
+		bool <- rep( FALSE, length( p ) )
+		i.1 <- rep( NaN, length( p ) )
+		i.2 <- rep( NaN, length( p ) )
+
+		for ( i in 1:length( p ) )
+		{
+			if ( p[i] < 0 || p[i] > 1 )
+			{
+				# 確率が負または1を超えている
+				warning( paste( "Warning: probability" , p[i] , "is out of range [0, 1]." ) )
+				next
+			}
+
+			is.ind <- is.ind.p( p[i] )
+			if ( !is.ind$bool )
+			{
+				bool[i] <- TRUE
+				for ( j in 1:( length( intervals ) - 1 ) )
+				{
+					# 論理的には = は不要だが、計算誤差回避のために = を付けておく
+					if ( p[i] >= intervals[[j]]$p.ind[2] && p[i] <= intervals[[j + 1]]$p.ind[1] )
+					{
+						i.1[i] <- j
+						i.2[i] <- j + 1
+						break
+					}
+				}
+			}
+			else
+			{
+				i.1[i] <- is.ind$i
+			}
+		}
+
+		return ( list( bool = bool, i.1 = i.1, i.2 = i.2 ) )
+	}
+)
+
+###############################################################################
+#' 独立区間判定 (X座標 (クォンタイル) )
+#'
+#' 指定されたX座標 (クォンタイル) が独立区間に入っているかどうかを調べる
+#' @name	CGD_is.ind.x
+#' @usage	a <- CGD$new()
+#'			a$is.ind.x(x)
+#' @param	x		X座標 (クォンタイル) のベクトル
+#' @return	第1要素 (bool) に、独立区間に入っていれば TRUE、入っていなければ FALSE、
+#'			第2要素 (i) に、当該 intervals のインデックス (bool = FALSE の場合は NaN) が入ったリスト
+###############################################################################
+NULL
+CGD$methods(
+	is.ind.x = function( x )
+	{
+		bool <- rep( FALSE, length( x ) )
+		i.result <- rep( NaN, length( x ) )
+
+		for ( i in 1:length( x ) )
+		{
+			for ( j in 1:length( intervals ) )
+			{
+				if ( x[i] >= intervals[[j]]$q.ind[1] && x[i] <= intervals[[j]]$q.ind[2] )
+				{
+					bool[i] <- TRUE
+					i.result[i] <- j
+					break
+				}
+			}
+		}
+
+		return ( list( bool = bool, i = i.result ) )
+	}
+)
+
+###############################################################################
+#' 接続区間判定 (X座標 (クォンタイル) )
+#'
+#' 指定されたX座標 (クォンタイル) が接続区間に入っているかどうかを調べる
+#' @name	CGD_is.conn.x
+#' @usage	a <- CGD$new()
+#'			a$is.conn.x(x)
+#' @param	x		X座標 (クォンタイル) のベクトル
+#' @return	第1要素 (bool) に、接続区間に入っていれば TRUE、入っていなければ FALSE、
+#'			第2要素 (i.1) に、前の intervals のインデックス
+#'			 (bool = FALSE の場合は 独立区間の intervals のインデックス)、
+#'			第3要素 (i.2) に、後の intervals のインデックス (i.1 + 1, bool = FALSE の場合は NaN) が入ったリスト
+###############################################################################
+NULL
+CGD$methods(
+	is.conn.x = function( x )
+	{
+		bool <- rep( FALSE, length( x ) )
+		i.1 <- rep( NaN, length( x ) )
+		i.2 <- rep( NaN, length( x ) )
+
+		for ( i in 1:length( x ) )
+		{
+			is.ind <- is.ind.x( x[i] )
+			if ( !is.ind$bool )
+			{
+				bool[i] <- TRUE
+				for ( j in 1:( length( intervals ) - 1 ) )
+				{
+					# 論理的には = は不要だが、計算誤差回避のために = を付けておく
+					if ( x[i] >= intervals[[j]]$q.ind[2] && x[i] <= intervals[[j + 1]]$q.ind[1] )
+					{
+						i.1[i] <- j
+						i.2[i] <- j + 1
+						break
+					}
+				}
+			}
+			else
+			{
+				i.1[i] <- is.ind$i
+			}
+		}
+
+		return ( list( bool = bool, i.1 = i.1, i.2 = i.2 ) )
+	}
+)
+
+###############################################################################
+#' 独立区間判定 (X座標 (クォンタイル) )
+#'
+#' 指定されたX座標 (クォンタイル) が独立区間に入っているかどうかを調べる
+#' @name	CGD_is.ind.q
+#' @usage	a <- CGD$new()
+#'			a$is.ind.q(q)
+#' @param	q		X座標 (クォンタイル) のベクトル
+#' @return	第1要素 (bool) に、独立区間に入っていれば TRUE、入っていなければ FALSE、
+#'			第2要素 (i) に、当該 intervals のインデックス (bool = FALSE の場合は NaN) が入ったリスト
+###############################################################################
+NULL
+CGD$methods(
+	is.ind.q = function( q )
+	{
+		return ( is.ind.x( q ) )
+	}
+)
+
+###############################################################################
+#' 接続区間判定 (X座標 (クォンタイル) )
+#'
+#' 指定されたX座標 (クォンタイル) が接続区間に入っているかどうかを調べる
+#' @name	CGD_is.conn.q
+#' @usage	a <- CGD$new()
+#'			a$is.conn.q(q)
+#' @param	q		X座標 (クォンタイル) のベクトル
+#' @return	第1要素 (bool) に、接続区間に入っていれば TRUE、入っていなければ FALSE、
+#'			第2要素 (i.1) に、前の intervals のインデックス
+#'			 (bool = FALSE の場合は 独立区間の intervals のインデックス)、
+#'			第3要素 (i.2) に、後の intervals のインデックス (i.1 + 1, bool = FALSE の場合は NaN) が入ったリスト
+###############################################################################
+NULL
+CGD$methods(
+	is.conn.q = function( q )
+	{
+		return ( is.conn.x( q ) )
+	}
+)
+
+###############################################################################
 #' 確率密度取得
 #'
 #' X座標 (クォンタイル) を指定して、確率密度を取得する
 #' @name	CGD_d
+#' @usage	a <- CGD$new()
+#'			a$d(x)
 #' @param	x		X座標 (クォンタイル) のベクトル
 #' @return	確率密度
 ###############################################################################
@@ -878,58 +1124,28 @@ CGD$methods(
 			}
 			else
 			{
-				# 与えられたX座標 (クォンタイル) を負担する分布を探索
-				if ( x[i] == Inf )				{
-					j <- length( intervals )
-				}
-				else
-				{
-					is.no.block = FALSE
-					for ( j in ( 1:length( intervals ) ) )
-					{
-						if ( x[i] >= intervals[[j]]$q.manage()[1] && x[i] < intervals[[j]]$q.manage()[2] )
-						{
-							break
-						}
-						else if ( j > 1 )
-						{
-							if ( x[i] > intervals[[j - 1]]$q.manage()[2] && x[i] < intervals[[j]]$q.manage()[1] )
-							{
-								# 負担分布なし ⇒ d( x ) = 0
-								results[i] <- 0
-								is.no.block = TRUE
-								break
-							}
-						}
-					}
-					if ( is.no.block )
-					{
-						next
-					}
-				}
-
-				if ( x[i] >= intervals[[j]]$q.ind[1] && x[i] <= intervals[[j]]$q.ind[2] )
+				# 確率密度関数が非連続の場合
+				is.conn <- is.conn.x( x[i] )
+				if ( !is.conn$bool )
 				{
 					# 独立区間内 ⇒ 確率密度をそのまま出力
-					results[i] <- dnorm( x[i], mean, intervals[[j]]$sd )
+					results[i] <- dnorm( x[i], mean, intervals[[is.conn$i.1]]$sd )
 				}
 				else
 				{
-					# 接続区間内 ⇒ 次の区間の標準偏差による確率密度と線形に割合を決めて負担を分割
-					d.1 <- NULL				# 確率分布1 (接続区間前を負担)
-					d.2 <- NULL				# 確率分布2 (接続区間後を負担)
-					x.conn <- numeric()		# 接続区間のX座標 (クォンタイル)
-					if ( x[i] >= intervals[[j]]$q.conn.next[1] && x[i] < intervals[[j]]$q.conn.next[2] )
+					# 接続区間内 ⇒ 区間前後の2つの分布で確率密度を負担
+					j <- is.conn$i.1
+					if ( x[i] > intervals[[j]]$q.manage()[2] && x[i] < intervals[[j + 1]]$q.manage()[1] )
 					{
-						d.1 <- intervals[[j]]
-						d.2 <- intervals[[j + 1]]
+						# 負担分布なし ⇒ d( x ) = 0 (このケースは type 2 の場合に生じる)
+						results[i] <- 0
+						next
 					}
-					else
-					{
-						d.1 <- intervals[[j - 1]]
-						d.2 <- intervals[[j]]
-					}
+
+					d.1 <- intervals[[j]]			# 確率分布1 (接続区間前を負担)
+					d.2 <- intervals[[j + 1]]		# 確率分布2 (接続区間後を負担)
 					x.conn <- c( d.1$q.conn.next[1], d.2$q.conn.prev[2] )
+													# 接続区間の範囲のX座標 (クォンタイル)
 
 					if ( x.conn[1] < mean )		# 平均値より絶対小でなければならない。「以下」は不可
 					{
@@ -969,12 +1185,12 @@ CGD$methods(
 									# P2(x) < inf
 									if ( x[i] < d.1$q.conn.next[2] )
 									{
-										# P1(x) < sup
+										# P1(x) < sup ⇒ 確率分布1 が単独で負担
 										results[i] <- dnorm( x[i], mean, d.1$sd ) / 2
 									}
 									else
 									{
-										# P1(x) >= sup
+										# P1(x) >= sup ⇒ 負担分布なし
 										results[i] <- 0
 									}
 								}
@@ -983,12 +1199,12 @@ CGD$methods(
 									# P2(x) >= inf
 									if ( x[i] < d.1$q.conn.next[2] )
 									{
-										# P1(x) < sup
+										# P1(x) < sup ⇒ 確率分布1 と 2 が負担
 										results[i] <- ( dnorm( x[i], mean, d.1$sd ) + dnorm( x[i], mean, d.2$sd ) ) / 2
 									}
 									else
 									{
-										# P1(x) >= sup
+										# P1(x) >= sup ⇒ 確率分布2 が単独で負担
 										results[i] <- dnorm( x[i], mean, d.2$sd ) / 2
 									}
 								}
@@ -1008,12 +1224,12 @@ CGD$methods(
 								{
 									if ( x[i] < d.1$q.conn.next[2] )
 									{
-										# P1(x) < sup
+										# P1(x) < sup ⇒ 確率分布1 と 2 が負担
 										results[i] <- ( dnorm( x[i], mean, d.1$sd ) + dnorm( x[i], mean, d.2$sd ) ) / 2
 									}
 									else
 									{
-										# P1(x) >= sup
+										# P1(x) >= sup ⇒ 確率分布2 が単独で負担
 										results[i] <- dnorm( x[i], mean, d.2$sd ) / 2
 									}
 								}
@@ -1025,12 +1241,12 @@ CGD$methods(
 								{
 									if ( x[i] < d.2$q.conn.prev[1] )
 									{
-										# P1(x) < inf
+										# P2(x) < inf ⇒ 確率分布1 が単独で負担
 										results[i] <- dnorm( x[i], mean, d.1$sd ) / 2
 									}
 									else
 									{
-										# P1(x) >= inf
+										# P2(x) >= inf ⇒ 確率分布1 と 2 が負担
 										results[i] <- ( dnorm( x[i], mean, d.1$sd ) + dnorm( x[i], mean, d.2$sd ) ) / 2
 									}
 								}
@@ -1051,12 +1267,12 @@ CGD$methods(
 								# P2(x) < inf
 								if ( x[i] < d.1$q.conn.next[2] )
 								{
-									# P1(x) < sup
+									# P1(x) < sup ⇒ 確率分布1 が単独で負担
 									results[i] <- dnorm( x[i], mean, d.1$sd ) / 2
 								}
 								else
 								{
-									# P1(x) >= sup
+									# P1(x) >= sup ⇒ 負担分布なし
 									results[i] <- 0
 								}
 							}
@@ -1065,12 +1281,12 @@ CGD$methods(
 								# P2(x) >= inf
 								if ( x[i] < d.1$q.conn.next[2] )
 								{
-									# P1(x) < sup
+									# P1(x) < sup ⇒ 確率分布1 と 2 が負担
 									results[i] <- ( dnorm( x[i], mean, d.1$sd ) + dnorm( x[i], mean, d.2$sd ) ) / 2
 								}
 								else
 								{
-									# P1(x) >= sup
+									# P1(x) >= sup ⇒ 確率分布2 が単独で負担
 									results[i] <- dnorm( x[i], mean, d.2$sd ) / 2
 								}
 							}
@@ -1114,6 +1330,8 @@ CGD$methods(
 #'
 #' X座標 (クォンタイル) を指定して、確率を取得する
 #' @name	CGD_p
+#' @usage	a <- CGD$new()
+#'			a$p(q)
 #' @param	q						X座標 (クォンタイル) のベクトル
 #' @return	確率
 ###############################################################################
@@ -1174,59 +1392,28 @@ CGD$methods(
 			}
 			else
 			{
-				# 与えられたX座標 (クォンタイル) を負担する分布を探索
-				if ( q[i] == Inf )
-				{
-					j <- length( intervals )
-				}
-				else
-				{
-					is.no.block = FALSE
-					for ( j in ( 1:length( intervals ) ) )
-					{
-						if ( q[i] >= intervals[[j]]$q.manage()[1] && q[i] < intervals[[j]]$q.manage()[2] )
-						{
-							break
-						}
-						else if ( j > 1 )
-						{
-							if ( q[i] > intervals[[j - 1]]$q.manage()[2] && q[i] < intervals[[j]]$q.manage()[1] )
-							{
-								# 負担分布なし ⇒ p = 直前の分布が負担する確率の上限 = 接続区間の確率の上限と下限の平均値
-								results[i] <- ( intervals[[j - 1]]$p.conn.next[1] + intervals[[j - 1]]$p.conn.next[2] ) / 2
-								is.no.block = TRUE
-								break
-							}
-						}
-					}
-					if ( is.no.block )
-					{
-						next
-					}
-				}
-
-				if ( q[i] >= intervals[[j]]$q.ind[1] && q[i] <= intervals[[j]]$q.ind[2] )
+				# 確率密度関数が非連続の場合
+				is.conn <- is.conn.q( q[i] )
+				if ( !is.conn$bool )
 				{
 					# 独立区間内 ⇒ 確率をそのまま出力
-					results[i] <- pnorm( q[i], mean, intervals[[j]]$sd )
+					results[i] <- pnorm( q[i], mean, intervals[[is.conn$i.1]]$sd )
 				}
 				else
 				{
-					# 接続区間内 ⇒ 次の区間の標準偏差による確率密度と線形に割合を決めて負担を分割
-					d.1 <- NULL				# 確率分布1 (接続区間前を負担)
-					d.2 <- NULL				# 確率分布2 (接続区間後を負担)
-					x.conn <- numeric()		# 接続区間のX座標 (クォンタイル)
-					if ( q[i] >= intervals[[j]]$q.conn.next[1] && q[i] < intervals[[j]]$q.conn.next[2] )
+					# 接続区間内 ⇒ 区間前後の2つの分布で確率を負担
+					j <- is.conn$i.1
+					if ( q[i] > intervals[[j]]$q.manage()[2] && q[i] < intervals[[j + 1]]$q.manage()[1] )
 					{
-						d.1 <- intervals[[j]]
-						d.2 <- intervals[[j + 1]]
+						# 負担分布なし ⇒ p = 直前の分布が負担する確率の上限 = 接続区間の確率の上限と下限の平均値
+						results[i] <- ( intervals[[j]]$p.conn.next[1] + intervals[[j]]$p.conn.next[2] ) / 2
+						next
 					}
-					else
-					{
-						d.1 <- intervals[[j - 1]]
-						d.2 <- intervals[[j]]
-					}
+
+					d.1 <- intervals[[j]]			# 確率分布1 (接続区間前を負担)
+					d.2 <- intervals[[j + 1]]		# 確率分布2 (接続区間後を負担)
 					x.conn <- c( d.1$q.conn.next[1], d.2$q.conn.prev[2] )
+													# 接続区間のX座標 (クォンタイル)
 
 					if ( x.conn[1] < mean )		# 平均値より絶対小でなければならない。「以下」は不可
 					{
@@ -1264,12 +1451,12 @@ CGD$methods(
 									# P2(x) < inf
 									if ( q[i] < d.1$q.conn.next[2] )
 									{
-										# P1(x) < sup
+										# P1(x) < sup ⇒ 確率分布1 が単独で負担
 										results[i] <- ( d.1$p.conn.next[1] + pnorm( q[i], mean, d.1$sd ) ) / 2
 									}
 									else
 									{
-										# P1(x) >= sup
+										# P1(x) >= sup ⇒ 負担分布なし
 										results[i] <- ( d.1$p.conn.next[1] + d.1$p.conn.next[2] ) / 2
 									}
 								}
@@ -1278,12 +1465,12 @@ CGD$methods(
 									# P2(x) >= inf
 									if ( q[i] < d.1$q.conn.next[2] )
 									{
-										# P1(x) < sup
+										# P1(x) < sup ⇒ 確率分布1 と 2 が負担
 										results[i] <- ( pnorm( q[i], mean, d.1$sd ) + pnorm( q[i], mean, d.2$sd ) ) / 2
 									}
 									else
 									{
-										# P1(x) >= sup
+										# P1(x) >= sup ⇒ 確率分布2 が単独で負担
 										results[i] <- ( d.1$p.conn.next[2] + pnorm( q[i], mean, d.2$sd ) ) / 2
 									}
 								}
@@ -1303,12 +1490,12 @@ CGD$methods(
 								{
 									if ( q[i] < d.1$q.conn.next[2] )
 									{
-										# P1(x) < sup
+										# P1(x) < sup ⇒ 確率分布1 と 2 が負担
 										results[i] <- ( pnorm( q[i], mean, d.1$sd ) + pnorm( q[i], mean, d.2$sd ) ) / 2
 									}
 									else
 									{
-										# P1(x) >= sup
+										# P1(x) >= sup ⇒ 確率分布2 が単独で負担
 										results[i] <- ( d.1$p.conn.next[2] + pnorm( q[i], mean, d.2$sd ) ) / 2
 									}
 								}
@@ -1320,12 +1507,12 @@ CGD$methods(
 								{
 									if ( q[i] < d.2$q.conn.prev[1] )
 									{
-										# P1(x) < inf
+										# P2(x) < inf ⇒ 確率分布1 が単独で負担
 										results[i] <- ( pnorm( q[i], mean, d.1$sd ) + d.2$p.conn.prev[1] ) / 2
 									}
 									else
 									{
-										# P1(x) >= inf
+										# P2(x) >= inf ⇒ 確率分布1 と 2 が負担
 										results[i] <- ( pnorm( q[i], mean, d.1$sd ) + pnorm( q[i], mean, d.2$sd ) ) / 2
 									}
 								}
@@ -1346,12 +1533,12 @@ CGD$methods(
 								# P2(x) < inf
 								if ( q[i] < d.1$q.conn.next[2] )
 								{
-									# P1(x) < sup
+									# P1(x) < sup ⇒ 確率分布1 が単独で負担
 									results[i] <- ( d.1$p.conn.next[1] + pnorm( q[i], mean, d.1$sd ) ) / 2
 								}
 								else
 								{
-									# P1(x) >= sup
+									# P1(x) >= sup ⇒ 負担分布なし
 									results[i] <- ( d.1$p.conn.next[1] + d.1$p.conn.next[2] ) / 2
 								}
 							}
@@ -1360,12 +1547,12 @@ CGD$methods(
 								# P2(x) >= inf
 								if ( q[i] < d.1$q.conn.next[2] )
 								{
-									# P1(x) < sup
+									# P1(x) < sup ⇒ 確率分布1 と 2 が負担
 									results[i] <- ( pnorm( q[i], mean, d.1$sd ) + pnorm( q[i], mean, d.2$sd ) ) / 2
 								}
 								else
 								{
-									# P1(x) >= sup
+									# P1(x) >= sup ⇒ 確率分布2 が単独で負担
 									results[i] <- ( d.1$p.conn.next[2] + pnorm( q[i], mean, d.2$sd ) ) / 2
 								}
 							}
@@ -1407,6 +1594,8 @@ CGD$methods(
 #'
 #' 確率を指定して、X座標 (クォンタイル) を取得する
 #' @name	CGD_q
+#' @usage	a <- CGD$new()
+#'			a$q(prob)
 #' @param	prob					確率のベクトル
 #' @return	X座標 (クォンタイル)
 ###############################################################################
@@ -1416,7 +1605,7 @@ CGD$methods(
 	{
 		results <- numeric()
 
-		for ( i in ( 1:length( prob ) ) )
+		for ( i in 1:length( prob ) )
 		{
 			if ( prob[i] < 0 || prob[i] > 1 )
 			{
@@ -1425,18 +1614,21 @@ CGD$methods(
 				results[i] <- NaN
 				next
 			}
+			else if ( prob[i] == 0 )
+			{
+				results[i] <- -Inf
+				next
+			}
+			else if ( prob[i] == 1 )
+			{
+				results[i] <- Inf
+				next
+			}
+
 
 			if ( type1.type == 3 )
 			{
-				if ( prob[i] == 0 )
-				{
-					results[i] <- -Inf
-				}
-				else if ( prob[i] == 1 )
-				{
-					results[i] <- Inf
-				}
-				else if ( prob[i] == 0.5 )
+				if ( prob[i] == 0.5 )
 				{
 					results[i] <- mean
 				}
@@ -1454,15 +1646,7 @@ CGD$methods(
 			else if ( is.continuous() || is.symmetric() )
 			{
 				# continuous or symmetric ⇒ 累積分布関数は至る所で微分可能なので、場合分けしなくても収束する
-				if ( prob[i] == 0 )
-				{
-					results[i] <- -Inf
-				}
-				else if ( prob[i] == 1 )
-				{
-					results[i] <- Inf
-				}
-				else if ( prob[i] == 0.5 )
+				if ( prob[i] == 0.5 )
 				{
 					results[i] <- mean
 				}
@@ -1481,30 +1665,17 @@ CGD$methods(
 			}
 			else
 			{
-				# 与えられた確率に相当する点を負担する分布を探索
-				if ( prob[i] == 1 )
-				{
-					j <- length( intervals )
-				}
-				else
-				{
-					for ( j in ( 1:length( intervals ) ) )
-					{
-						if ( prob[i] >= intervals[[j]]$p.ind[1] && prob[i] < intervals[[j]]$p.conn.next[2] )
-						{
-							break
-						}
-					}
-				}
-
-				if ( prob[i] <= intervals[[j]]$p.ind[2] )
+				# 確率密度関数が非連続の場合
+				is.conn <- is.conn.p( prob[i] )
+				j <- is.conn$i.1
+				if ( !is.conn$bool )
 				{
 					# 独立区間内 ⇒ 確率をそのまま出力
 					results[i] <- qnorm( prob[i], mean, intervals[[j]]$sd )
 				}
 				else
 				{
-					# 接続区間内 ⇒ 次の区間の標準偏差による確率密度と線形に割合を決めて負担を分割
+					# 接続区間内 ⇒ 区間前後の2つの分布で確率密度を負担
 					if ( intervals[[j]]$p.conn.next[1] < 0.5 && intervals[[j]]$p.conn.next[2] > 0.5 )
 					{
 						# type 3 ⇒ prob[i] が平均値なら 0.5。また、それより大か小かで値域を絞れる
@@ -1534,7 +1705,7 @@ CGD$methods(
 						}
 						else
 						{
-							# type 2 ⇒ 収束しにくいので、場合分けが必要
+							# type 2 ⇒ 場合分けが必要
 							dm <- ( intervals[[j]]$p.conn.next[1] + intervals[[j]]$p.conn.next[2] ) / 2 - prob[i]
 							if ( dm == 0 )
 							{
@@ -1576,6 +1747,8 @@ CGD$methods(
 #'
 #' ランダムサンプルを取得する
 #' @name	CGD_r
+#' @usage	a <- CGD$new()
+#'			a$r(n)
 #' @param	n		サンプル数
 #' @return	ランダムサンプルのベクトル
 ###############################################################################
@@ -1592,6 +1765,8 @@ CGD$methods(
 #'
 #' 標準偏差を取得する
 #' @name	CGD_sd
+#' @usage	a <- CGD$new()
+#'			a$sd()
 #' @return	標準偏差
 ###############################################################################
 NULL
