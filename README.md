@@ -290,10 +290,13 @@ $$
 p = \dfrac{1}{ \sqrt{ 2 \pi \sigma^2 } } \int_{-\infty}^{q} \exp( -\dfrac{ ( x - \mu )^2 }{ 2 \sigma^2 } ) dx
 $$
 
-という式で表される。この式の右辺を $t = \dfrac{ x - \mu }{ \sigma }$ と置いて変換すると、
+で表される。この式の右辺を $t = \dfrac{ x - \mu }{ \sigma }$ と置いて変換すると、
 
 $$
-p = \dfrac{1}{ \sqrt{ 2 \pi } } \int_{-\infty}^{ \dfrac{ q - \mu }{ \sigma } } \exp( -\dfrac{ t^2 }{ 2 } ) dt = \Phi( \dfrac{ q - \mu }{ \sigma } )
+\begin{eqnarray}
+p &=& \dfrac{1}{ \sqrt{ 2 \pi } } \int_{-\infty}^{ \dfrac{ q - \mu }{ \sigma } } \exp( -\dfrac{ t^2 }{ 2 } ) dt \\
+  &=& \Phi( \dfrac{ q - \mu }{ \sigma } )
+\end{eqnarray}
 $$
 
 となる。ただし、 $\Phi( x )$ は標準正規分布 $N( 0, 1 )$ の累積分布関数である。
