@@ -333,7 +333,7 @@ $$
 (経路の条件があるものは、経路によっては、構成に失敗することがある)。
 なお、表中の式で、 $\Phi_i( x ), \Phi_{i+1}( x )$ は正規分布 $N_i,N_{i+1}$ の累積分布関数、 $f_i( x ), f_{i+1}( x )$ はそれらの分布の確率密度関数、 $\bar \Phi_i( x ) = ( \Phi_i( x ) + \Phi_{i+1}( x ) ) / 2$ 、 $\Phi^\ast_i(x)$ は正規分布 $N( \mu, ( \dfrac{ \sigma_i }{ \sqrt2 } )^2 )$ の累積分布関数 である。
 
-| オプション  | 接続関数 $\Psi_i(x)$ ・確率密度関数 $g_i(x)$ | 適用可能な経路の条件 | 独立区間 |確率密度関数の連続性 | 実装ver |
+| オプション  | 接続関数 $\Psi_i(x)$ ・確率密度関数 $g_i(x)$ | 適用可能な経路の条件 | 独立区間 | 確率密度関数の連続性 | 実装ver |
 | :--------: | :--------------------------------------- | :------: | :----: | :----------------: | :-----: |
 | type1.type = 1 | $\Psi_i( x ) = \dfrac{ \alpha_{i+1} - x }{ \alpha_{i+1} - \beta_i } \Phi_i( x ) + \dfrac{ x - \beta_i }{ \alpha_{i+1} - \beta_i } \Phi_{i+1}( x )$ <br> $g_i( x ) = \dfrac{ \alpha_{i+1} - x }{ \alpha_{i+1} - \beta_i } f_i( x ) + \dfrac{ x - \beta_i }{ \alpha_{i+1} - \beta_i } f_{i+1}( x ) + \dfrac{ \Phi_{i+1}( x ) - \Phi_i( x ) }{ \alpha_{i+1} - \beta_i }$ | なし | 任意 | 不連続 | 1.0.0 |
 | type1.type = 2  | $\Psi_i( x ) = \dfrac{ \bar \Phi_i( \alpha_{i+1} ) - \bar \Phi_i( x ) }{ \bar \Phi_i( \alpha_{i+1} ) - \bar \Phi_i( \beta_i ) } \Phi_i( x ) + \dfrac{ \bar \Phi_i( x ) - \bar \Phi_i( \beta_i ) }{ \bar \Phi_i( \alpha_{i+1} ) - \bar \Phi_i( \beta_i ) } \Phi_{i+1}( x )$ <br> $g_i( x ) = \dfrac{ \bar \Phi_i( \alpha_{i+1} ) -\Phi_i( x ) }{ \bar \Phi_i( \alpha_{i+1} ) - \bar \Phi_i( \beta_i ) } f_i( x ) + \dfrac{ \Phi_{i+1}( x ) - \bar \Phi_i( \beta_i ) }{ \bar \Phi_i( \alpha_{i+1} ) - \bar \Phi_i( \beta_i ) } f_{i+1}( x )$ | なし | 任意 | 不連続 | 1.1.0 |
