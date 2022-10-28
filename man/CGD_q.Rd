@@ -5,10 +5,12 @@
 \title{X座標 (クォンタイル) 取得}
 \usage{
 a <- CGD$new()
-a$q(prob)
+a$q(prob, tol = .Machine$double.eps * 16)
 }
 \arguments{
 \item{prob}{確率のベクトル}
+
+\item{tol}{許容誤差 (デフォルト: .Machine$double.eps * 16)}
 }
 \value{
 X座標 (クォンタイル)

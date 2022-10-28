@@ -14,7 +14,7 @@
 連結ガウス分布の確率密度関数は、一般に不連続で、いびつで、自然界には絶対に存在しなさそうな分布になります。
 連結する隙間の部分に、凄いひずみを作るからです。
 
-クォンタイルが4点以下の場合は、連続で滑らかな確率密度関数を持つ確率分布を構成することもできます。
+クォンタイルが6点以下の場合は、連続で滑らかな確率密度関数を持つ確率分布を構成することもできます。
 その場合、設定 (type1.type, continuous / symmetric) により、確率密度関数が
 
 1. 2つの確率密度関数の平均 (type1.type = 1, continuous)、
@@ -22,7 +22,7 @@
 3. 中央が鋭利に尖ったり、逆に凹んだりしている関数 (type1.type = 2, symmetric)、
 4. 縦方向 (Y軸方向) にグラデーションがかかったように変化する関数 (type1.type = 3, symmetric)
 
-となるように構成できます。
+となるように構成することも可能です。
 これらの確率密度関数は、歪んだ分布や、裾野の広い分布の解析などに使えるだろうと思います。
 
 ともかく、これはそういった分布を構成する、R言語のソースファイルです。
@@ -278,7 +278,7 @@ $$
 
 独立区間を負担する正規分布は、以下のように構成する。
 
-+ すべての正規分布の平均値は、経路で与えられた点 $( x, 0.5 )$ の $x$ の値とする。
++ 原則として、すべての正規分布の平均値は、経路で与えられた点 $( x, 0.5 )$ の $x$ の値とする (バージョン 1.3.0 で追加された、連続な確率密度関数を持つ分布には例外もある)。
 
 + 先頭の独立区間 $[0, b_1]$ に対しては、累積分布関数が経路上の点 $( \beta_1, b_1 )$ を通るような正規分布を採用し、
 それ以外の独立区間 $[a_i, b_i]$ に対しては、 累積分布関数が経路上の点 $( \alpha_i, a_i )$ を通るような正規分布を採用する (その累積分布関数は必ず点 $( \beta_i, b_i )$ も通る)。
@@ -330,20 +330,20 @@ $$
 そのため、4つの場合の中で、最も自由に接続関数を構成することできる。
 
 本ライブラリでは、各オプションに応じて、以下の表のように接続関数を構成するよう試みる
-(経路の条件があるものは、経路によっては、構成に失敗することがある)。
+(経路の通過点の個数に条件があるものは、構成に失敗することがある)。
 なお、表中の式で、 $\Phi_i( x ), \Phi_{i+1}( x )$ は正規分布 $N_i,N_{i+1}$ の累積分布関数、 $f_i( x ), f_{i+1}( x )$ はそれらの分布の確率密度関数、 $\bar \Phi_i( x ) = ( \Phi_i( x ) + \Phi_{i+1}( x ) ) / 2$ 、 $\Phi^\ast_i(x)$ は正規分布 $N( \mu, ( \dfrac{ \sigma_i }{ \sqrt2 } )^2 )$ の累積分布関数 である。
 
-| オプション  | 接続関数 $\Psi_i(x)$ ・確率密度関数 $g_i(x)$ | 適用可能な経路の条件 | 独立区間 | 確率密度関数の連続性 | 実装ver |
+| オプション  | 接続関数 $\Psi_i(x)$ ・確率密度関数 $g_i(x)$ | 適用可能な経路の通過点の個数 | 独立区間 | 確率密度関数の連続性 | 実装ver |
 | :--------: | :--------------------------------------- | :------: | :----: | :----------------: | :-----: |
-| type1.type = 1 | $\Psi_i( x ) = \dfrac{ \alpha_{i+1} - x }{ \alpha_{i+1} - \beta_i } \Phi_i( x ) + \dfrac{ x - \beta_i }{ \alpha_{i+1} - \beta_i } \Phi_{i+1}( x )$ <br> $g_i( x ) = \dfrac{ \alpha_{i+1} - x }{ \alpha_{i+1} - \beta_i } f_i( x ) + \dfrac{ x - \beta_i }{ \alpha_{i+1} - \beta_i } f_{i+1}( x ) + \dfrac{ \Phi_{i+1}( x ) - \Phi_i( x ) }{ \alpha_{i+1} - \beta_i }$ | なし | 任意 | 不連続 | 1.0.0 |
-| type1.type = 2  | $\Psi_i( x ) = \dfrac{ \bar \Phi_i( \alpha_{i+1} ) - \bar \Phi_i( x ) }{ \bar \Phi_i( \alpha_{i+1} ) - \bar \Phi_i( \beta_i ) } \Phi_i( x ) + \dfrac{ \bar \Phi_i( x ) - \bar \Phi_i( \beta_i ) }{ \bar \Phi_i( \alpha_{i+1} ) - \bar \Phi_i( \beta_i ) } \Phi_{i+1}( x )$ <br> $g_i( x ) = \dfrac{ \bar \Phi_i( \alpha_{i+1} ) -\Phi_i( x ) }{ \bar \Phi_i( \alpha_{i+1} ) - \bar \Phi_i( \beta_i ) } f_i( x ) + \dfrac{ \Phi_{i+1}( x ) - \bar \Phi_i( \beta_i ) }{ \bar \Phi_i( \alpha_{i+1} ) - \bar \Phi_i( \beta_i ) } f_{i+1}( x )$ | なし | 任意 | 不連続 | 1.1.0 |
-| type1.type = 3 | $\Psi_1( x ) = \Phi_1( x ) - \dfrac{1}{ \sqrt{2} } \Phi^\ast_1( x ) + \dfrac{1}{ \sqrt{2} } \Phi^\ast_2( x ) \quad ( x \leq \mu )$ <br> $\Psi_2( x ) = \Phi_3( x ) - \dfrac{1}{ \sqrt{2} } \Phi^\ast_3( x ) + \dfrac{1}{ \sqrt{2} } \Phi^\ast_2( x ) \quad ( x > \mu )$ <br> $g_1( x ) = ( 1 - \dfrac{ f_1( x ) }{ f_1( \mu ) } ) f_1( x ) + \dfrac{ f_2( x ) }{ f_2( \mu ) } f_2( x ) \quad ( x \leq \mu )$ <br> $g_2( x ) = ( 1 - \dfrac{ f_3( x ) }{ f_3( \mu ) } ) f_3( x ) + \dfrac{ f_2( x ) }{ f_2( \mu ) } f_2( x ) \quad ( x < \mu )$ | 経路が3～4点<br> ( $x = \mu$ の1点および、 $x \neq -\infty, \mu, \infty$ の2～3点) | $[0, 0]$, $[0.5, 0.5]$, $[1, 1]$, $[0, 0.5]$, $[0.5, 1]$, $[0, 1]$ のいずれか | 連続<br>( $C^1$ 級) | 1.2.0 |
-| type1.type = 1 <br> continuous = TRUE | $\Psi( x ) = \dfrac{1}{2} ( \Phi_1( x ) + \Phi_2( x ) )$ <br> $g( x ) = \dfrac{1}{2} ( f_1( x ) + f_2( x ) )$ | 経路が3点<br> ( $x = \mu$ の1点と $x \neq -\infty, \mu, \infty$ の2点) | $[0, 0]$, $[1, 1]$ の2点 | 連続<br>( $C^\infty$ 級) | 1.2.0 |
-| type1.type = 2 <br> continuous = TRUE <br> (横方向グラデーション) | $\Psi( x ) = \Phi_1( x ) - \dfrac{1}{2} \Phi_1( x )^2 + \dfrac{1}{2} \Phi_2( x )^2$ <br> $g( x ) = ( 1 - \Phi_1( x ) )f_1( x ) + \Phi_2( x ) f_2( x )$ | 経路が3点<br> ( $x = \mu$ の1点と $x \neq -\infty, \mu, \infty$ の2点) | $[0, 0]$, $[1, 1]$ の2点 | 連続<br>( $C^\infty$ 級) | 1.2.0 |
+| type1.type = 1 | $\Psi_i( x ) = \dfrac{ \alpha_{i+1} - x }{ \alpha_{i+1} - \beta_i } \Phi_i( x ) + \dfrac{ x - \beta_i }{ \alpha_{i+1} - \beta_i } \Phi_{i+1}( x )$ <br> $g_i( x ) = \dfrac{ \alpha_{i+1} - x }{ \alpha_{i+1} - \beta_i } f_i( x ) + \dfrac{ x - \beta_i }{ \alpha_{i+1} - \beta_i } f_{i+1}( x ) + \dfrac{ \Phi_{i+1}( x ) - \Phi_i( x ) }{ \alpha_{i+1} - \beta_i }$ | 任意 | 任意 | 不連続 | 1.0.0 |
+| type1.type = 2  | $\Psi_i( x ) = \dfrac{ \bar \Phi_i( \alpha_{i+1} ) - \bar \Phi_i( x ) }{ \bar \Phi_i( \alpha_{i+1} ) - \bar \Phi_i( \beta_i ) } \Phi_i( x ) + \dfrac{ \bar \Phi_i( x ) - \bar \Phi_i( \beta_i ) }{ \bar \Phi_i( \alpha_{i+1} ) - \bar \Phi_i( \beta_i ) } \Phi_{i+1}( x )$ <br> $g_i( x ) = \dfrac{ \bar \Phi_i( \alpha_{i+1} ) -\Phi_i( x ) }{ \bar \Phi_i( \alpha_{i+1} ) - \bar \Phi_i( \beta_i ) } f_i( x ) + \dfrac{ \Phi_{i+1}( x ) - \bar \Phi_i( \beta_i ) }{ \bar \Phi_i( \alpha_{i+1} ) - \bar \Phi_i( \beta_i ) } f_{i+1}( x )$ | 任意 | 任意 | 不連続 | 1.1.0 |
+| type1.type = 3 | $\Psi( x ) = \Psi_1( x ) + \Psi_2( x ) + \Psi_3( x )$ <br> $\qquad \Psi_1( x ) = \mathrm{ min }( \Phi_1( x ) - \dfrac{1}{ \sqrt{2} } \Phi^\ast_1( x ), \  \dfrac{2 - \sqrt{2}}{4} )$ <br> $\qquad \Psi_2( x ) = \dfrac{1}{ \sqrt{2} } \Phi^\ast_2( x )$ <br> $\qquad \Psi_3( x ) = \mathrm{ max }( 0, \  \Phi_3( x ) - \dfrac{1}{ \sqrt{2} } \Phi^\ast_3( x ) - \dfrac{2 - \sqrt{2}}{4} )$ <br> $g( x ) = g_1( x ) + g_2( x ) + g_3( x )$ <br> $\qquad g_1( x ) = ( 1 - \dfrac{ f_1( x ) }{ f_1( \mu_1 ) } ) f_1( x ) \ \  ( x \leq \mu_1 ), \quad 0 \ \  ( x > \mu_1 )$ <br> $\qquad g_2( x ) = \dfrac{ f_2( x ) }{ f_2( \mu_2 ) } f_2( x )$ <br> $\qquad g_3( x ) = 0 \ \  ( x \leq \mu_3 ), \quad ( 1 - \dfrac{ f_3( x ) }{ f_3( \mu_3 ) } ) f_3( x ) \ \  ( x > \mu_3 )$ | $( \mu, 0.5 )$ を含む3～5点<br>または $( \mu, 0.5 )$ を含まない6点 | $[0, 0]$, $[0.5, 0.5]$, $[1, 1]$, $[0, 0.5]$, $[0.5, 1]$, $[0, 1]$ のいずれか | 連続<br>( $C^1$ 級) | 1.3.0 |
+| type1.type = 1 <br> continuous = TRUE | $\Psi( x ) = \dfrac{1}{2} ( \Phi_1( x ) + \Phi_2( x ) )$ <br> $g( x ) = \dfrac{1}{2} ( f_1( x ) + f_2( x ) )$ | $( \mu, 0.5 )$ を含む3点 | $[0, 0]$, $[1, 1]$ の2点 | 連続<br>( $C^\infty$ 級) | 1.2.0 |
+| type1.type = 2 <br> continuous = TRUE <br> (横方向グラデーション) | $\Psi( x ) = \Phi_1( x ) - \dfrac{1}{2} \Phi_1( x )^2 + \dfrac{1}{2} \Phi_2( x )^2$ <br> $g( x ) = ( 1 - \Phi_1( x ) )f_1( x ) + \Phi_2( x ) f_2( x )$ | $( \mu, 0.5 )$ を含む3点<br>または $( \mu, 0.5 )$ を含まない4点 | $[0, 0]$, $[1, 1]$ の2点 | 連続<br>( $C^\infty$ 級) | 1.3.0 |
 | type1.type = 3 <br> continuous = TRUE | 無効 (type1.type = 3 のデフォルトと同じ) | - | - | - | 1.2.0 |
-| type1.type = 1 <br> symmetric = TRUE | $\Psi( x ) = \dfrac{1}{2} ( \Phi_1( x ) + \Phi_2( x ) )$ <br> $g( x ) = \dfrac{1}{2} ( f_1( x ) + f_2( x ) )$ | 経路が3点<br> ( $x = \mu$ の1点と $x \neq -\infty, \mu, \infty$ の2点) | $[0, 0]$, $[1, 1]$ の2点 | 連続<br>( $C^\infty$ 級) | 1.2.0 |
-| type1.type = 2 <br> symmetric = TRUE | $\Psi_1( x ) = \Phi_1( x ) - \Phi_1( x )^2 + \Phi_2( x )^2 \qquad \qquad ( x \leq \mu )$ <br> $\Psi_2( x ) = 1 - \Psi_1( 2\mu - x ) \qquad \qquad \qquad \qquad \  ( x > \mu )$ <br> $g_1( x ) = ( 1 - 2\Phi_1( x ) ) f_1( x ) + 2\Phi_2( x ) f_2( x ) \quad ( x \leq \mu )$ <br> $g_2( x ) = g_1( 2\mu - x ) \qquad \qquad \qquad \qquad \qquad \  \  \  ( x > \mu )$ | 経路が3点<br> ( $x = \mu$ の1点と $x \neq -\infty, \mu, \infty$ の2点) | $[0, 0]$, $[0.5, 0.5]$, $[1, 1]$ の3点 | 連続 | 1.2.0 |
-| type1.type = 3 <br> symmetric = TRUE <br> (縦方向グラデーション) |  $\Psi( x ) = \Phi_1( x ) - \dfrac{1}{ \sqrt{2} } \Phi^\ast_1( x ) + \dfrac{1}{ \sqrt{2} } \Phi^\ast_2( x )$ <br> $g( x ) = ( 1 - \dfrac{ f_1( x ) }{ f_1( \mu ) } ) f_1( x ) + \dfrac{ f_2( x ) }{ f_2( \mu ) } f_2( x )$ | 経路が3点<br> ( $x = \mu$ の1点と $x \neq -\infty, \mu, \infty$ の2点) | $[0, 0]$, $[0.5, 0.5]$, $[1, 1]$ の3点 | 連続<br>( $C^\infty$ 級) | 1.2.0 |
+| type1.type = 1 <br> symmetric = TRUE | $\Psi( x ) = \dfrac{1}{2} ( \Phi_1( x ) + \Phi_2( x ) )$ <br> $g( x ) = \dfrac{1}{2} ( f_1( x ) + f_2( x ) )$ | $( \mu, 0.5 )$ を含む3点 | $[0, 0]$, $[1, 1]$ の2点 | 連続<br>( $C^\infty$ 級) | 1.2.0 |
+| type1.type = 2 <br> symmetric = TRUE | $\Psi_1( x ) = \Phi_1( x ) - \Phi_1( x )^2 + \Phi_2( x )^2 \qquad \qquad ( x \leq \mu )$ <br> $\Psi_2( x ) = 1 - \Psi_1( 2\mu - x ) \qquad \qquad \qquad \qquad \  ( x > \mu )$ <br> $g_1( x ) = ( 1 - 2\Phi_1( x ) ) f_1( x ) + 2\Phi_2( x ) f_2( x ) \quad ( x \leq \mu )$ <br> $g_2( x ) = g_1( 2\mu - x ) \qquad \qquad \qquad \qquad \qquad \  \  \  ( x > \mu )$ | $( \mu, 0.5 )$ を含む3点 | $[0, 0]$, $[0.5, 0.5]$, $[1, 1]$ の3点 | 連続 | 1.2.0 |
+| type1.type = 3 <br> symmetric = TRUE <br> (縦方向グラデーション) |  $\Psi( x ) = \Phi_1( x ) - \dfrac{1}{ \sqrt{2} } \Phi^\ast_1( x ) + \dfrac{1}{ \sqrt{2} } \Phi^\ast_2( x )$ <br> $g( x ) = ( 1 - \dfrac{ f_1( x ) }{ f_1( \mu ) } ) f_1( x ) + \dfrac{ f_2( x ) }{ f_2( \mu ) } f_2( x )$ | $( \mu, 0.5 )$ を含む3点 | $[0, 0]$, $[0.5, 0.5]$, $[1, 1]$ の3点 | 連続<br>( $C^\infty$ 級) | 1.2.0 |
 
 #### Type 2 - 接続区間 $Q_i = ( b_i, a_{i + 1} )$ が平均値 $\mu$ を含まない場合 その2
 + 接続区間 $Q_i$ の範囲が平均値 $\mu$ よりも小さく、標準偏差が $\sigma_i \geq \sigma_{i + 1}$ の場合

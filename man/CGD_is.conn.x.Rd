@@ -12,9 +12,9 @@ a$is.conn.x(x)
 }
 \value{
 第1要素 (bool) に、接続区間に入っていれば TRUE、入っていなければ FALSE、
-        第2要素 (i.1) に、前の intervals のインデックス
-         (bool = FALSE の場合は 独立区間の intervals のインデックス)、
-        第3要素 (i.2) に、後の intervals のインデックス (i.1 + 1, bool = FALSE の場合は NaN) が入ったリスト
+第2要素 (i.1) に、前の intervals のインデックス
+ (bool = FALSE の場合は 独立区間の intervals のインデックス)、
+第3要素 (i.2) に、後の intervals のインデックス (i.1 + 1, bool = FALSE の場合は NaN) が入ったリスト
 }
 \description{
 指定されたX座標 (クォンタイル) が接続区間に入っているかどうかを調べる

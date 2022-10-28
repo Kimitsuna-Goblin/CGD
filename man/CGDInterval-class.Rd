@@ -6,11 +6,13 @@
 \alias{CGDInterval}
 \title{連結ガウス分布区間クラス}
 \description{
-連結ガウス分布で使用する区間を表すクラス
+連結ガウス分布クラス (\link[cgd]{CGD-class}) で使用する区間を表すクラス
 }
 \section{Fields}{
 
 \describe{
+\item{\code{mean}}{平均値}
+
 \item{\code{sd}}{標準偏差}
 
 \item{\code{q.ind}}{独立区間におけるX座標 (クォンタイル)}

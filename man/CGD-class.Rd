@@ -17,18 +17,19 @@
 連結ガウス分布を使って滑らかなグラフを得るには、
 ランダムサンプルを取得して、そのヒストグラムを描画するとよい。
 
-クォンタイルが4点以下 (確率50％の点が1点、それ以外の点が3点以下) の場合は、
+クォンタイルが6点以下の場合は、
+type1.type の設定を適切に与えることにより、
 クォンタイルの位置が過度にいびつでなければ、連続で滑らかな確率密度関数を持つ
-確率分布を構成することができる。
+確率分布を構成することも可能である。
 }
 \section{Fields}{
 
 \describe{
 \item{\code{mean}}{平均値}
 
-\item{\code{intervals}}{連結区間 (CGDInterval クラスのリスト)}
+\item{\code{intervals}}{連結区間 (\link[cgd]{CGDInterval-class} クラスのリスト)}
 
-\item{\code{type1.type}}{接続区間が type 1 の場合の計算方法 (詳細は [set.waypoints()] を参照)}
+\item{\code{type1.type}}{接続区間が type 1 の場合の計算方法 (詳細は \link[cgd]{CGD$set.waypoints} を参照)}
 
 \item{\code{m.sd}}{計算済みの標準偏差 (クラス外からは直接参照しないこと)}
 }}

@@ -5,10 +5,12 @@
 \title{ランダムサンプル取得}
 \usage{
 a <- CGD$new()
-a$r(n)
+a$r(n, tol = 2^(-17))
 }
 \arguments{
 \item{n}{サンプル数}
+
+\item{tol}{q() に許容する誤差 (デフォルト: 2^(-17))}
 }
 \value{
 ランダムサンプルのベクトル

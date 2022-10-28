@@ -12,7 +12,7 @@ a$is.ind.x(x)
 }
 \value{
 第1要素 (bool) に、独立区間に入っていれば TRUE、入っていなければ FALSE、
-        第2要素 (i) に、当該 intervals のインデックス (bool = FALSE の場合は NaN) が入ったリスト
+第2要素 (i) に、当該 intervals のインデックス (bool = FALSE の場合は NaN) が入ったリスト
 }
 \description{
 指定されたX座標 (クォンタイル) が独立区間に入っているかどうかを調べる

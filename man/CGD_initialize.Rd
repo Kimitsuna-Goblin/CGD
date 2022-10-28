@@ -15,7 +15,7 @@ a <- CGD$new(mean = NULL, intervals = NULL, type1.type = 1)
 }
 \description{
 コンストラクタの引数は予め連結区間の構成が分かっている場合に指定する。
-詳細については、 set.waypoints() を参照。
+詳細については、 \link[cgd]{CGD$set.waypoints} を参照。
 }
 \seealso{
 \link[cgd]{CGDInterval-class}
