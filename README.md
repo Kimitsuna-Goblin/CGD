@@ -330,10 +330,11 @@ $$
 そのため、4つの場合の中で、最も自由に接続関数を構成することできる。
 
 本ライブラリでは、各オプションに応じて、以下の表のように接続関数を構成するよう試みる
-(経路の通過点の個数に条件があるものは、構成に失敗することがある)。
+(経路の点の個数に条件があるものは、構成に失敗することがある)。
 なお、表中の式で、 $\Phi_i( x ), \Phi_{i+1}( x )$ は正規分布 $N_i,N_{i+1}$ の累積分布関数、 $f_i( x ), f_{i+1}( x )$ はそれらの分布の確率密度関数、 $\bar \Phi_i( x ) = ( \Phi_i( x ) + \Phi_{i+1}( x ) ) / 2$ 、 $\Phi^\ast_i(x)$ は正規分布 $N( \mu, ( \dfrac{ \sigma_i }{ \sqrt2 } )^2 )$ の累積分布関数 である。
+添字のない $\mu$ はその分布の平均値を表し、添字のある $\mu_i$ は連結ガウス分布の構成要素の正規分布 $N_i( \mu_i, \sigma_i )$ の平均値を表す。原則として、 $\mu_i = \mu$ であるが、 type1.type = 3 で経路の点が5点以上の場合および、経路の点に $( \mu, 0.5 )$ を含まない場合は、一般に $\mu_i \neq \mu$ である。
 
-| オプション  | 接続関数 $\Psi_i(x)$ ・確率密度関数 $g_i(x)$ | 適用可能な経路の通過点の個数 | 独立区間 | 確率密度関数の連続性 | 実装ver |
+| オプション  | 接続関数 $\Psi_i(x)$ ・確率密度関数 $g_i(x)$ | 適用可能な経路の点の個数 | 独立区間 | 確率密度関数の連続性 | 実装ver |
 | :--------: | :--------------------------------------- | :------: | :----: | :----------------: | :-----: |
 | type1.type = 1 | $\Psi_i( x ) = \dfrac{ \alpha_{i+1} - x }{ \alpha_{i+1} - \beta_i } \Phi_i( x ) + \dfrac{ x - \beta_i }{ \alpha_{i+1} - \beta_i } \Phi_{i+1}( x )$ <br> $g_i( x ) = \dfrac{ \alpha_{i+1} - x }{ \alpha_{i+1} - \beta_i } f_i( x ) + \dfrac{ x - \beta_i }{ \alpha_{i+1} - \beta_i } f_{i+1}( x ) + \dfrac{ \Phi_{i+1}( x ) - \Phi_i( x ) }{ \alpha_{i+1} - \beta_i }$ | 任意 | 任意 | 不連続 | 1.0.0 |
 | type1.type = 2  | $\Psi_i( x ) = \dfrac{ \bar \Phi_i( \alpha_{i+1} ) - \bar \Phi_i( x ) }{ \bar \Phi_i( \alpha_{i+1} ) - \bar \Phi_i( \beta_i ) } \Phi_i( x ) + \dfrac{ \bar \Phi_i( x ) - \bar \Phi_i( \beta_i ) }{ \bar \Phi_i( \alpha_{i+1} ) - \bar \Phi_i( \beta_i ) } \Phi_{i+1}( x )$ <br> $g_i( x ) = \dfrac{ \bar \Phi_i( \alpha_{i+1} ) -\Phi_i( x ) }{ \bar \Phi_i( \alpha_{i+1} ) - \bar \Phi_i( \beta_i ) } f_i( x ) + \dfrac{ \Phi_{i+1}( x ) - \bar \Phi_i( \beta_i ) }{ \bar \Phi_i( \alpha_{i+1} ) - \bar \Phi_i( \beta_i ) } f_{i+1}( x )$ | 任意 | 任意 | 不連続 | 1.1.0 |
