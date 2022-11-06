@@ -11,7 +11,7 @@ a$is.ind.p(p)
 \item{p}{確率のベクトル}
 }
 \value{
-第1要素 (bool) に、独立区間に入っていれば TRUE、入っていなければ FALSE、
+第1要素 (bool) に、独立区間に入っていれば TRUE、入っていなければ FALSE。
 第2要素 (i) に、当該 intervals のインデックス (bool = FALSE の場合は NaN) が入ったリスト
 }
 \description{

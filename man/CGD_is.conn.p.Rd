@@ -11,9 +11,11 @@ a$is.conn.p(p)
 \item{p}{確率のベクトル}
 }
 \value{
-第1要素 (bool) に、接続区間に入っていれば TRUE、入っていなければ FALSE、
+第1要素 (bool) に、接続区間に入っていれば TRUE、入っていなければ FALSE
+ (type1.type = 3 では、2番目の独立区間が接続区間と互いに重なることがあるが、
+  指定された確率が独立区間と接続区間の両方に入っているときは、 FALSE を返す)。
 第2要素 (i.1) に、前の intervals のインデックス
- (bool = FALSE の場合は 独立区間の intervals のインデックス)、
+ (bool = FALSE の場合は 独立区間の intervals のインデックス)。
 第3要素 (i.2) に、後の intervals のインデックス (i.1 + 1, bool = FALSE の場合は NaN) が入ったリスト
 }
 \description{

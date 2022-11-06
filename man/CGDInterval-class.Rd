@@ -15,17 +15,17 @@
 
 \item{\code{sd}}{標準偏差}
 
-\item{\code{q.ind}}{独立区間におけるX座標 (クォンタイル)}
+\item{\code{q.ind}}{独立区間に対するX座標 (クォンタイル)}
 
 \item{\code{q.conn.prev}}{前の区間との接続区間の確率内に収まる、この標準偏差のX座標 (クォンタイル)}
 
 \item{\code{q.conn.next}}{次の区間との接続区間の確率内に収まる、この標準偏差のX座標 (クォンタイル)}
 
-\item{\code{p.ind}}{独立区間における確率}
+\item{\code{p.ind}}{独立区間}
 
-\item{\code{p.conn.prev}}{前の区間との接続区間の確率}
+\item{\code{p.conn.prev}}{前の区間との接続区間}
 
-\item{\code{p.conn.next}}{次の区間との接続区間の確率}
+\item{\code{p.conn.next}}{次の区間との接続区間}
 }}
 
 

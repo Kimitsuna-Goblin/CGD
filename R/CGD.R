@@ -1,7 +1,7 @@
 ##############################################################################
 # 連結ガウス分布 (Connected Gaussian Distribution) クラス
 # @file			CGD.R
-# @version		1.3.1
+# @version		1.3.5
 # @author		Kimitsuna-Goblin
 # @copyright	Copyright (C) 2022 Ura Kimitsuna
 # @license		Released under the MIT license.
@@ -21,9 +21,9 @@ f.t3.d <- list( function( x, m, s ) { ( 1 - dnorm( x, m, s ) * sqrt.2pi * s ) * 
 				function( x, m, s ) { dnorm( x, m, s )^2 * sqrt.2pi * s },
 				0 )
 # type1.type=3・累積分布用関数ハンドル
-f.t3.p <- list( function( x, m, s ) { pnorm( x, m, s ) - pnorm( x, m, s / sqrt( 2 ) ) / sqrt( 2 ) },
-				function( x, m, s ) { pnorm( x, m, s / sqrt( 2 ) ) / sqrt( 2 ) },
-				0.5 - 0.5 / sqrt( 2 ) )
+f.t3.p <- list( function( x, m, s ) { pnorm( x, m, s ) - pnorm( x, m, s * sqrt( 2 ) / 2 ) * sqrt( 2 ) / 2 },
+				function( x, m, s ) { pnorm( x, m, s * sqrt( 2 ) / 2 ) * sqrt( 2 ) / 2 },
+				( ( 2 - sqrt( 2 ) ) / 4 ) )
 
 ###############################################################################
 #  クラス・関数
@@ -70,7 +70,7 @@ bisection <- function( f, interval, tol = .Machine$double.eps * 16 )
 
 	if ( ans.1 * ans.2 > 0 )
 	{
-		stop( "f() values at end points not of opposite sign" )
+		stop( "Error: f() values at end points not of opposite sign." )
 	}
 
 	if ( ans.1 > 0 )
@@ -110,12 +110,12 @@ bisection.sub <- function( f, interval, tol )
 #' @exportClass	CGDInterval
 #' @field	mean			平均値
 #' @field	sd				標準偏差
-#' @field	q.ind			独立区間におけるX座標 (クォンタイル)
+#' @field	q.ind			独立区間に対するX座標 (クォンタイル)
 #' @field	q.conn.prev		前の区間との接続区間の確率内に収まる、この標準偏差のX座標 (クォンタイル)
 #' @field	q.conn.next		次の区間との接続区間の確率内に収まる、この標準偏差のX座標 (クォンタイル)
-#' @field	p.ind			独立区間における確率
-#' @field	p.conn.prev		前の区間との接続区間の確率
-#' @field	p.conn.next		次の区間との接続区間の確率
+#' @field	p.ind			独立区間
+#' @field	p.conn.prev		前の区間との接続区間
+#' @field	p.conn.next		次の区間との接続区間
 #' @seealso	[CGD-class]
 ###############################################################################
 CGDInterval <- setRefClass(
@@ -127,12 +127,12 @@ CGDInterval <- setRefClass(
 	fields = list(
 		mean = "numeric",			# 平均値
 		sd = "numeric",				# 標準偏差
-		q.ind = "vector",			# 独立区間におけるX座標 (クォンタイル)
+		q.ind = "vector",			# 独立区間に対するX座標 (クォンタイル)
 		q.conn.prev = "vector",		# 前の区間との接続区間の確率内に収まる、この標準偏差のX座標 (クォンタイル)
 		q.conn.next = "vector",		# 次の区間との接続区間の確率内に収まる、この標準偏差のX座標 (クォンタイル)
-		p.ind = "vector",			# 独立区間における確率
-		p.conn.prev = "vector",		# 前の区間との接続区間の確率
-		p.conn.next = "vector"		# 次の区間との接続区間の確率
+		p.ind = "vector",			# 独立区間
+		p.conn.prev = "vector",		# 前の区間との接続区間
+		p.conn.next = "vector"		# 次の区間との接続区間
 	)
 )
 
@@ -140,7 +140,7 @@ CGDInterval <- setRefClass(
 ###############################################################################
 #' 負担区間取得
 #'
-#' 負担区間 (前の区間との接続区間～次の区間との接続区間) のX座標 (クォンタイル) を取得する
+#' 負担区間 (前の区間との接続区間～次の区間との接続区間) に対するX座標 (クォンタイル) を取得する
 #' @name CGDInterval_q.manage
 #' @usage	a <- CGD$new()
 #'			a$intervals[[1]]$q.manage()
@@ -164,13 +164,13 @@ CGDInterval$methods(
 #' それを高精度に再現する分布が欲しいときなどに使うことができる。
 #' ただし、確率密度関数は一般に不連続であり、歪んだ形になる。
 #'
-#' 連結ガウス分布を使って滑らかなグラフを得るには、
-#' ランダムサンプルを取得して、そのヒストグラムを描画するとよい。
-#'
 #' クォンタイルが6点以下の場合は、
 #' type1.type の設定を適切に与えることにより、
-#' クォンタイルの位置が過度にいびつでなければ、連続で滑らかな確率密度関数を持つ
-#' 確率分布を構成することも可能である。
+#' クォンタイルの位置が過度にいびつでなければ、
+#' 確率密度関数が連続で滑らかな分布を構成することも可能である。
+#'
+#' 確率密度関数が不連続な連結ガウス分布を使って滑らかなグラフを得るには、
+#' ランダムサンプルを取得して、そのヒストグラムを描画するとよい。
 #' @export		CGD
 #' @exportClass	CGD
 #' @field	mean			平均値
@@ -251,50 +251,6 @@ CGD$methods(
 )
 
 ###############################################################################
-# type1.type=3 の確率密度関数または累積分布関数の値を得る
-# @param	x			X座標 (クォンタイル)
-# @param	means		平均値のベクトル
-# @param	sds			標準偏差のベクトル
-# @param	f.t3		確率密度 / 累積分布用関数ハンドル ( f.t3.d / f.t3.p )
-# @return	確率密度関数または累積分布関数の値
-###############################################################################
-dp.t3 <- function( x, means, sds, f.t3 )
-{
-	result <- f.t3[[2]]( x, means[2], sds[2] )
-
-	if ( x < means[1] )
-	{
-		result <- result + f.t3[[1]]( x, means[1], sds[1] )
-	}
-	else
-	{
-		result <- result + f.t3[[3]]
-	}
-
-	if ( x > means[3] )
-	{
-		result <- result + f.t3[[1]]( x, means[3], sds[3] ) - f.t3[[3]]
-	}
-
-	return ( result )
-}
-
-###############################################################################
-# type1.type=3, 経路5点 の場合の、中央 (2個目) の確率分布の標準偏差を計算する
-# @param	mean2		中央の確率分布の平均値
-# @param	wp2			経路の2点目のX座標 (クォンタイル)
-# @param	wp3			経路の4点目 (平均値を除けば3点目) のX座標 (クォンタイル)
-# @return	中央の確率分布の標準偏差
-###############################################################################
-t3.wp5.mid.sd <- function( mean2, wp2, wp3 )
-{
-	sd1 <- sd.mqp.norm( mean2, wp2$q, wp2$p )
-	sd2 <- sd.mqp.norm( mean2, wp3$q, wp3$p )
-
-	return ( ( sd1 * abs( mean2 - wp3$p ) + sd2 * abs( mean2 - wp2$p ) ) / ( abs( mean2 - wp2$p ) + abs( mean2 - wp3$p ) ) )
-}
-
-###############################################################################
 #' 経路設定
 #'
 #' 累積分布関数の経路 (クォンタイル) を設定する
@@ -307,24 +263,22 @@ t3.wp5.mid.sd <- function( mean2, wp2, wp3 )
 #'								 (type1.type = 2 で continuous = TRUE、または、type1.type = 3 の場合を除き、p = 0.5 の点は必須)
 #' @param	continuous			独立区間を [0, 0] と [1, 1] の2点にして、
 #'								確率密度関数が全区間 (-∞, ∞) で連続になるように分布構成を試みる。
-#'								type1.type = 1, 2 で有効 (デフォルト: FALSE)
+#'								type1.type = 1, 2 で有効 (type1.type >= 3 では常に連続) (デフォルト: FALSE)
 #' @param	symmetric			独立区間を [0, 0], [0.5, 0.5], [1, 1] の3点にして、
 #'								1番目と3番目の確率分布を同一にすることにより、
 #'								確率密度関数が全区間 (-∞, ∞) で連続で、かつ左右対称になるように試みる。
 #'								type1.type = 1, 2, 3 で有効 (デフォルト: FALSE)
 #' @param	uni.sigma			type1.type = 2、continuous = TRUE で、かつ、経路の構成点が3点の場合に、
 #'								2つの確率密度関数 f_1(x) と f_2(x) の標準偏差を同じ値に揃えるかどうかのフラグ。
-#'								この値が TRUE のとき、 f_1(x) と f_2(x) の平均値は等しくならないが、
-#'								得られる連結ガウス分布は、より実際のデータの分布モデルに近くなるかも知れない (デフォルト: FALSE)
+#'								このフラグが TRUE のときは、通常、 f_1(x) と f_2(x) の平均値は等しくならない (デフォルト: FALSE)
+#' @param	this.type1.type		フィールドの type1.type に設定する値 (1、2、3 のいずれかを指定すること)。
+#'								NULL の場合は type1.type の値を変更しない (デフォルト: NULL)
 #'
-#' @param	this.type1.type		フィールドの type1.type に設定する値 (1、2、3 のいずれかを指定すること) (デフォルト: NULL)
-#'								NULL の場合は type1.type の値を変更しない
+#'				type1.type = 1 は最も単純な連結である。 continuous = TRUE にすると、2つの正規分布の平均が構成可能である。
 #'
-#'				type1.type = 1 は、最も単純な連結である。2つの正規分布の平均が構成可能である。
+#'				type1.type = 2 は continuous = TRUE にすると、2つの確率密度関数の横方向グラデーションが構成可能である。
 #'
-#'				type1.type = 2 は、2つの確率密度関数の横方向グラデーションが構成可能である。
-#'
-#'				type1.type = 3 は、2つの確率密度関数の縦方向グラデーションが構成可能である。
+#'				type1.type = 3 は symmetric = TRUE にすると、2つの確率密度関数の縦方向グラデーションが構成可能である。
 #'
 #'				type1.type の値によって、接続区間 (β_i, α_{i+1}) が type 1 の場合、
 #'				接続区間の累積分布関数 Ψ_i(x) を以下のように計算する。
@@ -336,22 +290,21 @@ t3.wp5.mid.sd <- function( mean2, wp2, wp3 )
 #'							 ( Φ~_i(x) - Φ~_i(β_i) ) / ( Φ~_i(α_{i+1}) - Φ~_i(β_i) ) * Φ_{i+1}(x)
 #'
 #'				3: Ψ(x) = ∫_{-∞}^{min( x, μ_1 )} ( 1 - f_1(t) / f_1(μ_1) ) f_1(t) dt
-#'							+ ∫_{-∞}^x f_2(t)^2 / f_2(μ) } dt
-#'							+ ∫_{min( x, μ_3 )}^{x} ( 1 - f_3(t) / f_3(μ_3) ) f_(t) dt
+#'							+ ∫_{-∞}^x f_2(t)^2 / f_2(μ) dt
+#'							+ ∫_{min( x, μ_3 )}^x ( 1 - f_3(t) / f_3(μ_3) ) f_3(t) dt
 #'						 = min( Φ_1(x) - Φ^*_1(x) / √2, ( 2 - √2 ) / 4 )
 #'							+ Φ^*_2(x) / √2
 #'							+ max( 0, Φ_3(x) - Φ^*_3(x) / √2 - ( 2 - √2 ) / 4 )
 #'
-#'				ただし、Φ_i, Φ_{i+1} は接続区間の前後の独立区間における累積分布関数。
+#'				ただし、Φ_i, Φ_{i+1} は当該接続区間の前後の独立区間を負担する正規分布の累積分布関数。
 #'				Φ~_i(x) = ( Φ_i(x) + Φ_{i+1}(x) ) / 2。
-#'				f_i, f_{i+1} は接続区間の前後の独立区間における確率密度関数。μ は平均値。
-#'				Φ^*_i は正規分布 N(μ, (σ_i / √2)^2 ) の累積分布関数。
+#'				f_i, f_{i+1} は当該接続区間の前後の独立区間を負担する正規分布の確率密度関数。μ は平均値。
+#'				Φ^*_i は正規分布 N(μ_i, (σ_i / √2)^2) の累積分布関数。
 #'
 #'				type1.type = 1 では、
 #'				set.waypoints() の引数で continuous または symmetric を TRUE にした場合 (2つの正規分布の平均)、
 #'				独立区間は [0, 0], [1, 1] の2点になり、
-#'				接続区間の累積分布関数は Ψ(x) = ( Φ_i(x) + Φ_{i+1}(x) ) / 2 となる
-#'				 (この場合、独立区間を [0, 0], [0.5, 0.5], [1, 1] の3点と見做してもよい)。
+#'				接続区間の累積分布関数は Ψ(x) = ( Φ_i(x) + Φ_{i+1}(x) ) / 2 となる。
 #'
 #'				type1.type = 2 では、
 #'				set.waypoints() の引数で continuous を TRUE にした場合 (横方向グラデーション)、
@@ -369,10 +322,6 @@ t3.wp5.mid.sd <- function( mean2, wp2, wp3 )
 #'				独立区間は [0, 0], [0.5, 0.5], [1, 1] の3点になり、
 #'				接続区間 (0, 0.5), (0.5, 1) の累積分布関数はどちらも同じ、上の 3 の式になる。
 #'
-#'				type1.type = 2 と type1.type = 3 で symmetric を TRUE にした場合、
-#'				[0, 0] と [1, 1] の2点が1つめの正規分布 N_1 の独立区間、
-#'				[0.5, 0.5] が2つめの正規分布 N_2 の独立区間となる。
-#'
 #'				continuous = TRUE or symmetric = TRUE or type1.type = 3 の場合、経路の構成点は一定の個数でなければならない。
 #'				具体的には、構成点の個数は以下のようにする必要がある (個数に (*) が付いているものは、確率 0.5 の点が必須)。
 #'
@@ -381,12 +330,12 @@ t3.wp5.mid.sd <- function( mean2, wp2, wp3 )
 #'
 #'				・symmetric = TRUE :	type1.type = 1 or 2 ⇒ 3点(*)
 #'
-#'				・type1.type = 3 :		symmetric = FALSE ⇒ 3点(*) or 4点(*) or 5点(*) or 6点、
+#'				・type1.type = 3 :		symmetric = FALSE ⇒ 3点(*) or 4点 or 5点(*) or 6点、
 #'										symmetric = TRUE ⇒ 3点(*)
 #'
-#'				個数に (*) が付いていないものは、構成点の半数が確率 0.5 未満、半数が 0.5 超でなければならない。
-#'
-#' @return	nleqslv() を内部で実行した場合はその結果、それ以外は NULL
+#'				個数に (*) が付いていないものは、構成点の半数が確率 0.5 未満、半数が 0.5 超であることが望ましい。
+#'				ただし、type1.type = 3 で 4点経路の場合は、構成点がどちらか一方に偏っていてもよい。
+#' @return	nleqslv() を内部で実行した場合はその結果。それ以外は NULL
 #' @importFrom	nleqslv		nleqslv
 #' @seealso	\href{https://github.com/Kimitsuna-Goblin/CGD}{README.md} (GitHub)
 ###############################################################################
@@ -451,7 +400,7 @@ CGD$methods(
 					# X座標が確率に対して昇順に並んでいなければエラー
 					if ( wp[j - 1,]$q >= wp[j,]$q )
 					{
-						stop( "Error: order of q is not along with that of p" )
+						stop( "Error: order of q is not along with that of p." )
 					}
 				}
 
@@ -460,7 +409,8 @@ CGD$methods(
 		}
 		if ( !is.set.mean )
 		{
-			if ( ( type1.type == 2 && continuous && nrow( wp ) == 4 ) || ( type1.type == 3 && !symmetric && nrow( wp ) == 6 ) )
+			if ( ( type1.type == 2 && continuous && nrow( wp ) == 4 ) ||
+					( type1.type == 3 && !symmetric && ( nrow( wp ) == 4 || nrow( wp ) == 6 ) ) )
 			{
 				if ( wp$p[nrow( wp ) / 2] > 0.5 || wp$p[nrow( wp ) / 2 + 1] < 0.5 )
 				{
@@ -490,7 +440,7 @@ CGD$methods(
 		}
 
 		if ( type1.type == 3 && !( ( nrow( wp ) > 1 && nrow( wp ) < 5 && is.set.mean ) ||
-									( nrow( wp ) == 6 && !is.set.mean ) ) )
+									( ( nrow( wp ) == 4 || nrow( wp ) == 6 ) && !is.set.mean ) ) )
 		{
 			stop( "Error: illegal waypoints for type1.type == 3." )
 		}
@@ -521,12 +471,12 @@ CGD$methods(
 				intervals <<- list( CGDInterval$new(
 										mean = mean,
 										sd = result$x[1]^2,
-										q.ind = c( -Inf, -Inf ), q.conn.prev = c( -Inf, -Inf ), q.conn.next= c( 0, Inf ),
+										q.ind = c( -Inf, -Inf ), q.conn.prev = c( -Inf, -Inf ), q.conn.next = c( -Inf, Inf ),
 										p.ind = c( 0, 0 ), p.conn.prev = c( 0, 0 ), p.conn.next = c( 0, 1 ) ),
 									CGDInterval$new(
 										mean = mean,
 										sd = result$x[2]^2,
-										q.ind = c( Inf, Inf ), q.conn.prev = c( 0, Inf ), q.conn.next= c( Inf, Inf ),
+										q.ind = c( Inf, Inf ), q.conn.prev = c( -Inf, Inf ), q.conn.next = c( Inf, Inf ),
 										p.ind = c( 1, 1 ), p.conn.prev = c( 0, 1 ), p.conn.next = c( 1, 1 ) ) )
 			}
 			else
@@ -565,14 +515,14 @@ CGD$methods(
 												mean = mean - result$x[1],
 												sd = result$x[2]^2,
 												q.ind = c( -Inf, -Inf ),
-												q.conn.prev = c( -Inf, -Inf ), q.conn.next= c( 0, Inf ),
+												q.conn.prev = c( -Inf, -Inf ), q.conn.next = c( -Inf, Inf ),
 												p.ind = c( 0, 0 ),
 												p.conn.prev = c( 0, 0 ), p.conn.next = c( 0, 1 ) ),
 											CGDInterval$new(
 												mean = mean + result$x[1],
 												sd = result$x[2]^2,
 												q.ind = c( Inf, Inf ),
-												q.conn.prev = c( 0, Inf ), q.conn.next= c( Inf, Inf ),
+												q.conn.prev = c( -Inf, Inf ), q.conn.next = c( Inf, Inf ),
 												p.ind = c( 1, 1 ),
 												p.conn.prev = c( 0, 1 ), p.conn.next = c( 1, 1 ) ) )
 					}
@@ -603,14 +553,14 @@ CGD$methods(
 												mean = mean,
 												sd = result$x[1]^2,
 												q.ind = c( -Inf, -Inf ),
-												q.conn.prev = c( -Inf, -Inf ), q.conn.next= c( 0, Inf ),
+												q.conn.prev = c( -Inf, -Inf ), q.conn.next = c( -Inf, Inf ),
 												p.ind = c( 0, 0 ),
 												p.conn.prev = c( 0, 0 ), p.conn.next = c( 0, 1 ) ),
 											CGDInterval$new(
 												mean = mean,
 												sd = result$x[2]^2,
 												q.ind = c( Inf, Inf ),
-												q.conn.prev = c( 0, Inf ), q.conn.next= c( Inf, Inf ),
+												q.conn.prev = c( -Inf, Inf ), q.conn.next = c( Inf, Inf ),
 												p.ind = c( 1, 1 ),
 												p.conn.prev = c( 0, 1 ), p.conn.next = c( 1, 1 ) ) )
 					}
@@ -654,14 +604,14 @@ CGD$methods(
 											mean = result$x[1],
 											sd = result.sd[1],
 											q.ind = c( -Inf, -Inf ),
-											q.conn.prev = c( -Inf, -Inf ), q.conn.next= c( 0, Inf ),
+											q.conn.prev = c( -Inf, -Inf ), q.conn.next = c( -Inf, Inf ),
 											p.ind = c( 0, 0 ),
 											p.conn.prev = c( 0, 0 ), p.conn.next = c( 0, 1 ) ),
 										CGDInterval$new(
 											mean = result$x[2],
 											sd = result.sd[2],
 											q.ind = c( Inf, Inf ),
-											q.conn.prev = c( 0, Inf ), q.conn.next= c( Inf, Inf ),
+											q.conn.prev = c( -Inf, Inf ), q.conn.next = c( Inf, Inf ),
 											p.ind = c( 1, 1 ),
 											p.conn.prev = c( 0, 1 ), p.conn.next = c( 1, 1 ) ) )
 
@@ -698,14 +648,14 @@ CGD$methods(
 										mean = mean,
 										sd = result$x[1]^2,
 										q.ind = c( -Inf, -Inf ),
-										q.conn.prev = c( -Inf, -Inf ), q.conn.next= c( 0, mean ),
+										q.conn.prev = c( -Inf, -Inf ), q.conn.next = c( -Inf, mean ),
 										p.ind = c( 0, 0 ),
 										p.conn.prev = c( 0, 0 ), p.conn.next = c( 0, 0.5 ) ),
 									CGDInterval$new(
 										mean = mean,
 										sd = result$x[2]^2,
 										q.ind = c( mean, mean ),
-										q.conn.prev = c( 0, mean ), q.conn.next= c( mean, Inf ),
+										q.conn.prev = c( -Inf, mean ), q.conn.next = c( mean, Inf ),
 										p.ind = c( 0.5, 0.5 ),
 										p.conn.prev = c( 0, 0.5 ), p.conn.next = c( 0.5, 1 ) ),
 									CGDInterval$new(
@@ -728,10 +678,10 @@ CGD$methods(
 			e <- try( result <- nleqslv( sds, f <- function( x )
 													{
 														p <- pnorm( wp$q, mean, x[1]^2 )
-														p.a1 <- pnorm( wp$q, mean, x[1]^2 / sqrt( 2 ) )
-														p.a2 <- pnorm( wp$q, mean, x[2]^2 / sqrt( 2 ) )
+														p.a1 <- pnorm( wp$q, mean, x[1]^2 * sqrt( 2 ) / 2 )
+														p.a2 <- pnorm( wp$q, mean, x[2]^2 * sqrt( 2 ) / 2 )
 
-														return ( p - p.a1 / sqrt( 2 ) + p.a2 / sqrt( 2 ) - wp$p )
+														return ( p - p.a1 * sqrt( 2 ) / 2 + p.a2 * sqrt( 2 ) / 2 - wp$p )
 													} ), silent = TRUE )
 			if ( class( e ) == "try-error" )
 			{
@@ -739,27 +689,8 @@ CGD$methods(
 			}
 			else if ( result$termcd == 1 )
 			{
-				intervals <<- list( CGDInterval$new(
-										mean = mean,
-										sd = result$x[1]^2,
-										q.ind = c( -Inf, -Inf ),
-										q.conn.prev = c( -Inf, -Inf ), q.conn.next= c( 0, mean ),
-										p.ind = c( 0, 0 ),
-										p.conn.prev = c( 0, 0 ), p.conn.next = c( 0, 0.5 ) ),
-									CGDInterval$new(
-										mean = mean,
-										sd = result$x[2]^2,
-										q.ind = c( mean, mean ),
-										q.conn.prev = c( 0, mean ), q.conn.next= c( mean, Inf ),
-										p.ind = c( 0.5, 0.5 ),
-										p.conn.prev = c( 0, 0.5 ), p.conn.next = c( 0.5, 1 ) ),
-									CGDInterval$new(
-										mean = mean,
-										sd = result$x[1]^2,
-										q.ind = c( Inf, Inf ),
-										q.conn.prev = c( mean, Inf ), q.conn.next= c( Inf, Inf ),
-										p.ind = c( 1, 1 ),
-										p.conn.prev = c( 0.5, 1 ), p.conn.next = c( 1, 1 ) ) )
+				intervals <<- gen.t3.intervals( c( mean, mean, mean ),
+												c( result$x[1]^2, result$x[2]^2, result$x[1]^2 ) )
 			}
 			else
 			{
@@ -793,167 +724,180 @@ CGD$methods(
 
 			if ( j.lower > 3 || j.upper > 3 )
 			{
-				# 一方の経路に3点以上ある場合はエラーとする
-				stop( "Error: number of waypoints which p is lower/upper than 0.5 must be less than 3 where type1.type = 3." )
-			}
+				# 一方の経路に3点以上ある場合、平均値指定なしの4点経路と同じ方法で累積分布関数を構成
+				l <- t3.wp4.intervals( data.frame( q = c( wp$q, mean ), p = c( wp$p, 0.5 ) ) )
+				intervals <<- l$intervals
+				result <- l$result
 
-			# 場合分けして累積分布関数を構成
-			if ( j.lower == 2 && j.upper == 2 )
-			{
-				# ( #lower, #upper ) = ( 1, 1 )
-				sds <- c( 1, 1 )
-				e <- try( result <- nleqslv( sds, f <- function( x )
-														{
-															x.ave <- ( x[1]^2 + x[2]^2 ) / 2
-															p <- pnorm( wp$q, mean, x^2 )
-															p.a1 <- pnorm( wp$q, mean, x^2 / sqrt( 2 ) )
-															p.a2 <- pnorm( wp$q, mean, x.ave / sqrt( 2 ) )
-
-															return ( p - p.a1 / sqrt( 2 ) + p.a2 / sqrt( 2 ) - wp$p )
-														} ), silent = TRUE )
-				if ( class( e ) == "try-error" )
+				if ( intervals[[1]]$mean == intervals[[2]]$mean )
 				{
-					stop( "Error: failed to make up a probability density function." )
-				}
-				else if ( result$termcd == 1 )
-				{
-					# 成功
-					sds[1] <- result$x[1]^2
-					sds[2] <- ( result$x[1]^2 + result$x[2]^2 ) / 2
-					sds[3] <- result$x[2]^2
+					mean <<- intervals[[2]]$mean
 				}
 				else
 				{
-					stop( "Error: failed to make up a probability density function." )
+					mean <<- bisection( function( x ) { p( x ) - 0.5 }, c( intervals[[1]]$mean, intervals[[2]]$mean ) )
 				}
 			}
 			else
 			{
-				# ( #lower, #upper ) = ( 2, 0 ) or ( 0, 2 ) or ( 2, 1 ) or ( 1, 2 )
-				# ( #lower == 2 and ( #upper == 0 or 1 (i.e. any) ) ) || ( #lower == 0 and #upper == 2 ) ⇒ wp.lower = 1
-				wp.lower <- ifelse( ( j.lower == 3 || j.lower == 1 ), 1, 2 )
-				wp.upper <- ifelse( ( j.lower == 3 || j.lower == 1 ), 2, 3 )
-				wp.q <- c( wp$q[wp.lower], wp$q[wp.upper] )
-				wp.p <- c( wp$p[wp.lower], wp$p[wp.upper] )
-				xi.outer <- ifelse( j.lower == 3, 1, 2 )
-				xi.inner <- ifelse( j.lower == 3, 2, 1 )
-				sds <- c( 1, 1 )
-				e <- try( result <- nleqslv( sds, f <- function( x )
-														{
-															p <- pnorm( wp.q, mean, x[xi.outer]^2 )
-															p.a1 <- pnorm( wp.q, mean, x[xi.outer]^2 / sqrt( 2 ) )
-															p.a2 <- pnorm( wp.q, mean, x[xi.inner]^2 / sqrt( 2 ) )
+				# 場合分けして累積分布関数を構成
+				if ( j.lower == 2 && j.upper == 2 )
+				{
+					# ( #lower, #upper ) = ( 1, 1 )
+					sds <- c( 1, 1 )
+					e <- try( result <- nleqslv( sds, f <- function( x )
+															{
+																x.ave <- ( x[1]^2 + x[2]^2 ) / 2
+																p <- pnorm( wp$q, mean, x^2 )
+																p.a1 <- pnorm( wp$q, mean, x^2 * sqrt( 2 ) / 2 )
+																p.a2 <- pnorm( wp$q, mean, x.ave * sqrt( 2 ) / 2 )
 
-															return ( p - p.a1 / sqrt( 2 ) + p.a2 / sqrt( 2 ) - wp.p )
-														} ), silent = TRUE )
-				if ( class( e ) == "try-error" )
-				{
-					stop( "Error: failed to make up a probability density function." )
-				}
-				else if ( result$termcd == 1 )
-				{
-					if ( j.upper == 1 || j.lower == 1 )
+																return ( p - p.a1 * sqrt( 2 ) / 2 + p.a2 * sqrt( 2 ) / 2 - wp$p )
+															} ), silent = TRUE )
+					if ( class( e ) == "try-error" )
 					{
-						# ( #lower, #upper ) = ( 2, 0 ) or ( 0, 2 )
+						stop( "Error: failed to make up a probability density function." )
+					}
+					else if ( result$termcd == 1 )
+					{
+						# 成功
 						sds[1] <- result$x[1]^2
-						sds[2] <- result$x[xi.inner]^2
+						sds[2] <- ( result$x[1]^2 + result$x[2]^2 ) / 2
 						sds[3] <- result$x[2]^2
 					}
 					else
 					{
-						# ( #lower, #upper ) = ( 2, 1 ) or ( 1, 2 )
-						# 残りの1つの標準偏差を算出
-						if ( j.lower == 3 )
-						{
-							sds[1] <- result$x[xi.outer]^2
-							sds[2] <- result$x[xi.inner]^2
-
-							i.last <- 3
-						}
-						else
-						{
-							sds[2] <- result$x[xi.inner]^2
-							sds[3] <- result$x[xi.outer]^2
-
-							i.last <- 1
-						}
-
-						# 標準偏差の探索範囲決定 ( sd / sd.pseudo  は sd.pseudo/sds[2] と 1 の間にある)
-						sd.pseudo <- sd.mqp.norm( mean, wp$q[i.last], wp$p[i.last] )
-						if ( sd.pseudo > sds[2] )
-						{
-							# * 2, / 2 は本当は不要だけど計算誤差回避のために付けている
-							sd.max <- sd.pseudo^2 / sds[2] * 2
-							sd.min <- sd.pseudo / 2
-						}
-						else if ( sd.pseudo < sds[2] )
-						{
-							# * 2, / 2 は本当は不要だけど計算誤差回避のために付けている
-							sd.max <- sd.pseudo * 2
-							sd.min <- sd.pseudo^2 / sds[2] / 2
-						}
-						else # if ( sd.pseudo == sds[2] )
-						{
-							sds[i.last] <- result$x[xi.inner]^2
-							sd.max <- NULL
-							sd.min <- NULL
-						}
-
-						if ( !is.null( sd.max ) )
-						{
-							e <- try( result <- bisection( function( x )
-															{
-																pnorm( wp$q[i.last], mean, x ) -
-																pnorm( wp$q[i.last], mean, x / sqrt( 2 ) ) / sqrt( 2 ) +
-																pnorm( wp$q[i.last], mean, sds[2] / sqrt( 2 ) ) / sqrt( 2 ) -
-																wp$p[i.last]
-															}, c( sd.min, sd.max ) ), silent = TRUE )
-							if ( class( e ) == "try-error" )
-							{
-								stop( "Error: failed to make up a probability density function." )
-							}
-							else
-							{
-								sds[i.last] <- result
-							}
-						}
+						stop( "Error: failed to make up a probability density function." )
 					}
 				}
 				else
 				{
-					message( paste( "nleqslv is failed. message:", result$message ) )
-					stop( "Error: failed to make up a probability density function." )
+					# ( #lower, #upper ) = ( 2, 0 ) or ( 0, 2 ) or ( 2, 1 ) or ( 1, 2 )
+					# ( #lower == 2 and ( #upper == 0 or 1 (i.e. any) ) ) || ( #lower == 0 and #upper == 2 ) ⇒ wp.lower = 1
+					wp.lower <- ifelse( ( j.lower == 3 || j.lower == 1 ), 1, 2 )
+					wp.upper <- ifelse( ( j.lower == 3 || j.lower == 1 ), 2, 3 )
+					wp.q <- c( wp$q[wp.lower], wp$q[wp.upper] )
+					wp.p <- c( wp$p[wp.lower], wp$p[wp.upper] )
+					xi.outer <- ifelse( j.lower == 3, 1, 2 )
+					xi.inner <- ifelse( j.lower == 3, 2, 1 )
+					sds <- c( 1, 1 )
+					e <- try( result <- nleqslv( sds, f <- function( x )
+															{
+																p <- pnorm( wp.q, mean, x[xi.outer]^2 )
+																p.a1 <- pnorm( wp.q, mean, x[xi.outer]^2 * sqrt( 2 ) / 2 )
+																p.a2 <- pnorm( wp.q, mean, x[xi.inner]^2 * sqrt( 2 ) / 2 )
+
+																return ( p - p.a1 * sqrt( 2 ) / 2 + p.a2 * sqrt( 2 ) / 2 - wp.p )
+															} ), silent = TRUE )
+					if ( class( e ) == "try-error" )
+					{
+						stop( "Error: failed to make up a probability density function." )
+					}
+					else if ( result$termcd == 1 )
+					{
+						if ( j.upper == 1 || j.lower == 1 )
+						{
+							# ( #lower, #upper ) = ( 2, 0 ) or ( 0, 2 )
+							sds[1] <- result$x[1]^2
+							sds[2] <- result$x[xi.inner]^2
+							sds[3] <- result$x[2]^2
+						}
+						else
+						{
+							# ( #lower, #upper ) = ( 2, 1 ) or ( 1, 2 )
+							# 残りの1つの標準偏差を算出
+							if ( j.lower == 3 )
+							{
+								sds[1] <- result$x[xi.outer]^2
+								sds[2] <- result$x[xi.inner]^2
+
+								i.last <- 3
+							}
+							else
+							{
+								sds[2] <- result$x[xi.inner]^2
+								sds[3] <- result$x[xi.outer]^2
+
+								i.last <- 1
+							}
+
+							# 標準偏差の探索範囲決定 ( sd / sd.pseudo  は sd.pseudo/sds[2] と 1 の間にある)
+							sd.pseudo <- sd.mqp.norm( mean, wp$q[i.last], wp$p[i.last] )
+							if ( sd.pseudo > sds[2] )
+							{
+								# * 2, / 2 は本当は不要だけど計算誤差回避のために付けている
+								sd.max <- sd.pseudo^2 / sds[2] * 2
+								sd.min <- sd.pseudo / 2
+							}
+							else if ( sd.pseudo < sds[2] )
+							{
+								# * 2, / 2 は本当は不要だけど計算誤差回避のために付けている
+								sd.max <- sd.pseudo * 2
+								sd.min <- sd.pseudo^2 / sds[2] / 2
+							}
+							else # if ( sd.pseudo == sds[2] )
+							{
+								sds[i.last] <- result$x[xi.inner]^2
+								sd.max <- NULL
+								sd.min <- NULL
+							}
+
+							if ( !is.null( sd.max ) )
+							{
+								e <- try( result <- bisection( function( x )
+																{
+																	pnorm( wp$q[i.last], mean, x ) -
+																	pnorm( wp$q[i.last], mean, x * sqrt( 2 ) / 2 ) *
+																		sqrt( 2 ) / 2 +
+																	pnorm( wp$q[i.last], mean, sds[2] * sqrt( 2 ) / 2 ) *
+																		sqrt( 2 ) / 2 -
+																	wp$p[i.last]
+																}, c( sd.min, sd.max ) ), silent = TRUE )
+								if ( class( e ) == "try-error" )
+								{
+									stop( "Error: failed to make up a probability density function." )
+								}
+								else
+								{
+									sds[i.last] <- result
+								}
+							}
+						}
+					}
+					else
+					{
+						message( paste( "nleqslv is failed. message:", result$message ) )
+						stop( "Error: failed to make up a probability density function." )
+					}
+				}
+
+				intervals <<- gen.t3.intervals( c( mean, mean, mean ), sds )
+
+				if ( intervals[[1]]$mean == intervals[[2]]$mean )
+				{
+					mean <<- intervals[[2]]$mean
+				}
+				else
+				{
+					mean <<- bisection( function( x ) { p( x ) - 0.5 }, c( intervals[[1]]$mean, intervals[[2]]$mean ) )
 				}
 			}
-
-			intervals <<- list( CGDInterval$new(
-									mean = mean,
-									sd = sds[1],
-									q.ind = c( -Inf, -Inf ),
-									q.conn.prev = c( -Inf, -Inf ), q.conn.next= c( 0, mean ),
-									p.ind = c( 0, 0 ),
-									p.conn.prev = c( 0, 0 ), p.conn.next = c( 0, 0.5 ) ),
-								CGDInterval$new(
-									mean = mean,
-									sd = sds[2],
-									q.ind = c( mean, mean ),
-									q.conn.prev = c( 0, mean ), q.conn.next= c( mean, Inf ),
-									p.ind = c( 0.5, 0.5 ),
-									p.conn.prev = c( 0, 0.5 ), p.conn.next = c( 0.5, 1 ) ),
-								CGDInterval$new(
-									mean = mean,
-									sd = sds[3],
-									q.ind = c( Inf, Inf ),
-									q.conn.prev = c( mean, Inf ), q.conn.next= c( Inf, Inf ),
-									p.ind = c( 1, 1 ),
-									p.conn.prev = c( 0.5, 1 ), p.conn.next = c( 1, 1 ) ) )
 		}
-		else if ( type1.type == 3 && !symmetric && ( nrow( wp ) == 4 || nrow( wp ) == 6 ) )
+		else if ( type1.type == 3 && !symmetric && !is.set.mean && nrow( wp ) == 4 )
+		{
+			# type1.type == 3、4点経路、平均値指定なし
+			l <- t3.wp4.intervals( wp )
+			intervals <<- l$intervals
+			result <- l$result
+
+			mean <<- bisection( function( x ) { p( x ) - 0.5 }, c( intervals[[1]]$mean, intervals[[2]]$mean ) )
+		}
+		else if ( type1.type == 3 && !symmetric && ( ( is.set.mean && nrow( wp ) == 4 ) || nrow( wp ) == 6 ) )
 		{
 			# type1.type == 3、非対称、平均値変動
 
 			# 仮の平均値と標準偏差を計算してから nleqslv を実行する
-			mean.pseudo <- c(	( sqnorm( wp$p[2] ) * wp$q[1] - sqnorm( wp$p[1] ) * wp$q[2] ) /
+			mean.pseudo <- c( ( sqnorm( wp$p[2] ) * wp$q[1] - sqnorm( wp$p[1] ) * wp$q[2] ) /
 									( sqnorm( wp$p[2] ) - sqnorm( wp$p[1] ) ),
 								ifelse( nrow( wp ) == 4, mean,
 										( sqnorm( wp$p[4] ) * wp$q[3] - sqnorm( wp$p[3] ) * wp$q[4] ) /
@@ -1005,36 +949,21 @@ CGD$methods(
 			}
 			else if ( result$termcd == 1 )
 			{
-				intervals <<- list( CGDInterval$new(
-										mean = result$x[1],
-										sd = result$x[4]^2,
-										q.ind = c( -Inf, -Inf ),
-										q.conn.prev = c( -Inf, -Inf ), q.conn.next= c( 0, mean ),
-										p.ind = c( 0, 0 ),
-										p.conn.prev = c( 0, 0 ), p.conn.next = c( 0, 0.5 ) ),
-									CGDInterval$new(
-										mean = result$x[2],
-										sd = ifelse( nrow( wp ) == 4,
-													t3.wp5.mid.sd( result$x[2], wp[2,], wp[3,] ),
-													result$x[5]^2 ),
-										q.ind = c( mean, mean ),
-										q.conn.prev = c( 0, mean ), q.conn.next= c( mean, Inf ),
-										p.ind = c( 0.5, 0.5 ),
-										p.conn.prev = c( 0, 0.5 ), p.conn.next = c( 0.5, 1 ) ),
-									CGDInterval$new(
-										mean = result$x[3],
-										sd = result$x[length( result$x )]^2,
-										q.ind = c( Inf, Inf ),
-										q.conn.prev = c( mean, Inf ), q.conn.next= c( Inf, Inf ),
-										p.ind = c( 1, 1 ),
-										p.conn.prev = c( 0.5, 1 ), p.conn.next = c( 1, 1 ) ) )
-				if ( result$x[1] == result$x[2] && result$x[2] == result$x[3] )
+				means <- c( result$x[1], result$x[2], result$x[3] )
+ 				sds <-c( result$x[4]^2,
+							ifelse( nrow( wp ) == 4,
+									t3.wp5.mid.sd( result$x[2], wp[2,], wp[3,] ), result$x[5]^2 ),
+							result$x[length( result$x )]^2 )
+
+				intervals <<- gen.t3.intervals( means, sds )
+
+				if ( means[1] == means[2] && means[2] == means[3] )
 				{
-					mean <<- result$x[2]
+					mean <<- means[2]
 				}
 				else
 				{
-					mean <<- bisection( function( x ) { p( x ) - 0.5 }, c( min( result$x ), max( result$x ) ) )
+					mean <<- bisection( function( x ) { p( x ) - 0.5 }, c( min( means ), max( means ) ) )
 				}
 			}
 			else
@@ -1137,7 +1066,7 @@ CGD$methods(
 			intervals <<- c( intervals, CGDInterval$new(
 											mean = mean,
 											sd = sds[i],
-											q.ind = q.ind, q.conn.prev = q.conn.prev, q.conn.next= q.conn.next,
+											q.ind = q.ind, q.conn.prev = q.conn.prev, q.conn.next = q.conn.next,
 											p.ind = p.ind, p.conn.prev = p.conn.prev, p.conn.next = p.conn.next ) )
 			i <- i + 1
 		}
@@ -1145,6 +1074,187 @@ CGD$methods(
 		return ( result )
 	}
 )
+
+###############################################################################
+# type1.type=3 の確率密度関数または累積分布関数の値を得る
+# @param	x			X座標 (クォンタイル)
+# @param	means		平均値のベクトル
+# @param	sds			標準偏差のベクトル
+# @param	f.t3		確率密度 / 累積分布用関数ハンドル ( f.t3.d / f.t3.p )
+# @return	確率密度関数または累積分布関数の値
+###############################################################################
+dp.t3 <- function( x, means, sds, f.t3 )
+{
+	result <- f.t3[[2]]( x, means[2], sds[2] )
+
+	if ( x < means[1] )
+	{
+		result <- result + f.t3[[1]]( x, means[1], sds[1] )
+	}
+	else
+	{
+		result <- result + f.t3[[3]]
+	}
+
+	if ( x > means[3] )
+	{
+		result <- result + f.t3[[1]]( x, means[3], sds[3] ) - f.t3[[3]]
+	}
+
+	return ( result )
+}
+
+###############################################################################
+# type1.type=3, 4点経路で、平均値指定なし または 経路の点が平均値以上/以下に
+# 偏っている場合の intervals を導出する
+# @param	wp			経路
+# @return	intervals, result (nleqslv の結果) のリスト
+###############################################################################
+t3.wp4.intervals <- function( wp )
+{
+	if ( nrow( wp ) != 4 )
+	{
+		stop( paste( "Error: nrow( wp ) must be 4 for t3.wp4.intervals( wp ). the nrow: ", nrow( wp ) ) )
+	}
+
+	# 平均値から遠い2点を仮に1番目の累積分布関数、平均値から近い2点を仮に2番目の累積分布関数で通過させ、
+	# 2つの累積分布関数を縦方向にグラデーションさせる
+
+	# 平均値から遠い2点と近い2点を調べる
+	d.mean <- data.frame( i = 1:4, d = abs( 0.5 - wp$p ) )
+	max.i <- 0
+	max.d <- -1
+	min.i <- 0
+	min.d <- Inf
+	for ( i in 1:4 )
+	{
+		if ( max.d < d.mean$d[i] )
+		{
+			max.i <- i
+			max.d <- d.mean$d[i]
+		}
+
+		if ( min.d > d.mean$d[i] )
+		{
+			min.i <- i
+			min.d <- d.mean$d[i]
+		}
+	}
+
+	d.mean <- d.mean[-max.i,]
+	if ( max.i < min.i )
+	{
+		d.mean <- d.mean[-( min.i - 1 ),]
+	}
+	else
+	{
+		d.mean <- d.mean[-min.i,]
+	}
+
+	if ( d.mean$d[1] < d.mean$d[2] )
+	{
+		wp.far <- data.frame( q = c( wp$q[max.i], wp$q[d.mean$i[2]] ), p = c( wp$p[max.i], wp$p[d.mean$i[2]] ) )
+		wp.near <- data.frame( q = c( wp$q[min.i], wp$q[d.mean$i[1]] ), p = c( wp$p[min.i], wp$p[d.mean$i[1]] ) )
+	}
+	else
+	{
+		wp.far <- data.frame( q = c( wp$q[max.i], wp$q[d.mean$i[1]] ), p = c( wp$p[max.i], wp$p[d.mean$i[1]] ) )
+		wp.near <- data.frame( q = c( wp$q[min.i], wp$q[d.mean$i[2]] ), p = c( wp$p[min.i], wp$p[d.mean$i[2]] ) )
+	}
+
+	# 仮の平均値・標準偏差を求める
+	mean.pseudo <- c( ( sqnorm( wp.far$p[2] ) * wp.far$q[1] - sqnorm( wp.far$p[1] ) * wp.far$q[2] ) /
+						( sqnorm( wp.far$p[2] ) - sqnorm( wp.far$p[1] ) ),
+					( sqnorm( wp.near$p[2] ) * wp.near$q[1] - sqnorm( wp.near$p[1] ) * wp.near$q[2] ) /
+						( sqnorm( wp.near$p[2] ) - sqnorm( wp.near$p[1] ) ) )
+	sd.pseudo <- c( ( wp.far$q[2] - wp.far$q[1] ) / ( sqnorm( wp.far$p[2] ) - sqnorm( wp.far$p[1] ) ),
+					( wp.near$q[2] - wp.near$q[1] ) / ( sqnorm( wp.near$p[2] ) - sqnorm( wp.near$p[1] ) ) )
+
+	# nleqslv の計算
+	e <- try( result <- nleqslv( c( mean.pseudo, sqrt( sd.pseudo ) ),
+									f <- function( x )
+											{
+												p <- pnorm( wp$q, x[1], x[3]^2 )
+												p.a1 <- pnorm( wp$q, x[1], x[3]^2 * sqrt( 2 ) / 2 )
+												p.a2 <- pnorm( wp$q, x[2], x[4]^2 * sqrt( 2 ) / 2 )
+
+												return ( p - p.a1 * sqrt( 2 ) / 2 + p.a2 * sqrt( 2 ) / 2 - wp$p )
+											} ), silent = TRUE )
+	if ( class( e ) == "try-error" )
+	{
+		stop( "Error: failed to make up a continuous probability density function." )
+	}
+	else if ( result$termcd == 1 )
+	{
+		means <- c( result$x[1], result$x[2], result$x[1] )
+		sds <- c( result$x[3]^2, result$x[4]^2, result$x[3]^2 )
+	}
+	else
+	{
+		message( paste( "nleqslv is failed. message:", result$message ) )
+		stop( "Error: failed to make up a continuous probability density function." )
+	}
+
+	return ( list( intervals = gen.t3.intervals( means, sds ), result = result ) )
+}
+
+###############################################################################
+# type1.type=3 の intervals を生成する
+# @param	means		平均値のベクトル
+# @param	sds			標準偏差のベクトル
+# @return	生成した intervals
+###############################################################################
+gen.t3.intervals <- function( means, sds )
+{
+	if ( means[1] == means[2] && means[2] == means[3] )
+	{
+		ps <- c( 0.5, 0.5, 0.5 )
+	}
+	else
+	{
+		ps <- c( dp.t3( means[1], means, sds, f.t3.p ),
+					dp.t3( means[2], means, sds, f.t3.p ),
+					dp.t3( means[3], means, sds, f.t3.p ) )
+	}
+
+	return ( list( CGDInterval$new(
+						mean = means[1],
+						sd = sds[1],
+						q.ind = c( -Inf, -Inf ),
+						q.conn.prev = c( -Inf, -Inf ), q.conn.next = c( -Inf, means[1] ),
+						p.ind = c( 0, 0 ),
+						p.conn.prev = c( 0, 0 ), p.conn.next = c( 0, max( ps[1], ps[2] ) ) ),
+					CGDInterval$new(
+						mean = means[2],
+						sd = sds[2],
+						q.ind = c( means[2], means[2] ),
+						q.conn.prev = c( -Inf, max( qnorm( ps[1], means[2], sds[2] ), means[2] ) ),
+						q.conn.next = c( min( means[2], qnorm( ps[3], means[2], sds[2] ) ), Inf ),
+						p.ind = c( ps[2], ps[2] ),
+						p.conn.prev = c( 0, max( ps[1], ps[2] ) ), p.conn.next = c( min( ps[2], ps[3] ), 1 ) ),
+					CGDInterval$new(
+						mean = means[3],
+						sd = sds[3],
+						q.ind = c( Inf, Inf ),
+						q.conn.prev = c( means[3], Inf ), q.conn.next = c( Inf, Inf ),
+						p.ind = c( 1, 1 ),
+						p.conn.prev = c( min( ps[2], ps[3] ), 1 ), p.conn.next = c( 1, 1 ) ) ) )
+}
+
+###############################################################################
+# type1.type=3, 5点経路 の場合の、中央 (2番目) の確率分布の標準偏差を計算する
+# @param	mean2		中央の確率分布の平均値
+# @param	wp2			経路の2点目のX座標 (クォンタイル)
+# @param	wp3			経路の4点目 (平均値を除けば3点目) のX座標 (クォンタイル)
+# @return	中央の確率分布の標準偏差
+###############################################################################
+t3.wp5.mid.sd <- function( mean2, wp2, wp3 )
+{
+	sd1 <- sd.mqp.norm( mean2, wp2$q, wp2$p )
+	sd2 <- sd.mqp.norm( mean2, wp3$q, wp3$p )
+
+	return ( ( sd1 * abs( mean2 - wp3$p ) + sd2 * abs( mean2 - wp2$p ) ) / ( abs( mean2 - wp2$p ) + abs( mean2 - wp3$p ) ) )
+}
 
 ###############################################################################
 #' continuous 判定
@@ -1159,7 +1269,7 @@ NULL
 CGD$methods(
 	is.continuous = function()
 	{
-		return ( intervals[[1]]$p.conn.next[1] == 0 && intervals[[1]]$p.conn.next[2] == 1 )
+		return ( type1.type <= 2 && intervals[[1]]$p.conn.next[1] == 0 && intervals[[1]]$p.conn.next[2] == 1 )
 	}
 )
 
@@ -1215,6 +1325,34 @@ CGD$methods(
 )
 
 ###############################################################################
+#' uni.mean 判定
+#'
+#' uni.mean (分布を構成するすべての正規分布の平均値が等しい) かどうかを調べる
+#' @name	CGD_is.uni.mean
+#' @usage	a <- CGD$new()
+#'			a$is.uni.mean()
+#' @return	構成するすべての正規分布の平均値が等しければ TRUE、そうでなければ FALSE
+###############################################################################
+NULL
+CGD$methods(
+	is.uni.mean = function()
+	{
+		result <- TRUE
+
+		for ( i in length( intervals ) )
+		{
+			if ( intervals[[i]]$mean != mean )
+			{
+				result <- FALSE
+				break
+			}
+		}
+
+		return ( result )
+	}
+)
+
+###############################################################################
 #' 独立区間判定 (確率)
 #'
 #' 指定された確率が独立区間に入っているかどうかを調べる
@@ -1222,7 +1360,7 @@ CGD$methods(
 #' @usage	a <- CGD$new()
 #'			a$is.ind.p(p)
 #' @param	p		確率のベクトル
-#' @return	第1要素 (bool) に、独立区間に入っていれば TRUE、入っていなければ FALSE、
+#' @return	第1要素 (bool) に、独立区間に入っていれば TRUE、入っていなければ FALSE。
 #'			第2要素 (i) に、当該 intervals のインデックス (bool = FALSE の場合は NaN) が入ったリスト
 ###############################################################################
 NULL
@@ -1264,9 +1402,11 @@ CGD$methods(
 #' @usage	a <- CGD$new()
 #'			a$is.conn.p(p)
 #' @param	p		確率のベクトル
-#' @return	第1要素 (bool) に、接続区間に入っていれば TRUE、入っていなければ FALSE、
+#' @return	第1要素 (bool) に、接続区間に入っていれば TRUE、入っていなければ FALSE
+#'			 (type1.type = 3 では、2番目の独立区間が接続区間と互いに重なることがあるが、
+#'			  指定された確率が独立区間と接続区間の両方に入っているときは、 FALSE を返す)。
 #'			第2要素 (i.1) に、前の intervals のインデックス
-#'			 (bool = FALSE の場合は 独立区間の intervals のインデックス)、
+#'			 (bool = FALSE の場合は 独立区間の intervals のインデックス)。
 #'			第3要素 (i.2) に、後の intervals のインデックス (i.1 + 1, bool = FALSE の場合は NaN) が入ったリスト
 ###############################################################################
 NULL
@@ -1319,7 +1459,7 @@ CGD$methods(
 #' @usage	a <- CGD$new()
 #'			a$is.ind.x(x)
 #' @param	x		X座標 (クォンタイル) のベクトル
-#' @return	第1要素 (bool) に、独立区間に入っていれば TRUE、入っていなければ FALSE、
+#' @return	第1要素 (bool) に、独立区間に入っていれば TRUE、入っていなければ FALSE。
 #'			第2要素 (i) に、当該 intervals のインデックス (bool = FALSE の場合は NaN) が入ったリスト
 ###############################################################################
 NULL
@@ -1354,9 +1494,11 @@ CGD$methods(
 #' @usage	a <- CGD$new()
 #'			a$is.conn.x(x)
 #' @param	x		X座標 (クォンタイル) のベクトル
-#' @return	第1要素 (bool) に、接続区間に入っていれば TRUE、入っていなければ FALSE、
+#' @return	第1要素 (bool) に、接続区間に入っていれば TRUE、入っていなければ FALSE
+#'			 (type1.type = 3 では、2番目の独立区間が接続区間と互いに重なることがあるが、
+#'			  指定された座標が独立区間と接続区間の両方に入っているときは、 FALSE を返す)。
 #'			第2要素 (i.1) に、前の intervals のインデックス
-#'			 (bool = FALSE の場合は 独立区間の intervals のインデックス)、
+#'			 (bool = FALSE の場合は 独立区間の intervals のインデックス)。
 #'			第3要素 (i.2) に、後の intervals のインデックス (i.1 + 1, bool = FALSE の場合は NaN) が入ったリスト
 ###############################################################################
 NULL
@@ -1402,7 +1544,7 @@ CGD$methods(
 #' @usage	a <- CGD$new()
 #'			a$is.ind.q(q)
 #' @param	q		X座標 (クォンタイル) のベクトル
-#' @return	第1要素 (bool) に、独立区間に入っていれば TRUE、入っていなければ FALSE、
+#' @return	第1要素 (bool) に、独立区間に入っていれば TRUE、入っていなければ FALSE。
 #'			第2要素 (i) に、当該 intervals のインデックス (bool = FALSE の場合は NaN) が入ったリスト
 ###############################################################################
 NULL
@@ -1421,9 +1563,9 @@ CGD$methods(
 #' @usage	a <- CGD$new()
 #'			a$is.conn.q(q)
 #' @param	q		X座標 (クォンタイル) のベクトル
-#' @return	第1要素 (bool) に、接続区間に入っていれば TRUE、入っていなければ FALSE、
+#' @return	第1要素 (bool) に、接続区間に入っていれば TRUE、入っていなければ FALSE。
 #'			第2要素 (i.1) に、前の intervals のインデックス
-#'			 (bool = FALSE の場合は 独立区間の intervals のインデックス)、
+#'			 (bool = FALSE の場合は 独立区間の intervals のインデックス)。
 #'			第3要素 (i.2) に、後の intervals のインデックス (i.1 + 1, bool = FALSE の場合は NaN) が入ったリスト
 ###############################################################################
 NULL
@@ -2143,20 +2285,48 @@ CGD$methods(
 
 		# 分散を計算
 		v <- 0
-		for ( i in 1:length( intervals ) )
+		if ( type1.type >= 3 || is.continuous() || is.symmetric() )
 		{
-			v <- v + integrate( f <-
+			# 確率密度関数が連続
+			if ( type1.type == 1 )
+			{
+				v <- ( intervals[[1]]$sd^2 + intervals[[2]]$sd^2 ) / 2
+			}
+			else if ( type1.type == 3 && is.uni.mean() )
+			{
+				v <- ( intervals[[1]]$sd^2 * ( 1 - sqrt( 2 ) / 4 ) +
+								intervals[[2]]$sd^2 * sqrt( 2 ) / 2 +
+								intervals[[3]]$sd^2 * ( 1 - sqrt( 2 ) / 4 ) ) / 2
+			}
+			else
+			{
+				v <- integrate( f <-
 								function( x )
 								{
-									( x - mean )^2 * dnorm( x, mean, intervals[[i]]$sd )
-								}, intervals[[i]]$q.ind[1], intervals[[i]]$q.ind[2] )$value
-			if ( i < length( intervals ) )
+									( x - mean )^2 * d( x )
+								}, -Inf, Inf )$value
+			}
+		}
+		else
+		{
+			# 確率密度関数が不連続
+			for ( i in 1:length( intervals ) )
 			{
-				v <- v + integrate( f <-
-									function( x )
-									{
-										( x - mean )^2 * d( x )
-									}, intervals[[i]]$q.conn.next[1], intervals[[i]]$q.conn.next[2] )$value
+				sd <- intervals[[i]]$sd
+				f <- ifelse( is.infinite( intervals[[i]]$q.ind ), 0,
+								( intervals[[i]]$q.ind - mean ) * dnorm( intervals[[i]]$q.ind, mean, sd ) )
+
+				v <- v + sd^2 * ( pnorm( intervals[[i]]$q.ind[2], mean, sd ) -
+									pnorm( intervals[[i]]$q.ind[1], mean, sd ) - f[2] + f[1] )
+
+				if ( i < length( intervals ) )
+				{
+					v <- v + integrate( f <-
+										function( x )
+										{
+											( x - mean )^2 * d( x )
+										}, intervals[[i]]$q.ind[2], intervals[[i + 1]]$q.ind[1] )$value
+				}
 			}
 		}
 

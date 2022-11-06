@@ -14,18 +14,18 @@ sample <- a$r( 1000 ); hist( sample )
 # It's strongly recomended to run this plot to compare integration a$d() to a$p().
 y <- numeric()
 i <- 1
-for ( x in seq( -8, 8, 0.01 ) )
+for ( x in seq( -8, 8, 0.02 ) )
 {
 	y[i] <- integrate( f <- function( t ) { a$d( t ) }, -Inf, x )$value - a$p( x )
 	i <- i + 1
 }
-plot( seq( -8, 8, 0.01 ), y, type = "l" )
+plot( seq( -8, 8, 0.02 ), y, type = "l" )
 
 # normal test
 a$set.waypoints(
 data.frame(
 p = c( 0.1, 0.3, 0.5, 0.6, 0.7 ),
-q = c( qnorm( c( 0.1, 0.3, 0.5, 0.6 ), 0, 1 ), 0.5 ) ) )
+q = c( qnorm( c( 0.1, 0.3, 0.5, 0.6 ), 0, 1 ), 0.5 ) ), this.type1.type = 1 )
 a$is.ind.p( c( 0, 0.1, 0.3, 0.5, 0.6, 0.65, 0.7, 1 ) )
 a$is.conn.p( c( 0, 0.1, 0.3, 0.5, 0.6, 0.65, 0.7, 1 ) )
 a$is.ind.q( c( -Inf, -3, 0, 0.2533471, 0.2533472, 0.49, 0.5, 0.52440, 0.52441, 1, Inf ) )
@@ -36,6 +36,17 @@ a$p( c( 0.253347, 0.253348, 0.5, 0.52440, 0.52441 ) )
 ( a$p( 0.49 ) < pnorm( 0.49, 0, a$intervals[[2]]$sd ) )
 ( a$p( 0.5 ) == pnorm( 0.5, 0, a$intervals[[2]]$sd ) )
 ( a$p( 0.52440 ) == pnorm( 0.52440, 0, a$intervals[[2]]$sd ) )
+
+# This test must be run after each normal test
+# then the result value must be small enough (than about 1e-7).
+abs( a$sd() - sqrt( integrate( f <- function( x ) { ( x - a$mean )^2 * a$d( x ) }, -Inf, Inf )$value ) )
+
+# normal test
+a$set.waypoints(
+data.frame(
+p = c( 0.1, 0.3, 0.5, 0.6, 0.7 ),
+q = c( qnorm( c( 0.1, 0.3, 0.5, 0.6 ), 0, 1 ), 0.5 ) ), this.type1.type = 2 )
+
 
 # normal test
 a$set.waypoints(
@@ -51,6 +62,34 @@ a$is.conn.q( c( -1, -0.48, -0.04, 0, 0.5, 1, 1.5, 2 ) )
 plot( seq( -1, 0.05, 0.01 ), a$d( seq( -1, 0.05, 0.01 ) ), type = "l" )
 plot( seq( 0.05, 10, 0.01 ), a$d( seq( 0.05, 10, 0.01 ) ), type = "l" )
 
+
+# warning test
+a$set.waypoints(
+data.frame(
+p = c( 0.5 ),
+q = c( 1 ) ),
+this.type1.type = 1 )
+
+# normal test
+a$set.waypoints(
+data.frame(
+p = c( 0.5, 0.7 ),
+q = c( 0, qnorm( 0.7, 0, 1 ) ) ),
+this.type1.type = 1 )
+
+# normal test
+a$set.waypoints(
+data.frame(
+p = c( 0.1, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9 ),
+q = c( -9, -8.7, -5.4, -1, 0, 0.3, 0.5, 0.77 ) ),
+this.type1.type = 1 )
+
+# normal test
+a$set.waypoints(
+data.frame(
+p = c( 0.1, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9 ),
+q = c( -9, -8.7, -5.4, -1, 0, 0.3, 0.5, 0.77 ) ),
+this.type1.type = 2 )
 
 # normal test
 a$set.waypoints(
@@ -166,11 +205,25 @@ p = c( 0.1, 0.5, 0.7 ),
 q = c( qnorm( 0.1, 0, 1 ), 0, qnorm( 0.7, 0, 0.9 ) ) ),
 this.type1.type = 3 )
 
-# Error case
+# normal test for v1.3.5 and up
 a$set.waypoints(
 data.frame(
 p = c( 0.1, 0.3, 0.4, 0.5 ),
 q = c( qnorm( 0.1, 0, 1 ), qnorm( 0.3, 0, 0.9 ), qnorm( 0.4, 0, 0.87 ), 0 ) ),
+this.type1.type = 3 )
+
+# normal test (also)
+a$set.waypoints(
+data.frame(
+p = c( 0.5, 0.6, 0.75, 0.9 ),
+q = c( 0.5, qnorm( 0.6, 0.5, 0.9 ), qnorm( 0.75, 0.52, 1 ), qnorm( 0.9, 0.57, 1.1 ) ) ),
+this.type1.type = 3 )
+
+# normal test
+a$set.waypoints(
+data.frame(
+p = c( 0.1, 0.4, 0.6, 0.9 ),
+q = c( -1, -0.1, 0.2, 1.3 ) ),
 this.type1.type = 3 )
 
 # normal test
@@ -215,6 +268,13 @@ p = c( 0.5, 0.6, 0.9 ),
 q = c( 0, 0.2, 1.9 ) ),
 this.type1.type = 3 )
 
+# normal test
+a$set.waypoints(
+data.frame(
+p = c( 0.5, 0.6, 0.9 ),
+q = c( 1, 1.2, 2.9 ) ),
+this.type1.type = 3 )
+
 # Error case
 a$set.waypoints(
 data.frame(
@@ -241,6 +301,13 @@ a$set.waypoints(
 data.frame(
 p = c( 0.1, 0.3, 0.5, 0.7 ),
 q = c( -2, -0.5, 0, 0.5 ) ),
+this.type1.type = 3 )
+
+# normal test
+a$set.waypoints(
+data.frame(
+p = c( 0.1, 0.3, 0.5, 0.7 ),
+q = c( -4, -2.5, -2, -1.5 ) ),
 this.type1.type = 3 )
 
 # normal test
@@ -414,8 +481,8 @@ this.type1.type = 3 )
 
 # normal test
 qs <- c( qnorm( 0.1, 0, 0.8 ), qnorm( 0.25, 0, 0.85 ),
-			qnorm( 0.4, 0, 0.9 ), qnorm( 0.6, 0, 1.1 ),
-			qnorm( 0.75, 0, 1.11 ), qnorm( 0.9, 0, 1.13 ) )
+			qnorm( 0.4, 0, 0.9 ), qnorm( 0.6, 0, 1.2 ),
+			qnorm( 0.75, 0, 1.21 ), qnorm( 0.9, 0, 1.23 ) )
 a$set.waypoints(
 data.frame(
 p = c( 0.1, 0.25, 0.4, 0.6, 0.75, 0.9 ),
