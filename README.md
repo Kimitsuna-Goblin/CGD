@@ -1,11 +1,3 @@
-# 重要なお知らせ
-
-v1.3.0 および v1.3.1 には、重大な不具合があります。
-
-type1.type = 3 を指定したとき、 sd() の値は誤った値が返されます。
-これは次のバージョン (v1.3.5 の予定) で修正しますが、現時点では、 type1.type = 3 の分布では、 sd() で得られる標準偏差の値は信頼しないでください。
-申し訳ございません。
-
 # 連結ガウス分布 - Connected Gaussian Distribution
 
 連結ガウス分布とは、
@@ -346,7 +338,7 @@ $$
 | :--------: | :--------------------------------------- | :------: | :----: | :----------------: | :-----: |
 | type1.type = 1 | $\Psi_i( x ) = \dfrac{ \alpha_{i+1} - x }{ \alpha_{i+1} - \beta_i } \Phi_i( x ) + \dfrac{ x - \beta_i }{ \alpha_{i+1} - \beta_i } \Phi_{i+1}( x )$ <br> $g_i( x ) = \dfrac{ \alpha_{i+1} - x }{ \alpha_{i+1} - \beta_i } f_i( x ) + \dfrac{ x - \beta_i }{ \alpha_{i+1} - \beta_i } f_{i+1}( x ) + \dfrac{ \Phi_{i+1}( x ) - \Phi_i( x ) }{ \alpha_{i+1} - \beta_i }$ | 任意 | 任意 | 不連続 | 1.0.0 |
 | type1.type = 2  | $\Psi_i( x ) = \dfrac{ \bar \Phi_i( \alpha_{i+1} ) - \bar \Phi_i( x ) }{ \bar \Phi_i( \alpha_{i+1} ) - \bar \Phi_i( \beta_i ) } \Phi_i( x ) + \dfrac{ \bar \Phi_i( x ) - \bar \Phi_i( \beta_i ) }{ \bar \Phi_i( \alpha_{i+1} ) - \bar \Phi_i( \beta_i ) } \Phi_{i+1}( x )$ <br> $g_i( x ) = \dfrac{ \bar \Phi_i( \alpha_{i+1} ) -\Phi_i( x ) }{ \bar \Phi_i( \alpha_{i+1} ) - \bar \Phi_i( \beta_i ) } f_i( x ) + \dfrac{ \Phi_{i+1}( x ) - \bar \Phi_i( \beta_i ) }{ \bar \Phi_i( \alpha_{i+1} ) - \bar \Phi_i( \beta_i ) } f_{i+1}( x )$ | 任意 | 任意 | 不連続 | 1.1.0 |
-| type1.type = 3 | $\Psi( x ) = \Psi_1( x ) + \Psi_2( x ) + \Psi_3( x )$ <br> $\qquad \Psi_1( x ) = \mathrm{ min }( \Phi_1( x ) - \dfrac{1}{ \sqrt{2} } \Phi^\ast_1( x ), \  \dfrac{2 - \sqrt{2}}{4} )$ <br> $\qquad \Psi_2( x ) = \dfrac{1}{ \sqrt{2} } \Phi^\ast_2( x )$ <br> $\qquad \Psi_3( x ) = \mathrm{ max }( 0, \  \Phi_3( x ) - \dfrac{1}{ \sqrt{2} } \Phi^\ast_3( x ) - \dfrac{2 - \sqrt{2}}{4} )$ <br> $g( x ) = g_1( x ) + g_2( x ) + g_3( x )$ <br> $\qquad g_1( x ) = ( 1 - \dfrac{ f_1( x ) }{ f_1( \mu_1 ) } ) f_1( x ) \ \  ( x \leq \mu_1 ), \quad 0 \ \  ( x > \mu_1 )$ <br> $\qquad g_2( x ) = \dfrac{ f_2( x ) }{ f_2( \mu_2 ) } f_2( x )$ <br> $\qquad g_3( x ) = 0 \ \  ( x < \mu_3 ), \quad ( 1 - \dfrac{ f_3( x ) }{ f_3( \mu_3 ) } ) f_3( x ) \ \  ( x \geq \mu_3 )$ | $( \mu, 0.5 )$ を含む3～5点<br>または $( \mu, 0.5 )$ を含まない4点または6点 | $[0, 0]$, $[0.5, 0.5]$, $[1, 1]$, $[0, 0.5]$, $[0.5, 1]$, $[0, 1]$ のいずれか | 連続<br>( $C^1$ 級) | 1.3.0 |
+| type1.type = 3 | $\Psi( x ) = \Psi_1( x ) + \Psi_2( x ) + \Psi_3( x )$ <br> $\qquad \Psi_1( x ) = \mathrm{ min }( \Phi_1( x ) - \dfrac{1}{ \sqrt{2} } \Phi^\ast_1( x ), \  \dfrac{2 - \sqrt{2}}{4} )$ <br> $\qquad \Psi_2( x ) = \dfrac{1}{ \sqrt{2} } \Phi^\ast_2( x )$ <br> $\qquad \Psi_3( x ) = \mathrm{ max }( 0, \  \Phi_3( x ) - \dfrac{1}{ \sqrt{2} } \Phi^\ast_3( x ) - \dfrac{2 - \sqrt{2}}{4} )$ <br> $g( x ) = g_1( x ) + g_2( x ) + g_3( x )$ <br> $\qquad g_1( x ) = ( 1 - \dfrac{ f_1( x ) }{ f_1( \mu_1 ) } ) f_1( x ) \ \  ( x \leq \mu_1 ), \quad 0 \ \  ( x > \mu_1 )$ <br> $\qquad g_2( x ) = \dfrac{ f_2( x ) }{ f_2( \mu_2 ) } f_2( x )$ <br> $\qquad g_3( x ) = 0 \ \  ( x < \mu_3 ), \quad ( 1 - \dfrac{ f_3( x ) }{ f_3( \mu_3 ) } ) f_3( x ) \ \  ( x \geq \mu_3 )$ | $( \mu, 0.5 )$ を含む3～5点<br>または $( \mu, 0.5 )$ を含まない4点または6点 | $[0, 0]$, $[0.5, 0.5]$, $[1, 1]$, $[0, 0.5]$, $[0.5, 1]$, $[0, 1]$ のいずれか | 連続<br>( $C^1$ 級) | 1.3.5 |
 | type1.type = 1 <br> continuous = TRUE | $\Psi( x ) = \dfrac{1}{2} ( \Phi_1( x ) + \Phi_2( x ) )$ <br> $g( x ) = \dfrac{1}{2} ( f_1( x ) + f_2( x ) )$ | $( \mu, 0.5 )$ を含む3点 | $[0, 0]$, $[1, 1]$ の2点 | 連続<br>( $C^\infty$ 級) | 1.2.0 |
 | type1.type = 2 <br> continuous = TRUE <br> (横方向グラデーション) | $\Psi( x ) = \Phi_1( x ) - \dfrac{1}{2} \Phi_1( x )^2 + \dfrac{1}{2} \Phi_2( x )^2$ <br> $g( x ) = ( 1 - \Phi_1( x ) )f_1( x ) + \Phi_2( x ) f_2( x )$ | $( \mu, 0.5 )$ を含む3点<br>または $( \mu, 0.5 )$ を含まない4点 | $[0, 0]$, $[1, 1]$ の2点 | 連続<br>( $C^\infty$ 級) | 1.3.0 |
 | type1.type = 3 <br> continuous = TRUE | 無効 (type1.type = 3 のデフォルトと同じ) | - | - | - | 1.2.0 |
