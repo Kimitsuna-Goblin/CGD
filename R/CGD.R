@@ -1,7 +1,7 @@
 ##############################################################################
 # 連結ガウス分布 (Connected Gaussian Distribution) クラス
 # @file			CGD.R
-# @version		1.3.5
+# @version		1.3.6
 # @author		Kimitsuna-Goblin
 # @copyright	Copyright (C) 2022 Ura Kimitsuna
 # @license		Released under the MIT license.
@@ -50,6 +50,25 @@ sqnorm <- function( p )
 sd.mqp.norm <- function( mean, q, p )
 {
 	return ( ( q - mean ) / sqnorm( p ) )
+}
+
+###############################################################################
+#' 正規分布の分散の閉区間範囲内の値を返す
+#' @export
+#' @param	x.bound		閉区間を指定する、要素2個のベクトル (x.bound[1] < x.bound[2] であること)
+#' @param	mean		正規分布の平均
+#' @param	sd			正規分布の標準偏差
+#' @param	f.d			正規分布の確率密度を計算する関数 (デフォルト: dnorm( x, mean, sd ) )
+#' @param	f.p			正規分布の確率を計算する関数 (デフォルト: pnorm( x, mean, sd ) )
+#' @return	与えられた正規分布の分散を閉区間範囲内のみに限って計算した値
+###############################################################################
+variance.sub <- function( x.bound, mean, sd,
+							f.d = function( x, mean, sd ) dnorm( x, mean, sd ),
+							f.p = function( x, mean, sd ) pnorm( x, mean, sd ) )
+{
+ 	f <- ifelse( is.infinite( x.bound ), 0, ( x.bound - mean ) * f.d( x.bound, mean, sd ) )
+
+	return ( sd^2 * ( f.p( x.bound[2], mean, sd ) - f.p( x.bound[1], mean, sd ) - f[2] + f[1] ) )
 }
 
 ###############################################################################
@@ -2312,20 +2331,76 @@ CGD$methods(
 			# 確率密度関数が不連続
 			for ( i in 1:length( intervals ) )
 			{
-				sd <- intervals[[i]]$sd
-				f <- ifelse( is.infinite( intervals[[i]]$q.ind ), 0,
-								( intervals[[i]]$q.ind - mean ) * dnorm( intervals[[i]]$q.ind, mean, sd ) )
-
-				v <- v + sd^2 * ( pnorm( intervals[[i]]$q.ind[2], mean, sd ) -
-									pnorm( intervals[[i]]$q.ind[1], mean, sd ) - f[2] + f[1] )
+				# 独立区間の計算
+				v <- v + variance.sub( intervals[[i]]$q.ind, mean, intervals[[i]]$sd )
 
 				if ( i < length( intervals ) )
 				{
-					v <- v + integrate( f <-
-										function( x )
-										{
-											( x - mean )^2 * d( x )
-										}, intervals[[i]]$q.ind[2], intervals[[i + 1]]$q.ind[1] )$value
+					# 接続区間の計算
+					d.1 <- intervals[[i]]			# 確率分布1 (接続区間前を負担)
+					d.2 <- intervals[[i + 1]]		# 確率分布2 (接続区間後を負担)
+					x.conn <- c( d.1$q.conn.next[1], d.2$q.conn.prev[2] )
+
+ 					if ( ( x.conn[1] < mean && x.conn[2] <= mean && d.2$sd >= d.1$sd ) ||
+ 							( x.conn[1] >= mean && d.2$sd <= d.1$sd ) )
+					{
+						# type 1 (数値積分するしかない)
+						v <- v + integrate( f <-
+											function( x )
+											{
+												( x - mean )^2 * d( x )
+											}, intervals[[i]]$q.ind[2], intervals[[i + 1]]$q.ind[1] )$value
+					}
+					else if ( ( x.conn[1] < mean && x.conn[2] <= mean && d.2$sd < d.1$sd ) ||
+								( x.conn[1] >= mean && d.2$sd > d.1$sd ) )
+					{
+						# type 2
+
+						# Φ_1(x) < a_{i+1}, Φ_2(x) < b_i
+						v <- v + variance.sub( c( x.conn[1], min( d.1$q.conn.next[2], d.2$q.conn.prev[1] ) ),
+												mean, d.1$sd ) / 2
+
+						# Φ_1(x) >= a_{i+1}, Φ_2(x) < b_i ⇒ v <- v + 0 (i.e. 処理なし)
+
+						# Φ_1(x) < a_{i+1}, Φ_2(x) >= b_i
+						if ( d.1$q.conn.next[2] > d.2$q.conn.prev[1]  )
+						{
+							v <- v + ( variance.sub( c( d.2$q.conn.prev[1], d.1$q.conn.next[2] ), mean, d.1$sd ) +
+										variance.sub( c( d.2$q.conn.prev[1], d.1$q.conn.next[2] ), mean, d.2$sd ) ) / 2
+						}
+
+						# Φ_1(x) >= a_{i+1}, Φ_2(x) >= b_i
+						v <- v + variance.sub( c( max( d.1$q.conn.next[2], d.2$q.conn.prev[1] ), x.conn[2] ),
+												mean, d.2$sd ) / 2
+					}
+					else if ( d.2$sd >= d.1$sd )
+					{
+						# type 3a
+
+						# x <= mean
+						v <- v + variance.sub( c( x.conn[1], mean ), mean, d.1$sd )
+
+						# x > mean, Φ_1(x) < a_{i+1}
+						v <- v + ( variance.sub( c( mean, d.1$q.conn.next[2] ), mean, d.1$sd ) +
+										variance.sub( c( mean, d.1$q.conn.next[2] ), mean, d.2$sd ) ) / 2
+
+						# x > mean, Φ_1(x) >= a_{i+1}
+						v <- v + variance.sub( c( d.1$q.conn.next[2], x.conn[2] ), mean, d.1$sd ) / 2
+					}
+					else
+					{
+						# type 3b
+
+						# x <= mean, Φ_2(x) < b_i
+						v <- v + variance.sub( c( x.conn[1], d.2$q.conn.prev[1] ), mean, d.1$sd ) / 2
+
+						# x <= mean, Φ_2(x) >= b_i
+						v <- v + ( variance.sub( c( d.2$q.conn.prev[1], mean ), mean, d.1$sd ) +
+										variance.sub( c( d.2$q.conn.prev[1], mean ), mean, d.2$sd ) ) / 2
+
+						# x > mean
+						v <- v + variance.sub( c( mean, x.conn[2] ), mean, d.2$sd )
+					}
 				}
 			}
 		}
