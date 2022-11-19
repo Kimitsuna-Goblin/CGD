@@ -1,7 +1,7 @@
 ##############################################################################
 # 連結ガウス分布 (Connected Gaussian Distribution) クラス
 # @file			CGD.R
-# @version		1.3.6
+# @version		1.3.7
 # @author		Kimitsuna-Goblin
 # @copyright	Copyright (C) 2022 Ura Kimitsuna
 # @license		Released under the MIT license.
@@ -289,7 +289,7 @@ CGD$methods(
 #'								type1.type = 1, 2, 3 で有効 (デフォルト: FALSE)
 #' @param	uni.sigma			type1.type = 2、continuous = TRUE で、かつ、経路の構成点が3点の場合に、
 #'								2つの確率密度関数 f_1(x) と f_2(x) の標準偏差を同じ値に揃えるかどうかのフラグ。
-#'								このフラグが TRUE のときは、通常、 f_1(x) と f_2(x) の平均値は等しくならない (デフォルト: FALSE)
+#'								このフラグが TRUE のとき、通常、 f_1(x) と f_2(x) の平均値は等しくならない (デフォルト: FALSE)
 #' @param	this.type1.type		フィールドの type1.type に設定する値 (1、2、3 のいずれかを指定すること)。
 #'								NULL の場合は type1.type の値を変更しない (デフォルト: NULL)
 #'
@@ -389,6 +389,15 @@ CGD$methods(
 		for ( i in 1:nrow( waypoints ) )
 		{
 			oi <- wp.order[i]
+			if ( i > 1 )
+			{
+				# X座標が確率に対して昇順に並んでいなければエラー
+				if ( waypoints[wp.order[i - 1],]$q >= waypoints[oi,]$q )
+				{
+					stop( "Error: order of q is not along with that of p." )
+				}
+			}
+
 			if ( waypoints$p[oi] == 0.5 )
 			{
 				# 平均値を取得
@@ -414,14 +423,6 @@ CGD$methods(
 				# 経路を取得
 				wp[j,]$q <- waypoints[oi,]$q
 				wp[j,]$p <- waypoints[oi,]$p
-				if ( j > 1 )
-				{
-					# X座標が確率に対して昇順に並んでいなければエラー
-					if ( wp[j - 1,]$q >= wp[j,]$q )
-					{
-						stop( "Error: order of q is not along with that of p." )
-					}
-				}
 
 				j <- j + 1
 			}
@@ -708,8 +709,7 @@ CGD$methods(
 			}
 			else if ( result$termcd == 1 )
 			{
-				intervals <<- gen.t3.intervals( c( mean, mean, mean ),
-												c( result$x[1]^2, result$x[2]^2, result$x[1]^2 ) )
+				intervals <<- gen.t3.intervals( rep( mean, 3 ), c( result$x[1]^2, result$x[2]^2, result$x[1]^2 ) )
 			}
 			else
 			{
@@ -890,7 +890,7 @@ CGD$methods(
 					}
 				}
 
-				intervals <<- gen.t3.intervals( c( mean, mean, mean ), sds )
+				intervals <<- gen.t3.intervals( rep( mean, 3 ), sds )
 
 				if ( intervals[[1]]$mean == intervals[[2]]$mean )
 				{

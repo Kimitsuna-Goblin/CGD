@@ -24,7 +24,7 @@ type1.type = 1, 2, 3 で有効 (デフォルト: FALSE)}
 
 \item{uni.sigma}{type1.type = 2、continuous = TRUE で、かつ、経路の構成点が3点の場合に、
 2つの確率密度関数 f_1(x) と f_2(x) の標準偏差を同じ値に揃えるかどうかのフラグ。
-このフラグが TRUE のときは、通常、 f_1(x) と f_2(x) の平均値は等しくならない (デフォルト: FALSE)}
+このフラグが TRUE のとき、通常、 f_1(x) と f_2(x) の平均値は等しくならない (デフォルト: FALSE)}
 
 \item{this.type1.type}{フィールドの type1.type に設定する値 (1、2、3 のいずれかを指定すること)。
 NULL の場合は type1.type の値を変更しない (デフォルト: NULL)
