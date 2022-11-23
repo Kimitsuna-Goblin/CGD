@@ -346,6 +346,13 @@ $$
 | type1.type = 2 <br> symmetric = TRUE | $\Psi_1( x ) = \Phi_1( x ) - \Phi_1( x )^2 + \Phi_2( x )^2 \qquad \qquad ( x \leq \mu )$ <br> $\Psi_2( x ) = 1 - \Psi_1( 2\mu - x ) \qquad \qquad \qquad \qquad \  ( x > \mu )$ <br> $g_1( x ) = ( 1 - 2\Phi_1( x ) ) f_1( x ) + 2\Phi_2( x ) f_2( x ) \quad ( x \leq \mu )$ <br> $g_2( x ) = g_1( 2\mu - x ) \qquad \qquad \qquad \qquad \qquad \  \  \  ( x > \mu )$ | $( \mu, 0.5 )$ を含む3点 | $[0, 0]$, $[0.5, 0.5]$, $[1, 1]$ の3点 | 連続 | 1.2.0 |
 | type1.type = 3 <br> symmetric = TRUE <br> (縦方向グラデーション) |  $\Psi( x ) = \Phi_1( x ) - \dfrac{1}{ \sqrt{2} } \Phi^\ast_1( x ) + \dfrac{1}{ \sqrt{2} } \Phi^\ast_2( x )$ <br> $g( x ) = ( 1 - \dfrac{ f_1( x ) }{ f_1( \mu ) } ) f_1( x ) + \dfrac{ f_2( x ) }{ f_2( \mu ) } f_2( x )$ | $( \mu, 0.5 )$ を含む3点 | $[0, 0]$, $[0.5, 0.5]$, $[1, 1]$ の3点 | 連続<br>( $C^\infty$ 級) | 1.2.0 |
 
+##### 注意
+
+type1.type = 3 に対するオプション symmetric = TRUE は次のバージョンにて廃止する予定です。
+
+このオプションは、縦方向グラデーションを意味する v.grad に変更されます。
+機能としては、 v.grad は symmetric の上位互換になる予定ですので、 d(), p(), q() および sd() の計算結果は変わりません (バグが無い限りは)。
+
 #### Type 2 - 接続区間 $Q_i = ( b_i, a_{i + 1} )$ が平均値 $\mu$ を含まない場合 その2
 + 接続区間 $Q_i$ の範囲が平均値 $\mu$ よりも小さく、標準偏差が $\sigma_i \geq \sigma_{i + 1}$ の場合
 + 接続区間 $Q_i$ の範囲が平均値 $\mu$ よりも大きく、標準偏差が $\sigma_i \leq \sigma_{i + 1}$ の場合
