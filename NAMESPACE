@@ -2,6 +2,7 @@
 
 export(CGD)
 export(CGDInterval)
+export(ms.qp.norm)
 export(sd.mqp.norm)
 export(sqnorm)
 export(variance.sub)

@@ -11,7 +11,7 @@ a <- CGD$new(mean = NULL, intervals = NULL, type1.type = 1)
 
 \item{intervals}{連結区間 (CGDInterval クラスのリスト) (デフォルト: NULL)}
 
-\item{type1.type}{type 1 の場合の計算方法 (1、2、3 のいずれかを指定する) (デフォルト: 1)}
+\item{type1.type}{type 1 の場合の計算方法 (1、2、3、4 のいずれかを指定する) (デフォルト: 1)}
 }
 \description{
 コンストラクタの引数は予め連結区間の構成が分かっている場合に指定する。

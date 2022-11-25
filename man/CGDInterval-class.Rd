@@ -17,15 +17,15 @@
 
 \item{\code{q.ind}}{独立区間に対するX座標 (クォンタイル)}
 
-\item{\code{q.conn.prev}}{前の区間との接続区間の確率内に収まる、この標準偏差のX座標 (クォンタイル)}
+\item{\code{q.conn.prev}}{前の区間との接続区間の確率内に収まる、この正規分布の累積密度関数のX座標 (クォンタイル)}
 
-\item{\code{q.conn.next}}{次の区間との接続区間の確率内に収まる、この標準偏差のX座標 (クォンタイル)}
+\item{\code{q.conn.next}}{次の区間との接続区間の確率内に収まる、この正規分布の累積密度関数のX座標 (クォンタイル)}
 
 \item{\code{p.ind}}{独立区間}
 
-\item{\code{p.conn.prev}}{前の区間との接続区間}
+\item{\code{p.conn.prev}}{前の区間との接続区間 (type1.type = 3 では、1個目または3個目の正規分布の確率密度関数が寄与する区間)}
 
-\item{\code{p.conn.next}}{次の区間との接続区間}
+\item{\code{p.conn.next}}{次の区間との接続区間 (type1.type = 3 では、1個目または3個目の正規分布の確率密度関数が寄与する区間)}
 }}
 
 
