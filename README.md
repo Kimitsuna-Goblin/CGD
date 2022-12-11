@@ -304,7 +304,7 @@ $$
 $\Phi( x )$ の逆関数 $\Phi^{-1}( x )$ を使って、この式を変形すると、
 
 $$
-\sigma = \dfrac{ q - \mu }{ \Phi^{-1}( p ) } \quad ( q \neq \mu, 0 < p < 1 )
+\sigma = \dfrac{ q - \mu }{ \Phi^{-1}( p ) } \quad ( q \neq \mu, \  0  < p < 1 \  \land \  p \neq 0.5 )
 $$
 
 という式が得られる。ここに、標準偏差 $\sigma$ を $\mu, q, p$ を使って表すことができた。
