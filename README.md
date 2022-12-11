@@ -14,17 +14,17 @@
 連結ガウス分布の確率密度関数は、一般に不連続で、いびつで、自然界には絶対に存在しなさそうな分布になります。
 連結する隙間の部分に、凄いひずみを作るからです。
 
-クォンタイルが6点以下の場合は、連続で滑らかな確率密度関数を持つ確率分布を構成することもできます。
-その場合、設定 (type1.type, continuous / symmetric) により、確率密度関数が
+クォンタイルが8点以下の場合は、連続で滑らかな確率密度関数を持つ確率分布を構成することもできます。
+設定 (type1.type, continuous / symmetric / v.grad) によって、確率密度関数が
 
 1. 2つの確率密度関数の平均 (type1.type = 1, continuous)、
 2. 横方向 (X軸方向) にグラデーションがかかったように変化する関数 (type1.type = 2, continuous)、
-3. 中央が鋭利に尖ったり、逆に凹んだりしている関数 (type1.type = 2, symmetric)、
-4. 縦方向 (Y軸方向) にグラデーションがかかったように変化する関数 (type1.type = 3, symmetric)
+3. 中央が鋭利に尖ったり、逆に凹んだりしている左右対称な関数 (type1.type = 2, symmetric)、
+4. 縦方向 (Y軸方向) にグラデーションがかかったように変化する関数 (type1.type = 3, v.grad)
 5. 縦横両方向にグラデーションがかかったように変化する関数 (type1.type = 4) (2つの連結ガウス分布の連結)
 
-となるように構成することも可能です。
-これらの確率密度関数は、歪んだ分布や、裾野の広い分布の解析などに使えるだろうと思います。
+となるように構成することができます。
+これらの分布は、正規分布よりも歪んだ分布や、より裾野の広い分布のモデルとして使えるだろうと思われます。
 
 ともかく、これはそういった分布を構成する、R言語のソースファイルです。
 
@@ -75,9 +75,9 @@ devtools::install_github( "Kimitsuna-Goblin/cgd" )
 > #                   指定されたすべての点を通過する累積分布関数を持つ連結ガウス分布を構成します
 > #                   p = 0.5 (平均値) の点は必ず指定してください
 > a$set.waypoints(
->   data.frame(
->     p = c( 0.1, 0.3, 0.5, 0.6, 0.7 ),
->     q = c( qnorm( c( 0.1, 0.3, 0.5, 0.6 ), 0, 1 ), 0.5 ) ) )
++   data.frame(
++     p = c( 0.1, 0.3, 0.5, 0.6, 0.7 ),
++     q = c( qnorm( c( 0.1, 0.3, 0.5, 0.6 ), 0, 1 ), 0.5 ) ) )
 > NULL
 >
 > # d() : X座標を指定して、確率密度を返します
@@ -108,6 +108,8 @@ Field "mean":
 Field "intervals":
 [[1]]
 Reference class object of class "CGDInterval"
+Field "mean":
+[1] 0
 Field "sd":
 [1] 1
 Field "q.ind":
@@ -125,6 +127,8 @@ Field "p.conn.next":
 
 [[2]]
 Reference class object of class "CGDInterval"
+Field "mean":
+[1] 0
 Field "sd":
 [1] 0.9534697
 Field "q.ind":
@@ -140,15 +144,21 @@ Field "p.conn.prev":
 Field "p.conn.next":
 [1] 1 1
 
+Field "type1.type":
+[1] 1
 Field "m.sd":
+[1] -Inf
+Field "m.lsd":
+[1] -Inf
+Field "m.usd":
 [1] -Inf
 > # 各要素の意味はマニュアルまたはソースファイルのコメントを参照してください
 > #
-> # m.sd はこの連結ガウス分布の標準偏差です
-> # 計算に時間がかかるので、計算結果をメンバに持たせています
-> # m.sd は set.waypoints() で -Inf に初期化され、sd() メソッドを呼び出すと、計算結果と同じ値が設定されます
-> # 次に sd() を呼んだときは、まじめに計算せずに m.sd の値をそのまま返します
-> # 標準偏差を得るには sd() を使い、m.sd は直接参照しないでください
+> # m.sd, m.lsd, m.usd はこの連結ガウス分布の標準偏差 (全体, 下側, 上側) です
+> # 計算に時間がかかるので、計算結果をフィールドに持たせています
+> # これらのフィールドは sd() 等のメソッドを呼び出すと、計算結果と同じ値が設定されます
+> # 次に sd() 等を呼んだときは、再計算せずに、フィールドの値を返します
+> # 標準偏差を得るには sd() 等のメソッドを使い、フィールドの値は直接参照しないでください
 </pre>
 
 
@@ -332,8 +342,8 @@ $$
 
 本ライブラリでは、各オプションに応じて、以下の表のように接続関数を構成するよう試みる
 (経路の点の個数に条件があるものは、構成に失敗することがある)。
-なお、表中の式で、 $\Phi_i( x ), \Phi_{i+1}( x )$ は正規分布 $N_i,N_{i+1}$ の累積分布関数、 $f_i( x ), f_{i+1}( x )$ はそれらの分布の確率密度関数、 $\bar \Phi_i( x ) = ( \Phi_i( x ) + \Phi_{i+1}( x ) ) / 2$ 、 $\Phi^\ast_i(x)$ は正規分布 $N( \mu, ( \dfrac{ \sigma_i }{ \sqrt2 } )^2 )$ の累積分布関数 である。
-添字のない $\mu$ はその分布の平均値を表し、添字のある $\mu_i$ は連結ガウス分布の構成要素の正規分布 $N_i( \mu_i, \sigma_i^2 )$ の平均値を表す。原則として、 $\mu_i = \mu$ であるが、 (1) 経路の点に $( \mu, 0.5 )$ を含まない場合、(2) type1.type = 2、continuous = TRUE、uni.sigma = TRUE の場合、 (3) type1.type = 3 で経路の点が5点以上の場合の3つの場合は、一般に $\mu_i \neq \mu$ である。
+表中の式で、 $\Phi_i( x ), \Phi_{i+1}( x )$ は正規分布 $N_i,N_{i+1}$ の累積分布関数、 $f_i( x ), f_{i+1}( x )$ はそれらの分布の確率密度関数、 $\bar \Phi_i( x ) = ( \Phi_i( x ) + \Phi_{i+1}( x ) ) / 2$ 、 $\Phi^\ast_i(x)$ は正規分布 $N( \mu, ( \dfrac{ \sigma_i }{ \sqrt2 } )^2 )$ の累積分布関数 である。
+添字のない $\mu$ は連結ガウス分布の平均値を表し、添字のある $\mu_i$ は構成要素の正規分布 $N_i( \mu_i, \sigma_i^2 )$ の平均値を表す。
 
 | オプション  | 接続関数 $\Psi_i(x)$ ・確率密度関数 $g_i(x)$ | 適用可能な経路の点の個数 | 独立区間 | 確率密度関数の連続性 | 実装ver |
 | :--------: | :--------------------------------------- | :------: | :----: | :----------------: | :-----: |
@@ -345,7 +355,7 @@ $$
 | type1.type = 2 <br> symmetric = TRUE | $\Psi_1( x ) = \Phi_1( x ) - \Phi_1( x )^2 + \Phi_2( x )^2 \qquad \qquad ( x \leq \mu )$ <br> $\Psi_2( x ) = 1 - \Psi_1( 2\mu - x ) \qquad \qquad \qquad \qquad \  ( x > \mu )$ <br> $g_1( x ) = ( 1 - 2\Phi_1( x ) ) f_1( x ) + 2\Phi_2( x ) f_2( x ) \quad ( x \leq \mu )$ <br> $g_2( x ) = g_1( 2\mu - x ) \qquad \qquad \qquad \qquad \qquad \  \  \  ( x > \mu )$ | $( \mu, 0.5 )$ を含む3点 | $[0, 0]$, $[0.5, 0.5]$, $[1, 1]$ の3点 | 連続 | 1.2.0 |
 | type1.type = 3 <br> symmetric = TRUE <br> (縦方向グラデーション) <br> (廃止 → v.grad に変更) |  $\Psi( x ) = \Phi_1( x ) - \dfrac{1}{ \sqrt{2} } \Phi^\ast_1( x ) + \dfrac{1}{ \sqrt{2} } \Phi^\ast_2( x )$ <br> $g( x ) = ( 1 - \dfrac{ f_1( x ) }{ f_1( \mu ) } ) f_1( x ) + \dfrac{ f_2( x ) }{ f_2( \mu ) } f_2( x )$ | $( \mu, 0.5 )$ を含む3点 | $[0, 0]$, $[0.5, 0.5]$, $[1, 1]$ の3点 | 連続<br>( $C^\infty$ 級) | 1.2.0 (1.3.8 にて廃止) |
 | type1.type = 3 <br> v.grad = TRUE <br> (縦方向グラデーション) |  $\Psi( x ) = \Phi_1( x ) - \dfrac{1}{ \sqrt{2} } \Phi^\ast_1( x ) + \dfrac{1}{ \sqrt{2} } \Phi^\ast_2( x )$ <br> $g( x ) = ( 1 - \dfrac{ f_1( x ) }{ f_1( \mu_1 ) } ) f_1( x ) + \dfrac{ f_2( x ) }{ f_2( \mu_2 ) } f_2( x )$ | 任意の3点<br>または $( \mu, 0.5 )$ を含まない4点 | $[0, 0]$, $[1, 1]$ の2点<br>あるいは $[0.5, 0.5]$ を加えた3点 | 連続<br>( $C^\infty$ 級) | 1.3.8 |
-| type1.type = 4 <br> (縦横グラデーション) |  $\Psi( x ) = \Psi_A( x ) - \dfrac{1}{2} \Psi_A( x )^2 + \dfrac{1}{2} \Psi_B( x )^2$ <br> $\qquad \Psi_A( x ) = \Phi_{A1}( x ) - \dfrac{1}{ \sqrt{2} } \Phi^\ast_{A1}( x ) + \dfrac{1}{ \sqrt{2} } \Phi^\ast_{A2}( x )$ <br> $\qquad \Psi_B( x ) = \Phi_{B1}( x ) - \dfrac{1}{ \sqrt{2}  } \Phi^\ast_{B1}( x ) + \dfrac{1}{ \sqrt{2}  } \Phi^\ast_{B2}( x )$ <br> $g( x ) = ( 1 - \Psi_A( x ) ) g_A( x ) + \Psi_B( x ) g_B( x )$ <br> $\qquad g_A( x ) = ( 1 - \dfrac{ f_{A1}( x ) }{ f_{A1}( \mu_{A1} ) } ) f_{A1}( x ) + \dfrac{ f_{A2}( x ) }{ f_{A2}( \mu_{A2} ) } f_{A2}( x )$ <br> $\qquad g_B( x ) = ( 1 - \dfrac{ f_{B1}( x ) }{ f_{B1}( \mu_{B1} ) } ) f_{B1}( x ) + \dfrac{ f_{B2}( x ) }{ f_{B2}( \mu_{B2} ) } f_{B2}( x )$ | $( \mu, 0.5 )$ を含む5点または7点<br>または $( \mu, 0.5 )$ を含まない6点または8点 | $[0, 0]$, $[1, 1]$ の2点 | 連続<br>( $C^\infty$ 級) | 1.4.0 予定<br>(1.3.x では仮実装) |
+| type1.type = 4 <br> (縦横グラデーション) |  $\Psi( x ) = \Psi_1( x ) - \dfrac{1}{2} \Psi_1( x )^2 + \dfrac{1}{2} \Psi_2( x )^2$ <br> $\qquad \Psi_1( x ) = \Phi_{1, 1}( x ) - \dfrac{1}{ \sqrt{2} } \Phi^\ast_{1, 1}( x ) + \dfrac{1}{ \sqrt{2} } \Phi^\ast_{1, 2}( x )$ <br> $\qquad \Psi_2( x ) = \Phi_{2, 1}( x ) - \dfrac{1}{ \sqrt{2}  } \Phi^\ast_{2, 1}( x ) + \dfrac{1}{ \sqrt{2}  } \Phi^\ast_{2, 2}( x )$ <br> $g( x ) = ( 1 - \Psi_1( x ) ) g_1( x ) + \Psi_2( x ) g_2( x )$ <br> $\qquad g_1( x ) = ( 1 - \dfrac{ f_{1, 1}( x ) }{ f_{1, 1}( \mu_{1, 1} ) } ) f_{1, 1}( x ) + \dfrac{ f_{1, 2}( x ) }{ f_{1, 2}( \mu_{1, 2} ) } f_{1, 2}( x )$ <br> $\qquad g_2 ( x ) = ( 1 - \dfrac{ f_{2, 1}( x ) }{ f_{2, 1}( \mu_{2, 1} ) } ) f_{2, 1}( x ) + \dfrac{ f_{2, 2}( x ) }{ f_{2, 2}( \mu_{2, 2} ) } f_{2, 2}( x )$ | $( \mu, 0.5 )$ を含む5点または7点<br>または $( \mu, 0.5 )$ を含まない6点または8点 | $[0, 0]$, $[1, 1]$ の2点 | 連続<br>( $C^\infty$ 級) | 1.4.0 |
 
 #### Type 2 - 接続区間 $Q_i = ( b_i, a_{i + 1} )$ が平均値 $\mu$ を含まない場合 その2
 + 接続区間 $Q_i$ の範囲が平均値 $\mu$ よりも小さく、標準偏差が $\sigma_i \geq \sigma_{i + 1}$ の場合

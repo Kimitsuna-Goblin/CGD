@@ -11,7 +11,7 @@ sd.mqp.norm(mean, q, p)
 
 \item{q}{X座標 (クォンタイル)}
 
-\item{p}{その点における確率}
+\item{p}{そのX座標における確率 (累積分布関数の値)}
 }
 \value{
 標準偏差

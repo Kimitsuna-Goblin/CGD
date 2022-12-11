@@ -2,7 +2,7 @@
 % Please edit documentation in R/CGD.R
 \name{variance.sub}
 \alias{variance.sub}
-\title{正規分布の分散の閉区間範囲内の値を返す}
+\title{閉区間内における正規分布の分散の値を得る}
 \usage{
 variance.sub(
   x.bound,
@@ -24,8 +24,9 @@ variance.sub(
 \item{f.p}{正規分布の確率を計算する関数 (デフォルト: pnorm( x, mean, sd ) )}
 }
 \value{
-与えられた正規分布の分散を閉区間範囲内のみに限って計算した値
+定義域を閉区間内に限ったときの、正規分布の分散
 }
 \description{
-正規分布の分散の閉区間範囲内の値を返す
+正規分布の分散は通常、定義域を (-∞, ∞) として、広義積分計算して算出するが、
+その定義域をある閉区間 [x.bound[1], x.bound[2]] に限って、定積分計算した値を得る。
 }

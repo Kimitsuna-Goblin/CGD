@@ -4,20 +4,19 @@
 \alias{CGD$initialize}
 \title{コンストラクタ}
 \usage{
-a <- CGD$new(mean = NULL, intervals = NULL, type1.type = 1)
+a <- CGD$new(type1.type = 1)
 }
 \arguments{
-\item{mean}{平均値 (デフォルト: NULL)}
-
-\item{intervals}{連結区間 (CGDInterval クラスのリスト) (デフォルト: NULL)}
-
 \item{type1.type}{type 1 の場合の計算方法 (1、2、3、4 のいずれかを指定する) (デフォルト: 1)}
 }
 \description{
-コンストラクタの引数は予め連結区間の構成が分かっている場合に指定する。
-詳細については、 \link[cgd]{CGD$set.waypoints} を参照。
+処理の安定化・可読性向上のため、 type1.type 以外の引数は削除された。
+}
+\details{
+連結区間の構成が分かっている場合は \link[cgd]{CGD$set.intervals} を使用すること。
 }
 \seealso{
 \link[cgd]{CGDInterval-class}
+\link[cgd]{CGD$set.intervals}
 \link[cgd]{CGD$set.waypoints}
 }

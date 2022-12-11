@@ -2,6 +2,7 @@
 
 export(CGD)
 export(CGDInterval)
+export(gen.t3.intervals)
 export(ms.qp.norm)
 export(sd.mqp.norm)
 export(sqnorm)
