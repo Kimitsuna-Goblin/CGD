@@ -486,6 +486,8 @@ $\Phi^\ast_i(x)$ は正規分布 $N( \mu_i, ( \dfrac{ \sigma_i }{ \sqrt2 } )^2 )
 
 v1.2.0 にあった type1.type = 3, symmetric = TRUE (縦方向グラデーションの旧バージョン) のオプションは廃止され、 v1.3.8 以降、 type1.type = 3, v.grad = TRUE に上位互換的に変更された。
 
+type1.type = 4 (縦横グラデーション) は正規分布の連結ではなく、連結ガウス分布 (縦方向グラデーション) を横方向グラデーションで連結した分布である。
+
 ## 参考資料 - References
 
 ### 連結ガウス分布 (Connected Gaussian Distribution) に関する資料
