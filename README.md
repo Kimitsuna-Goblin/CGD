@@ -174,7 +174,7 @@ Field "m.usd":
 [test.R](https://github.com/Kimitsuna-Goblin/CGD/blob/master/test.R) - ライブラリのテスト用ソースファイルです。
 
 
-## 連結ガウス分布の構成方法 (一般の場合)<BR> - How to construct a Connected Gaussian Distribution (generally)
+## 連結ガウス分布の構成方法 (一般の場合)<br> - How to construct a Connected Gaussian Distribution (generally)
 
 一般に、 (不連続な) 連結ガウス分布は次のようにして構成することができる。
 
@@ -184,11 +184,11 @@ Field "m.usd":
 つまり、
 
 $$
-P = \left\lbrace P_i \subset [0, 1] \mid P_i=[a_i, b_i] ( 1 \leq i \leq n, 0 \leq a_i \leq b_i \leq 1 ), a_1=0, b_n=1,
-      i \neq j \Rightarrow P_i \cap P_j = \varnothing \right\rbrace
+P = \left\lbrace P_i \subset [0, 1] \mid P_i=[a_i, b_i] \  ( 1 \leq i \leq n, \  0 \leq a_i \leq b_i \leq 1 ), \  a_1=0, \  b_n=1,
+    \  i \neq j \Rightarrow P_i \cap P_j = \varnothing \right\rbrace
 $$
 
-を満たすような、閉区間の集合 $P$ を用意する (便宜上、 $P$ の先頭の要素 $P_1$ に 0 が含まれ、最後の要素 $P_n$ に 1 が含まれるものとした)。
+を満たすような、閉区間の集合 $P$ を用意する (便宜上、 $P$ の最初の要素 $P_1$ に 0 が含まれ、最後の要素 $P_n$ に 1 が含まれるものとした)。
 
 各要素 $P_i$ は、1点のみからなる区間 $[a_i, a_i] ( 0 \leq a_i \leq 1 )$ でもよい。
 
@@ -196,19 +196,19 @@ $$
 すなわち、 $1 \leq i \leq n - 1$ に対して、 $b_i ＜ a_{i+1}$ となっていることが望ましい
  (以下、 $P$ はこの条件を満たすものとする)。
 
-ここで、予め、累積分布関数の経路 (あるいは、クォンタイルとその確率。以下、経路と言う)
+ここで、予め、有限の $m$ 個の点からなる、累積分布関数が通過すべき経路 (あるいは、クォンタイルとその確率。以下、経路と言う)
 $W = \left\lbrace ( x_j, p_j ) \in ( \mathbb{R}, [0, 1] ) \mid 1 \leq j \leq m \right\rbrace$
 が与えられているときは、
-その経路上のすべての確率 $p_j ( 1 \leq j \leq m )$ の値が、いずれかの $P_i$ に必ず含まれるように取る
- (便宜上、経路 $W$ の確率 $\left\lbrace p_j \right\rbrace$ は昇順に並んでいるものとする)。
+その経路のすべての点の確率 $p_j$ $( 1 \leq j \leq m )$ の値が、それぞれ、いずれかの $P_i$ に必ず含まれるように取る
+ (便宜上、経路 $W$ の点の確率 $\left\lbrace p_j \right\rbrace$ は昇順に並んでいるものとする)。
 
-この際、もし、 $n$ を $m$ と等しく取り、それぞれ1つの閉区間 $P_i ( 1 \leq i \leq n = m )$ に確率 $p_i$ が1つだけ含まれるように $P$ を用意するならば、
+この際、もし、 $n$ を $m$ と等しく取り、それぞれ1つの閉区間 $P_i$ $( 1 \leq i \leq n = m )$ に、経路の点の確率 $p_i$ が1つだけ含まれるように $P$ を用意するならば、
 後の工程が確実に実行できる。
-ただし、後の工程が実行可能であれば、1つの閉区間 $P_i$ に複数の確率 $p_j, p_{j+1}, p_{j+2}, \cdots$ が含まれるように用意してもよい。
+ただし、後の工程が実行可能であれば、1つの閉区間 $P_i$ に、経路の複数の点の確率 $p_j, p_{j+1}, p_{j+2}, \cdots$ が含まれるように用意してもよい。
 
 
 2. 閉区間の集合 $P$ の要素数と等しい、 $n$ 個の正規分布からなる集合 $N = \left\lbrace N_1, N_2, \cdots, N_n \right\rbrace$ を用意して、
-その要素の正規分布 $N_i ( 1 \leq i \leq n )$ に、
+その要素の正規分布 $N_i$ $( 1 \leq i \leq n )$ に、
 閉区間 $P_i$ をそれぞれ1つずつ割り当てる。
 
 このとき、集合 $N$ が以下の2つの条件を満たすように、正規分布 $N_i$ を用意する。
@@ -222,18 +222,18 @@ $\lbrace x \mid \Phi_j( x ) \in P_j \rbrace$ が、互いに重ならないこ�
 $\left\lbrace \Phi_i^{-1}( p ) \mid p \in P_i \right\rbrace ∩ \left\lbrace \Phi_j^{-1}( p ) \mid p \in P_j \right\rbrace = \varnothing$
 であること。
 + 経路 $W = \left\lbrace ( x_j, p_j ) \right\rbrace$ が与えられており、
-経路上の確率 $p_j$ が閉区間 $P_i$ に含まれているときは、
-その区間が割り当てられている確率分布 $N_i$ の累積分布関数 $\Phi_i$ が、必ずその経路上の点 $( x_j, p_j )$ を通過すること。
+経路の点の確率 $p_j$ が閉区間 $P_i$ に含まれているときは、
+その区間が割り当てられている確率分布 $N_i$ の累積分布関数 $\Phi_i$ が、必ずその経路の点 $( x_j, p_j )$ を通過すること。
 すなわち、 $p_j \in P_i \Rightarrow \Phi_i( x_j ) = p_j$ が成り立つこと。
 
 なお、集合 $N$ の要素の中には、 $N_i = N_j ( i \neq j )$ なる同一の分布が存在してもよい。
 
-閉区間 $P_i$ がある程度の幅を持ち、 $P_i$ の中に複数個の経路上の確率 $p_j, p_{j+1}, p_{j+2}, ...$ を含んでいる場合は、
+ある1つの閉区間 $P_i$ の中に、経路の複数の点の確率 $p_j, p_{j+1}, p_{j+2}, ...$ が含まれる場合は、
 特別な場合を除いて、一般に、上の2つの条件を満たす正規分布の集合 $N$ を構成することはできない。
-しかし、すべての閉区間 $P_i$ が高々1個の経路上の確率 $p_j$ しか含まない場合、特に、すべての閉区間 $P_i$ が1点のみからなる場合は、
-2つの条件を満たす正規分布の集合 $N$ を必ず構成することができる (自明であろう)。
+しかし、すべての閉区間 $P_i$ が高々1個の経路の点の確率 $p_j$ しか含まず、特に、すべての閉区間 $P_i$ が1点のみからなる場合は、
+上の2つの条件を満たす正規分布の集合 $N$ は、必ず構成することができる (自明であろう)。
 
-さて、これまでの工程によって、与えられた経路上の点をすべて通過する、累積分布関数の不連続な断片が構成できたので、あとは、それらの断片を連続になるように接続すればよい。
+さて、これまでの工程によって、与えられた経路の点をすべて通過する、累積分布関数の不連続な断片が構成できたので、あとは、それらの断片を連続になるように接続すればよい。
 そこで、最終的な工程として、次のように断片の接続を行う。
 
 以下、記述を簡単にするため、
@@ -262,20 +262,19 @@ $$
 $$
 
 は確率分布の累積分布関数としての要件を満たす。
-以上のように構成した累積分布関数を持つ確率分布を「連結ガウス分布」と呼ぶ。
+以上のように構成した累積分布関数を持つ確率分布を **「連結ガウス分布」** と呼ぶ。
 
 これまで述べてきた閉区間 $P_i$ と開区間 $Q_i$ の呼称について、
-閉区間 $P_i =  [a_i, b_i]$ は、1つの正規分布の累積分布関数 $\Phi_i(x)$ が、単独で独立的に $\Phi_{CGD}(x)$ を負担している区間であることから、これを「独立区間」と呼ぶ。
-それに対して、開区間 $Q_i = (b_i, a_{i+1})$ は、2つの独立区間を接続していることから、これを「接続区間」と呼ぶ。
-また、接続区間 $Q_i$ を負担する関数 $\Psi_i(x)$ を「接続関数」と呼ぶ。
+閉区間 $P_i =  [a_i, b_i]$ は、1つの正規分布の累積分布関数 $\Phi_i(x)$ が、単独で独立的に $\Phi_{CGD}(x)$ を負担している区間であることから、これを **「独立区間」** と呼ぶ。
+それに対して、開区間 $Q_i = (b_i, a_{i+1})$ は、2つの独立区間を接続していることから、これを **「接続区間」** と呼ぶ。
+また、接続区間 $Q_i$ における累積分布関数に相当する関数 $\Psi_i(x)$ を **「接続関数」** と呼ぶ。
 
-以上、任意の経路の点を通過する連結ガウス分布の構成方法を述べたが、通過すべき経路の点が少なく3点程度の場合は、
-非線形連立方程式を解くことによって、独立区間を $[0, 0]$ や $[1, 1]$ といった特別な点に置き、その間を結ぶ接続関数に経路の点を通過させることもできる。
-その場合は、確率密度関数を全区間で連続あるいは $C^\infty$ 級にすることも可能である。
+以上、任意の経路の点を通過する、不連続な連結ガウス分布の構成方法を述べたが、
+独立区間を $[0, 0]$ や $[1, 1]$ 、 $[0.5, 0.5]$ といった、特別な1点からなる区間のみに限定すれば、確率密度関数が連続な分布を構成することも可能である。
 
-## 本ライブラリにおける連結ガウス分布の構成方法<BR> - The way to construct a Connected Gaussian Distribution in this library
+## 不連続な分布の構成方法 (本ライブラリの場合) <br> - The way to construct a Uncontinuous distribution (in this library)
 
-### 独立区間と正規分布の構成 - Constructing indipendent intervals and normal distributions
+### 独立区間と正規分布の構成 - Construction of indipendent intervals and normal distributions
 
 不連続な連結ガウス分布の場合、本ライブラリでは、以下のように独立区間を構成する。
 
@@ -322,9 +321,7 @@ $$
 したがって、上に述べたような正規分布は容易に見つけることができる。
 本ライブラリでは、この式を使って正規分布を構成し、連結ガウス分布の累積分布関数 $\Phi_{CGD}(x)$ の独立区間の部分を得る。
 
-なお、連続な連結ガウス分布の場合、独立区間は $[0, 0]$ や $[1, 1]$ など、特殊な1点のみからなる区間となり、それら以外の独立区間を作ることはできない。
-
-### 接続区間の構成 - Constructing connecting intervals
+### 接続区間の構成 - Construction of connecting intervals
 
 連結ガウス分布の累積分布関数 $\Phi_{CGD}(x)$ の接続区間の部分は、以下のように、type 1, type 2, type 3a, type 3b の4つの場合に分けて構成する。
 
@@ -343,25 +340,17 @@ $N_i$ の累積分布関数を $\Phi_i( x )$ 、確率密度関数を $f_i( x )$
 累積分布関数 $\Phi_i( x ), \Phi_{i + 1}( x )$ の値が両方とも接続区間 $Q_i$ の範囲内に収まり、範囲外に出ることがない。
 そのため、4つの場合の中で、最も自由に接続関数を構成することできる。
 
-本ライブラリでは、各オプションに応じて、以下の表のように接続関数を構成するよう試みる。
-不連続な連続ガウス分布は構成に失敗することはないが、連続な分布は構成に失敗することがある。
+本ライブラリでは、 type1.type というオプションによって、以下の表のように接続関数を構成する。
+なお、不連続な連続ガウス分布の場合は、構成に失敗することはない。
 
+表中の式で、 $\Phi_i( x ), \Phi_{i+1}( x )$ は正規分布 $N_i,N_{i+1}$ の累積分布関数である。
+$f_i( x ), f_{i+1}( x )$ は同じく正規分布 $N_i,N_{i+1}$ の確率密度関数である。
+$\bar \Phi_i( x ) = ( \Phi_i( x ) + \Phi_{i+1}( x ) ) / 2$ である。
 
-表中の式で、 $\Phi_i( x ), \Phi_{i+1}( x )$ は正規分布 $N_i,N_{i+1}$ の累積分布関数、 $f_i( x ), f_{i+1}( x )$ は同じく正規分布 $N_i,N_{i+1}$ の確率密度関数、 $\bar \Phi_i( x ) = ( \Phi_i( x ) + \Phi_{i+1}( x ) ) / 2$ 、 $\Phi^\ast_i(x)$ は正規分布 $N( \mu, ( \dfrac{ \sigma_i }{ \sqrt2 } )^2 )$ の累積分布関数 である。
-添字のない $\mu$ は連結ガウス分布の平均値を表し、添字のある $\mu_i$ は構成要素の正規分布 $N_i( \mu_i, \sigma_i^2 )$ の平均値を表す。
-なお、連続な分布の場合、接続関数 $\Psi( x )$ はそのまま累積分布関数となるので、表の項目にカッコ書きしておいた。
-
-| オプション  | 接続関数 (累積分布関数) $\Psi_i(x)$ ・確率密度関数 $g_i(x)$ | 適用可能な経路の点の個数 | 独立区間 | 確率密度関数の連続性 | 実装ver |
-| :--------: | :--------------------------------------- | :------: | :----: | :----------------: | :-----: |
-| type1.type = 1 | $\Psi_i( x ) = \dfrac{ \alpha_{i+1} - x }{ \alpha_{i+1} - \beta_i } \Phi_i( x ) + \dfrac{ x - \beta_i }{ \alpha_{i+1} - \beta_i } \Phi_{i+1}( x )$ <br> $g_i( x ) = \dfrac{ \alpha_{i+1} - x }{ \alpha_{i+1} - \beta_i } f_i( x ) + \dfrac{ x - \beta_i }{ \alpha_{i+1} - \beta_i } f_{i+1}( x ) + \dfrac{ \Phi_{i+1}( x ) - \Phi_i( x ) }{ \alpha_{i+1} - \beta_i }$ | 任意 | 任意 | 不連続 | 1.0.0 |
-| type1.type = 2  | $\Psi_i( x ) = \dfrac{ \bar \Phi_i( \alpha_{i+1} ) - \bar \Phi_i( x ) }{ \bar \Phi_i( \alpha_{i+1} ) - \bar \Phi_i( \beta_i ) } \Phi_i( x ) + \dfrac{ \bar \Phi_i( x ) - \bar \Phi_i( \beta_i ) }{ \bar \Phi_i( \alpha_{i+1} ) - \bar \Phi_i( \beta_i ) } \Phi_{i+1}( x )$ <br> $g_i( x ) = \dfrac{ \bar \Phi_i( \alpha_{i+1} ) -\Phi_i( x ) }{ \bar \Phi_i( \alpha_{i+1} ) - \bar \Phi_i( \beta_i ) } f_i( x ) + \dfrac{ \Phi_{i+1}( x ) - \bar \Phi_i( \beta_i ) }{ \bar \Phi_i( \alpha_{i+1} ) - \bar \Phi_i( \beta_i ) } f_{i+1}( x )$ | 任意 | 任意 | 不連続 | 1.1.0 |
-| type1.type = 3 | $\Psi( x ) = \Psi_1( x ) + \Psi_2( x ) + \Psi_3( x )$ <br> $\qquad \Psi_1( x ) = \mathrm{ min }( \Phi_1( x ) - \dfrac{1}{ \sqrt{2} } \Phi^\ast_1( x ), \  \dfrac{2 - \sqrt{2}}{4} )$ <br> $\qquad \Psi_2( x ) = \dfrac{1}{ \sqrt{2} } \Phi^\ast_2( x )$ <br> $\qquad \Psi_3( x ) = \mathrm{ max }( 0, \  \Phi_3( x ) - \dfrac{1}{ \sqrt{2} } \Phi^\ast_3( x ) - \dfrac{2 - \sqrt{2}}{4} )$ <br> $g( x ) = g_1( x ) + g_2( x ) + g_3( x )$ <br> $\qquad g_1( x ) = ( 1 - \dfrac{ f_1( x ) }{ f_1( \mu_1 ) } ) f_1( x ) \ \  ( x \leq \mu_1 ), \quad 0 \ \  ( x > \mu_1 )$ <br> $\qquad g_2( x ) = \dfrac{ f_2( x ) }{ f_2( \mu_2 ) } f_2( x )$ <br> $\qquad g_3( x ) = 0 \ \  ( x < \mu_3 ), \quad ( 1 - \dfrac{ f_3( x ) }{ f_3( \mu_3 ) } ) f_3( x ) \ \  ( x \geq \mu_3 )$ | $( \mu, 0.5 )$ を含む3～5点<br>または $( \mu, 0.5 )$ を含まない4点または6点 | $[0, 0]$, $[0.5, 0.5]$, $[1, 1]$, $[0, 0.5]$, $[0.5, 1]$, $[0, 1]$ のいずれか | 連続<br>( $C^1$ 級) | 1.3.5 |
-| type1.type = 1 <br> continuous = TRUE or symmetric = TRUE | $\Psi( x ) = \dfrac{1}{2} ( \Phi_1( x ) + \Phi_2( x ) )$ <br> $g( x ) = \dfrac{1}{2} ( f_1( x ) + f_2( x ) )$ | $( \mu, 0.5 )$ を含む3点 | $[0, 0]$, $[1, 1]$ の2点 | 連続<br>( $C^\infty$ 級) | 1.2.0 |
-| type1.type = 2 <br> continuous = TRUE <br> (横方向グラデーション) | $\Psi( x ) = \Phi_1( x ) - \dfrac{1}{2} \Phi_1( x )^2 + \dfrac{1}{2} \Phi_2( x )^2$ <br> $g( x ) = ( 1 - \Phi_1( x ) )f_1( x ) + \Phi_2( x ) f_2( x )$ | $( \mu, 0.5 )$ を含む3点<br>または $( \mu, 0.5 )$ を含まない4点 | $[0, 0]$, $[1, 1]$ の2点 | 連続<br>( $C^\infty$ 級) | 1.3.0 |
-| type1.type = 2 <br> symmetric = TRUE | $\Psi_1( x ) = \Phi_1( x ) - \Phi_1( x )^2 + \Phi_2( x )^2 \qquad \qquad ( x \leq \mu )$ <br> $\Psi_2( x ) = 1 - \Psi_1( 2\mu - x ) \qquad \qquad \qquad \qquad \  ( x > \mu )$ <br> $g_1( x ) = ( 1 - 2\Phi_1( x ) ) f_1( x ) + 2\Phi_2( x ) f_2( x ) \quad ( x \leq \mu )$ <br> $g_2( x ) = g_1( 2\mu - x ) \qquad \qquad \qquad \qquad \qquad \  \  \  ( x > \mu )$ | $( \mu, 0.5 )$ を含む3点 | $[0, 0]$, $[0.5, 0.5]$, $[1, 1]$ の3点 | 連続 | 1.2.0 |
-| type1.type = 3 <br> symmetric = TRUE <br> (縦方向グラデーション) <br> (廃止 → v.grad に変更) |  $\Psi( x ) = \Phi_1( x ) - \dfrac{1}{ \sqrt{2} } \Phi^\ast_1( x ) + \dfrac{1}{ \sqrt{2} } \Phi^\ast_2( x )$ <br> $g( x ) = ( 1 - \dfrac{ f_1( x ) }{ f_1( \mu ) } ) f_1( x ) + \dfrac{ f_2( x ) }{ f_2( \mu ) } f_2( x )$ | $( \mu, 0.5 )$ を含む3点 | $[0, 0]$, $[0.5, 0.5]$, $[1, 1]$ の3点 | 連続<br>( $C^\infty$ 級) | 1.2.0 (1.3.8 にて廃止) |
-| type1.type = 3 <br> v.grad = TRUE <br> (縦方向グラデーション) |  $\Psi( x ) = \Phi_1( x ) - \dfrac{1}{ \sqrt{2} } \Phi^\ast_1( x ) + \dfrac{1}{ \sqrt{2} } \Phi^\ast_2( x )$ <br> $g( x ) = ( 1 - \dfrac{ f_1( x ) }{ f_1( \mu_1 ) } ) f_1( x ) + \dfrac{ f_2( x ) }{ f_2( \mu_2 ) } f_2( x )$ | 任意の3点<br>または $( \mu, 0.5 )$ を含まない4点 | $[0, 0]$, $[1, 1]$ の2点<br>あるいは $[0.5, 0.5]$ を加えた3点 | 連続<br>( $C^\infty$ 級) | 1.3.8 |
-| type1.type = 4 <br> (縦横グラデーション) |  $\Psi( x ) = \Psi_1( x ) - \dfrac{1}{2} \Psi_1( x )^2 + \dfrac{1}{2} \Psi_2( x )^2$ <br> $\qquad \Psi_1( x ) = \Phi_{1, 1}( x ) - \dfrac{1}{ \sqrt{2} } \Phi^\ast_{1, 1}( x ) + \dfrac{1}{ \sqrt{2} } \Phi^\ast_{1, 2}( x )$ <br> $\qquad \Psi_2( x ) = \Phi_{2, 1}( x ) - \dfrac{1}{ \sqrt{2}  } \Phi^\ast_{2, 1}( x ) + \dfrac{1}{ \sqrt{2}  } \Phi^\ast_{2, 2}( x )$ <br> $g( x ) = ( 1 - \Psi_1( x ) ) g_1( x ) + \Psi_2( x ) g_2( x )$ <br> $\qquad g_1( x ) = ( 1 - \dfrac{ f_{1, 1}( x ) }{ f_{1, 1}( \mu_{1, 1} ) } ) f_{1, 1}( x ) + \dfrac{ f_{1, 2}( x ) }{ f_{1, 2}( \mu_{1, 2} ) } f_{1, 2}( x )$ <br> $\qquad g_2 ( x ) = ( 1 - \dfrac{ f_{2, 1}( x ) }{ f_{2, 1}( \mu_{2, 1} ) } ) f_{2, 1}( x ) + \dfrac{ f_{2, 2}( x ) }{ f_{2, 2}( \mu_{2, 2} ) } f_{2, 2}( x )$ | $( \mu, 0.5 )$ を含む5点または7点<br>または $( \mu, 0.5 )$ を含まない6点または8点 | $[0, 0]$, $[1, 1]$ の2点 | 連続<br>( $C^\infty$ 級) | 1.4.0 |
+| オプション  | 接続関数 $\Psi_i(x)$ ・確率密度関数 $g_i(x)$ | 通過できる経路の点の個数 | 確率密度関数の連続性 | 実装ver |
+| :--------: | :----------------------------------------- | :--------------------: | :----------------: | :-----: |
+| type1.type = 1 | $\Psi_i( x ) = \dfrac{ \alpha_{i+1} - x }{ \alpha_{i+1} - \beta_i } \Phi_i( x ) + \dfrac{ x - \beta_i }{ \alpha_{i+1} - \beta_i } \Phi_{i+1}( x )$ <br> $g_i( x ) = \dfrac{ \alpha_{i+1} - x }{ \alpha_{i+1} - \beta_i } f_i( x ) + \dfrac{ x - \beta_i }{ \alpha_{i+1} - \beta_i } f_{i+1}( x ) + \dfrac{ \Phi_{i+1}( x ) - \Phi_i( x ) }{ \alpha_{i+1} - \beta_i }$ | 任意 <br> (1個以上、上限なし) | 不連続 | 1.0.0 |
+| type1.type = 2  | $\Psi_i( x ) = \dfrac{ \bar \Phi_i( \alpha_{i+1} ) - \bar \Phi_i( x ) }{ \bar \Phi_i( \alpha_{i+1} ) - \bar \Phi_i( \beta_i ) } \Phi_i( x ) + \dfrac{ \bar \Phi_i( x ) - \bar \Phi_i( \beta_i ) }{ \bar \Phi_i( \alpha_{i+1} ) - \bar \Phi_i( \beta_i ) } \Phi_{i+1}( x )$ <br> $g_i( x ) = \dfrac{ \bar \Phi_i( \alpha_{i+1} ) -\Phi_i( x ) }{ \bar \Phi_i( \alpha_{i+1} ) - \bar \Phi_i( \beta_i ) } f_i( x ) + \dfrac{ \Phi_{i+1}( x ) - \bar \Phi_i( \beta_i ) }{ \bar \Phi_i( \alpha_{i+1} ) - \bar \Phi_i( \beta_i ) } f_{i+1}( x )$ | 任意 <br> (1個以上、上限なし) | 不連続 | 1.1.0 |
 
 #### Type 2 - 接続区間 $Q_i = ( b_i, a_{i + 1} )$ が平均値 $\mu$ を含まない場合 その2
 + 接続区間 $Q_i$ の範囲が平均値 $\mu$ よりも小さく、標準偏差が $\sigma_i \geq \sigma_{i + 1}$ の場合
@@ -458,6 +447,37 @@ f_{i+1}( x ) & \textrm{where} \quad x > \mu
 $$
 
 となる。
+
+## 連続な分布の構成方法 (本ライブラリの場合) <br> - The way to construct a Continuous distribution (in this library)
+
+連続な連結ガウス分布の場合、独立区間は $[0, 0]$ や $[1, 1]$ 、 $[0.5, 0.5]$ など、特別な1点のみからなる区間となり、それら以外の独立区間を作ることはできない。
+
+与えられた経路の点を通過させるには、 nleqslv パッケージを使って、接続関数の式を満たす平均値や標準偏差についての連立方程式を解くことで求める。
+ただし、連立方程式の式の数は、平均値と標準偏差の変数の個数 (自由度) を超えられないので、通過できる経路の点の個数には限界がある。
+また、経路が極端に歪んでいる場合は、連立方程式が解無しとなり、分布の構成に失敗することがある。
+
+本ライブラリでは、 type1.type オプションによって、以下の表のような分布を構成できる。
+オプションによって、通過できる経路の点の条件が異なるので、条件に応じたオプションを選ぶとよい。
+
+表中の式で、 $\Phi_i( x ), \Phi_{i+1}( x )$ は正規分布 $N_i,N_{i+1}$ の累積分布関数である。
+$f_i( x ), f_{i+1}( x )$ は同じく正規分布 $N_i,N_{i+1}$ の確率密度関数である。
+$\bar \Phi_i( x ) = ( \Phi_i( x ) + \Phi_{i+1}( x ) ) / 2$ である。
+$\Phi^\ast_i(x)$ は正規分布 $N( \mu, ( \dfrac{ \sigma_i }{ \sqrt2 } )^2 )$ の累積分布関数 である。
+添字のない $\mu$ は連結ガウス分布の平均値を表し、添字のある $\mu_i$ は構成要素の正規分布 $N_i( \mu_i, \sigma_i^2 )$ の平均値を表す。
+
+連続な分布の場合、接続関数 $\Psi( x )$ はそのまま連結ガウス分布の累積分布関数となるので、表の項目にカッコ書きしておいた。
+
+| オプション  | 接続関数 (累積分布関数) $\Psi(x)$ ・確率密度関数 $g(x)$ | 通過できる経路の点の個数 | 独立区間 | 確率密度関数の連続性 | 実装ver |
+| :--------: | :--------------------------------------- | :------: | :----: | :----------------: | :-----: |
+| type1.type = 1 <br> continuous = TRUE or symmetric = TRUE <br> (2つの正規分布の平均) | $\Psi( x ) = \dfrac{1}{2} ( \Phi_1( x ) + \Phi_2( x ) )$ <br> $g( x ) = \dfrac{1}{2} ( f_1( x ) + f_2( x ) )$ | $( \mu, 0.5 )$ を含む3点 | $[0, 0]$, $[1, 1]$ の2点 | 連続<br>( $C^\infty$ 級) | 1.2.0 |
+| type1.type = 2 <br> continuous = TRUE <br> (横方向グラデーション) | $\Psi( x ) = \Phi_1( x ) - \dfrac{1}{2} \Phi_1( x )^2 + \dfrac{1}{2} \Phi_2( x )^2$ <br> $g( x ) = ( 1 - \Phi_1( x ) )f_1( x ) + \Phi_2( x ) f_2( x )$ | $( \mu, 0.5 )$ を含む3点<br>または $( \mu, 0.5 )$ を含まない4点 | $[0, 0]$, $[1, 1]$ の2点 | 連続<br>( $C^\infty$ 級) | 1.3.0 |
+| type1.type = 2 <br> symmetric = TRUE | $\Psi_1( x ) = \Phi_1( x ) - \Phi_1( x )^2 + \Phi_2( x )^2 \qquad \qquad ( x \leq \mu )$ <br> $\Psi_2( x ) = 1 - \Psi_1( 2\mu - x ) \qquad \qquad \qquad \qquad \  ( x > \mu )$ <br> $g_1( x ) = ( 1 - 2\Phi_1( x ) ) f_1( x ) + 2\Phi_2( x ) f_2( x ) \quad ( x \leq \mu )$ <br> $g_2( x ) = g_1( 2\mu - x ) \qquad \qquad \qquad \qquad \qquad \  \  \  ( x > \mu )$ | $( \mu, 0.5 )$ を含む3点 | $[0, 0]$, $[0.5, 0.5]$, $[1, 1]$ の3点 | 連続 | 1.2.0 |
+| type1.type = 3 | $\Psi( x ) = \Psi_1( x ) + \Psi_2( x ) + \Psi_3( x )$ <br> $\qquad \Psi_1( x ) = \mathrm{ min }( \Phi_1( x ) - \dfrac{1}{ \sqrt{2} } \Phi^\ast_1( x ), \  \dfrac{2 - \sqrt{2}}{4} )$ <br> $\qquad \Psi_2( x ) = \dfrac{1}{ \sqrt{2} } \Phi^\ast_2( x )$ <br> $\qquad \Psi_3( x ) = \mathrm{ max }( 0, \  \Phi_3( x ) - \dfrac{1}{ \sqrt{2} } \Phi^\ast_3( x ) - \dfrac{2 - \sqrt{2}}{4} )$ <br> $g( x ) = g_1( x ) + g_2( x ) + g_3( x )$ <br> $\qquad g_1( x ) = ( 1 - \dfrac{ f_1( x ) }{ f_1( \mu_1 ) } ) f_1( x ) \ \  ( x \leq \mu_1 ), \quad 0 \ \  ( x > \mu_1 )$ <br> $\qquad g_2( x ) = \dfrac{ f_2( x ) }{ f_2( \mu_2 ) } f_2( x )$ <br> $\qquad g_3( x ) = 0 \ \  ( x < \mu_3 ), \quad ( 1 - \dfrac{ f_3( x ) }{ f_3( \mu_3 ) } ) f_3( x ) \ \  ( x \geq \mu_3 )$ | $( \mu, 0.5 )$ を含む3～5点<br>または $( \mu, 0.5 )$ を含まない4点または6点 | $[0, 0]$, $[0.5, 0.5]$, $[1, 1]$, $[0, 0.5]$, $[0.5, 1]$, $[0, 1]$ のいずれか | 連続<br>( $C^1$ 級) | 1.3.5 |
+| type1.type = 3 <br> symmetric = TRUE <br> (縦方向グラデーション) <br> (廃止 → v.grad に変更) |  $\Psi( x ) = \Phi_1( x ) - \dfrac{1}{ \sqrt{2} } \Phi^\ast_1( x ) + \dfrac{1}{ \sqrt{2} } \Phi^\ast_2( x )$ <br> $g( x ) = ( 1 - \dfrac{ f_1( x ) }{ f_1( \mu ) } ) f_1( x ) + \dfrac{ f_2( x ) }{ f_2( \mu ) } f_2( x )$ | $( \mu, 0.5 )$ を含む3点 | $[0, 0]$, $[0.5, 0.5]$, $[1, 1]$ の3点 | 連続<br>( $C^\infty$ 級) | 1.2.0 (1.3.8 にて廃止) |
+| type1.type = 3 <br> v.grad = TRUE <br> (縦方向グラデーション) |  $\Psi( x ) = \Phi_1( x ) - \dfrac{1}{ \sqrt{2} } \Phi^\ast_1( x ) + \dfrac{1}{ \sqrt{2} } \Phi^\ast_2( x )$ <br> $g( x ) = ( 1 - \dfrac{ f_1( x ) }{ f_1( \mu_1 ) } ) f_1( x ) + \dfrac{ f_2( x ) }{ f_2( \mu_2 ) } f_2( x )$ | 任意の3点<br>または $( \mu, 0.5 )$ を含まない4点 | $[0, 0]$, $[1, 1]$ の2点<br>あるいは $[0.5, 0.5]$ を加えた3点 | 連続<br>( $C^\infty$ 級) | 1.3.8 |
+| type1.type = 4 <br> (縦横グラデーション) |  $\Psi( x ) = \Psi_1( x ) - \dfrac{1}{2} \Psi_1( x )^2 + \dfrac{1}{2} \Psi_2( x )^2$ <br> $\qquad \Psi_1( x ) = \Phi_{1, 1}( x ) - \dfrac{1}{ \sqrt{2} } \Phi^\ast_{1, 1}( x ) + \dfrac{1}{ \sqrt{2} } \Phi^\ast_{1, 2}( x )$ <br> $\qquad \Psi_2( x ) = \Phi_{2, 1}( x ) - \dfrac{1}{ \sqrt{2}  } \Phi^\ast_{2, 1}( x ) + \dfrac{1}{ \sqrt{2}  } \Phi^\ast_{2, 2}( x )$ <br> $g( x ) = ( 1 - \Psi_1( x ) ) g_1( x ) + \Psi_2( x ) g_2( x )$ <br> $\qquad g_1( x ) = ( 1 - \dfrac{ f_{1, 1}( x ) }{ f_{1, 1}( \mu_{1, 1} ) } ) f_{1, 1}( x ) + \dfrac{ f_{1, 2}( x ) }{ f_{1, 2}( \mu_{1, 2} ) } f_{1, 2}( x )$ <br> $\qquad g_2 ( x ) = ( 1 - \dfrac{ f_{2, 1}( x ) }{ f_{2, 1}( \mu_{2, 1} ) } ) f_{2, 1}( x ) + \dfrac{ f_{2, 2}( x ) }{ f_{2, 2}( \mu_{2, 2} ) } f_{2, 2}( x )$ | $( \mu, 0.5 )$ を含む5点または7点<br>または $( \mu, 0.5 )$ を含まない6点または8点 | $[0, 0]$, $[1, 1]$ の2点 | 連続<br>( $C^\infty$ 級) | 1.4.0 |
+
+なお、 type1.type = 1, continuous = TRUE (or symmetric = TRUE) の場合の接続関数 (2つの正規分布の平均) は、正確には、 type 1 の接続関数の拡張ではなく、 type 3a/3b の接続関数の拡張であるが、便宜上、このようなオプションにて実装した。
 
 ## 参考資料 - References
 
