@@ -165,12 +165,13 @@ Field "m.usd":
 ## ソースファイル - Source files
 
 このソフトウェア (ライブラリ) は以下のファイルから成り立ちます。
-<br>
-なお、以下のソースファイルはすべて4文字タブで整形しています。
+ソースファイルは4文字タブで整形しています。
 
-[CGD.R](https://github.com/Kimitsuna-Goblin/CGD/blob/master/R/CGD.R) - メインのR言語のソースファイルです。
+[man/*.Rd](https://github.com/Kimitsuna-Goblin/CGD/blob/master/man/) - マニュアルです。
 
-[test.R](https://github.com/Kimitsuna-Goblin/CGD/blob/master/test.R) - いくつかのテストケースを書いた、テスト用ソースフィルです。
+[R/CGD.R](https://github.com/Kimitsuna-Goblin/CGD/blob/master/R/CGD.R) - メインのR言語のソースファイルです。
+
+[test.R](https://github.com/Kimitsuna-Goblin/CGD/blob/master/test.R) - いくつかのテストケースを書いた、テスト用ソースファイルです。
 
 
 ## 連結ガウス分布の構成方法 (一般の場合)<BR> - How to construct a Connected Gaussian Distribution (generally)
