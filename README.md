@@ -276,7 +276,7 @@ $$
 
 ### 独立区間と正規分布の構成 - Construction of indipendent intervals and normal distributions
 
-不連続な連結ガウス分布の場合、本ライブラリでは、以下のように独立区間を構成する。
+不連続な連結ガウス分布を構成する場合、本ライブラリでは、以下のように独立区間を構成する。
 
 + 累積分布関数の経路が与えられたとき (通常は与えられる)、原則として、経路上の点 $(x_i, a_i)$ の確率 $a_i$ に対し、1点のみからなる区間 $[a_i, a_i]$ を独立区間とする。
 ただし、以下の2つの場合を例外とする。
@@ -450,10 +450,10 @@ $$
 
 ## 連続な分布の構成方法 (本ライブラリの場合) <br> - The way to construct a Continuous distribution (in this library)
 
-連続な連結ガウス分布の場合、独立区間は $[0, 0]$ や $[1, 1]$ 、 $[0.5, 0.5]$ など、特別な1点のみからなる区間となり、それら以外の独立区間を作ることはできない。
+連続な連結ガウス分布では、特殊な例外を除いて、通常、独立区間は $[0, 0]$ や $[1, 1]$ 、 $[0.5, 0.5]$ など、特別な1点のみからなる区間となり、それら以外の独立区間を作ることはできない。
 
-与えられた経路の点を通過させるには、 nleqslv パッケージを使って、接続関数の式を満たす平均値や標準偏差についての連立方程式を解くことで求める。
-ただし、連立方程式の式の数は、平均値と標準偏差の変数の個数 (自由度) を超えられないので、通過できる経路の点の個数には限界がある。
+与えられた経路の点を通過させるには、 nleqslv パッケージを使って、経路の点の条件を満たすような、構成要素の正規分布 $N_i$ の平均値 $\mu_i$ と標準偏差 $\sigma_i$ についての連立方程式を解くことで実現する。
+ただし、連立方程式の式の数は、変数 $\mu_i$ と $\sigma_i$ の合計個数 (自由度) を超えられないので、通過できる経路の点の個数には限界がある。
 また、経路が極端に歪んでいる場合は、連立方程式が解無しとなり、分布の構成に失敗することがある。
 
 本ライブラリでは、 type1.type オプションによって、以下の表のような分布を構成できる。
@@ -472,9 +472,9 @@ $\Phi^\ast_i(x)$ は正規分布 $N( \mu, ( \dfrac{ \sigma_i }{ \sqrt2 } )^2 )$ 
 | type1.type = 1 <br> continuous = TRUE or symmetric = TRUE <br> (2つの正規分布の平均) | $\Psi( x ) = \dfrac{1}{2} ( \Phi_1( x ) + \Phi_2( x ) )$ <br> $g( x ) = \dfrac{1}{2} ( f_1( x ) + f_2( x ) )$ | $( \mu, 0.5 )$ を含む3点 | $[0, 0]$, $[1, 1]$ の2点 | 連続<br>( $C^\infty$ 級) | 1.2.0 |
 | type1.type = 2 <br> continuous = TRUE <br> (横方向グラデーション) | $\Psi( x ) = \Phi_1( x ) - \dfrac{1}{2} \Phi_1( x )^2 + \dfrac{1}{2} \Phi_2( x )^2$ <br> $g( x ) = ( 1 - \Phi_1( x ) )f_1( x ) + \Phi_2( x ) f_2( x )$ | $( \mu, 0.5 )$ を含む3点<br>または $( \mu, 0.5 )$ を含まない4点 | $[0, 0]$, $[1, 1]$ の2点 | 連続<br>( $C^\infty$ 級) | 1.3.0 |
 | type1.type = 2 <br> symmetric = TRUE | $\Psi_1( x ) = \Phi_1( x ) - \Phi_1( x )^2 + \Phi_2( x )^2 \qquad \qquad ( x \leq \mu )$ <br> $\Psi_2( x ) = 1 - \Psi_1( 2\mu - x ) \qquad \qquad \qquad \qquad \  ( x > \mu )$ <br> $g_1( x ) = ( 1 - 2\Phi_1( x ) ) f_1( x ) + 2\Phi_2( x ) f_2( x ) \quad ( x \leq \mu )$ <br> $g_2( x ) = g_1( 2\mu - x ) \qquad \qquad \qquad \qquad \qquad \  \  \  ( x > \mu )$ | $( \mu, 0.5 )$ を含む3点 | $[0, 0]$, $[0.5, 0.5]$, $[1, 1]$ の3点 | 連続 | 1.2.0 |
-| type1.type = 3 | $\Psi( x ) = \Psi_1( x ) + \Psi_2( x ) + \Psi_3( x )$ <br> $\qquad \Psi_1( x ) = \mathrm{ min }( \Phi_1( x ) - \dfrac{1}{ \sqrt{2} } \Phi^\ast_1( x ), \  \dfrac{2 - \sqrt{2}}{4} )$ <br> $\qquad \Psi_2( x ) = \dfrac{1}{ \sqrt{2} } \Phi^\ast_2( x )$ <br> $\qquad \Psi_3( x ) = \mathrm{ max }( 0, \  \Phi_3( x ) - \dfrac{1}{ \sqrt{2} } \Phi^\ast_3( x ) - \dfrac{2 - \sqrt{2}}{4} )$ <br> $g( x ) = g_1( x ) + g_2( x ) + g_3( x )$ <br> $\qquad g_1( x ) = ( 1 - \dfrac{ f_1( x ) }{ f_1( \mu_1 ) } ) f_1( x ) \ \  ( x \leq \mu_1 ), \quad 0 \ \  ( x > \mu_1 )$ <br> $\qquad g_2( x ) = \dfrac{ f_2( x ) }{ f_2( \mu_2 ) } f_2( x )$ <br> $\qquad g_3( x ) = 0 \ \  ( x < \mu_3 ), \quad ( 1 - \dfrac{ f_3( x ) }{ f_3( \mu_3 ) } ) f_3( x ) \ \  ( x \geq \mu_3 )$ | $( \mu, 0.5 )$ を含む3～5点<br>または $( \mu, 0.5 )$ を含まない4点または6点 | $[0, 0]$, $[0.5, 0.5]$, $[1, 1]$, $[0, 0.5]$, $[0.5, 1]$, $[0, 1]$ のいずれか | 連続<br>( $C^1$ 級) | 1.3.5 |
-| type1.type = 3 <br> symmetric = TRUE <br> (縦方向グラデーション) <br> (廃止 → v.grad に変更) |  $\Psi( x ) = \Phi_1( x ) - \dfrac{1}{ \sqrt{2} } \Phi^\ast_1( x ) + \dfrac{1}{ \sqrt{2} } \Phi^\ast_2( x )$ <br> $g( x ) = ( 1 - \dfrac{ f_1( x ) }{ f_1( \mu ) } ) f_1( x ) + \dfrac{ f_2( x ) }{ f_2( \mu ) } f_2( x )$ | $( \mu, 0.5 )$ を含む3点 | $[0, 0]$, $[0.5, 0.5]$, $[1, 1]$ の3点 | 連続<br>( $C^\infty$ 級) | 1.2.0 (1.3.8 にて廃止) |
-| type1.type = 3 <br> v.grad = TRUE <br> (縦方向グラデーション) |  $\Psi( x ) = \Phi_1( x ) - \dfrac{1}{ \sqrt{2} } \Phi^\ast_1( x ) + \dfrac{1}{ \sqrt{2} } \Phi^\ast_2( x )$ <br> $g( x ) = ( 1 - \dfrac{ f_1( x ) }{ f_1( \mu_1 ) } ) f_1( x ) + \dfrac{ f_2( x ) }{ f_2( \mu_2 ) } f_2( x )$ | 任意の3点<br>または $( \mu, 0.5 )$ を含まない4点 | $[0, 0]$, $[1, 1]$ の2点<br>あるいは $[0.5, 0.5]$ を加えた3点 | 連続<br>( $C^\infty$ 級) | 1.3.8 |
+| type1.type = 3 | $\Psi( x ) = \Psi_1( x ) + \Psi_2( x ) + \Psi_3( x )$ <br> $\qquad \Psi_1( x ) = \mathrm{ min }( \Phi_1( x ) - \dfrac{1}{ \sqrt{2} } \Phi^\ast_1( x ), \  \dfrac{2 - \sqrt{2}}{4} )$ <br> $\qquad \Psi_2( x ) = \dfrac{1}{ \sqrt{2} } \Phi^\ast_2( x )$ <br> $\qquad \Psi_3( x ) = \mathrm{ max }( 0, \  \Phi_3( x ) - \dfrac{1}{ \sqrt{2} } \Phi^\ast_3( x ) - \dfrac{2 - \sqrt{2}}{4} )$ <br> $g( x ) = g_1( x ) + g_2( x ) + g_3( x )$ <br> $\qquad g_1( x ) = ( 1 - \dfrac{ f_1( x ) }{ f_1( \mu_1 ) } ) f_1( x ) \ \  ( x \leq \mu_1 ), \quad 0 \ \  ( x > \mu_1 )$ <br> $\qquad g_2( x ) = \dfrac{ f_2( x ) }{ f_2( \mu_2 ) } f_2( x )$ <br> $\qquad g_3( x ) = 0 \ \  ( x < \mu_3 ), \quad ( 1 - \dfrac{ f_3( x ) }{ f_3( \mu_3 ) } ) f_3( x ) \ \  ( x \geq \mu_3 )$ | $( \mu, 0.5 )$ を含む3～5点<br>または $( \mu, 0.5 )$ を含まない4点または6点 | $[0, 0]$, $[1, 1]$ の2点 <br> あるいは $[0.5, 0.5]$ を加えた3点 <br> <br> (ただし、条件によっては、 $[0, 0.5]$ 、 $[0.5, 1]$ または $[0, 1]$ の区間を取りうる) | 連続<br>( $C^1$ 級) | 1.3.5 |
+| type1.type = 3 <br> symmetric = TRUE <br> (縦方向グラデーション, 廃止 → v.grad に変更) |  $\Psi( x ) = \Phi_1( x ) - \dfrac{1}{ \sqrt{2} } \Phi^\ast_1( x ) + \dfrac{1}{ \sqrt{2} } \Phi^\ast_2( x )$ <br> $g( x ) = ( 1 - \dfrac{ f_1( x ) }{ f_1( \mu ) } ) f_1( x ) + \dfrac{ f_2( x ) }{ f_2( \mu ) } f_2( x )$ | $( \mu, 0.5 )$ を含む3点 | $[0, 0]$, $[0.5, 0.5]$, $[1, 1]$ の3点 | 連続<br>( $C^\infty$ 級) | 1.2.0 (1.3.8 にて廃止) |
+| type1.type = 3 <br> v.grad = TRUE <br> (縦方向グラデーション) |  $\Psi( x ) = \Phi_1( x ) - \dfrac{1}{ \sqrt{2} } \Phi^\ast_1( x ) + \dfrac{1}{ \sqrt{2} } \Phi^\ast_2( x )$ <br> $g( x ) = ( 1 - \dfrac{ f_1( x ) }{ f_1( \mu_1 ) } ) f_1( x ) + \dfrac{ f_2( x ) }{ f_2( \mu_2 ) } f_2( x )$ | 任意の3点<br>または $( \mu, 0.5 )$ を含まない4点 | $[0, 0]$, $[1, 1]$ の2点 <br> あるいは $[0.5, 0.5]$ を加えた3点 | 連続<br>( $C^\infty$ 級) | 1.3.8 |
 | type1.type = 4 <br> (縦横グラデーション) |  $\Psi( x ) = \Psi_1( x ) - \dfrac{1}{2} \Psi_1( x )^2 + \dfrac{1}{2} \Psi_2( x )^2$ <br> $\qquad \Psi_1( x ) = \Phi_{1, 1}( x ) - \dfrac{1}{ \sqrt{2} } \Phi^\ast_{1, 1}( x ) + \dfrac{1}{ \sqrt{2} } \Phi^\ast_{1, 2}( x )$ <br> $\qquad \Psi_2( x ) = \Phi_{2, 1}( x ) - \dfrac{1}{ \sqrt{2}  } \Phi^\ast_{2, 1}( x ) + \dfrac{1}{ \sqrt{2}  } \Phi^\ast_{2, 2}( x )$ <br> $g( x ) = ( 1 - \Psi_1( x ) ) g_1( x ) + \Psi_2( x ) g_2( x )$ <br> $\qquad g_1( x ) = ( 1 - \dfrac{ f_{1, 1}( x ) }{ f_{1, 1}( \mu_{1, 1} ) } ) f_{1, 1}( x ) + \dfrac{ f_{1, 2}( x ) }{ f_{1, 2}( \mu_{1, 2} ) } f_{1, 2}( x )$ <br> $\qquad g_2 ( x ) = ( 1 - \dfrac{ f_{2, 1}( x ) }{ f_{2, 1}( \mu_{2, 1} ) } ) f_{2, 1}( x ) + \dfrac{ f_{2, 2}( x ) }{ f_{2, 2}( \mu_{2, 2} ) } f_{2, 2}( x )$ | $( \mu, 0.5 )$ を含む5点または7点<br>または $( \mu, 0.5 )$ を含まない6点または8点 | $[0, 0]$, $[1, 1]$ の2点 | 連続<br>( $C^\infty$ 級) | 1.4.0 |
 
 なお、 type1.type = 1, continuous = TRUE (or symmetric = TRUE) の場合の接続関数 (2つの正規分布の平均) は、正確には、 type 1 の接続関数の拡張ではなく、 type 3a/3b の接続関数の拡張であるが、便宜上、このようなオプションにて実装した。
