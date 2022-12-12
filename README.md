@@ -345,7 +345,7 @@ $N_i$ の累積分布関数を $\Phi_i( x )$ 、確率密度関数を $f_i( x )$
 累積分布関数 $\Phi_i( x ), \Phi_{i + 1}( x )$ の値が両方とも接続区間 $Q_i$ の範囲内に収まり、範囲外に出ることがない。
 そのため、4つの場合の中で、最も自由に接続関数を構成することできる。
 
-本ライブラリでは、 type1.type というオプションによって、以下の表 @tbl:1 のように接続関数を構成する。
+本ライブラリでは、 type1.type というオプションによって、以下の表 1 のように接続関数を構成する。
 なお、不連続な連続ガウス分布の場合は、構成に失敗することはない。
 
 表中の式で、 $\Phi_i( x ), \Phi_{i+1}( x )$ は正規分布 $N_i,N_{i+1}$ の累積分布関数である。
@@ -357,7 +357,7 @@ $\bar \Phi_i( x ) = ( \Phi_i( x ) + \Phi_{i+1}( x ) ) / 2$ である。
 | type1.type = 1 | $\Psi_i( x ) = \dfrac{ \alpha_{i+1} - x }{ \alpha_{i+1} - \beta_i } \Phi_i( x ) + \dfrac{ x - \beta_i }{ \alpha_{i+1} - \beta_i } \Phi_{i+1}( x )$ <br> $g_i( x ) = \dfrac{ \alpha_{i+1} - x }{ \alpha_{i+1} - \beta_i } f_i( x ) + \dfrac{ x - \beta_i }{ \alpha_{i+1} - \beta_i } f_{i+1}( x ) + \dfrac{ \Phi_{i+1}( x ) - \Phi_i( x ) }{ \alpha_{i+1} - \beta_i }$ | 任意 <br> (1個以上、上限なし) | 不連続 | 1.0.0 |
 | type1.type = 2  | $\Psi_i( x ) = \dfrac{ \bar \Phi_i( \alpha_{i+1} ) - \bar \Phi_i( x ) }{ \bar \Phi_i( \alpha_{i+1} ) - \bar \Phi_i( \beta_i ) } \Phi_i( x ) + \dfrac{ \bar \Phi_i( x ) - \bar \Phi_i( \beta_i ) }{ \bar \Phi_i( \alpha_{i+1} ) - \bar \Phi_i( \beta_i ) } \Phi_{i+1}( x )$ <br> $g_i( x ) = \dfrac{ \bar \Phi_i( \alpha_{i+1} ) -\Phi_i( x ) }{ \bar \Phi_i( \alpha_{i+1} ) - \bar \Phi_i( \beta_i ) } f_i( x ) + \dfrac{ \Phi_{i+1}( x ) - \bar \Phi_i( \beta_i ) }{ \bar \Phi_i( \alpha_{i+1} ) - \bar \Phi_i( \beta_i ) } f_{i+1}( x )$ | 任意 <br> (1個以上、上限なし) | 不連続 | 1.1.0 |
 
-Table: 不連続な連結ガウス分布のオプション{#tbl:1}
+表1: 不連続な連結ガウス分布のオプション
 
 #### Type 2 - 接続区間 $Q_i = ( b_i, a_{i + 1} )$ が平均値 $\mu$ を含まない場合 その2
 + 接続区間 $Q_i$ の範囲が平均値 $\mu$ よりも小さく、標準偏差が $\sigma_i \geq \sigma_{i + 1}$ の場合
@@ -465,7 +465,7 @@ $$
 
 なお、連続な分布の場合、平均値は、不連続な分布と異なり、 $\mu_i = \mu$ とは限らない。
 
-本ライブラリでは、 type1.type オプションによって、以下の表 @tbl:2 のような分布を構成できる。
+本ライブラリでは、 type1.type オプションによって、以下の表 2 のような分布を構成できる。
 オプションによって、通過できる経路の点の条件が異なるので、条件に応じたオプションを選ぶとよい。
 
 表中の式で、 $\Phi_i( x ), \Phi_{i+1}( x )$ は正規分布 $N_i,N_{i+1}$ の累積分布関数である。
@@ -484,7 +484,7 @@ $\Phi^\ast_i(x)$ は正規分布 $N( \mu_i, ( \dfrac{ \sigma_i }{ \sqrt2 } )^2 )
 | type1.type = 3, <br> v.grad = TRUE <br> (縦方向グラデーション) |  $\Psi( x ) = \Phi_1( x ) - \dfrac{1}{ \sqrt{2} } \Phi^\ast_1( x ) + \dfrac{1}{ \sqrt{2} } \Phi^\ast_2( x )$ <br> $g( x ) = ( 1 - \dfrac{ f_1( x ) }{ f_1( \mu_1 ) } ) f_1( x ) + \dfrac{ f_2( x ) }{ f_2( \mu_2 ) } f_2( x )$ | 任意の3点<br>または $( \mu, 0.5 )$ を含まない4点 | $[0, 0]$, $[1, 1]$ の2点 <br> あるいは $[0.5, 0.5]$ を加えた3点 | 連続<br>( $C^\infty$ 級) | 1.3.8 |
 | type1.type = 4 <br> (縦横グラデーション) |  $\Psi( x ) = \Psi_1( x ) - \dfrac{1}{2} \Psi_1( x )^2 + \dfrac{1}{2} \Psi_2( x )^2$ <br> $\qquad \Psi_1( x ) = \Phi_{1, 1}( x ) - \dfrac{1}{ \sqrt{2} } \Phi^\ast_{1, 1}( x ) + \dfrac{1}{ \sqrt{2} } \Phi^\ast_{1, 2}( x )$ <br> $\qquad \Psi_2( x ) = \Phi_{2, 1}( x ) - \dfrac{1}{ \sqrt{2}  } \Phi^\ast_{2, 1}( x ) + \dfrac{1}{ \sqrt{2}  } \Phi^\ast_{2, 2}( x )$ <br> $g( x ) = ( 1 - \Psi_1( x ) ) g_1( x ) + \Psi_2( x ) g_2( x )$ <br> $\qquad g_1( x ) = ( 1 - \dfrac{ f_{1, 1}( x ) }{ f_{1, 1}( \mu_{1, 1} ) } ) f_{1, 1}( x ) + \dfrac{ f_{1, 2}( x ) }{ f_{1, 2}( \mu_{1, 2} ) } f_{1, 2}( x )$ <br> $\qquad g_2 ( x ) = ( 1 - \dfrac{ f_{2, 1}( x ) }{ f_{2, 1}( \mu_{2, 1} ) } ) f_{2, 1}( x ) + \dfrac{ f_{2, 2}( x ) }{ f_{2, 2}( \mu_{2, 2} ) } f_{2, 2}( x )$ | $( \mu, 0.5 )$ を含む5点または7点<br>または $( \mu, 0.5 )$ を含まない6点または8点 | $[0, 0]$, $[1, 1]$ の2点 | 連続<br>( $C^\infty$ 級) | 1.4.0 |
 
-Table: 連続な連結ガウス分布のオプション{#tbl:2}
+表2: 連続な連結ガウス分布のオプション
 
 なお、 type1.type = 1, continuous = TRUE (or symmetric = TRUE) (2つの正規分布の平均) は、正確には type 1 の接続関数の拡張ではなく、 type 3a/3b の接続関数の拡張であるが、便宜上、このようなオプションにて実装した。
 
