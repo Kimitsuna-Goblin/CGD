@@ -171,7 +171,7 @@ Field "m.usd":
 
 [R/CGD.R](https://github.com/Kimitsuna-Goblin/CGD/blob/master/R/CGD.R) - メインのR言語のソースファイルです。
 
-[test.R](https://github.com/Kimitsuna-Goblin/CGD/blob/master/test.R) - いくつかのテストケースを書いた、テスト用ソースファイルです。
+[test.R](https://github.com/Kimitsuna-Goblin/CGD/blob/master/test.R) - ライブラリのテスト用ソースファイルです。
 
 
 ## 連結ガウス分布の構成方法 (一般の場合)<BR> - How to construct a Connected Gaussian Distribution (generally)
