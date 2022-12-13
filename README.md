@@ -486,7 +486,7 @@ $\Phi^\ast_i(x)$ は正規分布 $N( \mu_i, ( \dfrac{ \sigma_i }{ \sqrt2 } )^2 )
 
 表2: 連続な連結ガウス分布のオプション
 
-なお、 type1.type = 1, continuous = TRUE (or symmetric = TRUE) (2つの正規分布の平均) は、正確には type 1 の接続関数の拡張ではなく、 type 3a/3b の接続関数の拡張であるが、便宜上、このようなオプションにて実装した。
+なお、 type1.type = 1, continuous = TRUE (or symmetric = TRUE) (2つの正規分布の平均) は、正確には [type 1](#type-1---接続区間-q_i---b_i-a_i--1--が平均値-mu-を含まない場合-その1) の接続関数の拡張ではなく、 [type 3a/3b](#type-3a---接続区間-q_i---b_i-a_i--1--が平均値-mu-を含む場合-その1) の接続関数の拡張であるが、便宜上、このようなオプションにて実装した。
 
 v1.2.0 にあった type1.type = 3, symmetric = TRUE (縦方向グラデーションの旧バージョン) のオプションは廃止され、 v1.3.8 以降、 type1.type = 3, v.grad = TRUE に上位互換的に変更された。
 
