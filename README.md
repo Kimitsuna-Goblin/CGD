@@ -99,8 +99,11 @@ devtools::install_github( "Kimitsuna-Goblin/cgd" )
 > hist( sample )
 >
 > a    # オブジェクトの内部構造を表示します
-
 Reference class object of class "CGD"
+Field "kind.index":
+[1] 16
+Field "kind":
+[1] "Discontinuous Connected Gaussian Distribution"
 Field "mean":
 [1] 0
 Field "intervals":
@@ -150,7 +153,7 @@ Field "m.lsd":
 [1] -Inf
 Field "m.usd":
 [1] -Inf
-> # 各要素の意味はマニュアルまたはソースファイルのコメントを参照してください
+>> # 各要素の意味はマニュアルまたはソースファイルのコメントを参照してください
 > #
 > # m.sd, m.lsd, m.usd はこの連結ガウス分布の標準偏差 (全体, 下側, 上側) です
 > # 計算に時間がかかるので、計算結果をフィールドに持たせています
