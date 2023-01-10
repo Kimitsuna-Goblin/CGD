@@ -71,31 +71,29 @@ devtools::install_github( "Kimitsuna-Goblin/cgd" )
 >    #       type1.type = 接続区間が type 1 の場合の計算方法
 >    # を与えてください
 >
-> # set.waypoints() : 経路 (X座標 (あるいはクォンタイル) とその点における確率) を指定し、
-> #                   指定されたすべての点を通過する累積分布関数を持つ連結ガウス分布を構成します
-> #                   p = 0.5 (平均値) の点は必ず指定してください
+> # CGD$set.waypoints() : 経路 (X座標 (あるいはクォンタイル) とその点における確率) を指定し、
+> #                       指定されたすべての点を通過する累積分布関数を持つ連結ガウス分布を構成します
 > a$set.waypoints(
 +   data.frame(
 +     p = c( 0.1, 0.3, 0.5, 0.6, 0.7 ),
 +     q = c( qnorm( c( 0.1, 0.3, 0.5, 0.6 ), 0, 1 ), 0.5 ) ) )
 > NULL
 >
-> # d() : X座標を指定して、確率密度を返します
+> # CGD$d() : X座標を指定して、確率密度を返します
 > dev.new(); plot.new()
 > plot( seq( -3, 3, 0.01 ), a$d( seq( -3, 3, 0.01 ) ), type = "l" )
 >
-> # p() : X座標を指定して、確率を返します
+> # CGD$p() : X座標を指定して、確率を返します
 > dev.new(); plot.new()
 > plot( seq( -3, 3, 0.01 ), a$p( seq( -3, 3, 0.01 ) ), type = "l" )
 >
-> # q() : 確率を指定して、X座標 (クォンタイル) を返します
-> #       確率が同一となるX座標が、ある区間内に無限に存在し、
-> #       一意に定まらない場合は、該当区間の中点の座標を返します
+> # CGD$q() : 確率を指定して、X座標 (クォンタイル) を返します
+> #           確率が同一となるX座標が、ある区間内に無限に存在し、
+> #           一意に定まらない場合は、該当区間の中点の座標を返します
 > dev.new(); plot.new()
 > plot( seq( 0, 1, 0.01 ), a$q( seq( 0, 1, 0.01 ) ), type = "l" )
 >
-> # r() : ランダムサンプルを生成します (高速化は全然やってません)
-> #       でも、もしかしたらこれが一番役に立つのかも？
+> # CGD$r() : ランダムサンプルを生成します (高速化は全然やってません)
 > dev.new(); plot.new()
 > sample <- a$r( 1000 )
 > hist( sample )
@@ -159,6 +157,79 @@ Field "m.usd":
 > # これらのフィールドは sd() 等のメソッドを呼び出すと、計算結果と同じ値が設定されます
 > # 次に sd() 等を呼んだときは、再計算せずに、フィールドの値を返します
 > # 標準偏差を得るには sd() 等のメソッドを使い、フィールドの値は直接参照しないでください
+</pre>
+
+<pre>
+> library( cgd )    # ライブラリを読み込みます
+> a <- CGD$new()    # 連結ガウス分布クラスのオブジェクトを生成します
+>
+> # 度数分布のデータを用意します
+> x     <- seq( -2, 2, 0.2 )
+> freq  <-  c(  15164,  22923,  25134,  27631,  37239,  40464,
++               47126,  79469, 109966, 118241, 111333,  78674,
++               46921,  41026,  36975,  27403,  25493,  22838,
++               14992,  11468,   9174 )
+> total <- sum( freq )
+>
+> # CGD$nls.freq() : ライブラリでサポートされている連続分布の種類やオプションなどを指定して、
+> #                  度数分布に近くなるパラメータ (平均値、標準偏差) をフィールドに設定します
+> a$nls.freq( x, freq, total, kind = "Mean-Equaled Sigma-Differd Vertical Gradational Distribution" )
+Nonlinear regression model
+  model: d ~ dp.t3(x, c(mean, mean, mean), c(sqrt.sd.1^2, sqrt.sd.2^2,     sqrt.sd.1^2), f.t3.d)
+   data: list(d = get.d(x, freq, total), x = x)
+     mean sqrt.sd.1 sqrt.sd.2
+  -0.1992    1.0198    0.8050
+ residual sum-of-squares: 0.02285
+
+Number of iterations to convergence: 30
+Achieved convergence tolerance: 9.922e-06
+>
+> # CGD$d() : X座標を指定して、確率密度を返します
+> dev.new(); plot.new()
+> plot( seq( -3, 3, 0.01 ), a$d( seq( -3, 3, 0.01 ) ), type = "l" )
+>
+> # CGD$tex() : 得られた分布の累積分布関数と確率密度関数の表現式を TeX 形式で表示します
+> a$tex()
+\begin{align}
+\Psi(x) &= \Phi_1(x) - \dfrac{1}{\sqrt{2}} \Phi^\ast_1(x) + \dfrac{1}{\sqrt{2}} \Phi^\ast_2(x),\\
+g(x) &= \left( 1 - \dfrac{f_1(x)}{f_1(\mu_1)} \right) f_1(x) + \dfrac{f_2(x)}{f_2(\mu_2)} f_2(x),\\
+\\
+\Phi_i(x) &= \dfrac{1}{\sqrt{2 \pi \sigma_i^2}} \int_{-\infty}^{x}
+ \exp \left( -\dfrac{(t - \mu_i)^2}{2 \sigma_i^2} \right) dt,\\
+\Phi^\ast_i(x) &= \dfrac{1}{\sqrt{2 \pi \left( \begin{array}{c}
+ \dfrac{\sigma_i}{\sqrt{2}} \end{array} \right)^2}}
+ \int_{-\infty}^{x} \exp \left( \begin{array}{c} -\dfrac{(t - \mu_i)^2}{2
+ \left( \begin{array}{c} \dfrac{\sigma_i}{\sqrt{2}} \end{array} \right)^2} \end{array} \right) dt,\\
+f_i(x) &= \dfrac{1}{\sqrt{2 \pi \sigma_i^2}} \exp \left( -\dfrac{(x - \mu_i)^2}{2 \sigma_i^2} \right),\\
+\\
+& \begin{array}{l}
+\mu_1 = -0.199217, & \sigma_1 = 1.039974,\\
+\mu_2 = \mu_1, & \sigma_2 = 0.648027.
+\end{array}
+\end{align}
+>
+> # nls.freq.all() : ライブラリでサポートされている連続分布の種類をすべて試みて、
+> #                  度数分布に近い分布を探します (少し時間がかかります)
+> result <- nls.freq.all( x, freq, total )
+>
+> # nls.freq.all()$cor : 各モデルと度数分布との相対係数です
+> result$cor
+ [1] 0.9286582 0.9878450 0.9277467 0.8812164 0.9551502 0.8499192 0.9551271
+ [8] 0.9867571 0.9867073 0.9945393 0.9867147 0.9538990 0.8879331 0.9732565
+[15] 0.9964684
+>
+> # nls.freq.all()$best.cor : 各モデルと度数分布との相対係数のうち、最大の値です
+> result$best.cor
+[1] 0.9964684
+>
+> # nls.freq.all()$best : 最も度数分布に近い結果が得られたモデルです
+> # CGD$kind : その分布モデルの種類を表す文字列です
+> result$best$kind
+[1] "Mean-Differd Sigma-Differd Vertical-Horizontal Gradational Distribution"
+>
+> # CGD$d() : X座標を指定して、確率密度を返します
+> dev.new(); plot.new()
+> plot( seq( -3, 3, 0.01 ), result$best$d( seq( -3, 3, 0.01 ) ), type = "l" )
 </pre>
 
 

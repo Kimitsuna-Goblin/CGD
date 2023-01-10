@@ -2,18 +2,18 @@
 % Please edit documentation in R/CGD.R
 \name{ms.qp.norm}
 \alias{ms.qp.norm}
-\title{与えられた2点のクォンタイルを満たす正規分布の、平均値と標準偏差を得る}
+\title{正規分布の平均値・標準偏差算出}
 \usage{
 ms.qp.norm(q, p)
 }
 \arguments{
-\item{q}{X座標 (クォンタイル) (要素数 2個 のベクトル)}
+\item{q}{X座標 (クォンタイル)。要素数 2 個のベクトル。}
 
-\item{p}{それらのX座標における確率 (累積分布関数の値) (要素数 2個 のベクトル)}
+\item{p}{それらのX座標における確率 (累積分布関数の値)。要素数 2 個のベクトル。}
 }
 \value{
 list( mean = 平均値, sd = 標準偏差 )
 }
 \description{
-与えられた2点のクォンタイルを満たす正規分布の、平均値と標準偏差を得る
+与えられた2点のクォンタイルを満たす正規分布の、平均値と標準偏差を得る。
 }

@@ -4,12 +4,31 @@
 \alias{CGD$is.uni.mean}
 \title{uni.mean 判定}
 \usage{
-a <- CGD$new()
-a$is.uni.mean()
+CGD$is.uni.mean()
 }
 \value{
 構成するすべての正規分布の平均値が等しければ TRUE、そうでなければ FALSE
 }
 \description{
-uni.mean (分布を構成するすべての正規分布の平均値が等しい) かどうかを調べる
+分布を構成するすべての正規分布の平均値が等しいかどうかを調べる。
+}
+\examples{
+a <- CGD$new()
+a$kind	## Normal Distribution
+a$is.uni.mean()	## TRUE
+
+a$set.waypoints(
+	data.frame( p = c( 0.1, 0.4, 0.6, 0.9 ), q = c( -1.92, -0.20, 0.20, 1.92 ) ),
+	this.type1.type = 3, v.grad = TRUE )
+a$kind	## Mean-Differd Sigma-Differd Vertical Gradational Distribution
+a$is.uni.mean()	## FALSE
+
+a <- CGD$new()
+a$set.waypoints(
+	data.frame(
+		p = c( 0.2, 0.5, 0.6, 0.7 ),
+		q = c( qnorm( c( 0.2, 0.5, 0.6 ), 0, 1 ), 0.5 ) ),
+	this.type1.type = 1 )
+a$kind	## Discontinuous Connected Gaussian Distribution
+a$is.uni.mean()	## TRUE
 }

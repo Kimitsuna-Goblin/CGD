@@ -4,12 +4,22 @@
 \alias{CGD$sd}
 \title{標準偏差取得}
 \usage{
-a <- CGD$new()
-a$sd()
+CGD$sd()
 }
 \value{
 標準偏差
 }
 \description{
-標準偏差を取得する
+標準偏差を取得する。
+}
+\examples{
+a <- CGD$new()
+a$kind	## Normal Distribution
+a$sd()	## 1
+
+a$set.waypoints(
+	data.frame( p = c( 0.1, 0.5, 0.6 ), q = c( -1.92, 0, 0.20 ) ),
+	this.type1.type = 3, v.grad = TRUE )
+a$kind	## Mean-Equaled Sigma-Differd Vertical Gradational Distribution
+a$sd()	## 1.564198
 }

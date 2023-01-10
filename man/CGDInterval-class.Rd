@@ -6,7 +6,7 @@
 \alias{CGDInterval}
 \title{連結ガウス分布区間クラス}
 \description{
-連結ガウス分布クラス (\link[cgd]{CGD-class}) で使用する区間を表すクラス
+連結ガウス分布クラス (\link[cgd]{CGD}) で使用する区間を表すクラス。
 }
 \section{Fields}{
 
@@ -30,5 +30,5 @@
 
 
 \seealso{
-\link[cgd]{CGD-class}
+\link[cgd]{CGD}
 }

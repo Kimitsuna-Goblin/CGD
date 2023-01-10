@@ -2,20 +2,20 @@
 % Please edit documentation in R/CGD.R
 \name{sd.mqp.norm}
 \alias{sd.mqp.norm}
-\title{与えられた平均値を取り、1点における確率を満たす正規分布の標準偏差を得る}
+\title{正規分布の標準偏差算出}
 \usage{
 sd.mqp.norm(mean, q, p)
 }
 \arguments{
-\item{mean}{平均値}
+\item{mean}{平均値。}
 
-\item{q}{X座標 (クォンタイル)}
+\item{q}{X座標 (クォンタイル)。}
 
-\item{p}{そのX座標における確率 (累積分布関数の値)}
+\item{p}{そのX座標における確率 (累積分布関数の値)。}
 }
 \value{
 標準偏差
 }
 \description{
-与えられた平均値を取り、1点における確率を満たす正規分布の標準偏差を得る
+与えられた平均値を取り、1点における確率を満たす正規分布の標準偏差を得る。
 }

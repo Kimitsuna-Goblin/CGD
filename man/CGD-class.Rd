@@ -6,7 +6,7 @@
 \alias{CGD}
 \title{連結ガウス分布 (Connected Gaussian Distribution) クラス}
 \description{
-平均値の等しい正規分布をX軸方向に連結したモデルを表すクラス
+複数の正規分布をX軸方向に連結したモデルを表すクラス。
 }
 \details{
 連結ガウス分布は、任意のクォンタイルをゼロ誤差で満たす分布を構成できる。
@@ -14,20 +14,29 @@
 それを高精度に再現する分布が欲しいときなどに使うことができる。
 ただし、確率密度関数は一般に不連続であり、歪んだ形になる。
 
-クォンタイルが8点以下の場合は、
-type1.type の設定を適切に与えることにより、
-クォンタイルの位置が過度にいびつでなければ、
-確率密度関数が連続で滑らかな分布を構成することも可能である。
+単峰性や二峰性の連続分布を構成することも可能であるが、
+連続分布を構成するには、クォンタイルの個数が8点以下で、
+クォンタイルの位置が過度にいびつでないことが条件になる。
 
-確率密度関数が不連続な連結ガウス分布を使って滑らかなグラフを得るには、
+不連続な連結ガウス分布を使って滑らかなグラフを得るには、
 ランダムサンプルを取得して、そのヒストグラムを描画するとよい。
+
+また、 \link[cgd]{CGD$nls.freq} や \link[cgd]{CGD$nls.freq.all} を使うと、
+データの度数分布をもとに、その分布に近い連続分布モデルを得ることもできる。
+このとき、データは正規分布に従っていなくてもよい。
+むしろ、このクラスはデータが正規分布に従わない場合
+(あるいは、正規分布に従う裏付けが無い場合) に用いるべきである。
 }
 \section{Fields}{
 
 \describe{
+\item{\code{kind.index}}{分布の種類のインデックス番号}
+
+\item{\code{kind}}{分布の種類名}
+
 \item{\code{mean}}{平均値}
 
-\item{\code{intervals}}{連結区間 (\link[cgd]{CGDInterval-class} クラスのリスト)}
+\item{\code{intervals}}{連結区間 (\link[cgd]{CGDInterval} クラスのリスト)}
 
 \item{\code{type1.type}}{接続区間が type 1 の場合の計算方法 (詳細は \link[cgd]{CGD$set.waypoints} を参照)}
 
@@ -40,7 +49,7 @@ type1.type の設定を適切に与えることにより、
 
 
 \seealso{
-\link[cgd]{CGDInterval-class}
-\link[cgd]{CGD$set.waypoints}
-\href{https://github.com/Kimitsuna-Goblin/CGD}{README.md} (GitHub)
+\link[cgd]{CGDInterval}, \link[cgd]{CGD$set.waypoints},
+		\link[cgd]{CGD$nls.freq}, \link[cgd]{CGD$nls.freq.all},
+		\href{https://github.com/Kimitsuna-Goblin/CGD}{README.md} (GitHub)
 }

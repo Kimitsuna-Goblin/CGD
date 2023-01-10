@@ -4,12 +4,15 @@
 \alias{CGDInterval$q.manage}
 \title{負担区間取得}
 \usage{
-a <- CGD$new()
-a$intervals[[1]]$q.manage()
+CGDInterval$q.manage()
 }
 \value{
 負担区間のX座標 (クォンタイル)
 }
 \description{
-負担区間 (前の区間との接続区間～次の区間との接続区間) に対するX座標 (クォンタイル) を取得する
+負担区間 (前の区間との接続区間～次の区間との接続区間) に対するX座標 (クォンタイル) を取得する。
+}
+\examples{
+a <- CGD$new()
+a$intervals[[1]]$q.manage()
 }

@@ -4,12 +4,23 @@
 \alias{CGD$is.continuous}
 \title{continuous 判定}
 \usage{
-a <- CGD$new()
-a$is.continuous()
+CGD$is.continuous()
 }
 \value{
 continuous = TRUE として構成されていれば TRUE、そうでなければ FALSE
 }
 \description{
-continuous かどうかを調べる
+type1.type が 1 または 2 であって、
+continuous = TRUE として構成されているかどうかを調べる (分布が連続かどうかを調べる訳ではない)。
+}
+\examples{
+a <- CGD$new()
+a$kind	## Normal Distribution
+a$is.continuous()	## FALSE
+					## (a normal distribution is continuous but it has been not generated with continuous = TRUE option.)
+a$set.waypoints(
+	data.frame( p = c( 0.25, 0.5, 0.75 ), q = c( -0.67, 0, 0.53 ) ),
+	this.type1.type = 2, continuous = TRUE )
+a$kind	## Mean-Equaled Sigma-Differd Horizontal Gradational Distribution
+a$is.continuous()	## TRUE
 }

@@ -2,16 +2,16 @@
 % Please edit documentation in R/CGD.R
 \name{sqnorm}
 \alias{sqnorm}
-\title{正規分布において、与えられた確率が、平均値から何σ離れているかを得る}
+\title{正規分布の平均値からの相対位置算出}
 \usage{
 sqnorm(p)
 }
 \arguments{
-\item{p}{確率}
+\item{p}{確率。}
 }
 \value{
 平均値からの相対位置(σ単位)
 }
 \description{
-正規分布において、与えられた確率が、平均値から何σ離れているかを得る
+正規分布において、与えられた確率が、平均値から何σ離れているかを得る。
 }

@@ -4,17 +4,23 @@
 \alias{CGD$r}
 \title{ランダムサンプル取得}
 \usage{
-a <- CGD$new()
-a$r(n, tol = 2^(-17))
+CGD$r(n, tol = 2^(-17))
 }
 \arguments{
-\item{n}{サンプル数}
+\item{n}{サンプル数。}
 
-\item{tol}{q() に許容する誤差 (デフォルト: 2^(-17))}
+\item{tol}{q() に許容する誤差 (デフォルト: 2^(-17))。}
 }
 \value{
 ランダムサンプルのベクトル
 }
 \description{
-ランダムサンプルを取得する
+ランダムサンプルを取得する。
+}
+\examples{
+a <- CGD$new()
+a$set.waypoints(
+data.frame( p = c( 0.25, 0.5, 0.75 ), q = c( -0.67, 0, 0.53 ) ),
+this.type1.type = 2, continuous = TRUE )
+hist( a$r( 400 ) )
 }

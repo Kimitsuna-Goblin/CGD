@@ -4,19 +4,25 @@
 \alias{CGD$initialize}
 \title{コンストラクタ}
 \usage{
-a <- CGD$new(type1.type = 1)
+CGD$new(type1.type = 1)
 }
 \arguments{
-\item{type1.type}{type 1 の場合の計算方法 (1、2、3、4 のいずれかを指定する) (デフォルト: 1)}
+\item{type1.type}{type 1 の場合の計算方法。 1、2、3、4 のいずれかを指定すること (デフォルト: 1)。
+1～4 の詳細については、 \link[cgd]{CGD$set.waypoints} の this.type1.type の説明を参照。}
 }
 \description{
-処理の安定化・可読性向上のため、 type1.type 以外の引数は削除された。
+\link[cgd]{CGD} クラスオブジェクトを生成する。
 }
 \details{
+処理の安定化・可読性向上のため、 type1.type 以外の引数は削除された。
 連結区間の構成が分かっている場合は \link[cgd]{CGD$set.intervals} を使用すること。
 }
+\examples{
+CGD$new()
+CGD$new( type1.type = 2 )
+CGD$new( 3 )
+CGD$new( 4 )
+}
 \seealso{
-\link[cgd]{CGDInterval-class}
-\link[cgd]{CGD$set.intervals}
-\link[cgd]{CGD$set.waypoints}
+\link[cgd]{CGDInterval}, \link[cgd]{CGD$set.intervals}, \link[cgd]{CGD$set.waypoints}
 }

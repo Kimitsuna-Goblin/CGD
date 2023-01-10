@@ -4,12 +4,23 @@
 \alias{CGD$is.symmetric}
 \title{symmetric 判定}
 \usage{
-a <- CGD$new()
-a$is.symmetric()
+CGD$is.symmetric()
 }
 \value{
 symmetric = TRUE として構成されていれば TRUE、そうでなければ FALSE
 }
 \description{
-symmetric かどうかを調べる
+type1.type が 1 または 2 であって、
+symmetric = TRUE として構成されているかどうかを調べる (分布が左右対称かどうかを調べる訳ではない)。
+}
+\examples{
+a <- CGD$new()
+a$kind	## Normal Distribution
+a$is.symmetric()	## FALSE
+					## (a normal distribution is symmetric but it has been not generated with symmetric = TRUE option.)
+a$set.waypoints(
+	data.frame( p = c( 0.25, 0.5, 0.70 ), q = c( -0.67, 0, 0.35 ) ),
+	this.type1.type = 2, symmetric = TRUE )
+a$kind	## Symmetric Horizontal Gradational Distribution
+a$is.symmetric()	## TRUE
 }

@@ -4,15 +4,22 @@
 \alias{CGD$d}
 \title{確率密度取得}
 \usage{
-a <- CGD$new()
-a$d(x)
+CGD$d(x)
 }
 \arguments{
-\item{x}{X座標 (クォンタイル) のベクトル}
+\item{x}{X座標 (クォンタイル) のベクトル。}
 }
 \value{
-確率密度
+x における確率密度関数の値
 }
 \description{
-X座標 (クォンタイル) を指定して、確率密度を取得する
+X座標 (クォンタイル) を指定して、確率密度を取得する。
+}
+\examples{
+a <- CGD$new()
+a$set.waypoints(
+	data.frame( p = c( 0.25, 0.5, 0.75 ), q = c( -0.67, 0, 0.53 ) ),
+	this.type1.type = 2, continuous = TRUE )
+a$d( c( -0.67, 0, 0.53 ) )
+plot( seq( -3, 3, 0.01 ), a$d( seq( -3, 3, 0.01 ) ), type = "l" )
 }

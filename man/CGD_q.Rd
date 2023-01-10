@@ -4,17 +4,24 @@
 \alias{CGD$q}
 \title{X座標 (クォンタイル) 取得}
 \usage{
-a <- CGD$new()
-a$q(prob, tol = .Machine$double.eps * 16)
+CGD$q(prob, tol = .Machine$double.eps * 16)
 }
 \arguments{
-\item{prob}{確率のベクトル}
+\item{prob}{確率のベクトル。}
 
-\item{tol}{許容誤差 (デフォルト: .Machine$double.eps * 16)}
+\item{tol}{許容誤差 (デフォルト: .Machine$double.eps * 16)。}
 }
 \value{
-X座標 (クォンタイル)
+確率 prob に当たるX座標 (クォンタイル)
 }
 \description{
-確率を指定して、X座標 (クォンタイル) を取得する
+確率を指定して、X座標 (クォンタイル) を取得する。
+}
+\examples{
+a <- CGD$new()
+a$set.waypoints(
+	data.frame( p = c( 0.25, 0.5, 0.75 ), q = c( -0.67, 0, 0.53 ) ),
+	this.type1.type = 2, continuous = TRUE )
+a$q( c( 0.25, 0.5, 0.75 ) )
+plot( seq( 0, 1, 0.01 ), a$q( seq( 0, 1, 0.01 ) ), type = "l" )
 }

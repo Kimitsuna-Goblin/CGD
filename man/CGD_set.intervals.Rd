@@ -4,14 +4,17 @@
 \alias{CGD$set.intervals}
 \title{連結区間設定}
 \usage{
-a <- CGD$new(type1.type = 1)
-a$set.intervals(intervals, this.type1.type = NULL)
+CGD$set.intervals(this.intervals, this.type1.type = NULL)
 }
 \arguments{
-\item{intervals}{連結区間 (\link[cgd]{CGDInterval-class} クラスのリスト)}
+\item{new.intervals}{連結区間 (\link[cgd]{CGDInterval} クラスのリスト)。}
 
-\item{this.type1.type}{フィールドの type1.type に設定する値 (1、2、3、4 のいずれかを指定すること)。
-NULL の場合は type1.type の値を変更しない (デフォルト: NULL)}
+\item{this.type1.type}{フィールドの type1.type に設定する値。 1、2、3、4 のいずれかを指定すること。
+NULL の場合は type1.type の値を変更しない (デフォルト: NULL)。
+1～4 の詳細については、 \link[cgd]{CGD$set.waypoints} の this.type1.type の説明を参照。}
+}
+\value{
+分布の種類のインデックス番号
 }
 \description{
 予め連結区間の構成が分かっている場合に、連結区間を設定する。
@@ -19,6 +22,31 @@ NULL の場合は type1.type の値を変更しない (デフォルト: NULL)}
 フィールド m.sd, m.lsd, m.usd は初期化される。
 詳細については、 \link[cgd]{CGD$set.waypoints} を参照。
 }
+\examples{
+a1 <- CGD$new()
+a2 <- CGD$new()
+a3 <- CGD$new()
+
+a1$set.waypoints(
+data.frame(
+	p = c( 0.2, 0.5, 0.6, 0.7 ),
+	q = c( qnorm( c( 0.2, 0.5, 0.6 ), 0, 1 ), 0.5 ) ),
+this.type1.type = 1 )
+
+a2$set.intervals( a1$intervals )
+a3$set.intervals( a1$intervals, this.type1.type = 2 )
+
+a1$sd()
+plot( seq( 0.1, 0.6, 0.001 ), a1$d( seq( 0.1, 0.6, 0.001 ) ), type = "l" )
+
+## a2 is as same as a1
+a2$sd()
+plot( seq( 0.1, 0.6, 0.001 ), a2$d( seq( 0.1, 0.6, 0.001 ) ), type = "l" )
+
+## a3 is a little different from a1
+a3$sd()
+plot( seq( 0.1, 0.6, 0.001 ), a3$d( seq( 0.1, 0.6, 0.001 ) ), type = "l" )
+}
 \seealso{
-\link[cgd]{CGDInterval-class} \link[cgd]{CGD$set.waypoints}
+\link[cgd]{CGDInterval}, \link[cgd]{CGD$set.waypoints}
 }

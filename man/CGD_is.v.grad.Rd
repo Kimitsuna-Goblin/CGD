@@ -4,12 +4,22 @@
 \alias{CGD$is.v.grad}
 \title{v.grad 判定}
 \usage{
-a <- CGD$new()
-a$v.grad()
+CGD$is.v.grad()
 }
 \value{
 v.grad = TRUE として構成されていれば TRUE、そうでなければ FALSE
 }
 \description{
-v.grad かどうかを調べる
+v.grad = TRUE として構成されているかどうかを調べる。
+}
+\examples{
+a <- CGD$new()
+a$kind	## Normal Distribution
+a$is.v.grad()	## FALSE
+
+a$set.waypoints(
+	data.frame( p = c( 0.1, 0.4, 0.6, 0.9 ), q = c( -1.92, -0.20, 0.20, 1.92 ) ),
+	this.type1.type = 3, v.grad = TRUE )
+a$kind	## Mean-Differd Sigma-Differd Vertical Gradational Distribution
+a$is.v.grad()	## TRUE
 }

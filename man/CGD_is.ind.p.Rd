@@ -4,16 +4,25 @@
 \alias{CGD$is.ind.p}
 \title{独立区間判定 (確率)}
 \usage{
-a <- CGD$new()
-a$is.ind.p(p)
+CGD$is.ind.p(p)
 }
 \arguments{
-\item{p}{確率のベクトル}
+\item{p}{確率のベクトル。}
 }
 \value{
 第1要素 (bool) に、独立区間に入っていれば TRUE、入っていなければ FALSE。
-第2要素 (i) に、当該 intervals のインデックス (bool = FALSE の場合は NaN) が入ったリスト
+		第2要素 (i) に、当該 intervals のインデックス番号が入ったリスト。
+			 bool = FALSE の場合は NaN。
 }
 \description{
-指定された確率が独立区間に入っているかどうかを調べる
+指定された確率が独立区間に入っているかどうかを調べる。
+}
+\examples{
+a <- CGD$new()
+a$set.waypoints(
+data.frame(
+	p = c( 0.2, 0.5, 0.6, 0.7 ),
+	q = c( qnorm( c( 0.2, 0.5, 0.6 ), 0, 1 ), 0.5 ) ),
+this.type1.type = 1 )
+a$is.ind.p( c( 0, 0.6, 0.65, 0.7, 1 ) )
 }

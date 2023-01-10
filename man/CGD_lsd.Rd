@@ -4,12 +4,24 @@
 \alias{CGD$lsd}
 \title{下側標準偏差取得}
 \usage{
-a <- CGD$new()
-a$lsd()
+CGD$lsd()
 }
 \value{
 下側 (平均値以上) の標準偏差
 }
 \description{
-下側標準偏差を取得する
+下側標準偏差を取得する。
+}
+\examples{
+a <- CGD$new()
+a$kind	## Normal Distribution
+a$sd()	## 1
+a$lsd()	## 1
+
+a$set.waypoints(
+data.frame( p = c( 0.25, 0.5, 0.75 ), q = c( -0.67, 0, 0.53 ) ),
+this.type1.type = 2, continuous = TRUE )
+a$kind	## Mean-Equaled Sigma-Differd Horizontal Gradational Distribution
+a$sd()	## 0.9278135 (about)
+a$lsd()	## 1.077491 (about)
 }

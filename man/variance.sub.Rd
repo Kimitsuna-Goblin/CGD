@@ -2,7 +2,7 @@
 % Please edit documentation in R/CGD.R
 \name{variance.sub}
 \alias{variance.sub}
-\title{閉区間内における正規分布の分散の値を得る}
+\title{閉区間内における正規分布の分散の算出}
 \usage{
 variance.sub(
   x.bound,
@@ -13,15 +13,15 @@ variance.sub(
 )
 }
 \arguments{
-\item{x.bound}{閉区間を指定する、要素2個のベクトル (x.bound[1] < x.bound[2] であること)}
+\item{x.bound}{閉区間を指定する、要素2個のベクトル。 x.bound[1] < x.bound[2] であること。}
 
-\item{mean}{正規分布の平均}
+\item{mean}{正規分布の平均。}
 
-\item{sd}{正規分布の標準偏差}
+\item{sd}{正規分布の標準偏差。}
 
-\item{f.d}{正規分布の確率密度を計算する関数 (デフォルト: dnorm( x, mean, sd ) )}
+\item{f.d}{正規分布の確率密度を計算する関数 (デフォルト: dnorm( x, mean, sd ) )。}
 
-\item{f.p}{正規分布の確率を計算する関数 (デフォルト: pnorm( x, mean, sd ) )}
+\item{f.p}{正規分布の確率を計算する関数 (デフォルト: pnorm( x, mean, sd ) )。}
 }
 \value{
 定義域を閉区間内に限ったときの、正規分布の分散

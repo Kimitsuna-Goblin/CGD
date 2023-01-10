@@ -2,18 +2,21 @@
 % Please edit documentation in R/CGD.R
 \name{gen.t3.intervals}
 \alias{gen.t3.intervals}
-\title{type1.type=3 の intervals を生成する}
+\title{type1.type=3 用 intervals 生成}
 \usage{
 gen.t3.intervals(means, sds)
 }
 \arguments{
-\item{means}{平均値のベクトル}
+\item{means}{平均値のベクトル。}
 
-\item{sds}{標準偏差のベクトル}
+\item{sds}{標準偏差のベクトル。}
 }
 \value{
 生成した intervals
 }
 \description{
-type1.type=3 の intervals を生成する
+type1.type=3 の intervals を生成する。
+}
+\examples{
+gen.t3.intervals( means = c( 1.625, 0.032, -1.37 ), sds = rep( 0.828, 3 ) )
 }
