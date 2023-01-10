@@ -212,6 +212,25 @@ f_i(x) &= \dfrac{1}{\sqrt{2 \pi \sigma_i^2}} \exp \left( -\dfrac{(x - \mu_i)^2}{
 > #                  度数分布に近い分布を探します (少し時間がかかります)
 > result <- nls.freq.all( x, freq, total )
 >
+> # cgd:::kinds : サポートされている分布の種類です ( 1 ～ 15 は連続分布、 16 は不連続分布です)
+> cgd:::kinds
+ [1] "Normal Distribution"
+ [2] "Mean of Mean-Equaled Sigma-Differd 2 Normal Distributions"
+ [3] "Symmetric Horizontal Gradational Distribution"
+ [4] "Mean-Differd Sigma-Equaled Horizontal Gradational Distribution"
+ [5] "Mean-Equaled Sigma-Differd Horizontal Gradational Distribution"
+ [6] "Mean-Differd Sigma-Differd Horizontal Gradational Distribution"
+ [7] "Mean-Differd Sigma-Equaled Vertical Gradational Distribution"
+ [8] "Mean-Equaled Sigma-Differd Vertical Gradational Distribution"
+ [9] "Mean-Differd Sigma-Differd Vertical Gradational Distribution"
+[10] "3-Mean-Differd Sigma-Equaled Vertical Gradational Distribution"
+[11] "Mean-Equaled 3-Sigma-Differd Vertical Gradational Distribution"
+[12] "3-Mean-Differd 3-Sigma-Differd Vertical Gradational Distribution"
+[13] "Mean-Differd Sigma-Equaled Vertical-Horizontal Gradational Distribution"
+[14] "Mean-Equaled Sigma-Differd Vertical-Horizontal Gradational Distribution"
+[15] "Mean-Differd Sigma-Differd Vertical-Horizontal Gradational Distribution"
+[16] "Discontinuous Connected Gaussian Distribution"
+>
 > # nls.freq.all()$cor : 各モデルと度数分布との相対係数です
 > result$cor
  [1] 0.9286582 0.9878450 0.9277467 0.8812164 0.9551502 0.8499192 0.9551271
