@@ -21,6 +21,6 @@ a$is.continuous()	## FALSE
 a$set.waypoints(
 	data.frame( p = c( 0.25, 0.5, 0.75 ), q = c( -0.67, 0, 0.53 ) ),
 	this.type1.type = 2, continuous = TRUE )
-a$kind	## Mean-Equaled Sigma-Differd Horizontal Gradational Distribution
+a$kind	## Mean-Equaled Sigma-Differed Horizontal Gradational Distribution
 a$is.continuous()	## TRUE
 }

@@ -2,7 +2,7 @@
 
 連結ガウス分布とは、
 正規分布 (ガウス分布) を区間で切断し、隙間を持たせてX軸方向に並べ、累積分布関数のグラフを徐々に変化させて、連続になるように繋げた確率分布です。
-あるいは、それを拡張した、正規分布の確率密度関数のグラフが横方向や縦方向にグラデーション的に徐々に変化するような確率分布です。
+あるいは、それを拡張した、複数の正規分布のグラフが横方向や縦方向にグラデーション的に徐々に移り変わっていくような確率分布です。
 
 連結ガウス分布を使えば、どんなクォンタイルを指定しても、それを極めて小さい誤差で再現する分布を構成できます。
 
@@ -18,10 +18,10 @@
 たとえば、設定 (type1.type, continuous / symmetric / v.grad) によって、
 
 1. 2つの正規分布の平均 (type1.type = 1, continuous)、
-2. 横方向 (X軸方向) にグラデーション的に確率密度関数が変化する分布 (type1.type = 2, continuous)、
+2. 横方向 (X軸方向) にグラデーション的に正規分布の混合比率が変化する分布 (type1.type = 2, continuous)、
 3. 確率密度関数の中央が鋭利に尖ったり、逆に凹んだりしている、左右対称な分布 (type1.type = 2, symmetric)、
-4. 縦方向 (Y軸方向) にグラデーション的に確率密度関数が変化する分布 (type1.type = 3, v.grad)
-5. 縦横両方向にグラデーション的に確率密度関数が変化する分布 (type1.type = 4)
+4. 縦方向 (Y軸方向) にグラデーション的に正規分布の混合比率が変化する分布 (type1.type = 3, v.grad)
+5. 縦横両方向にグラデーション的に正規分布の混合比率が変化する分布 (type1.type = 4)
 
 のような分布モデルが作れます。
 これらの分布モデルは、正規分布に従わない歪んだ分布や、裾野の広い分布のモデルなどに使えると思われます。
@@ -176,7 +176,7 @@ Field "m.usd":
 >
 > # CGD$nls.freq() : ライブラリでサポートされている連続分布の種類やオプションなどを指定して、
 > #                  度数分布に近くなるパラメータ (平均値、標準偏差) をフィールドに設定します
-> a$nls.freq( x, freq, total, kind = "Mean-Equaled Sigma-Differd Vertical Gradational Distribution" )
+> a$nls.freq( x, freq, total, kind = "Mean-Equaled Sigma-Differed Vertical Gradational Distribution" )
 Nonlinear regression model
   model: d ~ dp.t3(x, c(mean, mean, mean), c(sqrt.sd.1^2, sqrt.sd.2^2,     sqrt.sd.1^2), f.t3.d)
    data: list(d = get.d(x, freq, total), x = x)
@@ -218,20 +218,20 @@ f_i(x) &= \dfrac{1}{\sqrt{2 \pi \sigma_i^2}} \exp \left( -\dfrac{(x - \mu_i)^2}{
 > # cgd:::kinds : サポートされている分布の種類です ( 1 ～ 15 は連続分布、 16 は不連続分布です)
 > cgd:::kinds
  [1] "Normal Distribution"
- [2] "Mean of Mean-Equaled Sigma-Differd 2 Normal Distributions"
+ [2] "Mean of Mean-Equaled Sigma-Differed 2 Normal Distributions"
  [3] "Symmetric Horizontal Gradational Distribution"
- [4] "Mean-Differd Sigma-Equaled Horizontal Gradational Distribution"
- [5] "Mean-Equaled Sigma-Differd Horizontal Gradational Distribution"
- [6] "Mean-Differd Sigma-Differd Horizontal Gradational Distribution"
- [7] "Mean-Differd Sigma-Equaled Vertical Gradational Distribution"
- [8] "Mean-Equaled Sigma-Differd Vertical Gradational Distribution"
- [9] "Mean-Differd Sigma-Differd Vertical Gradational Distribution"
-[10] "3-Mean-Differd Sigma-Equaled Vertical Gradational Distribution"
-[11] "Mean-Equaled 3-Sigma-Differd Vertical Gradational Distribution"
-[12] "3-Mean-Differd 3-Sigma-Differd Vertical Gradational Distribution"
-[13] "Mean-Differd Sigma-Equaled Vertical-Horizontal Gradational Distribution"
-[14] "Mean-Equaled Sigma-Differd Vertical-Horizontal Gradational Distribution"
-[15] "Mean-Differd Sigma-Differd Vertical-Horizontal Gradational Distribution"
+ [4] "Mean-Differed Sigma-Equaled Horizontal Gradational Distribution"
+ [5] "Mean-Equaled Sigma-Differed Horizontal Gradational Distribution"
+ [6] "Mean-Differed Sigma-Differed Horizontal Gradational Distribution"
+ [7] "Mean-Differed Sigma-Equaled Vertical Gradational Distribution"
+ [8] "Mean-Equaled Sigma-Differed Vertical Gradational Distribution"
+ [9] "Mean-Differed Sigma-Differed Vertical Gradational Distribution"
+[10] "3-Mean-Differed Sigma-Equaled Vertical Gradational Distribution"
+[11] "Mean-Equaled 3-Sigma-Differed Vertical Gradational Distribution"
+[12] "3-Mean-Differed 3-Sigma-Differed Vertical Gradational Distribution"
+[13] "Mean-Differed Sigma-Equaled Vertical-Horizontal Gradational Distribution"
+[14] "Mean-Equaled Sigma-Differed Vertical-Horizontal Gradational Distribution"
+[15] "Mean-Differed Sigma-Differed Vertical-Horizontal Gradational Distribution"
 [16] "Discontinuous Connected Gaussian Distribution"
 >
 > # nls.freq.all()$cor : 各モデルと度数分布との相対係数です
@@ -247,7 +247,7 @@ f_i(x) &= \dfrac{1}{\sqrt{2 \pi \sigma_i^2}} \exp \left( -\dfrac{(x - \mu_i)^2}{
 > # nls.freq.all()$best : 最も度数分布に近い結果が得られたモデルです
 > # CGD$kind : その分布モデルの種類を表す文字列です
 > result$best$kind
-[1] "Mean-Differd Sigma-Differd Vertical-Horizontal Gradational Distribution"
+[1] "Mean-Differed Sigma-Differed Vertical-Horizontal Gradational Distribution"
 >
 > # CGD$d() : X座標を指定して、確率密度を返します
 > dev.new(); plot.new()

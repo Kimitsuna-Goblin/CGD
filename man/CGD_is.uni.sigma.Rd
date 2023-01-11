@@ -20,7 +20,7 @@ a$is.uni.sigma()	## TRUE
 a$set.waypoints(
 	data.frame( p = c( 0.1, 0.4, 0.6, 0.9 ), q = c( -1.92, -0.20, 0.20, 1.92 ) ),
 	this.type1.type = 3, v.grad = TRUE )
-a$kind	## Mean-Differd Sigma-Differd Vertical Gradational Distribution
+a$kind	## Mean-Differed Sigma-Differed Vertical Gradational Distribution
 a$is.uni.sigma()	## FALSE
 
 a$set.waypoints(

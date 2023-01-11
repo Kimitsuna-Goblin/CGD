@@ -121,7 +121,7 @@ a$nls.freq( x, freq, total, this.type1.type = 3, uni.sigma = TRUE )
 a
 plot.freq.and.d( a, x, freq, total )
 
-a$nls.freq( x, freq, total, kind = "Mean-Equaled Sigma-Differd Vertical Gradational Distribution" )
+a$nls.freq( x, freq, total, kind = "Mean-Equaled Sigma-Differed Vertical Gradational Distribution" )
 a
 plot.freq.and.d( a, x, freq, total )
 

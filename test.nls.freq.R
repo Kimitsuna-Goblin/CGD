@@ -152,8 +152,8 @@ cgd.kind.index( cgds$cgd[[1]] ) # == cgds$cgd[[1]]$kind.index
 diff.check( cgds$cgd[[10]], x, freq, total )$summary[5]
 diff.check( cgds$cgd[[13]], x, freq, total )$summary[5] # smaller
 
-cgds$cgd[[10]]$kind # "3-Mean-Differd Sigma-Equaled Vertical Gradational Distribution"
-cgds$cgd[[13]]$kind # "Mean-Differd Sigma-Equaled Vertical-Horizontal Gradational Distribution"
+cgds$cgd[[10]]$kind # "3-Mean-Differed Sigma-Equaled Vertical Gradational Distribution"
+cgds$cgd[[13]]$kind # "Mean-Differed Sigma-Equaled Vertical-Horizontal Gradational Distribution"
 
 cgds$cgd[[10]]$intervals.mean() # -0.6709839 -0.1977604  0.2928316 (about)
 cgds$cgd[[10]]$intervals.sd() # 0.6400899 0.6400899 0.6400899 (about)
@@ -412,7 +412,7 @@ plot.freq.and.d( cgds$best, x, freq, total )
 # normal test
 nls.start.template( 1 )
 nls.start.template( 15 )
-nls.start.template( "Mean of Mean-Equaled Sigma-Differd 2 Normal Distributions" )
+nls.start.template( "Mean of Mean-Equaled Sigma-Differed 2 Normal Distributions" )
 
 # Warning case
 nls.start.template( 16 )

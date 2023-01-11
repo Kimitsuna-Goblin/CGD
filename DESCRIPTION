@@ -1,7 +1,7 @@
 Package: cgd
 Type: Package
 Title: 連結ガウス分布 (Connected Gaussian Distribution) クラス
-Version: 2.0.0
+Version: 2.0.1
 Author: Kimitsuna-Goblin
 Maintainer: Kimitsuna-Goblin <kimitsuna@i.softbank.jp>
 Description: 連結ガウス分布とは、
@@ -17,12 +17,12 @@ Description: 連結ガウス分布とは、
     かなり滑らかなグラフが得られます。
     一方、クォンタイルが8点以下の場合は、
     連続で滑らかな確率密度関数を持つ確率分布を構成することもできます。
-    その場合、設定 (type1.type, continuous / symmetric) により、確率密度関数が
+    その場合、設定 (type1.type, continuous / symmetric) により、
     (1) 2つの確率密度関数の平均 (type1.type = 1, continuous)、
-    (2) 横方向 (X軸方向) にグラデーションがかかったように変化する関数 (type1.type = 2, continuous)、
-    (3) 中央が鋭利に尖ったり、逆に凹んだりしている、左右対称な関数 (type1.type = 2, symmetric)、
-    (4) 縦方向 (Y軸方向) にグラデーションがかかったように変化する関数 (type1.type = 3, v.grad)、
-    (5) 縦横両方向にグラデーションがかかったように変化する関数 (type1.type = 4)
+    (2) 横方向 (X軸方向) にグラデーション的に正規分布の混合比率が変化する分布 (type1.type = 2, continuous)、
+    (3) 中央が鋭利に尖ったり、逆に凹んだりしている、左右対称な分布 (type1.type = 2, symmetric)、
+    (4) 縦方向 (Y軸方向) にグラデーション的に正規分布の混合比率が変化する分布 (type1.type = 3, v.grad)、
+    (5) 縦横両方向にグラデーション的に正規分布の混合比率が変化する分布 (type1.type = 4)
     となるように構成できます。
     これらの確率密度関数は、歪んだ分布や、裾野の広い分布の解析などに使える場合があると思います。
     ともかく、これはそういった確率分布を構成する、R言語のライブラリです。

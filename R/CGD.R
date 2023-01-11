@@ -1,7 +1,7 @@
 ##############################################################################
 # 連結ガウス分布 (Connected Gaussian Distribution) クラス
 # @file			CGD.R
-# @version		2.0.0
+# @version		2.0.1
 # @author		Kimitsuna-Goblin
 # @copyright	Copyright (C) 2023 Ura Kimitsuna
 # @license		Released under the MIT license.
@@ -25,23 +25,23 @@ f.t3.p <- list( function( x, m, s ) { pnorm( x, m, s ) - pnorm( x, m, s * sqrt( 
 				function( x, m, s ) { pnorm( x, m, s * sqrt( 2 ) / 2 ) * sqrt( 2 ) / 2 },
 				( ( 2 - sqrt( 2 ) ) / 4 ) )
 
-# 連結ガウス分布の種類 (1～15は連続分布)												# kind.index
-kinds <- c(	"Normal Distribution",														# 1
-			"Mean of Mean-Equaled Sigma-Differd 2 Normal Distributions",				# 2
-			"Symmetric Horizontal Gradational Distribution",							# 3
-			"Mean-Differd Sigma-Equaled Horizontal Gradational Distribution",			# 4
-			"Mean-Equaled Sigma-Differd Horizontal Gradational Distribution",			# 5
-			"Mean-Differd Sigma-Differd Horizontal Gradational Distribution",			# 6
-			"Mean-Differd Sigma-Equaled Vertical Gradational Distribution",				# 7
-			"Mean-Equaled Sigma-Differd Vertical Gradational Distribution",				# 8
-			"Mean-Differd Sigma-Differd Vertical Gradational Distribution",				# 9
-			"3-Mean-Differd Sigma-Equaled Vertical Gradational Distribution",			#10
-			"Mean-Equaled 3-Sigma-Differd Vertical Gradational Distribution",			#11
-			"3-Mean-Differd 3-Sigma-Differd Vertical Gradational Distribution",			#12
-			"Mean-Differd Sigma-Equaled Vertical-Horizontal Gradational Distribution",	#13
-			"Mean-Equaled Sigma-Differd Vertical-Horizontal Gradational Distribution",	#14
-			"Mean-Differd Sigma-Differd Vertical-Horizontal Gradational Distribution",	#15
-			"Discontinuous Connected Gaussian Distribution" )							#16
+# 連結ガウス分布の種類 (1～15は連続分布)													# kind.index
+kinds <- c(	"Normal Distribution",															# 1
+			"Mean of Mean-Equaled Sigma-Differed 2 Normal Distributions",					# 2
+			"Symmetric Horizontal Gradational Distribution",								# 3
+			"Mean-Differed Sigma-Equaled Horizontal Gradational Distribution",				# 4
+			"Mean-Equaled Sigma-Differed Horizontal Gradational Distribution",				# 5
+			"Mean-Differed Sigma-Differed Horizontal Gradational Distribution",				# 6
+			"Mean-Differed Sigma-Equaled Vertical Gradational Distribution",				# 7
+			"Mean-Equaled Sigma-Differed Vertical Gradational Distribution",				# 8
+			"Mean-Differed Sigma-Differed Vertical Gradational Distribution",				# 9
+			"3-Mean-Differed Sigma-Equaled Vertical Gradational Distribution",				#10
+			"Mean-Equaled 3-Sigma-Differed Vertical Gradational Distribution",				#11
+			"3-Mean-Differed 3-Sigma-Differed Vertical Gradational Distribution",			#12
+			"Mean-Differed Sigma-Equaled Vertical-Horizontal Gradational Distribution",		#13
+			"Mean-Equaled Sigma-Differed Vertical-Horizontal Gradational Distribution",		#14
+			"Mean-Differed Sigma-Differed Vertical-Horizontal Gradational Distribution",	#15
+			"Discontinuous Connected Gaussian Distribution" )								#16
 
 # TeX 形式 テンプレート (累積分布関数・確率密度関数共通)
 tex.form.header <- "\\begin{align}\n"
@@ -789,7 +789,7 @@ CGD$methods(
 			{
 				if ( type1.type == 1 && is.continuous() )
 				{
-					index <- 2	# Mean of Mean-Equaled Sigma-Differd 2 Normal Distributions
+					index <- 2	# Mean of Mean-Equaled Sigma-Differed 2 Normal Distributions
 				}
 				else if ( type1.type == 2 && is.symmetric() )
 				{
@@ -799,15 +799,15 @@ CGD$methods(
 				{
 					if ( is.uni.sigma() )
 					{
-						index <- 4	# Mean-Differd Sigma-Equaled Horizontal Gradational Distribution
+						index <- 4	# Mean-Differed Sigma-Equaled Horizontal Gradational Distribution
 					}
 					else if ( is.uni.mean() )
 					{
-						index <- 5	# Mean-Equaled Sigma-Differd Horizontal Gradational Distribution
+						index <- 5	# Mean-Equaled Sigma-Differed Horizontal Gradational Distribution
 					}
 					else
 					{
-						index <- 6	# Mean-Differd Sigma-Differd Horizontal Gradational Distribution
+						index <- 6	# Mean-Differed Sigma-Differed Horizontal Gradational Distribution
 					}
 				}
 				else if ( intervals[[1]]$p.conn.prev[2] == 0 && intervals[[length( intervals )]]$p.conn.next[1] == 1 )
@@ -821,30 +821,30 @@ CGD$methods(
 				{
 					if ( is.uni.sigma() )
 					{
-						index <- 7	# Mean-Differd Sigma-Equaled Vertical Gradational Distribution
+						index <- 7	# Mean-Differed Sigma-Equaled Vertical Gradational Distribution
 					}
 					else if ( is.uni.mean() )
 					{
-						index <- 8	# Mean-Equaled Sigma-Differd Vertical Gradational Distribution
+						index <- 8	# Mean-Equaled Sigma-Differed Vertical Gradational Distribution
 					}
 					else
 					{
-						index <- 9	# Mean-Differd Sigma-Differd Vertical Gradational Distribution
+						index <- 9	# Mean-Differed Sigma-Differed Vertical Gradational Distribution
 					}
 				}
 				else
 				{
 					if ( is.uni.sigma() )
 					{
-						index <- 10	# 3-Mean-Differd Sigma-Equaled Vertical Gradational Distribution
+						index <- 10	# 3-Mean-Differed Sigma-Equaled Vertical Gradational Distribution
 					}
 					else if ( is.uni.mean() )
 					{
-						index <- 11	# Mean-Equaled 3-Sigma-Differd Vertical Gradational Distribution
+						index <- 11	# Mean-Equaled 3-Sigma-Differed Vertical Gradational Distribution
 					}
 					else
 					{
-						index <- 12	# Mean-Differd 3-Sigma-Differd Vertical Gradational Distribution
+						index <- 12	# Mean-Differed 3-Sigma-Differed Vertical Gradational Distribution
 					}
 				}
 			}
@@ -852,15 +852,15 @@ CGD$methods(
 			{
 				if ( is.uni.sigma() )
 				{
-					index <- 13	# Mean-Differd Sigma-Equaled Vertical-Horizontal Gradational Distribution
+					index <- 13	# Mean-Differed Sigma-Equaled Vertical-Horizontal Gradational Distribution
 				}
 				else if ( is.uni.mean() )
 				{
-					index <- 14	# Mean-Equaled Sigma-Differd Vertical-Horizontal Gradational Distribution
+					index <- 14	# Mean-Equaled Sigma-Differed Vertical-Horizontal Gradational Distribution
 				}
 				else
 				{
-					index <- 15	# Mean-Differd Sigma-Differd Vertical-Horizontal Gradational Distribution
+					index <- 15	# Mean-Differed Sigma-Differed Vertical-Horizontal Gradational Distribution
 				}
 			}
 		}
@@ -2409,7 +2409,7 @@ t3.wp5.mid.sd <- function( mean2, wp2, wp3 )
 #'	a
 #'	plot.freq.and.d( a, x, freq, total )
 #'
-#'	a$nls.freq( x, freq, total, kind = "Mean-Equaled Sigma-Differd Vertical Gradational Distribution" )
+#'	a$nls.freq( x, freq, total, kind = "Mean-Equaled Sigma-Differed Vertical Gradational Distribution" )
 #'	a
 #'	plot.freq.and.d( a, x, freq, total )
 #'
@@ -3139,8 +3139,8 @@ get.intervals.with.nls.coef <- function( coefs, normal, symmetric, v.grad, uni.s
 #'	result$cor[[10]]
 #'	result$cor[[13]]	## smaller than result$cor[[10]]
 #'
-#'	result$cgd[[10]]$kind ## "3-Mean-Differd Sigma-Equaled Vertical Gradational Distribution" (== cgd:::kinds[10])
-#'	result$cgd[[13]]$kind ## "Mean-Differd Sigma-Equaled Vertical-Horizontal Gradational Distribution" (== cgd:::kinds[13])
+#'	result$cgd[[10]]$kind ## "3-Mean-Differed Sigma-Equaled Vertical Gradational Distribution" (== cgd:::kinds[10])
+#'	result$cgd[[13]]$kind ## "Mean-Differed Sigma-Equaled Vertical-Horizontal Gradational Distribution" (== cgd:::kinds[13])
 #'
 #'	## see the plots
 #'	plot.freq.and.d( result$cgd[[10]], x, freq, total )
@@ -3398,7 +3398,7 @@ nls.start.template <- function( target )
 #'	cgd.kind.index( cgd:::kinds )
 #'	cgd.kind.index( 1:16 )
 #'	cgd.kind.index( 6 )
-#'	cgd.kind.index( "3-Mean-Differd 3-Sigma-Differd Vertical Gradational Distribution" )
+#'	cgd.kind.index( "3-Mean-Differed 3-Sigma-Differed Vertical Gradational Distribution" )
 #'
 #'	a <- CGD$new()
 #'	cgd.kind.index( a )
@@ -3456,7 +3456,7 @@ cgd.kind.index <- function( targets )
 #'	cgd.kind( cgd:::kinds )
 #'	cgd.kind( 1:16 )
 #'	cgd.kind( 6 )
-#'	cgd.kind( "3-Mean-Differd 3-Sigma-Differd Vertical Gradational Distribution" )
+#'	cgd.kind( "3-Mean-Differed 3-Sigma-Differed Vertical Gradational Distribution" )
 #'
 #'	a <- CGD$new()
 #'	cgd.kind( a )
@@ -3492,7 +3492,7 @@ cgd.kind <- function( target )
 #'	a$set.waypoints(
 #'		data.frame( p = c( 0.25, 0.5, 0.75 ), q = c( -0.67, 0, 0.53 ) ),
 #'		this.type1.type = 2, continuous = TRUE )
-#'	a$kind	## Mean-Equaled Sigma-Differd Horizontal Gradational Distribution
+#'	a$kind	## Mean-Equaled Sigma-Differed Horizontal Gradational Distribution
 #'	a$is.continuous()	## TRUE
 ###############################################################################
 NULL
@@ -3554,7 +3554,7 @@ CGD$methods(
 #'	a$set.waypoints(
 #'		data.frame( p = c( 0.1, 0.4, 0.6, 0.9 ), q = c( -1.92, -0.20, 0.20, 1.92 ) ),
 #'		this.type1.type = 3, v.grad = TRUE )
-#'	a$kind	## Mean-Differd Sigma-Differd Vertical Gradational Distribution
+#'	a$kind	## Mean-Differed Sigma-Differed Vertical Gradational Distribution
 #'	a$is.v.grad()	## TRUE
 ###############################################################################
 NULL
@@ -3582,7 +3582,7 @@ CGD$methods(
 #'	a$set.waypoints(
 #'		data.frame( p = c( 0.1, 0.4, 0.6, 0.9 ), q = c( -1.92, -0.20, 0.20, 1.92 ) ),
 #'		this.type1.type = 3, v.grad = TRUE )
-#'	a$kind	## Mean-Differd Sigma-Differd Vertical Gradational Distribution
+#'	a$kind	## Mean-Differed Sigma-Differed Vertical Gradational Distribution
 #'	a$is.uni.sigma()	## FALSE
 #'
 #'	a$set.waypoints(
@@ -3615,7 +3615,7 @@ CGD$methods(
 #'	a$set.waypoints(
 #'		data.frame( p = c( 0.1, 0.4, 0.6, 0.9 ), q = c( -1.92, -0.20, 0.20, 1.92 ) ),
 #'		this.type1.type = 3, v.grad = TRUE )
-#'	a$kind	## Mean-Differd Sigma-Differd Vertical Gradational Distribution
+#'	a$kind	## Mean-Differed Sigma-Differed Vertical Gradational Distribution
 #'	a$is.uni.mean()	## FALSE
 #'
 #'	a <- CGD$new()
@@ -5088,7 +5088,7 @@ get.tex.val = function( cgd, decimal )
 #'	a$set.waypoints(
 #'		data.frame( p = c( 0.1, 0.5, 0.6 ), q = c( -1.92, 0, 0.20 ) ),
 #'		this.type1.type = 3, v.grad = TRUE )
-#'	a$kind	## Mean-Equaled Sigma-Differd Vertical Gradational Distribution
+#'	a$kind	## Mean-Equaled Sigma-Differed Vertical Gradational Distribution
 #'	a$sd()	## 1.564198
 ###############################################################################
 NULL
@@ -5292,7 +5292,7 @@ cgd.sd.sub <- function( l.bound, u.bound, mean, f )
 #'	a$set.waypoints(
 #'	data.frame( p = c( 0.25, 0.5, 0.75 ), q = c( -0.67, 0, 0.53 ) ),
 #'	this.type1.type = 2, continuous = TRUE )
-#'	a$kind	## Mean-Equaled Sigma-Differd Horizontal Gradational Distribution
+#'	a$kind	## Mean-Equaled Sigma-Differed Horizontal Gradational Distribution
 #'	a$sd()	## 0.9278135 (about)
 #'	a$lsd()	## 1.077491 (about)
 ###############################################################################
@@ -5327,7 +5327,7 @@ CGD$methods(
 #'	a$set.waypoints(
 #'	data.frame( p = c( 0.25, 0.5, 0.75 ), q = c( -0.67, 0, 0.53 ) ),
 #'	this.type1.type = 2, continuous = TRUE )
-#'	a$kind	## Mean-Equaled Sigma-Differd Horizontal Gradational Distribution
+#'	a$kind	## Mean-Equaled Sigma-Differed Horizontal Gradational Distribution
 #'	a$sd()	## 0.9278135 (about)
 #'	a$usd()	## 0.7487916 (about)
 ###############################################################################

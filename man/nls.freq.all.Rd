@@ -103,8 +103,8 @@ result$cor
 result$cor[[10]]
 result$cor[[13]]	## smaller than result$cor[[10]]
 
-result$cgd[[10]]$kind ## "3-Mean-Differd Sigma-Equaled Vertical Gradational Distribution" (== cgd:::kinds[10])
-result$cgd[[13]]$kind ## "Mean-Differd Sigma-Equaled Vertical-Horizontal Gradational Distribution" (== cgd:::kinds[13])
+result$cgd[[10]]$kind ## "3-Mean-Differed Sigma-Equaled Vertical Gradational Distribution" (== cgd:::kinds[10])
+result$cgd[[13]]$kind ## "Mean-Differed Sigma-Equaled Vertical-Horizontal Gradational Distribution" (== cgd:::kinds[13])
 
 ## see the plots
 plot.freq.and.d( result$cgd[[10]], x, freq, total )
