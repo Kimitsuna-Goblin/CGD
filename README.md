@@ -79,6 +79,15 @@ devtools::install_github( "Kimitsuna-Goblin/cgd" )
 +     q = c( qnorm( c( 0.1, 0.3, 0.5, 0.6 ), 0, 1 ), 0.5 ) ) )
 > NULL
 >
+> # trace.q() : 累積分布関数でクォンタイルをトレースする連結ガウス分布クラスオブジェクトを生成します
+> #             CGD$set.waypoints() と同じです (new しなくて良い分、こちらの方が簡単です)
+>
+> a <- trace.q(
++   data.frame(
++     p = c( 0.1, 0.3, 0.5, 0.6, 0.7 ),
++     q = c( qnorm( c( 0.1, 0.3, 0.5, 0.6 ), 0, 1 ), 0.5 ) ) )
+> NULL
+>
 > # CGD$d() : X座標を指定して、確率密度を返します
 > dev.new(); plot.new()
 > plot( seq( -3, 3, 0.01 ), a$d( seq( -3, 3, 0.01 ) ), type = "l" )
@@ -177,6 +186,18 @@ Field "m.usd":
 > # CGD$nls.freq() : ライブラリでサポートされている連続分布の種類やオプションなどを指定して、
 > #                  度数分布に近くなるパラメータ (平均値、標準偏差) をフィールドに設定します
 > a$nls.freq( x, freq, total, kind = "Mean-Equaled Sigma-Differed Vertical Gradational Distribution" )
+Nonlinear regression model
+  model: d ~ dp.t3(x, c(mean, mean, mean), c(sqrt.sd.1^2, sqrt.sd.2^2,     sqrt.sd.1^2), f.t3.d)
+   data: list(d = get.d(x, freq, total), x = x)
+     mean sqrt.sd.1 sqrt.sd.2
+  -0.1992    1.0198    0.8050
+ residual sum-of-squares: 0.02285
+
+Number of iterations to convergence: 30
+Achieved convergence tolerance: 9.922e-06
+>
+> # a <- nls.freq() のような書き方もできます (new しなくて良い分、こちらの方が簡単です)
+> a <- nls.freq( x, freq, total, kind = "Mean-Equaled Sigma-Differed Vertical Gradational Distribution" )
 Nonlinear regression model
   model: d ~ dp.t3(x, c(mean, mean, mean), c(sqrt.sd.1^2, sqrt.sd.2^2,     sqrt.sd.1^2), f.t3.d)
    data: list(d = get.d(x, freq, total), x = x)

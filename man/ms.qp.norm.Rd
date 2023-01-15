@@ -17,3 +17,8 @@ list( mean = 平均値, sd = 標準偏差 )
 \description{
 与えられた2点のクォンタイルを満たす正規分布の、平均値と標準偏差を得る。
 }
+\examples{
+ms.qp.norm( q = c( -1, 1 ), p = pnorm( c( -1, 1 ), 0, 1 ) ) # list( mean = 0, sd = 1 )
+ms.qp.norm( q = c(	0, 1 ), p = pnorm( c(  0, 1 ), 0, 2 ) ) # list( mean = 0, sd = 2 )
+ms.qp.norm( q = c( -2, 1 ), p = c( 0.3, 0.7 ) ) # list( mean = 0.5, sd = 2.86 ) (about)
+}

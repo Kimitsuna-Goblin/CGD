@@ -65,6 +65,13 @@ plot.waypoints.and.p( a, c( 0.1, 0.3, 0.5, 0.6, 0.7 ), c( qnorm( c( 0.1, 0.3, 0.
 #	Remark: Numerical integral is sometimes not so accurate.
 abs( 1 - sqrt( integrate( f <- function( x ) { ( x - a$mean )^2 * a$d( x ) }, -Inf, Inf )$value ) / a$sd() )
 
+# normal test
+a <- trace.q(
+data.frame(
+p = c( 0.1, 0.3, 0.5, 0.6, 0.7 ),
+q = c( qnorm( c( 0.1, 0.3, 0.5, 0.6 ), 0, 1 ), 0.5 ) ), type1.type = 1 )
+plot.waypoints.and.p( a, c( 0.1, 0.3, 0.5, 0.6, 0.7 ), c( qnorm( c( 0.1, 0.3, 0.5, 0.6 ), 0, 1 ), 0.5 ), c( -3, 3 ) )
+
 # Error case
 a$set.waypoints(
 	data.frame(
@@ -1567,25 +1574,16 @@ p = c( 0.1, 0.25, 0.4, 0.5, 0.6, 0.75, 0.9 ),
 q = qs ),
 this.type1.type = 4 )
 
-# normal test (sub1 of Baltan Rev.)
-qs <- c( -1.2, -1, -0.32 )
+# normal test (for success, it needs about 1100 iterations)
 a$set.waypoints(
 data.frame(
-p = c( 0.1, 0.25, 0.4 ),
+p = c( 0.1, 0.25, 0.4, 0.5, 0.6, 0.75, 0.9 ),
 q = qs ),
-this.type1.type = 3, v.grad = TRUE )
+this.type1.type = 4, control = list( maxit = 2000 ) )
 c( a$sd(), a$lsd(), a$usd() )
 a$p( qs )
 plot.waypoints.and.p( a,
-	c( 0.1, 0.25, 0.4 ), qs, c( -3, 3 ) )
-
-# Error case (sub2 of Baltan Rev.)
-qs <- c( 0.3, 0.8, 1 )
-a$set.waypoints(
-data.frame(
-p = c( 0.6, 0.75, 0.9 ),
-q = qs ),
-this.type1.type = 3, v.grad = TRUE )
+	c( 0.1, 0.25, 0.4, 0.5, 0.6, 0.75, 0.9 ), qs, c( -3, 3 ) )
 
 
 # normal test

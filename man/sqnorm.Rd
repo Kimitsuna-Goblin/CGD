@@ -15,3 +15,8 @@ sqnorm(p)
 \description{
 正規分布において、与えられた確率が、平均値から何σ離れているかを得る。
 }
+\examples{
+sqnorm( 0.5 ) # 0
+sqnorm( pnorm( -2, 0, 1 ) ) # -2
+sqnorm( seq( 0, 1, 0.1 ) ) # increces from -Inf to Inf
+}

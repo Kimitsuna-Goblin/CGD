@@ -1,7 +1,7 @@
 ##############################################################################
 # 連結ガウス分布 (Connected Gaussian Distribution) クラス
 # @file			CGD.R
-# @version		2.0.1
+# @version		2.1.0
 # @author		Kimitsuna-Goblin
 # @copyright	Copyright (C) 2023 Ura Kimitsuna
 # @license		Released under the MIT license.
@@ -234,6 +234,10 @@ tex.d.all <-
 #' @export
 #' @param	p			確率。
 #' @return	平均値からの相対位置(σ単位)
+#' @examples
+#'	sqnorm( 0.5 ) # 0
+#'	sqnorm( pnorm( -2, 0, 1 ) ) # -2
+#'	sqnorm( seq( 0, 1, 0.1 ) ) # increces from -Inf to Inf
 ###############################################################################
 sqnorm <- function( p )
 {
@@ -246,9 +250,13 @@ sqnorm <- function( p )
 #' 与えられた平均値を取り、1点における確率を満たす正規分布の標準偏差を得る。
 #' @export
 #' @param	mean		平均値。
-#' @param	q			X座標 (クォンタイル)。
-#' @param	p			そのX座標における確率 (累積分布関数の値)。
+#' @param	q			X座標 (クォンタイル)。平均値と同じ値を与えてはならない。
+#' @param	p			そのX座標における確率 (累積分布関数の値)。 0.5 を与えてはならない。
 #' @return	標準偏差
+#' @examples
+#'	sd.mqp.norm( 0, qnorm( 0.3, 0, 1 ), 0.3 ) # 1
+#'	sd.mqp.norm( rep( 0, 5 ), 1:5, pnorm( 1:5, 0, 1 ) ) # 1 1 1 1 1
+#'	sd.mqp.norm( c( -0.1, 0, 0.3 ), c( -0.3, -0.1, 0.4 ), c( 0.38, 0.47, 0.53 ) ) # [2] == [3]
 ###############################################################################
 sd.mqp.norm <- function( mean, q, p )
 {
@@ -263,6 +271,10 @@ sd.mqp.norm <- function( mean, q, p )
 #' @param	q			X座標 (クォンタイル)。要素数 2 個のベクトル。
 #' @param	p			それらのX座標における確率 (累積分布関数の値)。要素数 2 個のベクトル。
 #' @return	list( mean = 平均値, sd = 標準偏差 )
+#' @examples
+#'	ms.qp.norm( q = c( -1, 1 ), p = pnorm( c( -1, 1 ), 0, 1 ) ) # list( mean = 0, sd = 1 )
+#'	ms.qp.norm( q = c(	0, 1 ), p = pnorm( c(  0, 1 ), 0, 2 ) ) # list( mean = 0, sd = 2 )
+#'	ms.qp.norm( q = c( -2, 1 ), p = c( 0.3, 0.7 ) ) # list( mean = 0.5, sd = 2.86 ) (about)
 ###############################################################################
 ms.qp.norm <- function( q, p )
 {
@@ -873,6 +885,231 @@ CGD$methods(
 )
 
 ###############################################################################
+#' 分位点トレース
+#'
+#' 累積分布関数で分位点をトレースする CGD クラスオブジェクトを生成する。
+#' @export
+#' @param	quantiles			分位点の data.frame( q = X座標 (クォンタイル), p = その点における確率 )
+#'								X座標 (クォンタイル) は昇順にソートしておくこと。
+#'								平均値は p = 0.5 の点のX座標として与えること。
+#' @param	continuous			TRUE にすると、 type1.type = 1 または 2 のとき、独立区間を [0, 0] と [1, 1] の 2点にして、
+#'								確率密度関数が全区間 (-∞, ∞) で連続になるように分布構成を試みる (デフォルト: FALSE)。
+#'								type1.type = 1 または 2 のときに有効 (type1.type >= 3 では常に連続)。
+#' @param	symmetric			TRUE にすると、 type1.type = 1 または 2 のとき、
+#'								独立区間を [0, 0], [0.5, 0.5], [1, 1] の 3点にして、
+#'								1番目と 3番目の確率分布を同一にすることにより、
+#'								確率密度関数が全区間 (-∞, ∞) で連続で、かつ左右対称になるように試みる (デフォルト: FALSE)。
+#'								type1.type = 1 または 2 のときに有効。
+#' @param	v.grad				TRUE にすると、 type1.type = 3 のとき、
+#'								裾部の左右の標準偏差が等しい、縦方向グラデーションの分布を構成する (デフォルト: FALSE)。
+#' @param	uni.sigma			TRUE にすると、 type1.type = 2、continuous = TRUE のとき、
+#'								構成要素の各正規分布の標準偏差を強制的に等しくする (デフォルト: FALSE)。
+#'								uni.sigma = TRUE の設定は type1.type = 2、continuous = TRUE で、
+#'								経路の構成点が (μ, 0.5) を含む 3点の場合のみ有効。このとき、生成される分布は左右対称になる。
+#' @param	uni.mean			FALSE にすると、 type1.type = 3、v.grad = TRUE のとき、
+#'								構成要素の各正規分布の平均値を異なるようにする (デフォルト: TRUE)。
+#'								ほとんどの場合、デフォルトの設定のままで構成に成功するが、
+#'								歪みがある程度大きい経路の場合は、 uni.mean = FALSE を設定したほうが成功しやすいケースもある。
+#'								uni.mean の設定は v.grad = TRUE で、経路の構成点が (μ, 0.5) を含む 3点の場合のみ有効。
+#' @param	control				nleqslv に渡す、同関数の control オプションのリスト (デフォルト: list())。
+#'								詳細は \href{https://cran.r-project.org/web/packages/nleqslv/nleqslv.pdf}{nleqslv} を参照。
+#'								デフォルトは空だが、経路の条件不足のため "Jacobian is singular" のエラーになる可能性が高い場合
+#'								 (type1.type = 3, v.grad = TRUE で歪みが大きい 3点経路の場合と
+#'								  type1.type = 4 で 7点経路の場合) は allowSingular = TRUE が暗黙のうちに設定される。
+#'								ただし、引数 control のリストに allowSingular が与えられている場合は、引数のリストを優先する。
+#' @param	type1.type			フィールドの type1.type に設定する値。 1、2、3、4 のいずれかを指定すること (デフォルト: 1)。
+#'
+#'				type1.type の値によって、接続区間 (β_i, α_{i+1}) が type 1 の場合
+#'				 (この type 1 の詳細については \href{https://github.com/Kimitsuna-Goblin/CGD}{README.md} を参照)、
+#'				接続区間の累積分布関数 Ψ_i(x) を以下のように計算する。
+#'
+#'				1: Ψ_i(x) = ( α_{i+1} - x ) / ( α_{i+1} - β_i ) * Φ_i(x) +
+#'							 ( x - β_i ) / ( α_{i+1} - β_i ) * Φ_{i+1}(x)
+#'
+#'				2: Ψ_i(x) = ( Φ~_i(α_{i+1}) - Φ~_i(x) ) / ( Φ~_i(α_{i+1}) - Φ~_i(β_i) ) * Φ_i(x) +
+#'							 ( Φ~_i(x) - Φ~_i(β_i) ) / ( Φ~_i(α_{i+1}) - Φ~_i(β_i) ) * Φ_{i+1}(x)
+#'
+#'				3: Ψ(x) = ∫_{-∞}^{min( x, μ_1 )} ( 1 - f_1(t) / f_1(μ_1) ) f_1(t) dt
+#'							+ ∫_{-∞}^x f_2(t)^2 / f_2(μ) dt
+#'							+ ∫_{min( x, μ_3 )}^x ( 1 - f_3(t) / f_3(μ_3) ) f_3(t) dt
+#'						 = min( Φ_1(x) - Φ^*_1(x) / √2, ( 2 - √2 ) / 4 )
+#'							+ Φ^*_2(x) / √2
+#'							+ max( 0, Φ_3(x) - Φ^*_3(x) / √2 - ( 2 - √2 ) / 4 )
+#'
+#'				4: Ψ(x) = Ψ_1(x) - Ψ_1(x)^2 / 2 + Ψ_2(x)^2 / 2,
+#'						Ψ_1(x) = Φ_1(x) - Φ^*_1(x) / √2 + Φ^*_2(x) / √2,
+#'						Ψ_2(x) = Φ_3(x) - Φ^*_3(x) / √2 + Φ^*_4(x) / √2
+#'
+#'				ただし、Φ_i, Φ_{i+1} は当該接続区間の前後の独立区間を負担する正規分布の累積分布関数、
+#'				Φ~_i(x) = ( Φ_i(x) + Φ_{i+1}(x) ) / 2 、
+#'				f_i, f_{i+1} は当該接続区間の前後の独立区間を負担する正規分布の確率密度関数、μ は平均値、
+#'				Φ^*_i は正規分布 N(μ_i, (σ_i / √2)^2) の累積分布関数である。
+#'
+#'				type1.type = 1 は、不連続分布を構成するための、最も単純な連結方法である。
+#'								また、 continuous = TRUE または symmetric = TRUE のオプションにより、
+#'								左右対称な連続分布である「平均値が等しい2つの正規分布の平均」が構成できる。
+#'								なお、このとき、累積分布関数は Ψ(x) = ( Φ_i(x) + Φ_{i+1}(x) ) / 2 となる。
+#'								ただし、便宜上、そのように作っているだけであって、
+#'								この連続分布の累積分布関数 Ψ(x) は上の 1: に示した不連続分布の Ψ_i(x) の拡張ではない。
+#'
+#'				type1.type = 2 は、 1 と同様に、不連続分布を構成するための連結方法であるが、
+#'								不連続分布の累積分布関数 Ψ_i(x) を β_i → -∞, α_{i+1} → ∞ と自然に拡張することで、
+#'								連続分布も構成できるように工夫している。
+#'								continuous = TRUE にすると、2つの確率密度関数の「横方向グラデーション」が構成できる。
+#'								つまり、確率密度関数の形が、 x = -∞ の点から x = ∞ の点に向かって、
+#'								横方向に徐々に変化していくようなイメージの分布を構成できる。
+#'								また、 symmetric = TRUE にすると、
+#'								平均値の点で折り返したような左右対称な分布を構成できる
+#'								 (ただし、文字通り「折り返している」ため、連続であるが、滑らかではない)。
+#'
+#'				type1.type = 3 は連続分布に特化した、「縦方向グラデーション」の連結方法である。
+#'								つまり、確率密度関数の形が、平均値から遠い裾部から、平均値に近い山部に向かって、
+#'								縦方向に徐々に変化していくようなイメージの分布を構成できる。
+#'								v.grad = TRUE にすると、構成要素の正規分布は裾部と山部の2つになり (上の式では f_1 = f_3)、
+#'								v.grad = FALSE にすると、裾部の両側がそれぞれ別の分布になるので、正規分布は3つになる。
+#'								なお、 v.grad = TRUE, uni.mean = TRUE とすると、左右対称な分布になる。
+#'
+#'				type1.type = 4 は正規分布の連結ではなく、
+#'								2つの連続な連結ガウス分布を連結した、「縦横グラデーション」の構成方法である。
+#'								つまり、2つの type1.type = 3, v.grad = TRUE (縦方向グラデーション) の分布を
+#'								type1.type = 2, continuous = TRUE (横方向グラデーション) で連結する。
+#'								これは、本ライブラリの連続分布の構成方法の中では、最も自由度が高い方法である。
+#'								ただし、通常、左右対称な分布にはならない。
+#'
+#'				連続分布を構成する場合、経路の構成点は一定の個数でなければならない。
+#'				具体的には、構成点の個数は以下のようにする必要がある (個数に (*) が付いているものは、確率 0.5 の点が必須)。
+#'
+#'				・type1.type = 1 :	continuous = TRUE or symmetric = TRUE ⇒ 3点(*)
+#'
+#'				・type1.type = 2 :	continuous = TRUE ⇒ 3点(*) or 4点、
+#'									symmetric = TRUE ⇒ 3点(*)
+#'
+#'				・type1.type = 3 :	v.grad = FALSE ⇒ 3点(*) or 4点 or 5点(*) or 6点、
+#'									v.grad = TRUE ⇒ 3点 or 4点
+#'
+#'				・type1.type = 4 :	5点(*) or 6点 or 7点(*) or 8点
+#'
+#'				個数に (*) が付いていないものは、構成点の半数が確率 0.5 未満、半数が 0.5 超であることが望ましい。
+#'				ただし、type1.type = 3, v.grad = FALSE で 4点経路の場合および v.grad = TRUE で 3点または4点経路 の場合は、
+#'				構成点がどちらか一方に偏っていてもよい。
+#' @return	nleqslv() を内部で実行した場合はその結果。それ以外は NULL
+#' @importFrom	nleqslv		nleqslv
+#' @seealso	\href{https://github.com/Kimitsuna-Goblin/CGD}{README.md} (GitHub)
+#' @examples
+#'	## Discontinuous Example:
+#'	##	Where discontinuous, you can set quantiles as any.
+#'	##	type1.type must be 1 or 2.
+#'	a <- trace.q(
+#'		data.frame(
+#'			p = c( 0.2, 0.5, 0.6, 0.7 ),
+#'			q = c( qnorm( c( 0.2, 0.5, 0.6 ), 0, 1 ), 0.5 ) ),
+#'		type1.type = 1 )
+#'	plot( seq( -3, 3, 0.01 ), a$d( seq( -3, 3, 0.01 ) ), type = "l" )
+#'
+#'	## Mean of 2 Normal Distributions Example:
+#'	##	The number of quantiles must be 3.
+#'	##	You have to set p[2] = 0.5, then ( p[2] - p[1] ) and ( p[3] - p[2] ) must be different.
+#'	a <- trace.q(
+#'		data.frame(
+#'			p = c( 0.1, 0.5, 0.6 ),
+#'			q = c( qnorm( 0.1, 0, 1 ), 0, qnorm( 0.6, 0, 0.75 ) ) ),
+#'		type1.type = 1, continuous = TRUE )
+#'	plot( seq( -3, 3, 0.01 ), a$d( seq( -3, 3, 0.01 ) ), type = "l" )
+#'
+#'	## Horizontal Gradational Example:
+#'	##	The number of quantiles must be 3 or 4.
+#'	##	Where 3-quantiles, you have to set one of p[i] as 0.5, but other points can be set any.
+#'	##	Where 4-quantiles, you must not set p[i] = 0.5 for any i.
+#'	a <- trace.q(
+#'		data.frame( p = c( 0.25, 0.5, 0.75 ), q = c( -0.67, 0, 0.53 ) ),
+#'		type1.type = 2, continuous = TRUE )
+#'	plot( seq( -3, 3, 0.01 ), a$d( seq( -3, 3, 0.01 ) ), type = "l" )
+#'
+#'	## uni.sigma Example:
+#'	##	The number of quantiles must be 3 and one of p[i] must be 0.5.
+#'	##	This is not the "symmetric" option,
+#'	##	but the result will serve a top-flattened or center-dent symmetric probability density function.
+#'	##	For constructing error-less distribution, it is recommended to set p[3] = 0.5 (or p[1] = 0.5)
+#'	##	and both p[1] and p[2] (or, p[2] and p[3]) are set as on the same side of the probability density function as below.
+#'	##	If you set p[2] = 0.5, then ( p[2] - p[1] ) and ( p[3] - p[2] ) must be different.
+#'	a <- trace.q(
+#'		data.frame( p = c( 0.25, 0.4, 0.5 ), q = c( -0.64, -0.25, 0 ) ),
+#'		type1.type = 2, continuous = TRUE, uni.sigma = TRUE )
+#'	plot( seq( -3, 3, 0.01 ), a$d( seq( -3, 3, 0.01 ) ), type = "l" )
+#'
+#'	## Symmetric Example:
+#'	##	The number of quantiles must be 3 and one of p[i] must be 0.5.
+#'	##	For constructing error-less distribution, it is recommended to set p[3] = 0.5 (or p[1] = 0.5)
+#'	##	and both p[1] and p[2] (or, p[2] and p[3]) are set as on the same side of the probability density function as below.
+#'	##	If you set p[2] = 0.5, then ( p[2] - p[1] ) and ( p[3] - p[2] ) must be different.
+#'	a <- trace.q(
+#'		data.frame( p = c( 0.25, 0.4, 0.5 ), q = c( -0.67, -0.15, 0 ) ),
+#'		type1.type = 2, symmetric = TRUE )
+#'	plot( seq( -3, 3, 0.01 ), a$d( seq( -3, 3, 0.01 ) ), type = "l" )
+#'
+#'	## Vertical Gradational Example:
+#'	##	The number of quantiles must be 3 or 4.
+#'	##
+#'	##	Where 3-quantiles, you have to set one of p[i] as 0.5.
+#'	##	In this case, each point of 3 quantiles has a specific role.
+#'	##	One is to specify a waypoint on the tail, one is for a waypoint on the head
+#'	##	and the other is to specify the mean.
+#'	##	If the distribution is strange shaped, uni.mean = FALSE option may help to construct.
+#'	##	uni.mean = TRUE option serves a symmetric distribution (default),
+#'	##	and uni.mean = FALSE may serve an asymmetric distribution.
+#'	##
+#'	##	Where 4-quantiles, you must not set p[i] = 0.5 for any i.
+#'	##	Then the result may serve an asymmetric distribution.
+#'	a <- trace.q(
+#'		data.frame( p = c( 0.1, 0.4, 0.5 ), q = c( -1.28, -0.23, 0 ) ),
+#'		type1.type = 3, v.grad = TRUE )
+#'	plot( seq( -3, 3, 0.01 ), a$d( seq( -3, 3, 0.01 ) ), type = "l" )
+#'
+#'	a <- trace.q(
+#'		data.frame( p = c( 0.1, 0.3, 0.5 ), q = c( -1.28, -0.42, 0 ) ),
+#'		type1.type = 3, v.grad = TRUE, uni.mean = FALSE )
+#'	plot( seq( -3, 3, 0.01 ), a$d( seq( -3, 3, 0.01 ) ), type = "l" )
+#'
+#'	a <- trace.q(
+#'		data.frame( p = c( 0.1, 0.4, 0.6, 0.9 ), q = c( -1.92, -0.20, 0.20, 1.92 ) ),
+#'		type1.type = 3, v.grad = TRUE )
+#'	plot( seq( -3, 3, 0.01 ), a$d( seq( -3, 3, 0.01 ) ), type = "l" )
+#'
+#'	## 3-Mean/Sigma-Differed Vertical Gradational Example:
+#'	##	the number of quantiles must be from 3 to 6.
+#'	##	where number of quantiles is 4 or 6, you must not set p[i] = 0.5 for any i.
+#'	a <- trace.q(
+#'		data.frame( p = c( 0.1, 0.4, 0.6, 0.9 ), q = c( -1.92, -0.20, 0.20, 1.92 ) ),
+#'		type1.type = 3, v.grad = FALSE )
+#'	plot( seq( -3, 3, 0.01 ), a$d( seq( -3, 3, 0.01 ) ), type = "l" )
+#'
+#'	## Vertical-Horizontal Gradational Examples:
+#'	##	the number of quantiles must be from 5 to 8.
+#'	##	where number of quantiles is 6 or 8, you must not set p[i] = 0.5 for any i.
+#'	a <- trace.q(
+#'		data.frame(
+#'			p = c( 0.1, 0.25, 0.4, 0.5, 0.6, 0.75, 0.9 ),
+#'			q = c( -1.38, -0.76, -0.28, 0.02, 0.36, 1.10, 2.79 ) ),
+#'	type1.type = 4 )
+#'	plot( seq( -3, 3, 0.01 ), a$d( seq( -3, 3, 0.01 ) ), type = "l" )
+#'
+#'	a <- trace.q(
+#'		data.frame(
+#'			p = c( 0.1, 0.2, 0.3, 0.4, 0.6, 0.7, 0.8, 0.9 ),
+#'			q = c( -1.40, -0.96, -0.61, -0.30, 0.32, 0.72, 1.23, 2.21 ) ),
+#'	type1.type = 4 )
+#'	plot( seq( -3, 3, 0.01 ), a$d( seq( -3, 3, 0.01 ) ), type = "l" )
+###############################################################################
+trace.q <- function( quantiles, continuous = FALSE, symmetric = FALSE, v.grad = FALSE,
+							uni.sigma = FALSE, uni.mean = TRUE, control = list(), type1.type = 1 )
+{
+	obj <- CGD$new()
+	print( obj$set.waypoints( quantiles, continuous, symmetric, v.grad,
+								uni.sigma, uni.mean, control, type1.type ) )
+	return ( obj )
+}
+
+###############################################################################
 #' 経路設定
 #'
 #' 累積分布関数の経路 (クォンタイル) を設定する。
@@ -882,7 +1119,6 @@ CGD$methods(
 #' @param	waypoints			経路の data.frame( q = 経路のX座標 (クォンタイル), p = その点における確率 )
 #'								X座標 (クォンタイル) は昇順にソートしておくこと。
 #'								平均値は p = 0.5 の点のX座標として与えること。
-#'								 (type1.type = 2 で continuous = TRUE、または、type1.type = 3 の場合を除き、p = 0.5 の点は必須)
 #' @param	continuous			TRUE にすると、 type1.type = 1 または 2 のとき、独立区間を [0, 0] と [1, 1] の 2点にして、
 #'								確率密度関数が全区間 (-∞, ∞) で連続になるように分布構成を試みる (デフォルト: FALSE)。
 #'								type1.type = 1 または 2 のときに有効 (type1.type >= 3 では常に連続)。
@@ -1846,31 +2082,29 @@ CGD$methods(
 			wp.q <- c( wp$q[1:2], ifelse( rep( nrow( wp ) == 4, 2 ), c( mean, mean ), wp$q[3:4] ),
 						wp$q[( nrow( wp ) - 1 ):nrow( wp )] )
 
-			d.1 <- CGD$new()
-			e <- try( d.1$set.waypoints( data.frame( p = c( wp.p[1:2], 0.5 ), q = wp.q[1:3] ),
-											this.type1.type = 3, v.grad = TRUE, uni.mean = TRUE ), silent = TRUE )
+			e <- try( d.1 <- trace.q( data.frame( p = c( wp.p[1:2], 0.5 ), q = wp.q[1:3] ),
+										type1.type = 3, v.grad = TRUE, uni.mean = TRUE ), silent = TRUE )
 			if ( inherits( e, "try-error" ) )
 			{
-				message( "d.1$set.waypoints has failed with uni.mean = TRUE. retrying with uni.mean = FALSE." )
-				e <- try( d.1$set.waypoints( data.frame( p = wp.p[1:3], q = wp.q[1:3] ),
-												this.type1.type = 3, v.grad = TRUE, uni.mean = FALSE ), silent = TRUE )
+				message( "trace.q for d.1 has failed with uni.mean = TRUE. retrying with uni.mean = FALSE." )
+				e <- try( d.1 <- trace.q( data.frame( p = wp.p[1:3], q = wp.q[1:3] ),
+											type1.type = 3, v.grad = TRUE, uni.mean = FALSE ), silent = TRUE )
 				if ( inherits( e, "try-error" ) )
 				{
-					stop( "Error: d.1$set.waypoints has failed." )
+					stop( "Error: trace.q for d.1 has failed." )
 				}
 			}
 
-			d.2 <- CGD$new()
-			e <- try( d.2$set.waypoints( data.frame( p = c( 0.5, wp.p[5:6] ), q = wp.q[4:6] ),
-											this.type1.type = 3, v.grad = TRUE ), silent = TRUE )
+			e <- try( d.2 <- trace.q( data.frame( p = c( 0.5, wp.p[5:6] ), q = wp.q[4:6] ),
+										type1.type = 3, v.grad = TRUE ), silent = TRUE )
 			if ( inherits( e, "try-error" ) )
 			{
-				message( "d.2$set.waypoints has failed with uni.mean = TRUE. retrying with uni.mean = FALSE." )
-				e <- try( d.2$set.waypoints( data.frame( p = wp.p[4:6], q = wp.q[4:6] ),
-												this.type1.type = 3, v.grad = TRUE, uni.mean = FALSE ), silent = TRUE )
+				message( "trace.q for d.2$ has failed with uni.mean = TRUE. retrying with uni.mean = FALSE." )
+				e <- try( d.2 <- trace.q( data.frame( p = wp.p[4:6], q = wp.q[4:6] ),
+												type1.type = 3, v.grad = TRUE, uni.mean = FALSE ), silent = TRUE )
 				if ( inherits( e, "try-error" ) )
 				{
-					stop( "Error: d.2$set.waypoints has failed." )
+					stop( "Error: trace.q for d.2 has failed." )
 				}
 			}
 
@@ -1944,26 +2178,26 @@ CGD$methods(
 			wp.q <- c( wp$q[1:3], ifelse( rep( nrow( wp ) == 6, 2 ), c( mean, mean ), c( wp$q[4:5] ) ),
 						wp$q[( nrow( wp ) - 2 ):nrow( wp )] )
 
-			d.1 <- CGD$new()
-			e <- try( d.1$set.waypoints( data.frame( p = wp.p[1:3], q = wp.q[1:3] ),
-											this.type1.type = 3, v.grad = TRUE ), silent = TRUE )
+			e <- try( d.1 <- trace.q( data.frame( p = wp.p[1:3], q = wp.q[1:3] ),
+										type1.type = 3, v.grad = TRUE ), silent = TRUE )
 			if ( inherits( e, "try-error" ) )
 			{
-				warning( "Warning: d.1$set.waypoints has failed for lower 3-point-route setting." )
+				warning( "Warning: trace.q for d.1 has failed for lower 3-point-route setting." )
 				pseudos <- list( ms.qp.norm( wp.q[1:2], wp.p[1:2] ), ms.qp.norm( wp.q[2:3], wp.p[2:3] ) )
 
+				d.1 <- CGD$new( type1.type = 3 )
 				d.1$set.intervals( gen.t3.intervals( c( pseudos[[1]]$mean, pseudos[[2]]$mean, pseudos[[1]]$mean ),
 													c( pseudos[[1]]$sd, pseudos[[2]]$sd, pseudos[[1]]$sd ) ) )
 			}
 
-			d.2 <- CGD$new()
-			e <- try( d.2$set.waypoints( data.frame( p = wp.p[6:8], q = wp.q[6:8] ),
-											this.type1.type = 3, v.grad = TRUE ), silent = TRUE )
+			e <- try( d.2 <- trace.q( data.frame( p = wp.p[6:8], q = wp.q[6:8] ),
+											type1.type = 3, v.grad = TRUE ), silent = TRUE )
 			if ( inherits( e, "try-error" ) )
 			{
-				warning( "Warning: d.2$set.waypoints has failed for upper 3-point-route setting." )
+				warning( "Warning: trace.q for d.2 has failed for upper 3-point-route setting." )
 				pseudos <- list( ms.qp.norm( wp.q[7:8], wp.p[7:8] ), ms.qp.norm( wp.q[5:6], wp.p[5:6] ) )
 
+				d.2 <- CGD$new( type1.type = 3 )
 				d.2$set.intervals( gen.t3.intervals( c( pseudos[[1]]$mean, pseudos[[2]]$mean, pseudos[[1]]$mean ),
 													c( pseudos[[1]]$sd, pseudos[[2]]$sd, pseudos[[1]]$sd ) ) )
 			}
@@ -2306,6 +2540,139 @@ t3.wp5.mid.sd <- function( mean2, wp2, wp3 )
 	return ( ( sd1 * abs( mean2 - wp3$p ) + sd2 * abs( mean2 - wp2$p ) ) / ( abs( mean2 - wp2$p ) + abs( mean2 - wp3$p ) ) )
 }
 
+
+###############################################################################
+#' 度数分布による連続な連結ガウス分布構成
+#'
+#' 非線形最小二乗法 (\link[stats]{nls}) によって、
+#' 与えられた度数分布に最も近くなるように、連続な連結ガウス分布を構成する。
+#'
+#' この関数内では、度数分布の外れ値の除外は行わない。外れ値の除外は、必要に応じて、前処理で行うこと。
+#' 度数の合計 (total) に外れ値の分を含めるかどうかは、ライブラリの利用者の判断に委ねられる。
+#' そのため、引数 total は省略できない。
+#' @export
+#' @param	x				X座標のベクトル。最低 3 個以上の要素を含み、昇順に並べておくこと。また、値に重複がないこと。
+#' @param	freq			X座標に対する度数分布のベクトル。要素数は x と同数であること。
+#' @param	total			度数の合計。
+#'							前処理で除外された外れ値の数を合計に含めるかどうかは、この関数の使用者の判断に委ねられる。
+#'							それゆえに、この引数は省略できない。
+#' @param	start			\link[stats]{nls} に渡す初期値のリスト (デフォルト: NULL)。
+#'							デフォルト (NULL) の場合は、内部で平均値や局地的な標準偏差などをある程度計算して、
+#'							暫定的なパラメータを初期値とする。
+#'							もし、自分で初期値を与える場合は、
+#'							構成要素の正規分布の平均値 (mean または mean.1, mean.2, mean.3 または
+#'							mean.1.1, mean.1.2, mean.2.1, mean.2,2) と
+#'							標準偏差の平方根 (sqrt.sd または sqrt.sd.1, sqrt.sd.2, sqrt.sd.3 または
+#'							sqrt.sd.1.1, sqrt.sd.1.2, sqrt.sd.2.1, sqrt.sd.2.2) をリストとして与えること。
+#'							なお、リストのテンプレートが \link[cgd]{nls.start.template} で得られる。
+#' @param	control			\link[stats]{nls} に渡す設定。詳細は \link[stats]{nls.control} を参照 (デフォルト: list())。
+#' @param	set.by.start	\link[stats]{nls} を実行せず、
+#'							start の値をそのまま使って分布を構成するフラグ。
+#'							start の値は、引数で与えられた場合は、それをそのまま使い、
+#'							引数で与えられていない場合は、内部で計算した暫定的な初期値を使う (デフォルト: FALSE)。
+#' @param	kind			生成する分布の種類を特定する変数 (1要素のみ有効) (デフォルト: NULL)。
+#'							変数の種類は、 \link[cgd]{CGD} クラスオブジェクト か、 cgd:::kinds の要素の文字列か、
+#'							またはそのインデックス番号が有効。
+#'							kind に NULL でない有効な引数を与えると、
+#'							以下の normal から uni.mean までの 6 個の引数は無視され、
+#'							kind で指定された分布の種類に沿うように、それらのオプションの値が内部で決定される。
+#' @param	normal			正規分布で近似するフラグ。
+#'							normal = TRUE にすると、
+#'							type1.type を除く以降の 4 個の引数は無視され、結果の分布は正規分布になる。
+#'							type1.type は既設定値が (引数 type1.type が与えられていれば、その値を上書きした結果)
+#'							1 または 2 であればそのまま、それ以外は 1 に設定される (デフォルト: FALSE)。
+#' @param	symmetric		type1.type = 2, symmetric = TRUE で近似するフラグ。 symmetric = TRUE にすると、
+#'							type1.type, uni.sigma, uni.mean の引数は無視さる (デフォルト: FALSE)。
+#' @param	v.grad			type1.type = 3, v.grad = TRUE で近似するフラグ。 v.grad = TRUE にすると、
+#'							type1.type の引数は無視され、 type1.type = 3 に設定される (デフォルト: FALSE)
+#' @param	type1.type		フィールドの type1.type に設定する値。 1、2、3、4 のいずれかを指定すること。
+#'							分布の種類は type1.type の設定値によって、
+#'								1: 平均値が等しい2つの正規分布の平均 (uni.sigma, uni.mean の設定は無効)、
+#'								2: 横方向グラデーション、
+#'								3:	(歪んだ) 縦方向グラデーション、
+#'								4: 縦横グラデーション
+#'							となる (デフォルト: 2)。
+#' @param	uni.sigma		構成要素の正規分布の標準偏差をすべて等しくするかどうかのフラグ。
+#'							uni.sigma = TRUE にすると、 uni.mean の引数は無視され、 uni.mean = FALSE になる。
+#'							type1.type = 1 では無効 (デフォルト: FALSE)。
+#' @param	uni.mean		構成要素の正規分布の平均値をすべて等しくするかどうかのフラグ。
+#'							type1.type = 1 では、 FALSE の設定は無効
+#'							 (注: 平均値が異なる2つの正規分布の平均は、
+#'							  本ライブラリにおける不連続な連結ガウス分布の拡張ではなく、
+#'							  単峰性の分布のモデルとしても適さない) (デフォルト: TRUE)。
+#' @param	...				その他、 \link[stats]{nls} の各引数を指定できる。詳細は \link[stats]{nls} の Arguments を参照。
+#' @return	生成した CGD クラスオブジェクト
+#' @seealso	\link[stats]{nls}, \link[stats]{nls.control}, \link[cgd]{nls.freq.all},
+#'			\link[cgd]{nls.start.template}
+#' @examples
+#'	## preparing
+#'	x <- seq( -2, 2, 0.2 )
+#'	freq <- c( 15.164, 22.923, 25.134, 27.631, 37.239, 40.464,
+#'			47.126, 79.469, 109.966, 118.241, 111.333, 78.674,
+#'			46.921, 41.026, 36.975, 27.403, 25.493, 22.838,
+#'			14.992, 11.468, 9.174 )
+#'	total <- sum( freq )
+#'
+#'	plot.freq.and.d <- function( a, x, freq, total )
+#'	{
+#'		xlim <- c( min( x ), max( x ) ); ylim <- c( 0, max( cgd::get.d( x, freq, total ) ) * 1.2 )
+#'		plot( x, cgd::get.d( x, freq, total ), xlim = xlim, ylim = ylim, xlab = "", ylab = "" )
+#'		par( new = T )
+#'		plot( seq( min( x ), max( x ), 0.01 ), a$d( seq( min( x ), max( x ), 0.01 ) ), type = "l", xlim = xlim, ylim = ylim )
+#'	}
+#'
+#'	## examples
+#'	a <- nls.freq( x, freq, total, normal = TRUE )
+#'	a
+#'	plot.freq.and.d( a, x, freq, total )
+#'
+#'	a <- nls.freq( x, freq, total, type1.type = 1 )
+#'	a
+#'	plot.freq.and.d( a, x, freq, total )
+#'
+#'	a <- nls.freq( x, freq, total )	## Remark: default value of type1.type = 2 for nls.freq()
+#'	a
+#'	plot.freq.and.d( a, x, freq, total )
+#'
+#'	a <- nls.freq( x, freq, total, type1.type = 3, uni.sigma = TRUE )
+#'	a
+#'	plot.freq.and.d( a, x, freq, total )
+#'
+#'	a <- nls.freq( x, freq, total, kind = "Mean-Equaled Sigma-Differed Vertical Gradational Distribution" )
+#'	a
+#'	plot.freq.and.d( a, x, freq, total )
+#'
+#'	a <- nls.freq( x, freq, total, kind = 13, control = list( warnOnly = TRUE ) )
+#'	a
+#'	plot.freq.and.d( a, x, freq, total )
+#'
+#'	## you can set start parameters if you want
+#'	start.list <- nls.start.template( a )
+#'	start.list
+#'
+#'	start.list$mean.1.1 <- -0.671
+#'	start.list$mean.1.2 <- -0.198
+#'	start.list$mean.2.1 <- 0.293
+#'	start.list$mean.2.2 <- -0.198
+#'	start.list$sqrt.sd <- sqrt( 0.640 )		## sqrt.sd is the square root of the standard deviation.
+#'	a <- nls.freq( x, freq, total, kind = 13, start = start.list )
+#'	a
+#'	plot.freq.and.d( a, x, freq, total )
+#'
+#'	a <- nls.freq( x, freq, total, type1.type = 4, uni.mean = FALSE )
+#'	a
+#'	plot.freq.and.d( a, x, freq, total )
+###############################################################################
+nls.freq <- function( x, freq, total, start = NULL, control = list(), set.by.start = FALSE, kind = NULL,
+							normal = FALSE, symmetric = FALSE, v.grad = FALSE, type1.type = 2,
+							uni.sigma = FALSE, uni.mean = TRUE, ... )
+{
+	obj <- CGD$new()
+	print( obj$nls.freq( x, freq, total, start, control, set.by.start, kind,
+							normal, symmetric, v.grad, type1.type,
+							uni.sigma, uni.mean, ... ) )
+	return ( obj )
+}
 
 ###############################################################################
 #' 度数分布による連続な連結ガウス分布構成

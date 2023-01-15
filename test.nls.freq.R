@@ -27,6 +27,11 @@ freq <- ( pnorm( x + 0.1, 0, 0.5 ) - pnorm( x - 0.1, 0, 0.5 ) ) * ( 1000 + sin( 
 total <- sum( freq )
 
 a$nls.freq( x, freq, total, normal = TRUE )
+a$type1.type # 1
+diff.check( a, x, freq, total )
+
+a <- nls.freq( x, freq, total, normal = TRUE )
+a$type1.type # 2
 diff.check( a, x, freq, total )
 
 ########
@@ -46,7 +51,7 @@ a$nls.freq( x, freq, total, this.type1.type = 5 )
 a$nls.freq( x, freq, total, start = list( mean = -10, sqrt.sd = 10 ), normal = TRUE )
 
 # normal test
-a$nls.freq( x, freq, total, normal = TRUE, trace = TRUE )
+a$nls.freq( x, freq, total, normal = TRUE, this.type1.type = 1, trace = TRUE )
 
 # Error case
 freq <- floor( dnorm( x, 0, 0.5 ) * 1000 )
