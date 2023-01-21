@@ -86,7 +86,6 @@ devtools::install_github( "Kimitsuna-Goblin/cgd" )
 +   data.frame(
 +     p = c( 0.1, 0.3, 0.5, 0.6, 0.7 ),
 +     q = c( qnorm( c( 0.1, 0.3, 0.5, 0.6 ), 0, 1 ), 0.5 ) ) )
-> NULL
 >
 > # CGD$d() : X座標を指定して、確率密度を返します
 > dev.new(); plot.new()

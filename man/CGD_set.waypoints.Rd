@@ -5,7 +5,7 @@
 \title{経路設定}
 \usage{
 CGD$set.waypoints(waypoints, continuous = FALSE, symmetric = FALSE, v.grad = FALSE,
-							uni.sigma = FALSE, this.type1.type = NULL)
+                            uni.sigma = FALSE, this.type1.type = NULL)
 }
 \arguments{
 \item{waypoints}{経路の data.frame( q = 経路のX座標 (クォンタイル), p = その点における確率 )
@@ -127,105 +127,105 @@ nleqslv() を内部で実行した場合はその結果。それ以外は NULL
 }
 \examples{
 ## Discontinuous Example:
-##	Where discontinuous, you can set waypoints as any.
-##	this.type1.type must be 1 or 2.
+##  Where discontinuous, you can set waypoints as any.
+##  this.type1.type must be 1 or 2.
 a <- CGD$new()
 a$set.waypoints(
-	data.frame(
-		p = c( 0.2, 0.5, 0.6, 0.7 ),
-		q = c( qnorm( c( 0.2, 0.5, 0.6 ), 0, 1 ), 0.5 ) ),
-	this.type1.type = 1 )
+    data.frame(
+        p = c( 0.2, 0.5, 0.6, 0.7 ),
+        q = c( qnorm( c( 0.2, 0.5, 0.6 ), 0, 1 ), 0.5 ) ),
+    this.type1.type = 1 )
 plot( seq( -3, 3, 0.01 ), a$d( seq( -3, 3, 0.01 ) ), type = "l" )
 
 ## Mean of 2 Normal Distributions Example:
-##	The number of p of waypoints must be 3.
-##	You have to set p[2] = 0.5, then ( p[2] - p[1] ) and ( p[3] - p[2] ) must be different.
+##  The number of p of waypoints must be 3.
+##  You have to set p[2] = 0.5, then ( p[2] - p[1] ) and ( p[3] - p[2] ) must be different.
 a$set.waypoints(
-	data.frame(
-		p = c( 0.1, 0.5, 0.6 ),
-		q = c( qnorm( 0.1, 0, 1 ), 0, qnorm( 0.6, 0, 0.75 ) ) ),
-	this.type1.type = 1, continuous = TRUE )
+    data.frame(
+        p = c( 0.1, 0.5, 0.6 ),
+        q = c( qnorm( 0.1, 0, 1 ), 0, qnorm( 0.6, 0, 0.75 ) ) ),
+    this.type1.type = 1, continuous = TRUE )
 plot( seq( -3, 3, 0.01 ), a$d( seq( -3, 3, 0.01 ) ), type = "l" )
 
 ## Horizontal Gradational Example:
-##	The number of p of waypoints must be 3 or 4.
-##	Where number of p is 3, you have to set one of p[i] as 0.5, but other points can be set any.
-##	Where number of p is 4, you must not set p[i] = 0.5 for any i.
+##  The number of p of waypoints must be 3 or 4.
+##  Where number of p is 3, you have to set one of p[i] as 0.5, but other points can be set any.
+##  Where number of p is 4, you must not set p[i] = 0.5 for any i.
 a$set.waypoints(
-	data.frame( p = c( 0.25, 0.5, 0.75 ), q = c( -0.67, 0, 0.53 ) ),
-	this.type1.type = 2, continuous = TRUE )
+    data.frame( p = c( 0.25, 0.5, 0.75 ), q = c( -0.67, 0, 0.53 ) ),
+    this.type1.type = 2, continuous = TRUE )
 plot( seq( -3, 3, 0.01 ), a$d( seq( -3, 3, 0.01 ) ), type = "l" )
 
 ## uni.sigma Example:
-##	The number of p of waypoints must be 3 and one of p[i] must be 0.5.
-##	This is not the "symmetric" option,
-##	but the result will serve a top-flattened or center-dent symmetric probability density function.
-##	For constructing error-less distribution, it is recommended to set p[3] = 0.5 (or p[1] = 0.5)
-##	and both p[1] and p[2] (or, p[2] and p[3]) are set as on the same side of the probability density function as below.
-##	If you set p[2] = 0.5, then ( p[2] - p[1] ) and ( p[3] - p[2] ) must be different.
+##  The number of p of waypoints must be 3 and one of p[i] must be 0.5.
+##  This is not the "symmetric" option,
+##  but the result will serve a top-flattened or center-dent symmetric probability density function.
+##  For constructing error-less distribution, it is recommended to set p[3] = 0.5 (or p[1] = 0.5)
+##  and both p[1] and p[2] (or, p[2] and p[3]) are set as on the same side of the probability density function as below.
+##  If you set p[2] = 0.5, then ( p[2] - p[1] ) and ( p[3] - p[2] ) must be different.
 a$set.waypoints(
-	data.frame( p = c( 0.25, 0.4, 0.5 ), q = c( -0.64, -0.25, 0 ) ),
-	this.type1.type = 2, continuous = TRUE, uni.sigma = TRUE )
+    data.frame( p = c( 0.25, 0.4, 0.5 ), q = c( -0.64, -0.25, 0 ) ),
+    this.type1.type = 2, continuous = TRUE, uni.sigma = TRUE )
 plot( seq( -3, 3, 0.01 ), a$d( seq( -3, 3, 0.01 ) ), type = "l" )
 
 ## Symmetric Example:
-##	The number of p of waypoints must be 3 and one of p[i] must be 0.5.
-##	For constructing error-less distribution, it is recommended to set p[3] = 0.5 (or p[1] = 0.5)
-##	and both p[1] and p[2] (or, p[2] and p[3]) are set as on the same side of the probability density function as below.
-##	If you set p[2] = 0.5, then ( p[2] - p[1] ) and ( p[3] - p[2] ) must be different.
+##  The number of p of waypoints must be 3 and one of p[i] must be 0.5.
+##  For constructing error-less distribution, it is recommended to set p[3] = 0.5 (or p[1] = 0.5)
+##  and both p[1] and p[2] (or, p[2] and p[3]) are set as on the same side of the probability density function as below.
+##  If you set p[2] = 0.5, then ( p[2] - p[1] ) and ( p[3] - p[2] ) must be different.
 a$set.waypoints(
-	data.frame( p = c( 0.25, 0.4, 0.5 ), q = c( -0.67, -0.15, 0 ) ),
-	this.type1.type = 2, symmetric = TRUE )
+    data.frame( p = c( 0.25, 0.4, 0.5 ), q = c( -0.67, -0.15, 0 ) ),
+    this.type1.type = 2, symmetric = TRUE )
 plot( seq( -3, 3, 0.01 ), a$d( seq( -3, 3, 0.01 ) ), type = "l" )
 
 ## Vertical Gradational Example:
-##	The number of p of waypoints must be 3 or 4.
+##  The number of p of waypoints must be 3 or 4.
 ##
-##	Where number of p is 3, you have to set one of p[i] as 0.5.
-##	In this case, each of 3 waypoints has a specific role.
-##	One is to specify a waypoint on the tail, one is for a waypoint on the head
-##	and the other is to specify the mean.
-##	diff.mean = TRUE option force to make asymmetric the distribution.
+##  Where number of p is 3, you have to set one of p[i] as 0.5.
+##  In this case, each of 3 waypoints has a specific role.
+##  One is to specify a waypoint on the tail, one is for a waypoint on the head
+##  and the other is to specify the mean.
+##  diff.mean = TRUE option force to make asymmetric the distribution.
 ##
-##	Where number of p is 4, you must not set p[i] = 0.5 for any i.
-##	Then the result may serve an asymmetric distribution.
+##  Where number of p is 4, you must not set p[i] = 0.5 for any i.
+##  Then the result may serve an asymmetric distribution.
 a$set.waypoints(
-	data.frame( p = c( 0.1, 0.4, 0.5 ), q = c( -1.28, -0.23, 0 ) ),
-	this.type1.type = 3, v.grad = TRUE )
+    data.frame( p = c( 0.1, 0.4, 0.5 ), q = c( -1.28, -0.23, 0 ) ),
+    this.type1.type = 3, v.grad = TRUE )
 plot( seq( -3, 3, 0.01 ), a$d( seq( -3, 3, 0.01 ) ), type = "l" )
 
 a$set.waypoints(
-	data.frame( p = c( 0.1, 0.3, 0.5 ), q = c( -1.28, -0.42, 0 ) ),
-	this.type1.type = 3, v.grad = TRUE, diff.mean = TRUE )
+    data.frame( p = c( 0.1, 0.3, 0.5 ), q = c( -1.28, -0.42, 0 ) ),
+    this.type1.type = 3, v.grad = TRUE, diff.mean = TRUE )
 plot( seq( -3, 3, 0.01 ), a$d( seq( -3, 3, 0.01 ) ), type = "l" )
 
 a$set.waypoints(
-	data.frame( p = c( 0.1, 0.4, 0.6, 0.9 ), q = c( -1.92, -0.20, 0.20, 1.92 ) ),
-	this.type1.type = 3, v.grad = TRUE )
+    data.frame( p = c( 0.1, 0.4, 0.6, 0.9 ), q = c( -1.92, -0.20, 0.20, 1.92 ) ),
+    this.type1.type = 3, v.grad = TRUE )
 plot( seq( -3, 3, 0.01 ), a$d( seq( -3, 3, 0.01 ) ), type = "l" )
 
 ## 3-Mean/Sigma-Differed Vertical Gradational Example:
-##	the number of p of waypoints must be from 3 to 6.
-##	where number of p is 4 or 6, you must not set p[i] = 0.5 for any i.
+##  the number of p of waypoints must be from 3 to 6.
+##  where number of p is 4 or 6, you must not set p[i] = 0.5 for any i.
 a$set.waypoints(
-	data.frame( p = c( 0.1, 0.4, 0.6, 0.9 ), q = c( -1.92, -0.20, 0.20, 1.92 ) ),
-	this.type1.type = 3, v.grad = FALSE )
+    data.frame( p = c( 0.1, 0.4, 0.6, 0.9 ), q = c( -1.92, -0.20, 0.20, 1.92 ) ),
+    this.type1.type = 3, v.grad = FALSE )
 plot( seq( -3, 3, 0.01 ), a$d( seq( -3, 3, 0.01 ) ), type = "l" )
 
 ## Vertical-Horizontal Gradational Examples:
-##	the number of p of waypoints must be from 5 to 8.
-##	where number of p is 6 or 8, you must not set p[i] = 0.5 for any i.
+##  the number of p of waypoints must be from 5 to 8.
+##  where number of p is 6 or 8, you must not set p[i] = 0.5 for any i.
 a$set.waypoints(
-	data.frame(
-		p = c( 0.1, 0.25, 0.4, 0.5, 0.6, 0.75, 0.9 ),
-		q = c( -1.38, -0.76, -0.28, 0.02, 0.36, 1.10, 2.79 ) ),
+    data.frame(
+        p = c( 0.1, 0.25, 0.4, 0.5, 0.6, 0.75, 0.9 ),
+        q = c( -1.38, -0.76, -0.28, 0.02, 0.36, 1.10, 2.79 ) ),
 this.type1.type = 4 )
 plot( seq( -3, 3, 0.01 ), a$d( seq( -3, 3, 0.01 ) ), type = "l" )
 
 a$set.waypoints(
-	data.frame(
-		p = c( 0.1, 0.2, 0.3, 0.4, 0.6, 0.7, 0.8, 0.9 ),
-		q = c( -1.40, -0.96, -0.61, -0.30, 0.32, 0.72, 1.23, 2.21 ) ),
+    data.frame(
+        p = c( 0.1, 0.2, 0.3, 0.4, 0.6, 0.7, 0.8, 0.9 ),
+        q = c( -1.40, -0.96, -0.61, -0.30, 0.32, 0.72, 1.23, 2.21 ) ),
 this.type1.type = 4 )
 plot( seq( -3, 3, 0.01 ), a$d( seq( -3, 3, 0.01 ) ), type = "l" )
 }
