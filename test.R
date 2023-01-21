@@ -564,7 +564,7 @@ p = c( 0.1, 0.3, 0.4, 0.5, 0.6 ),
 q = qs ),
 this.type1.type = 3, v.grad = TRUE )
 
-# normal test for v2.1.0 and up
+# normal test for v2.2.0 and up
 qs <- c( qnorm( 0.1, 0, 1 ), qnorm( 0.3, 0, 0.9 ), 0, qnorm( 0.6, 0, 0.85 )  )
 a$set.waypoints(
 data.frame(
@@ -1653,7 +1653,7 @@ a$p( qs )
 plot.waypoints.and.p( a,
 	c( 0.1, 0.25, 0.5, 0.75, 0.9 ), qs, c( -3, 3 ) )
 
-# normal test for v2.1.0 and up
+# normal test for v2.2.0 and up
 qs <- c( qnorm( 0.1, 0, 2 ), qnorm( 0.25, 0, 1.5 ),
 			qnorm( 0.5, 0, 1 ),
 			qnorm( 0.75, 0, 0.95 ), qnorm( 0.9, 0, 0.792 ) )
@@ -1667,7 +1667,7 @@ a$p( qs )
 plot.waypoints.and.p( a,
 	c( 0.1, 0.25, 0.5, 0.75, 0.9 ), qs, c( -3, 3 ) )
 
-# normal test for v.2.1.0 and up
+# normal test for v2.2.0 and up
 qs <- c( qnorm( 0.1, 0, 0.792 ), qnorm( 0.25, 0, 0.95 ),
 			qnorm( 0.5, 0, 1 ),
 			qnorm( 0.75, 0, 1.5 ), qnorm( 0.9, 0, 2 ) )
