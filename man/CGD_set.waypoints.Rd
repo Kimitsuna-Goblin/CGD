@@ -25,16 +25,16 @@ type1.type = 1 または 2 のときに有効。}
 \item{v.grad}{TRUE にすると、 type1.type = 3 のとき、
 裾部の左右の標準偏差が等しい、縦方向グラデーションの分布を構成する (デフォルト: FALSE)。}
 
-\item{uni.sigma}{TRUE にすると、 type1.type = 2、continuous = TRUE のとき、
+\item{uni.sigma}{TRUE にすると、連続分布に対して、
 構成要素の各正規分布の標準偏差を強制的に等しくする (デフォルト: FALSE)。
-uni.sigma = TRUE の設定は type1.type = 2、continuous = TRUE で、
-経路の構成点が (μ, 0.5) を含む 3点の場合のみ有効。このとき、生成される分布は左右対称になる。}
+経路の構成点が少ない場合のみ有効
+ (type1.type = 1 では、本ライブラリでは無効。
+  type1.type = 2 では 3点、type1.type = 3 では 3～4点 (v.grad = TRUE の場合は 3点のみ)、
+  type1.type = 4 では 5点 の場合に有効)。}
 
-\item{uni.mean}{FALSE にすると、 type1.type = 3、v.grad = TRUE のとき、
-構成要素の各正規分布の平均値を異なるようにする (デフォルト: TRUE)。
-ほとんどの場合、デフォルトの設定のままで構成に成功するが、
-歪みがある程度大きい経路の場合は、 uni.mean = FALSE を設定したほうが成功しやすいケースもある。
-uni.mean の設定は v.grad = TRUE で、経路の構成点が (μ, 0.5) を含む 3点の場合のみ有効。}
+\item{diff.mean}{TRUE にすると、構成要素の各正規分布の平均値を強制的に異なるようにする (デフォルト: FALSE)。
+diff.mean の設定は type1.type = 3, v.grad = TRUE で、かつ経路の構成点が 3点の場合、
+または、 type1.type = 4 で、かつ経路の構成点が 5点の場合のみ有効。}
 
 \item{control}{nleqslv に渡す、同関数の control オプションのリスト (デフォルト: list())。
 詳細は \href{https://cran.r-project.org/web/packages/nleqslv/nleqslv.pdf}{nleqslv} を参照。
@@ -46,9 +46,9 @@ uni.mean の設定は v.grad = TRUE で、経路の構成点が (μ, 0.5) を含
 \item{this.type1.type}{フィールドの type1.type に設定する値。 1、2、3、4 のいずれかを指定すること。
                             NULL の場合は type1.type の値を変更しない (デフォルト: NULL)。
 
-            type1.type の値によって、接続区間 (β_i, α_{i+1}) が type 1 の場合
+            type1.type の値によって、接続区間 (β$i, α_{i+1}) が type 1 の場合
              (この type 1 の詳細については \href{https://github.com/Kimitsuna-Goblin/CGD}{README.md} を参照)、
-            接続区間の累積分布関数 Ψ_i(x) を以下のように計算する。
+            接続区間の累積分布関数 Ψ$i(x) を以下のように計算する。
 
             1: Ψ_i(x) = ( α_{i+1} - x ) / ( α_{i+1} - β_i ) * Φ_i(x) +
                          ( x - β_i ) / ( α_{i+1} - β_i ) * Φ_{i+1}(x)
@@ -94,7 +94,6 @@ uni.mean の設定は v.grad = TRUE で、経路の構成点が (μ, 0.5) を含
                             縦方向に徐々に変化していくようなイメージの分布を構成できる。
                             v.grad = TRUE にすると、構成要素の正規分布は裾部と山部の2つになり (上の式では f_1 = f_3)、
                             v.grad = FALSE にすると、裾部の両側がそれぞれ別の分布になるので、正規分布は3つになる。
-                            なお、 v.grad = TRUE, uni.mean = TRUE とすると、左右対称な分布になる。
 
             type1.type = 4 は正規分布の連結ではなく、
                             2つの連続な連結ガウス分布を連結した、「縦横グラデーション」の構成方法である。
@@ -186,9 +185,7 @@ plot( seq( -3, 3, 0.01 ), a$d( seq( -3, 3, 0.01 ) ), type = "l" )
 ##	In this case, each of 3 waypoints has a specific role.
 ##	One is to specify a waypoint on the tail, one is for a waypoint on the head
 ##	and the other is to specify the mean.
-##	If the distribution is strange shaped, uni.mean = FALSE option may help to construct.
-##	uni.mean = TRUE option serves a symmetric distribution (default),
-##	and uni.mean = FALSE may serve an asymmetric distribution.
+##	diff.mean = TRUE option force to make asymmetric the distribution.
 ##
 ##	Where number of p is 4, you must not set p[i] = 0.5 for any i.
 ##	Then the result may serve an asymmetric distribution.
@@ -199,7 +196,7 @@ plot( seq( -3, 3, 0.01 ), a$d( seq( -3, 3, 0.01 ) ), type = "l" )
 
 a$set.waypoints(
 	data.frame( p = c( 0.1, 0.3, 0.5 ), q = c( -1.28, -0.42, 0 ) ),
-	this.type1.type = 3, v.grad = TRUE, uni.mean = FALSE )
+	this.type1.type = 3, v.grad = TRUE, diff.mean = TRUE )
 plot( seq( -3, 3, 0.01 ), a$d( seq( -3, 3, 0.01 ) ), type = "l" )
 
 a$set.waypoints(

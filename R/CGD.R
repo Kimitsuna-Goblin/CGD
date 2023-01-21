@@ -902,15 +902,13 @@ CGD$methods(
 #'								type1.type = 1 または 2 のときに有効。
 #' @param	v.grad				TRUE にすると、 type1.type = 3 のとき、
 #'								裾部の左右の標準偏差が等しい、縦方向グラデーションの分布を構成する (デフォルト: FALSE)。
-#' @param	uni.sigma			TRUE にすると、 type1.type = 2、continuous = TRUE のとき、
+#' @param	uni.sigma			TRUE にすると、連続分布に対して、
 #'								構成要素の各正規分布の標準偏差を強制的に等しくする (デフォルト: FALSE)。
-#'								uni.sigma = TRUE の設定は type1.type = 2、continuous = TRUE で、
-#'								経路の構成点が (μ, 0.5) を含む 3点の場合のみ有効。このとき、生成される分布は左右対称になる。
-#' @param	uni.mean			FALSE にすると、 type1.type = 3、v.grad = TRUE のとき、
-#'								構成要素の各正規分布の平均値を異なるようにする (デフォルト: TRUE)。
-#'								ほとんどの場合、デフォルトの設定のままで構成に成功するが、
-#'								歪みがある程度大きい経路の場合は、 uni.mean = FALSE を設定したほうが成功しやすいケースもある。
-#'								uni.mean の設定は v.grad = TRUE で、経路の構成点が (μ, 0.5) を含む 3点の場合のみ有効。
+#'								経路の構成点が少ない場合のみ有効
+#'								 (type1.type = 2 では 3点、type1.type = 3 では 3～4点、type1.type = 4 では 5点)。
+#' @param	diff.mean			TRUE にすると、 type1.type = 3、v.grad = TRUE のとき、
+#'								構成要素の各正規分布の平均値を異なるようにする (デフォルト: FALSE)。
+#'								diff.mean の設定は v.grad = TRUE で、経路の構成点が (μ, 0.5) を含む 3点の場合のみ有効。
 #' @param	control				nleqslv に渡す、同関数の control オプションのリスト (デフォルト: list())。
 #'								詳細は \href{https://cran.r-project.org/web/packages/nleqslv/nleqslv.pdf}{nleqslv} を参照。
 #'								デフォルトは空だが、経路の条件不足のため "Jacobian is singular" のエラーになる可能性が高い場合
@@ -967,7 +965,6 @@ CGD$methods(
 #'								縦方向に徐々に変化していくようなイメージの分布を構成できる。
 #'								v.grad = TRUE にすると、構成要素の正規分布は裾部と山部の2つになり (上の式では f_1 = f_3)、
 #'								v.grad = FALSE にすると、裾部の両側がそれぞれ別の分布になるので、正規分布は3つになる。
-#'								なお、 v.grad = TRUE, uni.mean = TRUE とすると、左右対称な分布になる。
 #'
 #'				type1.type = 4 は正規分布の連結ではなく、
 #'								2つの連続な連結ガウス分布を連結した、「縦横グラデーション」の構成方法である。
@@ -1054,9 +1051,7 @@ CGD$methods(
 #'	##	In this case, each point of 3 quantiles has a specific role.
 #'	##	One is to specify a waypoint on the tail, one is for a waypoint on the head
 #'	##	and the other is to specify the mean.
-#'	##	If the distribution is strange shaped, uni.mean = FALSE option may help to construct.
-#'	##	uni.mean = TRUE option serves a symmetric distribution (default),
-#'	##	and uni.mean = FALSE may serve an asymmetric distribution.
+#'	##	diff.mean = TRUE option force to make asymmetric the distribution.
 #'	##
 #'	##	Where 4-quantiles, you must not set p[i] = 0.5 for any i.
 #'	##	Then the result may serve an asymmetric distribution.
@@ -1067,7 +1062,7 @@ CGD$methods(
 #'
 #'	a <- trace.q(
 #'		data.frame( p = c( 0.1, 0.3, 0.5 ), q = c( -1.28, -0.42, 0 ) ),
-#'		type1.type = 3, v.grad = TRUE, uni.mean = FALSE )
+#'		type1.type = 3, v.grad = TRUE, diff.mean = TRUE )
 #'	plot( seq( -3, 3, 0.01 ), a$d( seq( -3, 3, 0.01 ) ), type = "l" )
 #'
 #'	a <- trace.q(
@@ -1101,11 +1096,11 @@ CGD$methods(
 #'	plot( seq( -3, 3, 0.01 ), a$d( seq( -3, 3, 0.01 ) ), type = "l" )
 ###############################################################################
 trace.q <- function( quantiles, continuous = FALSE, symmetric = FALSE, v.grad = FALSE,
-							uni.sigma = FALSE, uni.mean = TRUE, control = list(), type1.type = 1 )
+							uni.sigma = FALSE, diff.mean = FALSE, control = list(), type1.type = 1 )
 {
 	obj <- CGD$new()
-	print( obj$set.waypoints( quantiles, continuous, symmetric, v.grad,
-								uni.sigma, uni.mean, control, type1.type ) )
+	obj$set.waypoints( quantiles, continuous, symmetric, v.grad,
+						uni.sigma, diff.mean, control, type1.type )
 	return ( obj )
 }
 
@@ -1129,15 +1124,15 @@ trace.q <- function( quantiles, continuous = FALSE, symmetric = FALSE, v.grad = 
 #'								type1.type = 1 または 2 のときに有効。
 #' @param	v.grad				TRUE にすると、 type1.type = 3 のとき、
 #'								裾部の左右の標準偏差が等しい、縦方向グラデーションの分布を構成する (デフォルト: FALSE)。
-#' @param	uni.sigma			TRUE にすると、 type1.type = 2、continuous = TRUE のとき、
+#' @param	uni.sigma			TRUE にすると、連続分布に対して、
 #'								構成要素の各正規分布の標準偏差を強制的に等しくする (デフォルト: FALSE)。
-#'								uni.sigma = TRUE の設定は type1.type = 2、continuous = TRUE で、
-#'								経路の構成点が (μ, 0.5) を含む 3点の場合のみ有効。このとき、生成される分布は左右対称になる。
-#' @param	uni.mean			FALSE にすると、 type1.type = 3、v.grad = TRUE のとき、
-#'								構成要素の各正規分布の平均値を異なるようにする (デフォルト: TRUE)。
-#'								ほとんどの場合、デフォルトの設定のままで構成に成功するが、
-#'								歪みがある程度大きい経路の場合は、 uni.mean = FALSE を設定したほうが成功しやすいケースもある。
-#'								uni.mean の設定は v.grad = TRUE で、経路の構成点が (μ, 0.5) を含む 3点の場合のみ有効。
+#'								経路の構成点が少ない場合のみ有効
+#'								 (type1.type = 1 では、本ライブラリでは無効。
+#'								  type1.type = 2 では 3点、type1.type = 3 では 3～4点 (v.grad = TRUE の場合は 3点のみ)、
+#'								  type1.type = 4 では 5点 の場合に有効)。
+#' @param	diff.mean			TRUE にすると、構成要素の各正規分布の平均値を強制的に異なるようにする (デフォルト: FALSE)。
+#'								diff.mean の設定は type1.type = 3, v.grad = TRUE で、かつ経路の構成点が 3点の場合、
+#'								または、 type1.type = 4 で、かつ経路の構成点が 5点の場合のみ有効。
 #' @param	control				nleqslv に渡す、同関数の control オプションのリスト (デフォルト: list())。
 #'								詳細は \href{https://cran.r-project.org/web/packages/nleqslv/nleqslv.pdf}{nleqslv} を参照。
 #'								デフォルトは空だが、経路の条件不足のため "Jacobian is singular" のエラーになる可能性が高い場合
@@ -1195,7 +1190,6 @@ trace.q <- function( quantiles, continuous = FALSE, symmetric = FALSE, v.grad = 
 #'								縦方向に徐々に変化していくようなイメージの分布を構成できる。
 #'								v.grad = TRUE にすると、構成要素の正規分布は裾部と山部の2つになり (上の式では f_1 = f_3)、
 #'								v.grad = FALSE にすると、裾部の両側がそれぞれ別の分布になるので、正規分布は3つになる。
-#'								なお、 v.grad = TRUE, uni.mean = TRUE とすると、左右対称な分布になる。
 #'
 #'				type1.type = 4 は正規分布の連結ではなく、
 #'								2つの連続な連結ガウス分布を連結した、「縦横グラデーション」の構成方法である。
@@ -1283,9 +1277,7 @@ trace.q <- function( quantiles, continuous = FALSE, symmetric = FALSE, v.grad = 
 #'	##	In this case, each of 3 waypoints has a specific role.
 #'	##	One is to specify a waypoint on the tail, one is for a waypoint on the head
 #'	##	and the other is to specify the mean.
-#'	##	If the distribution is strange shaped, uni.mean = FALSE option may help to construct.
-#'	##	uni.mean = TRUE option serves a symmetric distribution (default),
-#'	##	and uni.mean = FALSE may serve an asymmetric distribution.
+#'	##	diff.mean = TRUE option force to make asymmetric the distribution.
 #'	##
 #'	##	Where number of p is 4, you must not set p[i] = 0.5 for any i.
 #'	##	Then the result may serve an asymmetric distribution.
@@ -1296,7 +1288,7 @@ trace.q <- function( quantiles, continuous = FALSE, symmetric = FALSE, v.grad = 
 #'
 #'	a$set.waypoints(
 #'		data.frame( p = c( 0.1, 0.3, 0.5 ), q = c( -1.28, -0.42, 0 ) ),
-#'		this.type1.type = 3, v.grad = TRUE, uni.mean = FALSE )
+#'		this.type1.type = 3, v.grad = TRUE, diff.mean = TRUE )
 #'	plot( seq( -3, 3, 0.01 ), a$d( seq( -3, 3, 0.01 ) ), type = "l" )
 #'
 #'	a$set.waypoints(
@@ -1332,7 +1324,7 @@ trace.q <- function( quantiles, continuous = FALSE, symmetric = FALSE, v.grad = 
 NULL
 CGD$methods(
 	set.waypoints = function( waypoints, continuous = FALSE, symmetric = FALSE, v.grad = FALSE,
-								uni.sigma = FALSE, uni.mean = TRUE, control = list(), this.type1.type = NULL )
+								uni.sigma = FALSE, diff.mean = FALSE, control = list(), this.type1.type = NULL )
 	{
 		result <- NULL
 
@@ -1354,7 +1346,7 @@ CGD$methods(
 		# 確率 p の範囲チェック
 		if ( length( waypoints$p[( waypoints$p < 0 | waypoints$p > 1 )] ) > 0 )
 		{
-			warning( paste( "Warning: probability" ,
+			warning( paste( "Warning: Probability" ,
 								waypoints$p[( waypoints$p < 0 | waypoints$p > 1 )], "is out of range [0, 1]." ) )
 		}
 
@@ -1362,7 +1354,7 @@ CGD$methods(
 		if ( length( waypoints$q[( waypoints$q == -Inf & waypoints$p != 0 ) |
 									( waypoints$q == Inf & waypoints$p != 1 )]	) > 0 )
 		{
-			warning( "Warning: there is a row which q is infinite (-Inf or Inf) but p is not 0 or 1." )
+			warning( "Warning: There is a row which q is infinite (-Inf or Inf) but p is not 0 or 1." )
 		}
 
 		# 平均値を除いた経路の data.frame を取得
@@ -1373,7 +1365,7 @@ CGD$methods(
 			if ( any( waypoints$p[wp.order[1:( nrow( waypoints ) - 1 )]] >= waypoints$p[wp.order[2:nrow( waypoints )]] ) ||
 					any( waypoints$q[wp.order[1:( nrow( waypoints ) - 1 )]] >= waypoints$q[wp.order[2:nrow( waypoints )]] ) )
 			{
-				stop( "Error: order of q is not along with that of p." )
+				stop( "Error: Order of q is not along with that of p." )
 			}
 		}
 
@@ -1385,7 +1377,7 @@ CGD$methods(
 											q.ordered > -Inf & q.ordered < Inf & p.ordered != 0.5] )
 		if ( nrow( wp ) == 0 )
 		{
-			warning( "Warning: no waypoints other than (p = 0, 0.5, 1) are given." )
+			warning( "Warning: No waypoints other than (p = 0, 0.5, 1) are given." )
 		}
 
 		# 平均値取得・エラーチェック
@@ -1397,7 +1389,7 @@ CGD$methods(
 			if ( type1.type == 4 && ( nrow( wp ) == 4 || nrow( wp ) == 6 ) &&
 									( wp$p[nrow( wp ) / 2] > 0.5 || wp$p[nrow( wp ) / 2 + 1] < 0.5 ) )
 			{
-				stop( paste( "Error: half of p for waypoints must be ",
+				stop( paste( "Error: Half of p for waypoints must be ",
 								"equal to or less than 0.5 and the others must be greater than 0.5." ) )
 			}
 		}
@@ -1413,7 +1405,7 @@ CGD$methods(
 				if ( !( type1.type == 3 && ( v.grad || ( !v.grad && ( nrow( wp ) == 4 ) ) ) ) &&
 											( wp$p[nrow( wp ) / 2] > 0.5 || wp$p[nrow( wp ) / 2 + 1] < 0.5 ) )
 				{
-					stop( paste( "Error: half of p for waypoints must be ",
+					stop( paste( "Error: Half of p for waypoints must be ",
 									"less than 0.5 and the others must be greater than 0.5." ) )
 				}
 			}
@@ -1427,31 +1419,42 @@ CGD$methods(
 								( type1.type == 2 && ( ( nrow( wp ) == 2 && is.set.mean ) ||
 														( nrow( wp ) == 4 && !is.set.mean ) ) ) ) )
 		{
-			stop( "Error: illegal number of waypoints or illegal type1.type for continuous = TRUE." )
+			stop( "Error: Illegal number of waypoints or illegal type1.type for continuous = TRUE." )
 		}
 
 		if ( symmetric && !( ( type1.type == 1 || type1.type == 2 ) && nrow( wp ) == 2 ) )
 		{
-			stop( "Error: illegal number of waypoints or illegal type1.type for symmetric = TRUE." )
+			stop( "Error: Illegal number of waypoints or illegal type1.type for symmetric = TRUE." )
+		}
+
+		if ( uni.sigma && !( ( type1.type == 2 && continuous &&  nrow( wp ) == 2 ) ||
+								( type1.type == 3 &&
+									( ( v.grad && ( nrow( wp ) == 2 || ( nrow( wp ) == 3 && !is.set.mean ) ) ) ||
+									( !v.grad && ( ( nrow( wp ) == 3 && !is.set.mean ) ||
+													( nrow( wp ) == 4 && !is.set.mean ) ) ) ) ) ||
+								( type1.type == 4 && ( nrow( wp ) == 4 && is.set.mean ) ) ) )
+		{
+			stop( "Error: Illegal number of waypoints or illegal type1.type for uni.sigma = TRUE." )
 		}
 
 		if ( v.grad && !( type1.type == 3 && ( ( nrow( wp ) == 2 && is.set.mean ) ||
-												( ( nrow( wp ) == 3 || nrow( wp ) == 4 ) && !is.set.mean ) ) ) )
+												nrow( wp ) == 3 ||
+												( ( nrow( wp ) == 4 ) && !is.set.mean ) ) ) )
 		{
-			stop( "Error: illegal number of waypoints or illegal type1.type for v.grad = TRUE." )
+			stop( "Error: Illegal number of waypoints or illegal type1.type for v.grad = TRUE." )
 		}
 
 		if ( type1.type == 3 && !( ( nrow( wp ) > 1 && nrow( wp ) < 5 && is.set.mean ) ||
 									( v.grad && ( nrow( wp ) == 3 && !is.set.mean ) ) ||
 									( ( nrow( wp ) == 4 || nrow( wp ) == 6 ) && !is.set.mean ) ) )
 		{
-			stop( "Error: illegal waypoints for type1.type == 3." )
+			stop( "Error: Illegal waypoints for type1.type == 3." )
 		}
 
 		if ( type1.type == 4 && !( ( ( nrow( wp ) == 4 || nrow( wp ) == 6 ) && is.set.mean ) ||
 									( ( nrow( wp ) == 6 || nrow( wp ) == 8 ) && !is.set.mean ) ) )
 		{
-			stop( "Error: illegal waypoints for type1.type == 4." )
+			stop( "Error: Illegal waypoints for type1.type == 4." )
 		}
 
 		####################################
@@ -1473,7 +1476,7 @@ CGD$methods(
 													}, control = control ), silent = TRUE )
 			if ( inherits( e, "try-error" ) )
 			{
-				stop( "Error: failed to make up a continuous probability density function." )
+				stop( "Error: Failed to construct a continuous probability density function." )
 			}
 			else if ( result$termcd == 1 )
 			{
@@ -1490,8 +1493,8 @@ CGD$methods(
 			}
 			else
 			{
-				message( paste( "nleqslv has failed. message:", result$message ) )
-				stop( "Error: failed to make up a continuous probability density function." )
+				message( paste( "nleqslv has failed. Message:", result$message ) )
+				stop( "Error: Failed to construct a continuous probability density function." )
 			}
 		}
 		else if ( type1.type == 2 && continuous )
@@ -1516,7 +1519,7 @@ CGD$methods(
 															}, control = control ), silent = TRUE )
 					if ( inherits( e, "try-error" ) )
 					{
-						stop( "Error: failed to make up a continuous probability density function." )
+						stop( "Error: Failed to construct a continuous probability density function." )
 					}
 					else if ( result$termcd == 1 )
 					{
@@ -1537,8 +1540,8 @@ CGD$methods(
 					}
 					else
 					{
-						message( paste( "nleqslv has failed. message:", result$message ) )
-						stop( "Error: failed to make up a continuous probability density function." )
+						message( paste( "nleqslv has failed. Message:", result$message ) )
+						stop( "Error: Failed to construct a continuous probability density function." )
 					}
 				}
 				else
@@ -1554,7 +1557,7 @@ CGD$methods(
 															}, control = control ), silent = TRUE )
 					if ( inherits( e, "try-error" ) )
 					{
-						stop( "Error: failed to make up a continuous probability density function." )
+						stop( "Error: Failed to construct a continuous probability density function." )
 					}
 					else if ( result$termcd == 1 )
 					{
@@ -1575,8 +1578,8 @@ CGD$methods(
 					}
 					else
 					{
-						message( paste( "nleqslv has failed. message:", result$message ) )
-						stop( "Error: failed to make up a continuous probability density function." )
+						message( paste( "nleqslv has failed. Message:", result$message ) )
+						stop( "Error: Failed to construct a continuous probability density function." )
 					}
 				}
 			}
@@ -1600,7 +1603,7 @@ CGD$methods(
 														}, control = control ), silent = TRUE )
 				if ( inherits( e, "try-error" ) )
 				{
-					stop( "Error: failed to make up a continuous probability density function." )
+					stop( "Error: Failed to construct a continuous probability density function." )
 				}
 				else if ( result$termcd == 1 )
 				{
@@ -1623,8 +1626,8 @@ CGD$methods(
 				}
 				else
 				{
-					message( paste( "nleqslv has failed. message:", result$message ) )
-					stop( "Error: failed to make up a continuous probability density function." )
+					message( paste( "nleqslv has failed. Message:", result$message ) )
+					stop( "Error: Failed to construct a continuous probability density function." )
 				}
 			}
 		}
@@ -1644,7 +1647,7 @@ CGD$methods(
 													}, control = control ), silent = TRUE )
 			if ( inherits( e, "try-error" ) )
 			{
-				stop( "Error: failed to make up a symmetric probability density function." )
+				stop( "Error: Failed to construct a symmetric probability density function." )
 			}
 			else if ( result$termcd == 1 )
 			{
@@ -1672,60 +1675,97 @@ CGD$methods(
 			}
 			else
 			{
-				message( paste( "nleqslv has failed. message:", result$message ) )
-				stop( "Error: failed to make up a symmetric probability density function." )
+				message( paste( "nleqslv has failed. Message:", result$message ) )
+				stop( "Error: Failed to construct a symmetric probability density function." )
 			}
 		}
 		else if ( type1.type == 3 && v.grad )
 		{
 			# type1.type == 3、縦方向グラデーション
-			if ( nrow( wp ) == 2 && uni.mean )
+			successed <- FALSE	# 経路構成の成否フラグ
+
+			if ( nrow( wp ) == 2 && !diff.mean )
 			{
 				# 平均値指定あり・3点経路
-				# 2つの正規分布の平均値を同一にして、経路の1点目と3点目を累積分布関数が通るように標準偏差を求める
-				sds <- c( 1, 1 )
-				e <- try( result <- nleqslv( sds, f <- function( x )
-														{
-															p <- pnorm( wp$q, mean, x[1]^2 )
-															p.a1 <- pnorm( wp$q, mean, x[1]^2 * sqrt( 2 ) / 2 )
-															p.a2 <- pnorm( wp$q, mean, x[2]^2 * sqrt( 2 ) / 2 )
+				if ( uni.sigma )
+				{
+					# 平均値以外の2点を通る正規分布の平均値と標準偏差を仮の値とする
+					pseudo <- ms.qp.norm( wp$q, wp$p )
 
-															return ( p - p.a1 * sqrt( 2 ) / 2 + p.a2 * sqrt( 2 ) / 2 - wp$p )
-														}, control = control ), silent = TRUE )
-				if ( inherits( e, "try-error" ) )
-				{
-					stop( "Error: failed to make up a symmetric probability density function." )
-				}
-				else if ( result$termcd == 1 )
-				{
-					set.intervals( gen.t3.intervals( rep( mean, 3 ), c( result$x[1]^2, result$x[2]^2, result$x[1]^2 ) ) )
+					x.0 <- c( pseudo$mean, mean, pseudo$sd )
+
+					wp <- data.frame( q = c( mean, wp$q ), p = c( 0.5, wp$p ) )
+
+					e <- try( result <- nleqslv( x.0, f <- function( x )
+															{
+																p <- pnorm( wp$q, x[1], x[3]^2 )
+																p.a1 <- pnorm( wp$q, x[1], x[3]^2 * sqrt( 2 ) / 2 )
+																p.a2 <- pnorm( wp$q, x[2], x[3]^2 * sqrt( 2 ) / 2 )
+
+																return ( p - p.a1 * sqrt( 2 ) / 2 + p.a2 * sqrt( 2 ) / 2 - wp$p )
+															}, control = control ), silent = TRUE )
+					if ( inherits( e, "try-error" ) )
+					{
+						stop( "Error: Failed to construct a continuous probability density function." )
+					}
+					else if ( result$termcd == 1 )
+					{
+						set.intervals( gen.t3.intervals( c( result$x[1], result$x[2], result$x[1] ),
+															rep( result$x[3]^2, 3 ) ) )
+						successed <- TRUE
+					}
+					else
+					{
+						message( paste( "nleqslv has failed. Message:", result$message ) )
+						error( "Error: Failed to construct a continuous probability density function." )
+					}
 				}
 				else
 				{
-					message( paste( "nleqslv has failed. message:", result$message ) )
-					stop( "Error: failed to make up a probability density function." )
+					# 2つの正規分布の平均値を同一にして、平均値以外の2点を累積分布関数が通るように標準偏差を求める
+					sds <- c( 1, 1 )
+					e <- try( result <- nleqslv( sds, f <- function( x )
+															{
+																p <- pnorm( wp$q, mean, x[1]^2 )
+																p.a1 <- pnorm( wp$q, mean, x[1]^2 * sqrt( 2 ) / 2 )
+																p.a2 <- pnorm( wp$q, mean, x[2]^2 * sqrt( 2 ) / 2 )
+
+																return ( p - p.a1 * sqrt( 2 ) / 2 + p.a2 * sqrt( 2 ) / 2 - wp$p )
+															}, control = control ), silent = TRUE )
+					if ( inherits( e, "try-error" ) )
+					{
+						stop( "Error: Failed to construct a symmetric probability density function." )
+					}
+					else if ( result$termcd == 1 )
+					{
+						set.intervals( gen.t3.intervals( rep( mean, 3 ), c( result$x[1]^2, result$x[2]^2, result$x[1]^2 ) ) )
+						successed <- TRUE
+					}
+					else
+					{
+						message( paste( "nleqslv has once failed. Message:", result$message ) )
+						message( paste( "Message: Failed to construct a symmetric probability density function.",
+										"Constructing asymmetric one has been retried." ) )
+					}
 				}
 			}
-			else if ( ( nrow( wp ) == 2 && !uni.mean ) || ( nrow( wp ) == 3 && !is.set.mean ) )
+
+			if ( !successed && ( nrow( wp ) == 2 || ( nrow( wp ) == 3 && !is.set.mean ) ) )
 			{
 				# 平均値指定なし・3点経路
-
-				successed <- FALSE	# 経路構成の成否フラグ
-
 				if ( nrow( wp ) == 2 )
 				{
 					if ( wp$p[1] > 0.5 )
 					{
-						wp <- data.frame( p = c( 0.5, wp$p ), q = c( mean, wp$q ) )
+						wp <- data.frame( q = c( mean, wp$q ), p = c( 0.5, wp$p ) )
 					}
 					else if ( wp$p[2] < 0.5 )
 					{
-						wp <- data.frame( p = c( wp$p, 0.5 ), q = c( wp$q, mean ) )
+						wp <- data.frame( q = c( wp$q, mean ), p = c( wp$p, 0.5 ) )
 					}
 					else
 					{
-						stop( paste( "Error: uni.mean = FALSE is unabled for waypoints via p[2] = 0.5",
-										" (via p[1] = 0.5 or p[3] = 0.5 is enabled)." ) )
+						stop( "Error: Failed to construct an asymmetric probability density function with v.grad = TRUE" )
 					}
 				}
 
@@ -1757,7 +1797,7 @@ CGD$methods(
 														}, control = control ), silent = TRUE )
 					if ( inherits( e, "try-error" ) )
 					{
-						stop( "Error: failed to make up a symmetric probability density function." )
+						stop( "Error: Failed to construct a continuous probability density function." )
 					}
 					else if ( result$termcd == 1 )
 					{
@@ -1770,7 +1810,8 @@ CGD$methods(
 						break
 					}
 
-					warning( paste( "Warning: nleqslv for 3-point-route crossing at #", i, "point has failed.",
+					message( paste( "nleqslv has once failed. Message:", result$message ) )
+					message( paste( "Message: 3-point-tracing crossing at #", i, "point has failed.",
 									"The result may distort heavily." ) )
 				}
 
@@ -1778,8 +1819,8 @@ CGD$methods(
 				{
 					# 失敗したら4点経路としてリトライ
 					# 経路の2点目を4点目とし、条件不足のため allowSingular = TRUE とする
-					warning( paste( "Warning: nleqslv for 3-point-route has failed.",
-									" retrying as 4-point-route with allowSingular = TRUE." ) )
+					message( paste( "Message: All of tries of 3-point-tracing have failed.",
+									"4-point-tracing with allowSingular = TRUE has been retried." ) )
 					if ( is.null( control$allowSingular ) )
 					{
 						c.tmp <- append( control, list( allowSingular = TRUE ) )
@@ -1794,7 +1835,7 @@ CGD$methods(
 					result <- l$result
 				}
 			}
-			else
+			else if ( !successed )
 			{
 				# 4点経路
 				if ( is.set.mean )
@@ -1817,10 +1858,10 @@ CGD$methods(
 			num.lower <- length( wp$p[wp$p < 0.5] )
 			num.upper <- length( wp$p[wp$p >= 0.5] )
 
-			if ( num.lower >= 3 || num.upper >= 3 )
+			if ( num.lower >= 3 || num.upper >= 3 || uni.sigma )
 			{
-				# 一方の側に3点以上ある場合、平均値指定なしの4点経路と同じ方法で累積分布関数を構成
-				l <- t3.v.grad.wp4.intervals( data.frame( q = c( wp$q, mean ), p = c( wp$p, 0.5 ) ), control )
+				# 一方の側に3点以上あるか、 uni.sigma = TRUE の場合、平均値指定なしの4点経路と同じ方法で累積分布関数を構成
+				l <- t3.wp4.intervals( data.frame( q = c( wp$q, mean ), p = c( wp$p, 0.5 ) ), uni.sigma, control )
 				set.intervals( l$intervals )
 				result <- l$result
 			}
@@ -1843,7 +1884,7 @@ CGD$methods(
 															}, control = control ), silent = TRUE )
 					if ( inherits( e, "try-error" ) )
 					{
-						stop( "Error: failed to make up a probability density function." )
+						stop( "Error: Failed to construct a probability density function." )
 					}
 					else if ( result$termcd == 1 )
 					{
@@ -1854,8 +1895,8 @@ CGD$methods(
 					}
 					else
 					{
-						message( paste( "nleqslv has failed. message:", result$message ) )
-						stop( "Error: failed to make up a probability density function." )
+						message( paste( "nleqslv has failed. Message:", result$message ) )
+						stop( "Error: Failed to construct a probability density function." )
 					}
 				}
 				else
@@ -1886,7 +1927,7 @@ CGD$methods(
 															}, control = control ), silent = TRUE )
 					if ( inherits( e, "try-error" ) )
 					{
-						stop( "Error: failed to make up a probability density function." )
+						stop( "Error: Failed to construct a probability density function." )
 					}
 					else if ( result$termcd == 1 )
 					{
@@ -1923,13 +1964,13 @@ CGD$methods(
 								if ( p.remain <= 0 )
 								{
 									# 最後の経路の点が累積分布関数よりも下にあるため、構成できない ⇒ エラー
-									stop( paste( "Error: failed to make up a probability density function.",
+									stop( paste( "Error: Failed to construct a probability density function.",
 													"The lowest quantile (x-coordinate) may be too near from the mean." ) )
 								}
 								else if ( p.remain >= ( 0.5 - 0.25 * sqrt( 2 ) ) )
 								{
 									# 最後の経路の点が累積分布関数よりも上にありすぎるため、構成できない ⇒ エラー
-									stop( paste( "Error: failed to make up a probability density function.",
+									stop( paste( "Error: Failed to construct a probability density function.",
 													"The lowest quantile (x-coordinate) may be too far from the mean." ) )
 								}
 							}
@@ -1938,13 +1979,13 @@ CGD$methods(
 								if ( p.remain <= ( 0.5 - 0.25 * sqrt( 2 ) ) )
 								{
 									# 最後の経路の点の位置が低すぎるため、構成できない ⇒ エラー
-									stop( paste( "Error: failed to make up a probability density function.",
+									stop( paste( "Error: Failed to construct a probability density function.",
 													"The highest quantile (x-coordinate) may be too far from the mean." ) )
 								}
 								else if ( p.remain >= ( 1 - 0.5 * sqrt( 2 ) ) )
 								{
 									# 最後の経路の点の位置が高すぎるため、構成できない ⇒ エラー
-									stop( paste( "Error: failed to make up a probability density function.",
+									stop( paste( "Error: Failed to construct a probability density function.",
 													"The highest quantile (x-coordinate) may be too near from the mean." ) )
 								}
 							}
@@ -1983,8 +2024,8 @@ CGD$methods(
 					}
 					else
 					{
-						message( paste( "nleqslv has failed. message:", result$message ) )
-						stop( "Error: failed to make up a probability density function." )
+						message( paste( "nleqslv has failed. Message:", result$message ) )
+						stop( "Error: Failed to construct a probability density function." )
 					}
 				}
 
@@ -1993,8 +2034,8 @@ CGD$methods(
 		}
 		else if ( type1.type == 3 && !is.set.mean && nrow( wp ) == 4 )
 		{
-			# type1.type == 3、4点経路、平均値指定なし ⇒ 縦方向グラデーションとする
-			l <- t3.v.grad.wp4.intervals( wp, control )
+			# type1.type == 3、4点経路、平均値指定なし
+			l <- t3.wp4.intervals( wp, uni.sigma, control )
 			set.intervals( l$intervals )
 			result <- l$result
 		}
@@ -2051,7 +2092,7 @@ CGD$methods(
 
 			if ( inherits( e, "try-error" ) )
 			{
-				stop( "Error: failed to make up a continuous probability density function." )
+				stop( "Error: Failed to construct a continuous probability density function." )
 			}
 			else if ( result$termcd == 1 )
 			{
@@ -2065,8 +2106,8 @@ CGD$methods(
 			}
 			else
 			{
-				message( paste( "nleqslv has failed. message:", result$message ) )
-				stop( "Error: failed to make up a continuous probability density function." )
+				message( paste( "nleqslv has failed. Message:", result$message ) )
+				stop( "Error: Failed to construct a continuous probability density function." )
 			}
 		}
 		else if ( type1.type == 4 && ( nrow( wp ) == 4 || ( nrow( wp ) == 6 && !is.set.mean ) ) )
@@ -2075,93 +2116,149 @@ CGD$methods(
 			#	まず、上下で平均値が等しい縦横グラデーションの構成を試し、
 			#	ダメなら上下で平均値が異なる縦横グラデーションを構成する
 
-			# 仮の平均値と標準偏差を計算
+			# 仮の平均値と標準偏差を計算 (trace.q に control はあえて渡してない)
 			# 6点経路の場合、2つの type1.type = 3 分布の仮の平均値は 3, 4点目 とする
 			wp.p <- c( wp$p[1:2], ifelse( rep( nrow( wp ) == 4, 2 ), c( 0.5, 0.5 ), wp$p[3:4] ),
 						wp$p[( nrow( wp ) - 1 ):nrow( wp )] )
 			wp.q <- c( wp$q[1:2], ifelse( rep( nrow( wp ) == 4, 2 ), c( mean, mean ), wp$q[3:4] ),
 						wp$q[( nrow( wp ) - 1 ):nrow( wp )] )
 
-			e <- try( d.1 <- trace.q( data.frame( p = c( wp.p[1:2], 0.5 ), q = wp.q[1:3] ),
-										type1.type = 3, v.grad = TRUE, uni.mean = TRUE ), silent = TRUE )
+			e <- try( d.1 <- trace.q( data.frame( q = wp.q[1:3], p = c( wp.p[1:2], 0.5 ) ),
+										type1.type = 3, v.grad = TRUE,
+										uni.sigma = uni.sigma, diff.mean = diff.mean ), silent = TRUE )
 			if ( inherits( e, "try-error" ) )
 			{
-				message( "trace.q for d.1 has failed with uni.mean = TRUE. retrying with uni.mean = FALSE." )
-				e <- try( d.1 <- trace.q( data.frame( p = wp.p[1:3], q = wp.q[1:3] ),
-											type1.type = 3, v.grad = TRUE, uni.mean = FALSE ), silent = TRUE )
-				if ( inherits( e, "try-error" ) )
-				{
-					stop( "Error: trace.q for d.1 has failed." )
-				}
+				stop( "Error: Failed to determine the drop-in parameters of the lower distribution." )
 			}
 
-			e <- try( d.2 <- trace.q( data.frame( p = c( 0.5, wp.p[5:6] ), q = wp.q[4:6] ),
-										type1.type = 3, v.grad = TRUE ), silent = TRUE )
+			e <- try( d.2 <- trace.q( data.frame( q = wp.q[4:6], p = c( 0.5, wp.p[5:6] ) ),
+										type1.type = 3, v.grad = TRUE,
+										uni.sigma = uni.sigma, diff.mean = diff.mean ), silent = TRUE )
 			if ( inherits( e, "try-error" ) )
 			{
-				message( "trace.q for d.2$ has failed with uni.mean = TRUE. retrying with uni.mean = FALSE." )
-				e <- try( d.2 <- trace.q( data.frame( p = wp.p[4:6], q = wp.q[4:6] ),
-												type1.type = 3, v.grad = TRUE, uni.mean = FALSE ), silent = TRUE )
-				if ( inherits( e, "try-error" ) )
-				{
-					stop( "Error: trace.q for d.2 has failed." )
-				}
+				stop( "Error: Failed to determine the drop-in parameters of the upper distribution." )
 			}
 
 			# nleqslv の計算
-			if ( nrow( wp ) == 4 )
+			for ( i in 1:2 )
 			{
-				x.0 <- sqrt( c( d.1$intervals[[1]]$sd, d.1$intervals[[2]]$sd,
-								d.2$intervals[[1]]$sd, d.2$intervals[[2]]$sd ) )
-			}
-			else
-			{
-				x.0 <- c( d.1$mean, d.2$mean,
-							sqrt( c( d.1$intervals[[1]]$sd, d.1$intervals[[2]]$sd,
-										d.2$intervals[[1]]$sd, d.2$intervals[[2]]$sd ) ) )
-			}
+				if ( i == 1 )
+				{
+					if ( nrow( wp ) == 4 && !diff.mean && !uni.sigma )
+					{
+						# length( x.0 ) == 4
+						x.0 <- sqrt( c( d.1$intervals[[1]]$sd, d.1$intervals[[2]]$sd,
+										d.2$intervals[[1]]$sd, d.2$intervals[[2]]$sd ) )
 
-			e <- try( result <- nleqslv( x.0, f <- ifelse( nrow( wp ) == 4,
-													function( x )
-													{
-														sds <- x^2
-														p.1 <-	f.t3.p[[1]]( wp$q, mean, sds[1] ) +
-																f.t3.p[[2]]( wp$q, mean, sds[2] )
-														p.2 <-	f.t3.p[[1]]( wp$q, mean, sds[3] ) +
-																f.t3.p[[2]]( wp$q, mean, sds[4] )
+						f <- function( x )
+						{
+							sds <- x^2
+							p.1 <-	f.t3.p[[1]]( wp$q, mean, sds[1] ) +
+									f.t3.p[[2]]( wp$q, mean, sds[2] )
+							p.2 <-	f.t3.p[[1]]( wp$q, mean, sds[3] ) +
+									f.t3.p[[2]]( wp$q, mean, sds[4] )
 
-														p <- p.1 - p.1^2 / 2 + p.2^2 / 2
+							p <- p.1 - p.1^2 / 2 + p.2^2 / 2
 
-														return ( p - wp$p )
-													},
-													function( x )
-													{
-														sds <- x[3:6]^2
-														p.1 <-	f.t3.p[[1]]( wp$q, x[1], sds[1] ) +
-																f.t3.p[[2]]( wp$q, x[1], sds[2] )
-														p.2 <-	f.t3.p[[1]]( wp$q, x[2], sds[3] ) +
-																f.t3.p[[2]]( wp$q, x[2], sds[4] )
+							return ( p - wp$p )
+						}
+					}
+					else
+					{
+						next
+					}
+				}
+				else
+				{
+					if ( uni.sigma )
+					{
+						wp <- data.frame( q = c( mean, wp$q ), p = c( 0.5, wp$p ) )
 
-														p <- p.1 - p.1^2 / 2 + p.2^2 / 2
+						# length( x.0 ) == 5
+						x.0 <- c( d.1$intervals[[1]]$mean, d.1$intervals[[2]]$mean,
+									d.2$intervals[[1]]$mean, d.2$intervals[[2]]$mean,
+									sqrt( ( d.1$intervals[[2]]$sd + d.2$intervals[[2]]$sd ) / 2 ) )
 
-														return ( p - wp$p )
-													} ), control = control ), silent = TRUE )
-			if ( inherits( e, "try-error" ) )
-			{
-				stop( "Error: failed to make up a continuous probability density function." )
-			}
-			else if ( result$termcd == 1 )
-			{
-				means <- ifelse( rep( nrow( wp ) == 4, 2 ), c( mean, mean ), c( result$x[1], result$x[2] ) )
-				sds <- result$x[( length( result$x ) - 3 ):length( result$x )]^2
+						f <- function( x )
+						{
+							sd <- x[5]^2
+							p.1 <-	f.t3.p[[1]]( wp$q, x[1], sd ) +
+									f.t3.p[[2]]( wp$q, x[2], sd )
+							p.2 <-	f.t3.p[[1]]( wp$q, x[3], sd ) +
+									f.t3.p[[2]]( wp$q, x[4], sd )
 
-				set.intervals( list( gen.t3.intervals( rep( means[1], 3 ), c( sds[1], sds[2], sds[1] ) ),
-									gen.t3.intervals( rep( means[2], 3 ), c( sds[3], sds[4], sds[3] ) ) ) )
-			}
-			else
-			{
-				message( paste( "nleqslv has failed. message:", result$message ) )
-				stop( "Error: failed to make up a continuous probability density function." )
+							p <- p.1 - p.1^2 / 2 + p.2^2 / 2
+							return ( p - wp$p )
+						}
+					}
+					else
+					{
+						if ( nrow( wp ) == 4 )
+						{
+							wp <- data.frame( q = c( mean, mean, wp$q ), p = c( 0.5, 0.5, wp$p ) )
+
+							#	条件不足のため allowSingular = TRUE とする
+							control <- append( control, list( allowSingular = TRUE ) )
+						}
+						# length( x.0 ) == 6
+						x.0 <- c( d.1$mean, d.2$mean,
+									sqrt( c( d.1$intervals[[1]]$sd, d.1$intervals[[2]]$sd,
+												d.2$intervals[[1]]$sd, d.2$intervals[[2]]$sd ) ) )
+						f <- function( x )
+						{
+							sds <- x[3:6]^2
+							p.1 <-	f.t3.p[[1]]( wp$q, x[1], sds[1] ) +
+									f.t3.p[[2]]( wp$q, x[1], sds[2] )
+							p.2 <-	f.t3.p[[1]]( wp$q, x[2], sds[3] ) +
+									f.t3.p[[2]]( wp$q, x[2], sds[4] )
+
+							p <- p.1 - p.1^2 / 2 + p.2^2 / 2
+
+							return ( p - wp$p )
+						}
+					}
+				}
+
+				e <- try( result <- nleqslv( x.0, f, control = control ), silent = TRUE )
+				if ( inherits( e, "try-error" ) )
+				{
+					stop( "Error: Failed to construct a continuous probability density function." )
+				}
+				else if ( result$termcd == 1 )
+				{
+					if ( length( x.0 ) == 4 )
+					{
+						means <- rep( mean, 4 )
+						sds <- result$x[1:4]^2
+					}
+					else if ( length( x.0 ) == 5 )
+					{
+						means <- result$x[1:4]
+						sds <- rep( result$x[5]^2, 4 )
+					}
+					else # if ( length( x.0 ) == 6 )
+					{
+						means <- c( result$x[1], result$x[1], result$x[2], result$x[2] )
+						sds <- result$x[3:6]^2
+					}
+
+					set.intervals( list( gen.t3.intervals( c( means[1], means[2], means[1] ), c( sds[1], sds[2], sds[1] ) ),
+										gen.t3.intervals( c( means[3], means[4], means[3] ), c( sds[3], sds[4], sds[3] ) ) ) )
+					break
+				}
+				else
+				{
+					message( paste( "nleqslv has failed. Message:", result$message ) )
+					if ( i == 1 )
+					{
+						message( paste( "Message: 5-point-tracing has failed.",
+										"6-point-tracing with allowSingular = TRUE has been retried." ) )
+					}
+					else
+					{
+						stop( "Error: Failed to construct a continuous probability density function." )
+					}
+				}
 			}
 		}
 		else if ( type1.type == 4 && ( nrow( wp ) == 6 || nrow( wp ) == 8 ) )
@@ -2178,11 +2275,13 @@ CGD$methods(
 			wp.q <- c( wp$q[1:3], ifelse( rep( nrow( wp ) == 6, 2 ), c( mean, mean ), c( wp$q[4:5] ) ),
 						wp$q[( nrow( wp ) - 2 ):nrow( wp )] )
 
-			e <- try( d.1 <- trace.q( data.frame( p = wp.p[1:3], q = wp.q[1:3] ),
+			e <- try( d.1 <- trace.q( data.frame( q = wp.q[1:3], p = wp.p[1:3] ),
 										type1.type = 3, v.grad = TRUE ), silent = TRUE )
 			if ( inherits( e, "try-error" ) )
 			{
-				warning( "Warning: trace.q for d.1 has failed for lower 3-point-route setting." )
+				message( paste( "Message: Failed to the 3-point-trace algorithm for the drop-in parameters",
+								"of the lower distribution.",
+								"So the combination of 2-point-trace algorithms has been used instead." ) )
 				pseudos <- list( ms.qp.norm( wp.q[1:2], wp.p[1:2] ), ms.qp.norm( wp.q[2:3], wp.p[2:3] ) )
 
 				d.1 <- CGD$new( type1.type = 3 )
@@ -2190,11 +2289,13 @@ CGD$methods(
 													c( pseudos[[1]]$sd, pseudos[[2]]$sd, pseudos[[1]]$sd ) ) )
 			}
 
-			e <- try( d.2 <- trace.q( data.frame( p = wp.p[6:8], q = wp.q[6:8] ),
-											type1.type = 3, v.grad = TRUE ), silent = TRUE )
+			e <- try( d.2 <- trace.q( data.frame( q = wp.q[6:8], p = wp.p[6:8] ),
+										type1.type = 3, v.grad = TRUE ), silent = TRUE )
 			if ( inherits( e, "try-error" ) )
 			{
-				warning( "Warning: trace.q for d.2 has failed for upper 3-point-route setting." )
+				message( paste( "Message: Failed to the 3-point-trace algorithm for the drop-in parameters",
+								"of the upper distribution.",
+								"So the combination of 2-point-trace algorithms has been used instead." ) )
 				pseudos <- list( ms.qp.norm( wp.q[7:8], wp.p[7:8] ), ms.qp.norm( wp.q[5:6], wp.p[5:6] ) )
 
 				d.2 <- CGD$new( type1.type = 3 )
@@ -2230,7 +2331,7 @@ CGD$methods(
 													}, control = c.tmp ), silent = TRUE )
 			if ( inherits( e, "try-error" ) )
 			{
-				stop( "Error: failed to make up a continuous probability density function." )
+				stop( "Error: Failed to construct a continuous probability density function." )
 			}
 			else if ( result$termcd == 1 )
 			{
@@ -2241,8 +2342,8 @@ CGD$methods(
 			}
 			else
 			{
-				message( paste( "nleqslv has failed. message:", result$message ) )
-				stop( "Error: failed to make up a continuous probability density function." )
+				message( paste( "nleqslv has failed. Message:", result$message ) )
+				stop( "Error: Failed to construct a continuous probability density function." )
 			}
 		}
 
@@ -2394,7 +2495,7 @@ t3.v.grad.wp4.intervals <- function( wp, control )
 {
 	if ( nrow( wp ) != 4 )
 	{
-		stop( paste( "Error: nrow( wp ) must be 4 for t3.v.grad.wp4.intervals( wp ). the nrow: ", nrow( wp ) ) )
+		stop( paste( "Error: nrow( wp ) must be 4 for t3.v.grad.wp4.intervals( wp ). The nrow: ", nrow( wp ) ) )
 	}
 
 	# 平均値から遠い2点を仮に1番目の正規分布、平均値から近い2点を仮に2番目の正規分布で通過させ、
@@ -2459,7 +2560,7 @@ t3.v.grad.wp4.intervals <- function( wp, control )
 									}, control = control ), silent = TRUE )
 	if ( inherits( e, "try-error" ) )
 	{
-		stop( "Error: failed to make up a continuous probability density function." )
+		stop( "Error: Failed to construct a continuous probability density function." )
 	}
 	else if ( result$termcd == 1 )
 	{
@@ -2468,8 +2569,127 @@ t3.v.grad.wp4.intervals <- function( wp, control )
 	}
 	else
 	{
-		message( paste( "nleqslv has failed. message:", result$message ) )
-		stop( "Error: failed to make up a continuous probability density function." )
+		message( paste( "nleqslv has failed. Message:", result$message ) )
+		stop( "Error: Failed to construct a continuous probability density function." )
+	}
+
+	return ( list( intervals = gen.t3.intervals( means, sds ), result = result ) )
+}
+
+###############################################################################
+# type1.type=3, v.grad = FALSE, 4点経路の intervals を導出する
+# @param	wp				経路。
+# @param	uni.sigma		標準偏差を揃えるかどうかのフラグ
+# @param	control			nleqslv に渡す設定。
+# @return	intervals, result (nleqslv の結果) のリスト
+###############################################################################
+t3.wp4.intervals <- function( wp, uni.sigma, control )
+{
+	if ( nrow( wp ) != 4 )
+	{
+		stop( paste( "Error: nrow( wp ) must be 4 for t3.wp4.intervals( wp ). The nrow: ", nrow( wp ) ) )
+	}
+
+	# 経路を平均値に近い順に並び替えて、
+	# 平均値から遠い2点を通る正規分布と、平均値に近い2点を通る正規分布の平均値と標準偏差をそれぞれ算出し、
+	# それらの平均値を nleqslv のための仮の値とする
+
+	wp <- data.frame( q = wp$q[order( abs( wp$p - 0.5 ) )], p = wp$p[order( abs( wp$p - 0.5 ) )] )
+
+	pseudos <- list( ms.qp.norm( wp$q[1:2], wp$p[1:2] ), ms.qp.norm( wp$q[3:4], wp$p[3:4] ) )
+
+	preudo.mean = list( mean = ( pseudos[[1]]$mean + pseudos[[2]]$mean ) / 2,
+						sd = ( pseudos[[1]]$sd + pseudos[[2]]$sd ) / 2 )
+
+	if ( uni.sigma )
+	{
+		e <- try( result <- nleqslv( c( pseudos[[1]]$mean, preudo.mean$mean, pseudos[[2]]$mean,
+										sqrt( preudo.mean$sd ) ),
+										f <- function( x )
+										{
+											means <- x[1:3]
+											sds <- rep( x[4]^2, 3 )
+											return ( dp.t3( wp$q, means, sds, f.t3.p ) - wp$p )
+										}, control = control ), silent = TRUE )
+		if ( inherits( e, "try-error" ) )
+		{
+			stop( "Error: Failed to construct a continuous probability density function." )
+		}
+		else if ( result$termcd == 1 )
+		{
+			means <- result$x[1:3]
+			sds <- rep( result$x[4]^2, 3 )
+		}
+		else
+		{
+			message( paste( "nleqslv has failed. Message:", result$message ) )
+			stop( "Error: Failed to construct a continuous probability density function." )
+		}
+	}
+	else
+	{
+		e <- try( result <- nleqslv( c( preudo.mean$mean,
+										sqrt( pseudos[[1]]$sd ), sqrt( preudo.mean$sd ), sqrt( pseudos[[2]]$sd ) ),
+										f <- function( x )
+										{
+											means <- rep( x[1], 3 )
+											sds <- x[2:4]^2
+											return ( dp.t3( wp$q, means, sds, f.t3.p ) - wp$p )
+										}, control = control ), silent = TRUE )
+		if ( inherits( e, "try-error" ) )
+		{
+			stop( "Error: Failed to construct a continuous probability density function." )
+		}
+		else if ( result$termcd == 1 )
+		{
+			means <- rep( result$x[1], 3 )
+			sds <- result$x[2:4]^2
+		}
+		else
+		{
+			# 失敗したら t3.v.grad.wp4.intervals でリトライ
+			message( paste( "nleqslv has once failed. Message:", result$message ) )
+			message( paste( "Message: Failed to construct a continuous probability density function",
+							"with v.grad = FALSE. Constructing with v.grad = TRUE has been retried." ) )
+			e <- try( l <- t3.v.grad.wp4.intervals( wp, control ), silent = TRUE )
+			if ( inherits( e, "try-error" ) )
+			{
+				# それも失敗したら条件不足の allowSingular = TRUE でリトライ
+				message( paste( "Message: Failed to construct a continuous probability density function",
+								"with v.grad = TRUE. Constructing with allowSingular = TRUE has been retried." ) )
+
+				wp <- data.frame( q = c( wp$q[1:2], wp$q ), p = c( wp$p[1:2], wp$p ) )
+
+				control <- append( control, list( allowSingular = TRUE ) )
+
+				e <- try( result <- nleqslv( c( pseudos[[1]]$mean, preudo.mean$mean, pseudos[[2]]$mean,
+												sqrt( pseudos[[1]]$sd ), sqrt( preudo.mean$sd ), sqrt( pseudos[[2]]$sd ) ),
+												f <- function( x )
+												{
+													means <- x[1:3]
+													sds <- x[4:6]^2
+													return ( dp.t3( wp$q, means, sds, f.t3.p ) - wp$p )
+												}, control = control ), silent = TRUE )
+				if ( inherits( e, "try-error" ) )
+				{
+					stop( "Error: Failed to construct a continuous probability density function." )
+				}
+				else if ( result$termcd == 1 )
+				{
+					means <- result$x[1:3]
+					sds <- result$x[4:6]^2
+				}
+				else
+				{
+					message( paste( "The last nleqslv has failed. Message:", result$message ) )
+					stop( "Error: Failed to construct a continuous probability density function." )
+				}
+			}
+			else
+			{
+				return ( l )
+			}
+		}
 	}
 
 	return ( list( intervals = gen.t3.intervals( means, sds ), result = result ) )
@@ -2668,9 +2888,9 @@ nls.freq <- function( x, freq, total, start = NULL, control = list(), set.by.sta
 							uni.sigma = FALSE, uni.mean = TRUE, ... )
 {
 	obj <- CGD$new()
-	print( obj$nls.freq( x, freq, total, start, control, set.by.start, kind,
+	obj$nls.freq( x, freq, total, start, control, set.by.start, kind,
 							normal, symmetric, v.grad, type1.type,
-							uni.sigma, uni.mean, ... ) )
+							uni.sigma, uni.mean, ... )
 	return ( obj )
 }
 
@@ -2815,12 +3035,12 @@ CGD$methods(
 		# 引数チェック
 		if ( length( x ) != length( freq ) )
 		{
-			stop( "Error: the lengths of x and freq are different." )
+			stop( "Error: The lengths of x and freq are different." )
 		}
 
 		if ( length( x ) < 3 )
 		{
-			stop( "Error: the lengths of x and freq are too short." )
+			stop( "Error: The lengths of x and freq are too short." )
 		}
 
 		if ( !all( x[1:length( x ) - 1] < x[2:length( x )] ) )
@@ -2926,7 +3146,7 @@ CGD$methods(
 													control = control, ... ), silent = TRUE )
 			if ( inherits( e, "try-error" ) )
 			{
-				stop( paste( "nls has failed. message:", e ) )
+				stop( paste( "nls has failed. Message:", e ) )
 			}
 			else
 			{
@@ -3551,7 +3771,7 @@ nls.freq.all <- function( x, freq, total, start = NULL, control = list( maxiter 
 		start <- init.start.list()
 	}
 
-	# nls実行 (エラーは無視)
+	# nls実行 (エラー時はメッセージ表示するが、処理は継続)
 	cgds <- list()
 	for ( i in 1:length( start ) )
 	{
@@ -4034,7 +4254,7 @@ CGD$methods(
 			if ( p[i] < 0 || p[i] > 1 )
 			{
 				# 確率が負または1を超えている
-				warning( paste( "Warning: probability" , p[i] , "is out of range [0, 1]." ) )
+				warning( paste( "Warning: Probability" , p[i] , "is out of range [0, 1]." ) )
 				next
 			}
 
@@ -4105,7 +4325,7 @@ CGD$methods(
 			if ( p[i] < 0 || p[i] > 1 )
 			{
 				# 確率が負または1を超えている
-				warning( paste( "Warning: probability" , p[i] , "is out of range [0, 1]." ) )
+				warning( paste( "Warning: Probability" , p[i] , "is out of range [0, 1]." ) )
 				next
 			}
 
@@ -4635,7 +4855,7 @@ CGD$methods(
 			}
 			else if ( type1.type == 3 )
 			{
-				# type1.type == 3 の場合の計算は symmetric であってもなくても同じ
+				# type1.type == 3 の場合の計算は v.grad であってもなくても同じ
 
 				result <- dp.t3( q, c( intervals[[1]]$mean, intervals[[2]]$mean, intervals[[3]]$mean ),
 									c( intervals[[1]]$sd, intervals[[2]]$sd, intervals[[3]]$sd ), f.t3.p )
@@ -4898,7 +5118,7 @@ CGD$methods(
 			if ( prob < 0 || prob > 1 )
 			{
 				# 確率が負または1を超えている
-				warning( paste( "Warning: probability" , prob, "is out of range [0, 1]." ) )
+				warning( paste( "Warning: Probability" , prob, "is out of range [0, 1]." ) )
 				return ( NaN )
 			}
 			else if ( prob == 0 )

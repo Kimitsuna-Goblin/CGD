@@ -127,8 +127,12 @@ a$type1.type == 3 # TRUE
 a$is.v.grad() # TRUE
 diff.check( a, x, freq, total )
 
-# Error case
+# normal test
 a$nls.freq( x, freq, total, uni.sigma = TRUE )
+a$type1.type == 3 # TRUE
+a$is.v.grad() # FALSE
+a$is.uni.sigma() # TRUE
+diff.check( a, x, freq, total )
 
 #### nls.freq.all
 
@@ -181,7 +185,7 @@ diff.check( a, x, freq, total )$summary[5] # > diff.check( cgds$cgd[[10]], x, fr
 # then retrying nls.freq.all
 start.list <- init.start.list()
 length( start.list ) # 15
-start.list
+start.list # All elements are NULL.
 
 start.list[[13]] <- nls.start.template( cgds$cgd[[13]]$kind )
 
@@ -197,7 +201,8 @@ cgds
 cgds$cgd
 cgds$best
 cgds$best.cor
-cgds$cor # [13] : 0.9956901 (about)
+cgds$cor
+cgds$cor[13] # 0.9956901 (about)
 
 #### dent center base
 seed$set.waypoints(
@@ -205,24 +210,6 @@ data.frame( p = c( 0.6, 0.9, 0.5 ), q = c( qnorm( 0.6, 0, 1.2 ), qnorm( 0.9, 0, 
 this.type1.type = 2, symmetric = TRUE )
 freq <- ( seed$p( x + 0.1 ) - seed$p( x - 0.1 ) ) * ( 1000 + sin( x * 10 + 0.5 ) * 100 )
 total <- sum( freq )
-
-plot.freq.and.d( cgds$cgd[[1]], x, freq, total )
-plot.freq.and.d( cgds$cgd[[2]], x, freq, total )
-plot.freq.and.d( cgds$cgd[[3]], x, freq, total )
-plot.freq.and.d( cgds$cgd[[4]], x, freq, total )
-plot.freq.and.d( cgds$cgd[[5]], x, freq, total )
-plot.freq.and.d( cgds$cgd[[6]], x, freq, total )
-plot.freq.and.d( cgds$cgd[[7]], x, freq, total )
-plot.freq.and.d( cgds$cgd[[8]], x, freq, total )
-plot.freq.and.d( cgds$cgd[[9]], x, freq, total )
-plot.freq.and.d( cgds$cgd[[10]], x, freq, total )
-plot.freq.and.d( cgds$cgd[[11]], x, freq, total )
-plot.freq.and.d( cgds$cgd[[12]], x, freq, total )
-plot.freq.and.d( cgds$cgd[[13]], x, freq, total )
-plot.freq.and.d( cgds$cgd[[14]], x, freq, total )
-plot.freq.and.d( cgds$cgd[[15]], x, freq, total )
-
-plot.freq.and.d( cgds$best, x, freq, total )
 
 
 ## set.by.start
@@ -277,12 +264,12 @@ diff.check( a, x, freq, total )
 
 ## nls test
 # normal test
-a$nls.freq( x, freq, total, uni.sigma = TRUE )
+a$nls.freq( x, freq, total, this.type1.type = 2, uni.sigma = TRUE )
 a$type1.type == 2 # TRUE
 a$is.uni.sigma() # TRUE
 a$is.uni.mean() # FALSE
-a$intervals.mean() # -0.2743823  0.2750839 (about)
-a$intervals.sd() # 0.8160915 0.8160915 (about)
+a$intervals.mean() # 1.161789 -1.161223 (about)
+a$intervals.sd() # 0.8834894 0.8834894 (about)
 diff.check( a, x, freq, total )
 
 # Warning case
