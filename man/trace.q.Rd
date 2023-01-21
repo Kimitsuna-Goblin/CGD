@@ -51,9 +51,9 @@ diff.mean の設定は v.grad = TRUE で、経路の構成点が (μ, 0.5) を�
 
 \item{type1.type}{フィールドの type1.type に設定する値。 1、2、3、4 のいずれかを指定すること (デフォルト: 1)。
 
-            type1.type の値によって、接続区間 (β$i, α_{i+1}) が type 1 の場合
+            type1.type の値によって、接続区間 (β_i, α_{i+1}) が type 1 の場合
              (この type 1 の詳細については \href{https://github.com/Kimitsuna-Goblin/CGD}{README.md} を参照)、
-            接続区間の累積分布関数 Ψ$i(x) を以下のように計算する。
+            接続区間の累積分布関数 Ψ_i(x) を以下のように計算する。
 
             1: Ψ_i(x) = ( α_{i+1} - x ) / ( α_{i+1} - β_i ) * Φ_i(x) +
                          ( x - β_i ) / ( α_{i+1} - β_i ) * Φ_{i+1}(x)
