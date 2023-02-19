@@ -1,3 +1,5 @@
+#### This file is for testing mainly CGD$set.waypoints and trace.q.
+
 library( "cgd" )
 a<-CGD$new()
 dev.new(); plot.new()
@@ -8,10 +10,10 @@ control <- list( ftol = 1e-4 )
 # There 5 commands should be run after each non-error test to confirm the result.
 # You can change the numbers '3' and '1000' of below to any other numbers.
 a
-plot( seq( -3, 3, 0.01 ), a$d( seq( -3, 3, 0.01 ) ), type = "l" )
-plot( seq( -3, 3, 0.01 ), a$p( seq( -3, 3, 0.01 ) ), type = "l" )
-plot( seq( 0, 1, 0.01 ), a$q( seq( 0, 1, 0.01 ) ), type = "l" )
-sample <- a$r( 1000 ); hist( sample )
+system.time( plot( seq( -3, 3, 0.01 ), a$d( seq( -3, 3, 0.01 ) ), type = "l" ) )
+system.time( plot( seq( -3, 3, 0.01 ), a$p( seq( -3, 3, 0.01 ) ), type = "l" ) )
+system.time( plot( seq( 0, 1, 0.01 ), a$q( seq( 0, 1, 0.01 ) ), type = "l" ) )
+system.time( sample <- a$r( 1000 ) ); hist( sample )
 
 # It's recomended to run this plot to compare integration a$d() to a$p().
 #	Remark: Numerical integral is sometimes not so accurate.
@@ -74,9 +76,27 @@ plot.waypoints.and.p( a, c( 0.1, 0.3, 0.5, 0.6, 0.7 ), c( qnorm( c( 0.1, 0.3, 0.
 
 # Error case
 a$set.waypoints(
+data.frame(
+p = c( 0.1, 0.3, 0.5, 0.6, 0.7 ),
+q = c( qnorm( c( 0.1, 0.3, 0.5, 0.6 ), 0, 1 ), 0.5 ) ), this.type1.type = 1, diff.mean = TRUE )
+
+# Error case
+a$set.waypoints(
+data.frame(
+p = c( 0.1, 0.3, 0.5, 0.6, 0.7 ),
+q = c( qnorm( c( 0.1, 0.3, 0.5, 0.6 ), 0, 1 ), 0.5 ) ), this.type1.type = 2, diff.mean = TRUE )
+
+# Error case
+a$set.waypoints(
 	data.frame(
 		p = c( 0.1, 0.3, 0.5, 0.6, 0.5 ),
 		q = c( qnorm( c( 0.1, 0.3, 0.5, 0.6, 0.51 ), 0, 1 ) ), this.type1.type = 1 ) )
+
+# normal test
+a <- trace.q(
+data.frame(
+p = c( 0.3, 0.5, 0.1, 0.6, 0.7 ),
+q = c( qnorm( c( 0.3, 0.5, 0.1, 0.6 ), 0, 1 ), 0.5 ) ), type1.type = 1 )
 
 # warning case
 a$set.waypoints(
@@ -226,7 +246,7 @@ p = c( 0.5 ),
 q = c( 1 ) ),
 this.type1.type = 1 )
 a$type1.type # 1
-a$kind # Normal Distribution
+a$kind # NA
 
 # normal test
 a <- CGD$new( 2 )
@@ -290,9 +310,6 @@ a$p( qs )
 plot.waypoints.and.p( a,
 	c( 0.1, 0.5, 0.6 ), qs, c( -3, 3 ) )
 
-# for control option test
-control <- list( ftol = 1e-4 )
-
 # normal test (control option)
 a$set.waypoints(
 data.frame(
@@ -301,6 +318,13 @@ q = qs ),
 this.type1.type = 1, continuous = TRUE, control = control )
 c( a$sd(), a$lsd(), a$usd() )
 a$p( qs ) # 0.0999377 0.5000000 0.5999828 (about)
+
+# Error case
+a$set.waypoints(
+data.frame(
+p = c( 0.1, 0.5, 0.6 ),
+q = qs ),
+this.type1.type = 1, continuous = TRUE, diff.mean = TRUE )
 
 # normal test
 qs <- c( qnorm( 0.1, -0.5, 1.9 ), -0.5, qnorm( 0.7, -0.5, 1.8 ) )
@@ -321,7 +345,18 @@ p = c( 0.1, 0.5, 0.6 ),
 q = c( qnorm( 0.1, 0, 0.9 ), 0, qnorm( 0.6, 0, 1 ) ) ),
 this.type1.type = 1, continuous = TRUE )
 
-# for bug-fix
+# normal test for v2.3.0 and up
+qs <- c( qnorm( 0.1, 0, 1 ), qnorm( 0.4, 0, 0.8 ), qnorm( 0.6, 0, 0.8 ) )
+a$set.waypoints(
+data.frame(
+p = c( 0.1, 0.4, 0.6 ), qs ),
+this.type1.type = 1, continuous = TRUE )
+c( a$sd(), a$lsd(), a$usd() ) # 1.104407 1.104407 1.104407
+a$p( qs )
+plot.waypoints.and.p( a,
+	c( 0.1, 0.4, 0.6 ), qs, c( -3, 3 ) )
+
+# normal test (for bug-fix)
 qs <- c( qnorm( 0.1, 0, 1.9 ), 0, qnorm( 0.7, 0, 0.4 ) )
 a$set.waypoints(
 data.frame(
@@ -343,6 +378,7 @@ q = qs ),
 this.type1.type = 2, continuous = TRUE )
 c( a$sd(), a$lsd(), a$usd() ) # 1.332352 1.519680 1.113954 (about)
 a$p( qs )
+a$is.uni.mean()	# TRUE
 plot.waypoints.and.p( a,
 	c( 0.3, 0.5, 0.7 ), qs, c( -3, 3 ) )
 
@@ -354,6 +390,29 @@ q = qs ),
 this.type1.type = 2, continuous = TRUE, control = control )
 c( a$sd(), a$lsd(), a$usd() )
 a$p( qs ) # 0.2999898 0.5000000 0.7000054 (about)
+a$is.uni.mean()	# TRUE
+
+# normal test (diff.mean)
+a$set.waypoints(
+data.frame(
+p = c( 0.3, 0.5, 0.7 ),
+q = qs ),
+this.type1.type = 2, continuous = TRUE, diff.mean = TRUE )
+c( a$sd(), a$lsd(), a$usd() ) # 1.390740 1.609658 1.130186 (about)
+a$p( qs )
+a$is.uni.mean()	# FALSE
+plot.waypoints.and.p( a,
+	c( 0.3, 0.5, 0.7 ), qs, c( -3, 3 ) )
+
+# normal test (diff.mean, control option)
+a$set.waypoints(
+data.frame(
+p = c( 0.3, 0.5, 0.7 ),
+q = qs ),
+this.type1.type = 2, continuous = TRUE, diff.mean = TRUE, control = control )
+c( a$sd(), a$lsd(), a$usd() )
+a$p( qs ) # 0.3000307 0.5000591 0.7000246 (about)
+a$is.uni.mean()	# FALSE
 
 # normal test
 qs <- c( qnorm( 0.3, 0.2, 0.7 ), 0.2, qnorm( 0.9, 0.2, 1.1 ) )
@@ -366,6 +425,28 @@ c( a$sd(), a$lsd(), a$usd() ) # 0.8988465 0.6552345 1.0892740 (about)
 a$p( qs )
 plot.waypoints.and.p( a,
 	c( 0.3, 0.5, 0.9 ), qs, c( -3, 3 ) )
+
+# normal test
+a$set.waypoints(
+data.frame(
+p = c( 0.3, 0.6, 0.9 ),
+q = qs ),
+this.type1.type = 2, continuous = TRUE )
+c( a$sd(), a$lsd(), a$usd() ) # 0.9063446 0.4747657 1.1905959 (about)
+a$p( qs )
+plot.waypoints.and.p( a,
+	c( 0.3, 0.6, 0.9 ), qs, c( -3, 3 ) )
+
+# normal test
+a$set.waypoints(
+data.frame(
+p = c( 0.52, 0.6, 0.9 ),
+q = qs ),
+this.type1.type = 2, continuous = TRUE )
+c( a$sd(), a$lsd(), a$usd() ) # 1.842416 2.165694 1.448711 (about)
+a$p( qs )
+plot.waypoints.and.p( a,
+	c( 0.52, 0.6, 0.9 ), qs, c( -3, 3 ) )
 
 # normal test - sharp center
 qs <- c( qnorm( 0.3, -0.2, 0.7 ), -0.2, qnorm( 0.9, -0.2, 1 ) )
@@ -387,6 +468,22 @@ q = qs ),
 this.type1.type = 2, symmetric = TRUE, control = control )
 c( a$sd(), a$lsd(), a$usd() )
 a$p( qs ) # 0.2999911 0.5000000 0.8999857 (about)
+plot.waypoints.and.p( a,
+	c( 0.3, 0.5, 0.9 ), qs, c( -3, 3 ) )
+
+# Error case
+a$set.waypoints(
+data.frame(
+p = c( 0.3, 0.49, 0.9 ),
+q = qs ),
+this.type1.type = 2, symmetric = TRUE )
+
+# Error case
+a$set.waypoints(
+data.frame(
+p = c( 0.3, 0.5, 0.9 ),
+q = qs ),
+this.type1.type = 2, symmetric = TRUE, diff.mean = TRUE )
 
 # normal test - dent center
 qs <- c( qnorm( 0.6, 0, 1.2 ), qnorm( 0.9, 0, 1.05 ), 0 )
@@ -495,6 +592,44 @@ a$p( qs )
 plot.waypoints.and.p( a,
 	c( 0.5, 0.6, 0.9 ), qs, c( -3, 3 ) )
 
+
+# normal test for v2.3.0 and up
+qs <- c( qnorm( 0.4, 0, 0.7 ), qnorm( 0.6, 0, 0.7 ), qnorm( 0.9, 0, 0.9 ) )
+a$set.waypoints(
+data.frame(
+p = c( 0.4, 0.6, 0.9 ),
+q = qs ),
+this.type1.type = 3 )
+c( a$sd(), a$lsd(), a$usd() ) # 0.7982611 0.6262522 0.9392814 (about)
+a$p( qs )
+plot.waypoints.and.p( a,
+	c( 0.4, 0.6, 0.9 ), qs, c( -3, 3 ) )
+
+# normal test for v2.3.0 and up
+qs <- c( 0, qnorm( 0.6, 0, 0.9 ), qnorm( 0.9, 0, 1.2 ) )
+a$set.waypoints(
+data.frame(
+p = c( 0.4, 0.6, 0.9 ),
+q = qs ),
+this.type1.type = 3 )
+c( a$sd(), a$lsd(), a$usd() ) # 0.9806078 0.7884754 1.1408286 (about)
+a$p( qs )
+plot.waypoints.and.p( a,
+	c( 0.4, 0.6, 0.9 ), qs, c( -3, 3 ) )
+
+# normal test for v2.3.0 and up
+qs <- c( qnorm( 0.1, 0, 1.5 ), qnorm( 0.3, 0, 1 ), qnorm( 0.6, 0, 0.8 ) )
+a$set.waypoints(
+data.frame(
+p = c( 0.1, 0.3, 0.6 ),
+q = qs ),
+this.type1.type = 3 )
+c( a$sd(), a$lsd(), a$usd() ) # 1.567381 1.555877 1.578800 (about)
+a$p( qs )
+plot.waypoints.and.p( a,
+	c( 0.1, 0.3, 0.6 ), qs, c( -3, 3 ) )
+
+
 # normal test
 qs <- c( qnorm( 0.1, 0, 1 ), 0, qnorm( 0.7, 0, 0.9 ) )
 a$set.waypoints(
@@ -525,7 +660,7 @@ data.frame(
 p = c( 0.1, 0.3, 0.4 ),
 q = qs ),
 this.type1.type = 3, v.grad = TRUE )
-c( a$sd(), a$lsd(), a$usd() ) # 1.103387 1.048196 1.155945
+c( a$sd(), a$lsd(), a$usd() ) # 1.103387 1.048196 1.155945 (about)
 a$p( qs )
 a$is.v.grad() # TRUE
 a$is.uni.mean() # FALSE
@@ -555,6 +690,62 @@ a$p( qs )
 a$is.v.grad() # TRUE
 plot.waypoints.and.p( a,
 	c( 0.1, 0.5, 0.9 ), qs, c( -3, 3 ) )
+
+
+# normal test for v2.3.0 and up
+qs <- c( -0.479, -0.472, -0.215 )
+a$set.waypoints(
+data.frame(
+p = c( 0.1, 0.3, 0.7 ),
+q = qs ),
+this.type1.type = 3, v.grad = TRUE )
+c( a$sd(), a$lsd(), a$usd() ) # 0.12619658 0.06875084 0.16469510 (about)
+a$p( qs )
+plot.waypoints.and.p( a,
+	c( 0.1, 0.3, 0.7 ), qs, c( -3, 3 ) )
+
+# normal test for v2.3.0 and up
+a$set.waypoints(
+data.frame(
+p = c( 0.1, 0.3, 0.32 ),
+q = qs ),
+this.type1.type = 3, v.grad = TRUE )
+c( a$sd(), a$lsd(), a$usd() ) # 6.013542 3.276127 7.848081 (about)
+a$p( qs )
+plot.waypoints.and.p( a,
+	c( 0.1, 0.3, 0.32 ), qs, c( -3, 3 ) )
+
+# normal test for v2.3.0 and up
+qs <- c( 0.215, 0.217, 0.472 )
+a$set.waypoints(
+data.frame(
+p = c( 0.1, 0.12, 0.3 ),
+q = qs ),
+this.type1.type = 3, v.grad = TRUE )
+c( a$sd(), a$lsd(), a$usd() ) # 0.3410867 0.4322945 0.2140135 (about)
+a$p( qs )
+plot.waypoints.and.p( a,
+	c( 0.1, 0.12, 0.3 ), qs, c( -3, 3 ) )
+
+# normal test for v2.3.0 and up
+a$set.waypoints(
+data.frame(
+p = c( 0.6, 0.62, 0.8 ),
+q = qs ),
+this.type1.type = 3, v.grad = TRUE )
+c( a$sd(), a$lsd(), a$usd() ) # 1.0138751 0.2176936 1.4172138 (about)
+a$p( qs )
+plot.waypoints.and.p( a,
+	c( 0.6, 0.62, 0.8 ), qs, c( -3, 3 ) )
+
+# Error case
+qs <- c( -0.479, -0.472, 0.472 )
+a$set.waypoints(
+data.frame(
+p = c( 0.1, 0.12, 0.2 ),
+q = qs ),
+this.type1.type = 3, v.grad = TRUE )
+
 
 # Error case
 qs <- c( qnorm( 0.1, 0, 1 ), qnorm( 0.3, 0, 0.9 ), qnorm( 0.4, 0, 0.85 ), 0, qnorm( 0.6, 0, 0.85 )	)
@@ -683,7 +874,7 @@ a$is.uni.mean() # FALSE
 plot.waypoints.and.p( a,
 	c( 0.5, 0.7, 0.9 ), qs, c( -3, 3 ) )
 
-# normal test ?
+# normal test
 qs <- c( 0, 0.7, 0.9 )
 a$set.waypoints(
 data.frame(
@@ -725,6 +916,8 @@ a$is.v.grad() # TRUE
 a$is.uni.mean() # FALSE
 plot.waypoints.and.p( a,
 	c( 0.1, 0.3, 0.5 ), qs, c( -3, 3 ) )
+
+plot( seq( -8, 8, 0.01 ), a$d( seq( -8, 8, 0.01 ) ), type = "l" )
 
 # normal test
 qs <- c( -0.7, -0.5, 0 )
@@ -797,27 +990,20 @@ a$is.uni.mean() # TRUE
 plot.waypoints.and.p( a,
 	c( 0.1, 0.3, 0.5 ), qs, c( -3, 3 ) )
 
-# normal test
-qs <- c( 0, qnorm( 0.6, 0, 0.8 ), qnorm( 0.9, 0, 1 ) )
-a$set.waypoints(
-data.frame(
-p = c( 0.5, 0.7, 0.9 ),
-q = qs ),
-this.type1.type = 3, v.grad = TRUE, diff.mean = TRUE )
-c( a$sd(), a$lsd(), a$usd() ) # 1.270474 1.412360 1.110606
-a$p( qs )
-a$is.v.grad() # TRUE
-a$is.uni.mean() # FALSE
-plot.waypoints.and.p( a,
-	c( 0.5, 0.7, 0.9 ), qs, c( -3, 3 ) )
 
-# Error case
+# normal test for v2.3.0 and up
 qs <- c( qnorm( 0.1, 0, 1 ), 0, qnorm( 0.6, 0, 0.85 ) )
 a$set.waypoints(
 data.frame(
 p = c( 0.1, 0.5, 0.6 ),
 q = qs ),
 this.type1.type = 3, v.grad = TRUE, diff.mean = TRUE )
+c( a$sd(), a$lsd(), a$usd() ) # 1.018618 1.026266 1.010913
+a$p( qs )
+a$is.v.grad() # TRUE
+a$is.uni.mean() # FALSE
+plot.waypoints.and.p( a,
+	c( 0.1, 0.5, 0.6 ), qs, c( -3, 3 ) )
 
 # normal test
 qs <- c( qnorm( 0.1, 0, 1 ), 0, qnorm( 0.7, 0, 0.9 ) )
@@ -965,6 +1151,13 @@ p = c( 0.1, 0.4, 0.5 ),
 q = c( -2.9, -1.2, 0 ) ),
 this.type1.type = 3 )
 
+# Error case
+a$set.waypoints(
+data.frame(
+p = c( 0.1, 0.5, 0.6 ),
+q = c( -2.9, -1.2, 0 ) ),
+this.type1.type = 3 )
+
 # normal test
 qs <- c( -2, -0.5, 0, 0.7 )
 a$set.waypoints(
@@ -973,7 +1166,6 @@ p = c( 0.1, 0.3, 0.5, 0.8 ),
 q = qs ),
 this.type1.type = 3 )
 c( a$sd(), a$lsd(), a$usd() ) # 1.283321 1.640214 0.776867
-a$p( qs )
 a$p( qs )
 plot.waypoints.and.p( a,
 	c( 0.1, 0.3, 0.5, 0.8 ), qs, c( -3, 3 ) )
@@ -1050,7 +1242,16 @@ p = c( 0.1, 0.5, 0.6, 0.9 ),
 q = qs ),
 this.type1.type = 3 )
 c( a$sd(), a$lsd(), a$usd() ) # 1.695580 1.575835 1.807409
-a$p( qs )
+plot.waypoints.and.p( a,
+	c( 0.1, 0.5, 0.6, 0.9 ), qs, c( -3, 3 ) )
+
+# This test should be performed after the previous test immediately (to use the previous result).
+a$set.waypoints(
+data.frame(
+p = c( 0.1, 0.5, 0.6, 0.9 ),
+q = qs ),
+this.type1.type = 3, diff.mean = TRUE )
+c( a$sd(), a$lsd(), a$usd() ) # 1.693498 1.618187 1.765599
 plot.waypoints.and.p( a,
 	c( 0.1, 0.5, 0.6, 0.9 ), qs, c( -3, 3 ) )
 
@@ -1102,9 +1303,35 @@ this.type1.type = 3 )
 # Error case
 a$set.waypoints(
 data.frame(
-p = c( 0.004, 0.5, 0.6, 0.9 ),
+p = c( 0.04, 0.5, 0.6, 0.9 ),
 q = c( -0.2, 0, 0.1, 2.3 ) ),
 this.type1.type = 3 )
+
+# Error case
+a$set.waypoints(
+data.frame(
+p = c( 0.1, 0.4, 0.5, 0.9 ),
+q = c( -2.3, -0.1, 0, 0.2 ) ),
+this.type1.type = 3 )
+
+# Error case
+a$set.waypoints(
+data.frame(
+p = c( 0.1, 0.4, 0.5, 0.51 ),
+q = c( -2.3, -0.1, 0, 0.2 ) ),
+this.type1.type = 3 )
+
+# normal test- bug fix (for v.2.3.0 and up)
+qs <- c( -2.3, -0.2, 0, 0.2 )
+a$set.waypoints(
+data.frame(
+p = c( 0.1, 0.4, 0.5, 0.6 ),
+q = qs ),
+this.type1.type = 3 )
+c( a$sd(), a$lsd(), a$usd() ) # 1.851449 1.851451 1.851447 (about)
+a$p( qs )
+plot.waypoints.and.p( a,
+	c( 0.1, 0.4, 0.5, 0.6 ), qs, c( -3, 3 ) )
 
 # Error case
 a$set.waypoints(
@@ -1211,7 +1438,7 @@ p = c( 0.25, 0.5, 0.7 ),
 q = qs ),
 this.type1.type = 2, continuous = TRUE, uni.sigma = TRUE, control = control )
 c( a$sd(), a$lsd(), a$usd() )
-a$p( qs ) # 0.2500214 0.5000000 0.6999782 (about)
+a$p( qs ) #0.2500214 0.5000000 0.6999782 (about)
 
 # normal test
 qs <- c( qnorm( 0.25, 0, 1 ), 0, qnorm( 0.7, 0, 1.02 ) )
@@ -1224,6 +1451,30 @@ c( a$sd(), a$lsd(), a$usd() ) # 0.0.9156116 0.9156116 0.9156116 (about)
 a$p( qs )
 plot.waypoints.and.p( a,
 	c( 0.25, 0.5, 0.7 ), qs, c( -3, 3 ) )
+
+# normal test for v2.3.0 and up
+qs <- c( qnorm( 0.2, 0, 1 ), qnorm( 0.4, 0, 1.01 ), qnorm( 0.8, 0, 1.05 ) )
+a$set.waypoints(
+data.frame(
+p = c( 0.2, 0.4, 0.8 ),
+q = qs ),
+this.type1.type = 2, continuous = TRUE, uni.sigma = TRUE )
+c( a$sd(), a$lsd(), a$usd() ) # 0.9637276 0.9637276 0.9637276 (about)
+a$p( qs )
+plot.waypoints.and.p( a,
+	c( 0.2, 0.4, 0.8 ), qs, c( -3, 3 ) )
+
+# normal test
+qs <- c( qnorm( 0.2, 0, 1 ), qnorm( 0.4, 0, 1.01 ), qnorm( 0.8, 0, 1.05 ) )
+a$set.waypoints(
+data.frame(
+p = c( 0.2, 0.4, 0.8 ),
+q = qs ),
+this.type1.type = 2, continuous = TRUE )
+c( a$sd(), a$lsd(), a$usd() ) # 1.0259111 0.9939195 1.0569349 (about)
+a$p( qs )
+plot.waypoints.and.p( a,
+	c( 0.2, 0.4, 0.8 ), qs, c( -3, 3 ) )
 
 # normal test
 qs <- c( qnorm( 0.1, -0.2, 1 ), qnorm( 0.4, 0, 1 ), 0 )
@@ -1270,7 +1521,7 @@ data.frame(
 p = c( 0.1, 0.4, 0.6, 0.8 ),
 q = qs ),
 this.type1.type = 3 )
-c( a$sd(), a$lsd(), a$usd() ) # 2.446720 1.194284 3.247548 (about)
+c( a$sd(), a$lsd(), a$usd() ) # 2.446724 1.194284 3.247553 (about)
 a$p( qs )
 plot.waypoints.and.p( a,
 	c( 0.1, 0.4, 0.6, 0.8 ), qs, c( -3, 3 ) )
@@ -1328,7 +1579,7 @@ a$set.waypoints(
 data.frame(
 p = c( 0.1, 0.4, 0.5, 0.6, 0.8 ),
 q = qs ),
-this.type1.type = 4, uni.sigma = TRUE )
+this.type1.type = 4, uni.sigma = TRUE, control = list( maxit = 2000 ) )
 
 # normal test (without uni.sigma; Compare to above)
 a$set.waypoints(
@@ -1380,12 +1631,16 @@ plot.waypoints.and.p( a,
 plot( seq( 0.4, 0.6, 0.001 ), a$q( seq( 0.4, 0.6, 0.001 ) ), type = "l" )
 plot( seq( 0.01, 0.06, 0.001 ), a$q( seq( 0.01, 0.06, 0.001 ) ), type = "l" )
 
-# Error case
+# normal test for v2.3.0 and up
 a$set.waypoints(
 data.frame(
 p = c( 0.1, 0.5, 0.75, 0.9 ),
 q = qs ),
 this.type1.type = 2, continuous = TRUE )
+c( a$sd(), a$lsd(), a$usd() ) # 1.553601 1.343706 1.738334 (about)
+a$p( qs )
+plot.waypoints.and.p( a,
+	c( 0.1, 0.5, 0.75, 0.9 ), qs, c( -3, 3 ) )
 
 ## 5 or 6 waypoints for type1.type = 3
 # Error case
@@ -1402,7 +1657,7 @@ data.frame(
 p = c( 0.1, 0.25, 0.5, 0.75, 0.9 ),
 q = qs ),
 this.type1.type = 3 )
-c( a$sd(), a$lsd(), a$usd() ) # 1.098104 1.117994 1.077848 (about)
+c( a$sd(), a$lsd(), a$usd() ) # 1.092617 1.111492 1.073411 (about)
 a$p( qs )
 plot.waypoints.and.p( a,
 	c( 0.1, 0.25, 0.5, 0.75, 0.9 ), qs, c( -3, 3 ) )
@@ -1414,7 +1669,7 @@ p = c( 0.1, 0.25, 0.5, 0.75, 0.9 ),
 q = qs ),
 this.type1.type = 3, control = control )
 c( a$sd(), a$lsd(), a$usd() )
-a$p( qs ) # 0.1000019 0.2500011 0.5000010 0.7500170 0.8999936 (about)
+a$p( qs ) # 0.1000345 0.2500480 0.5000082 0.7500175 0.8999795 (about)
 
 # normal test
 qs <- c( -1.4, -0.7, 0, 0.75, 1.42 )
@@ -1423,7 +1678,7 @@ data.frame(
 p = c( 0.1, 0.25, 0.5, 0.75, 0.9 ),
 q = qs ),
 this.type1.type = 3 )
-c( a$sd(), a$lsd(), a$usd() ) # 1.106754 1.131228 1.081726 (about)
+c( a$sd(), a$lsd(), a$usd() ) # 1.115318 1.141139 1.088885 (about)
 a$p( qs )
 plot.waypoints.and.p( a,
 	c( 0.1, 0.25, 0.5, 0.75, 0.9 ), qs, c( -3, 3 ) )
@@ -1435,10 +1690,22 @@ data.frame(
 p = c( 0.1, 0.25, 0.5, 0.75, 0.9 ),
 q = qs ),
 this.type1.type = 3 )
-c( a$sd(), a$lsd(), a$usd() ) # 1.126960 1.157912 1.095133 (about)
+c( a$sd(), a$lsd(), a$usd() ) # 1.115318 1.141139 1.088885 (about)
 a$p( qs )
 plot.waypoints.and.p( a,
 	c( 0.1, 0.25, 0.5, 0.75, 0.9 ), qs, c( -2, 4 ) )
+
+# normal test
+qs <- c( -1.412, -0.262, 0.272, 0.756, 1.427 )
+a$set.waypoints(
+data.frame(
+p = c( 0.1, 0.4, 0.6, 0.75, 0.9 ),
+q = qs ),
+this.type1.type = 3 )
+c( a$sd(), a$lsd(), a$usd() ) # 1.106111 1.129753 1.081952 (about)
+a$p( qs )
+plot.waypoints.and.p( a,
+	c( 0.1, 0.4, 0.6, 0.75, 0.9 ), qs, c( -3, 3 ) )
 
 # Error case
 qs <- c( -1.4, -0.1, 0.1, 0.75, 1.42 )
@@ -1511,12 +1778,16 @@ p = c( 0.1, 0.25, 0.6, 0.7, 0.75, 0.9 ),
 q = qs ),
 this.type1.type = 4 )
 
-# Error case
+# normal test for v2.3.0 and up
 a$set.waypoints(
 data.frame(
 p = c( 0.1, 0.25, 0.5, 0.6, 0.75, 0.9 ),
 q = qs ),
 this.type1.type = 4 )
+c( a$sd(), a$lsd(), a$usd() ) # 1.0776972 0.7169528 1.3449317 (about)
+a$p( qs )
+plot.waypoints.and.p( a,
+	c( 0.1, 0.25, 0.5, 0.6, 0.75, 0.9 ), qs, c( -3, 3 ) )
 
 # Error case
 qs <- c( qnorm( 0.1, 0, 0.9 ), qnorm( 0.25, 0, 0.95 ),
@@ -1622,6 +1893,19 @@ q = qs ),
 this.type1.type = 4 )
 c( a$sd(), a$lsd(), a$usd() ) # 1.5698853 2.0417000 0.8720897 (about)
 a$p( qs )
+a$is.uni.mean() # TRUE
+plot.waypoints.and.p( a,
+	c( 0.1, 0.25, 0.5, 0.75, 0.9 ), qs, c( -3, 3 ) )
+
+# normal test
+a$set.waypoints(
+data.frame(
+p = c( 0.1, 0.25, 0.5, 0.75, 0.9 ),
+q = qs ),
+this.type1.type = 4, diff.mean = TRUE )
+c( a$sd(), a$lsd(), a$usd() ) # 1.5683332 2.0368452 0.8778382 (about)
+a$p( qs )
+a$is.uni.mean() # FALSE
 plot.waypoints.and.p( a,
 	c( 0.1, 0.25, 0.5, 0.75, 0.9 ), qs, c( -3, 3 ) )
 
@@ -1717,8 +2001,8 @@ a$set.waypoints(
 data.frame(
 p = c( 0.1, 0.25, 0.4, 0.5, 0.6, 0.75, 0.9 ),
 q = qs ),
-this.type1.type = 4 )
-c( a$sd(), a$lsd(), a$usd() ) # 1.191395 1.207134 1.175445
+this.type1.type = 4, control = list( maxit = 1000 ) )
+c( a$sd(), a$lsd(), a$usd() ) # 0.8413850 0.7632772 0.9128337 (about)
 a$p( qs )
 plot.waypoints.and.p( a,
 	c( 0.1, 0.25, 0.4, 0.5, 0.6, 0.75, 0.9 ), qs, c( -3, 3 ) )
@@ -1766,9 +2050,9 @@ this.type1.type = 4 )
 qs <- c( -1, -0.8, -0.3, 0, 0.32, 1, 1.2 )
 a$set.waypoints(
 data.frame(
-p = c( 0.1, 0.25, 0.4, 0.5, 0.6, 0.75, 0.9 ),
+p = c( 0.1, 0.25, 0.4, 0.5, 0.6, 0.75, 0.9),
 q = qs ),
-this.type1.type = 4 )
+this.type1.type = 4, control = list( maxit = 1000 ) )
 intervals <- list( gen.t3.intervals(
 						c( -a$intervals[[2]][[1]]$mean, -a$intervals[[2]][[2]]$mean, -a$intervals[[2]][[3]]$mean ),
 						c( a$intervals[[2]][[1]]$sd, a$intervals[[2]][[2]]$sd, a$intervals[[2]][[3]]$sd ) ),
@@ -1777,26 +2061,19 @@ intervals <- list( gen.t3.intervals(
 						c( a$intervals[[1]][[1]]$sd, a$intervals[[1]][[2]]$sd, a$intervals[[1]][[3]]$sd ) ) )
 
 a$set.intervals( intervals )
-c( a$sd(), a$lsd(), a$usd() ) # 1.191395 1.175445 1.207134
+c( a$sd(), a$lsd(), a$usd() ) # 0.8413850 0.9128337 0.7632772 (about)
 a$p( c( -1.2, -1, -0.32, 0, 0.3, 0.8, 1 ) )
 plot.waypoints.and.p( a,
 	c( 0.1, 0.25, 0.4, 0.5, 0.6, 0.75, 0.9 ), -qs[order( -qs )], c( -3, 3 ) )
 
-# Error case (Baltan Rev.)
+# normal test (Baltan Rev.) (for success, it needs about 1000 iterations)
 qs <- c( -1.2, -1, -0.32, 0, 0.3, 0.8, 1 )
 a$set.waypoints(
 data.frame(
 p = c( 0.1, 0.25, 0.4, 0.5, 0.6, 0.75, 0.9 ),
 q = qs ),
-this.type1.type = 4 )
-
-# normal test (for success, it needs about 1000 iterations)
-a$set.waypoints(
-data.frame(
-p = c( 0.1, 0.25, 0.4, 0.5, 0.6, 0.75, 0.9 ),
-q = qs ),
-this.type1.type = 4, control = list( maxit = 2000 ) )
-c( a$sd(), a$lsd(), a$usd() )
+this.type1.type = 4, control = list( maxit = 1000 ) )
+c( a$sd(), a$lsd(), a$usd() ) # 1.122514 1.120770 1.124254 (about)
 a$p( qs )
 plot.waypoints.and.p( a,
 	c( 0.1, 0.25, 0.4, 0.5, 0.6, 0.75, 0.9 ), qs, c( -3, 3 ) )
@@ -1855,7 +2132,7 @@ a$set.waypoints(
 data.frame(
 p = c( 0.1, 0.2, 0.3, 0.5, 0.6, 0.7, 0.8, 0.9 ),
 q = qs ),
-this.type1.type = 4 )
+this.type1.type = 4, control = list( maxit = 2000 ) )
 
 # Error case
 qs <- c( -1.4, -0.96, -0.61, -0.3, 0.32, 0.715, 1.24, 2 )
@@ -1885,6 +2162,15 @@ a$p( qs ) # 0.1 0.2 0.3 0.4 0.6 0.7 0.8 0.9
 plot.waypoints.and.p( a,
 	c( 0.1, 0.2, 0.3, 0.4, 0.6, 0.7, 0.8, 0.9 ), qs, c( -3, 3 ) )
 
+# normal test
+qs <- c( a$q( 0.1 ), a$q( 0.25 ), a$q( 0.4 ), a$q( 0.50 ), a$q( 0.6 ), a$q( 0.7 ), a$q( 0.8 ), a$q( 0.9 ) )
+a$set.waypoints(
+data.frame(
+p = c( 0.1, 0.25, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9 ),
+q = qs ),
+this.type1.type = 4 )
+c( a$sd(), a$lsd(), a$usd() ) # 1.317654 1.062110 1.531127 (about)
+
 # normal test (compare to above)
 # This test should be performed after the previous test immediately (to use the previous result).
 qs.2 <- a$q( c( 0.25, 0.5, 0.75 ) )
@@ -1897,6 +2183,39 @@ c( a$sd(), a$lsd(), a$usd() ) # 1.332606 1.098767 1.531140
 plot.waypoints.and.p( a,
 	c( 0.25, 0.5, 0.75 ), qs.2, c( -3, 3 ) )
 
-# plot the burden ratio of the lower distribution for type1.type = 3, symmetric
-x<-seq( -5, 5, 0.01 ); plot( x, pnorm( x, 0 ,1 ) - pnorm( x, 0, 1/sqrt(2) ) / sqrt(2), type="l" )
 
+#### Appendix
+
+# Plot of the burden ratio of the lower distribution for type1.type = 3, symmetric.
+x<-seq( -5, 5, 0.01 ); plot( x, pnorm( x, 0, 1 ) - pnorm( x, 0, 1/sqrt(2) ) / sqrt(2), type="l" )
+
+
+# Plots to show pnorm( x, 0, 1/sqrt(2) ) / pnorm( x, 0, 1 ) is bounded on [1, 1.107] where x > 0,
+# and ( 1 - pnorm( x, 0, 1/sqrt(2) ) ) / ( 1 - pnorm( x, 0, 1 ) ) is also bounded on [1, 1.107] where x < 0.
+x<-seq( 0, 4, 0.01 ); plot( x, pnorm( x, 0, 1/sqrt(2) ) / pnorm( x, 0, 1 ), type="l" )
+x<-seq( -4, 0, 0.01 ); plot( x, ( 1 - pnorm( x, 0, 1/sqrt(2) ) ) / ( 1 - pnorm( x, 0, 1 ) ), type="l" )
+
+max.pp <- cgd:::bisection( function(x) dnorm( x, 0, 1/sqrt(2) ) / pnorm( x, 0, 1 ) - pnorm( x, 0, 1/sqrt(2) ) * dnorm( x, 0, 1 ) / pnorm( x, 0, 1 )^2, c( 0, 1 ))
+max.pp
+pnorm( max.pp, 0, 1/sqrt(2) ) / pnorm( max.pp, 0, 1 )
+( 1 - pnorm( -max.pp, 0, 1/sqrt(2) ) ) / ( 1 - pnorm( -max.pp, 0, 1 ) )
+
+
+# Plot of x which maximize pnorm( x, 0, sigma * 1/sqrt(2) ) / pnorm( x, 0, sigma ) where sigma > 0 (it is linear).
+sigma<-seq( 0.1, 2, 0.1 )
+x<-vapply( sigma, function(s) { cgd:::bisection( function(y) dnorm( y, 0, s * 1/sqrt(2) ) / pnorm( y, 0, s ) - pnorm( y, 0, s * 1/sqrt(2) ) * dnorm( y, 0, s ) / pnorm( y, 0, s )^2, c( 0, s * 2 ) ) }, 0 )
+plot( sigma, x, type="l" )
+
+# Plot of the maximum values (it is a constant).
+plot( sigma, pnorm( x, 0, sigma * 1/sqrt(2) ) / pnorm( x, 0, sigma ), type="l" )
+
+
+## The following plots are of no use to this library, but may be interesting as mathematics.
+
+# Plot of x.max which maximize pnorm( x, 0, sigma ) / pnorm( x, 0, 1 ) where 0 < sigma < 1.
+sigma<-c( 0.001, seq( 0.01, 0.99, 0.01 ), 0.999 )
+x.max<-vapply( sigma, function(s) { cgd:::bisection( function(y) dnorm( y, 0, s ) / pnorm( y, 0, 1 ) - pnorm( y, 0, s ) * dnorm( y, 0, 1 ) / pnorm( y, 0, 1 )^2, c( 0, 1 ) ) }, 0 )
+plot( sigma, x.max, type="l" )
+
+# Plot of the maximum values.
+plot( sigma, pnorm( x.max, 0, sigma ) / pnorm( x.max, 0, 1 ), type="l" )

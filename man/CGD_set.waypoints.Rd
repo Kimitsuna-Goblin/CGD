@@ -5,7 +5,7 @@
 \title{経路設定}
 \usage{
 CGD$set.waypoints(waypoints, continuous = FALSE, symmetric = FALSE, v.grad = FALSE,
-                            uni.sigma = FALSE, this.type1.type = NULL)
+							uni.sigma = FALSE, this.type1.type = NULL)
 }
 \arguments{
 \item{waypoints}{経路の data.frame( q = 経路のX座標 (クォンタイル), p = その点における確率 )
@@ -16,11 +16,10 @@ X座標 (クォンタイル) は昇順にソートしておくこと。
 確率密度関数が全区間 (-∞, ∞) で連続になるように分布構成を試みる (デフォルト: FALSE)。
 type1.type = 1 または 2 のときに有効 (type1.type >= 3 では常に連続)。}
 
-\item{symmetric}{TRUE にすると、 type1.type = 1 または 2 のとき、
-独立区間を [0, 0], [0.5, 0.5], [1, 1] の 3点にして、
-1番目と 3番目の確率分布を同一にすることにより、
-確率密度関数が全区間 (-∞, ∞) で連続で、かつ左右対称になるように試みる (デフォルト: FALSE)。
-type1.type = 1 または 2 のときに有効。}
+\item{symmetric}{TRUE にすると、確率密度関数が、平均点を中心として左右対称になるように試みる (デフォルト: FALSE)。
+type1.type = 1 または 2 のときのみ有効。
+type1.type = 2, symmetric = TRUE のときは、確率が 0.5 の点を waypoints に必ず指定する必要がある。
+なお、 type1.type = 2, symmetric = TRUE のときの確率密度関数は平均値の点において微分できない。}
 
 \item{v.grad}{TRUE にすると、 type1.type = 3 のとき、
 裾部の左右の標準偏差が等しい、縦方向グラデーションの分布を構成する (デフォルト: FALSE)。}
@@ -32,15 +31,14 @@ type1.type = 1 または 2 のときに有効。}
   type1.type = 2 では 3点、type1.type = 3 では 3～4点 (v.grad = TRUE の場合は 3点のみ)、
   type1.type = 4 では 5点 の場合に有効)。}
 
-\item{diff.mean}{TRUE にすると、構成要素の各正規分布の平均値を強制的に異なるようにする (デフォルト: FALSE)。
-diff.mean の設定は type1.type = 3, v.grad = TRUE で、かつ経路の構成点が 3点の場合、
-または、 type1.type = 4 で、かつ経路の構成点が 5点の場合のみ有効。}
+\item{diff.mean}{TRUE にすると、構成要素の各正規分布の平均値が異なるようになるように試みる (デフォルト: FALSE)。
+不連続分布および type1.type = 1 または symmetric = TRUE では無効。
+なお、 diff.mean = TRUE としても、結果的に、各正規分布の平均値が等しくなることもあり得る。}
 
 \item{control}{nleqslv に渡す、同関数の control オプションのリスト (デフォルト: list())。
 詳細は \href{https://cran.r-project.org/web/packages/nleqslv/nleqslv.pdf}{nleqslv} を参照。
-デフォルトは空だが、経路の条件不足のため "Jacobian is singular" のエラーになる可能性が高い場合
- (type1.type = 3, v.grad = TRUE で歪みが大きい 3点経路の場合と
-  type1.type = 4 で 7点経路の場合) は allowSingular = TRUE が暗黙のうちに設定される。
+デフォルトは空だが、条件不足のため "Jacobian is singular" のエラーになる可能性が高い場合は
+allowSingular = TRUE が暗黙のうちに設定される。
 ただし、引数 control のリストに allowSingular が与えられている場合は、引数のリストを優先する。}
 
 \item{this.type1.type}{フィールドの type1.type に設定する値。 1、2、3、4 のいずれかを指定すること。
@@ -76,8 +74,10 @@ diff.mean の設定は type1.type = 3, v.grad = TRUE で、かつ経路の構成
                             また、 continuous = TRUE または symmetric = TRUE のオプションにより、
                             左右対称な連続分布である「平均値が等しい2つの正規分布の平均」が構成できる。
                             なお、このとき、累積分布関数は Ψ(x) = ( Φ_i(x) + Φ_{i+1}(x) ) / 2 となる。
-                            ただし、便宜上、そのように作っているだけであって、
-                            この連続分布の累積分布関数 Ψ(x) は上の 1: に示した不連続分布の Ψ_i(x) の拡張ではない。
+                            ただし、他のオプションとの兼ね合いのために、
+                            便宜上、このように作っているだけであって、
+                            この type1.type = 1 の連続分布の累積分布関数は、
+                            上の 1: に示した不連続分布の累積分布関数の自然な拡張ではない。
 
             type1.type = 2 は、 1 と同様に、不連続分布を構成するための連結方法であるが、
                             不連続分布の累積分布関数 Ψ_i(x) を β_i → -∞, α_{i+1} → ∞ と自然に拡張することで、
@@ -85,14 +85,16 @@ diff.mean の設定は type1.type = 3, v.grad = TRUE で、かつ経路の構成
                             continuous = TRUE にすると、2つの確率密度関数の「横方向グラデーション」が構成できる。
                             つまり、確率密度関数の形が、 x = -∞ の点から x = ∞ の点に向かって、
                             横方向に徐々に変化していくようなイメージの分布を構成できる。
+                            この type1.type = 2 の連続分布の累積分布関数は、
+                            上の 2: に示した不連続分布の累積分布関数の自然な拡張である。
                             また、 symmetric = TRUE にすると、
                             平均値の点で折り返したような左右対称な分布を構成できる
-                             (ただし、文字通り「折り返している」ため、連続であるが、滑らかではない)。
+                             (ただし、文字通り「折り返している」ため、平均値の点において微分可能ではない)。
 
             type1.type = 3 は連続分布に特化した、「縦方向グラデーション」の連結方法である。
                             つまり、確率密度関数の形が、平均値から遠い裾部から、平均値に近い山部に向かって、
                             縦方向に徐々に変化していくようなイメージの分布を構成できる。
-                            v.grad = TRUE にすると、構成要素の正規分布は裾部と山部の2つになり (上の式では f_1 = f_3)、
+                            v.grad = TRUE にすると、構成要素の正規分布は裾部と山部の2つになる (上の式では f_1 = f_3)。
                             v.grad = FALSE にすると、裾部の両側がそれぞれ別の分布になるので、正規分布は3つになる。
 
             type1.type = 4 は正規分布の連結ではなく、
@@ -103,132 +105,128 @@ diff.mean の設定は type1.type = 3, v.grad = TRUE で、かつ経路の構成
                             ただし、通常、左右対称な分布にはならない。
 
             連続分布を構成する場合、経路の構成点は一定の個数でなければならない。
-            具体的には、構成点の個数は以下のようにする必要がある (個数に (*) が付いているものは、確率 0.5 の点が必須)。
+            具体的には、構成点の個数は以下のようにする必要がある。
 
-            ・type1.type = 1 :    continuous = TRUE or symmetric = TRUE ⇒ 3点(*)
+            ・type1.type = 1 :    continuous = TRUE or symmetric = TRUE ⇒ 3点
 
-            ・type1.type = 2 :    continuous = TRUE ⇒ 3点(*) or 4点、
-                                symmetric = TRUE ⇒ 3点(*)
+            ・type1.type = 2 :    continuous = TRUE ⇒ 3～4点、
+                                symmetric = TRUE ⇒ 3点 (必ず確率 0.5 の点を含めること)
 
-            ・type1.type = 3 :    v.grad = FALSE ⇒ 3点(*) or 4点 or 5点(*) or 6点、
-                                v.grad = TRUE ⇒ 3点 or 4点
+            ・type1.type = 3 :    v.grad = TRUE ⇒ 3～4点、
+                                v.grad = FALSE ⇒ 3～6点
 
-            ・type1.type = 4 :    5点(*) or 6点 or 7点(*) or 8点
-
-            個数に (*) が付いていないものは、構成点の半数が確率 0.5 未満、半数が 0.5 超であることが望ましい。
-            ただし、type1.type = 3, v.grad = FALSE で 4点経路の場合および v.grad = TRUE で 3点または4点経路 の場合は、
-            構成点がどちらか一方に偏っていてもよい。}
+            ・type1.type = 4 :    5～8点}
 }
 \value{
 nleqslv() を内部で実行した場合はその結果。それ以外は NULL
 }
 \description{
 累積分布関数の経路 (クォンタイル) を設定する。
+ジェネレータ関数 \link[cgd]{trace.q} はこのメソッドを関数化したものである。
 }
 \examples{
 ## Discontinuous Example:
-##  Where discontinuous, you can set waypoints as any.
-##  this.type1.type must be 1 or 2.
+##	For discontinuous distribution, you can set waypoints as any.
+##	The type1.type must be 1 or 2.
 a <- CGD$new()
 a$set.waypoints(
-    data.frame(
-        p = c( 0.2, 0.5, 0.6, 0.7 ),
-        q = c( qnorm( c( 0.2, 0.5, 0.6 ), 0, 1 ), 0.5 ) ),
-    this.type1.type = 1 )
+	data.frame(
+		p = c( 0.2, 0.5, 0.6, 0.7 ),
+		q = c( qnorm( c( 0.2, 0.5, 0.6 ), 0, 1 ), 0.5 ) ),
+	this.type1.type = 1 )
 plot( seq( -3, 3, 0.01 ), a$d( seq( -3, 3, 0.01 ) ), type = "l" )
 
 ## Mean of 2 Normal Distributions Example:
-##  The number of p of waypoints must be 3.
-##  You have to set p[2] = 0.5, then ( p[2] - p[1] ) and ( p[3] - p[2] ) must be different.
+##	The type1.type = 1, continuous = TRUE option-set gives mean of 2 normal distributions.
+##	The number of p of waypoints must be 3.
+##	And it is better for every point to take different distance from the mean.
 a$set.waypoints(
-    data.frame(
-        p = c( 0.1, 0.5, 0.6 ),
-        q = c( qnorm( 0.1, 0, 1 ), 0, qnorm( 0.6, 0, 0.75 ) ) ),
-    this.type1.type = 1, continuous = TRUE )
+	data.frame(
+		p = c( 0.1, 0.5, 0.6 ),
+		q = c( qnorm( 0.1, 0, 1 ), 0, qnorm( 0.6, 0, 0.75 ) ) ),
+	this.type1.type = 1, continuous = TRUE )
 plot( seq( -3, 3, 0.01 ), a$d( seq( -3, 3, 0.01 ) ), type = "l" )
 
 ## Horizontal Gradational Example:
-##  The number of p of waypoints must be 3 or 4.
-##  Where number of p is 3, you have to set one of p[i] as 0.5, but other points can be set any.
-##  Where number of p is 4, you must not set p[i] = 0.5 for any i.
+##	The type1.type = 2, continuous = TRUE option-set gives a horizontal gradational distribution.
+##	The number of p of the waypoints must be 3 or 4.
 a$set.waypoints(
-    data.frame( p = c( 0.25, 0.5, 0.75 ), q = c( -0.67, 0, 0.53 ) ),
-    this.type1.type = 2, continuous = TRUE )
+	data.frame( p = c( 0.25, 0.5, 0.75 ), q = c( -0.67, 0, 0.53 ) ),
+	this.type1.type = 2, continuous = TRUE )
+plot( seq( -3, 3, 0.01 ), a$d( seq( -3, 3, 0.01 ) ), type = "l" )
+
+## symmetric Example:
+##	This option provides a distribution with a symmetric continuous
+##	probability density function for type1.type = 2
+##	 (and you can use this option for type1.type = 1 as same meaning of "continuous").
+##	With this option, the number of p of waypoints must be 3. And one of p[i] must be 0.5.
+##	And it is recommended that two of quantiles are set as on the same side of
+##	the probability density function as below.
+a$set.waypoints(
+	data.frame( p = c( 0.25, 0.4, 0.5 ), q = c( -0.67, -0.15, 0 ) ),
+	this.type1.type = 2, symmetric = TRUE )
 plot( seq( -3, 3, 0.01 ), a$d( seq( -3, 3, 0.01 ) ), type = "l" )
 
 ## uni.sigma Example:
-##  The number of p of waypoints must be 3 and one of p[i] must be 0.5.
-##  This is not the "symmetric" option,
-##  but the result will serve a top-flattened or center-dent symmetric probability density function.
-##  For constructing error-less distribution, it is recommended to set p[3] = 0.5 (or p[1] = 0.5)
-##  and both p[1] and p[2] (or, p[2] and p[3]) are set as on the same side of the probability density function as below.
-##  If you set p[2] = 0.5, then ( p[2] - p[1] ) and ( p[3] - p[2] ) must be different.
+##	This option constructs a distribution in which the standard deviations
+##	of the normal distributions of the components are all equal.
+##	Since this option reduces the degrees of freedom,
+##	you can specify only limited number of quantile-probability points.
 a$set.waypoints(
-    data.frame( p = c( 0.25, 0.4, 0.5 ), q = c( -0.64, -0.25, 0 ) ),
-    this.type1.type = 2, continuous = TRUE, uni.sigma = TRUE )
-plot( seq( -3, 3, 0.01 ), a$d( seq( -3, 3, 0.01 ) ), type = "l" )
-
-## Symmetric Example:
-##  The number of p of waypoints must be 3 and one of p[i] must be 0.5.
-##  For constructing error-less distribution, it is recommended to set p[3] = 0.5 (or p[1] = 0.5)
-##  and both p[1] and p[2] (or, p[2] and p[3]) are set as on the same side of the probability density function as below.
-##  If you set p[2] = 0.5, then ( p[2] - p[1] ) and ( p[3] - p[2] ) must be different.
-a$set.waypoints(
-    data.frame( p = c( 0.25, 0.4, 0.5 ), q = c( -0.67, -0.15, 0 ) ),
-    this.type1.type = 2, symmetric = TRUE )
+	data.frame( p = c( 0.25, 0.4, 0.5 ), q = c( -0.64, -0.25, 0 ) ),
+	this.type1.type = 2, continuous = TRUE, uni.sigma = TRUE )
 plot( seq( -3, 3, 0.01 ), a$d( seq( -3, 3, 0.01 ) ), type = "l" )
 
 ## Vertical Gradational Example:
-##  The number of p of waypoints must be 3 or 4.
+##	The type1.type = 3, v.grad = TRUE option-set gives a vertical gradational distribution.
+##	The number of p of waypoints must be 3 or 4.
 ##
-##  Where number of p is 3, you have to set one of p[i] as 0.5.
-##  In this case, each of 3 waypoints has a specific role.
-##  One is to specify a waypoint on the tail, one is for a waypoint on the head
-##  and the other is to specify the mean.
-##  diff.mean = TRUE option force to make asymmetric the distribution.
-##
-##  Where number of p is 4, you must not set p[i] = 0.5 for any i.
-##  Then the result may serve an asymmetric distribution.
+##	Where number of p is 3, you should give each of 3 waypoints a specific role.
+##	One is to specify a waypoint on the tail, one is for a waypoint on the head
+##	and the other is to specify the mean.
 a$set.waypoints(
-    data.frame( p = c( 0.1, 0.4, 0.5 ), q = c( -1.28, -0.23, 0 ) ),
-    this.type1.type = 3, v.grad = TRUE )
+	data.frame( p = c( 0.1, 0.4, 0.5 ), q = c( -1.28, -0.23, 0 ) ),
+	this.type1.type = 3, v.grad = TRUE )
 plot( seq( -3, 3, 0.01 ), a$d( seq( -3, 3, 0.01 ) ), type = "l" )
 
 a$set.waypoints(
-    data.frame( p = c( 0.1, 0.3, 0.5 ), q = c( -1.28, -0.42, 0 ) ),
-    this.type1.type = 3, v.grad = TRUE, diff.mean = TRUE )
+	data.frame( p = c( 0.1, 0.4, 0.6, 0.9 ), q = c( -1.92, -0.20, 0.20, 1.92 ) ),
+	this.type1.type = 3, v.grad = TRUE )
 plot( seq( -3, 3, 0.01 ), a$d( seq( -3, 3, 0.01 ) ), type = "l" )
 
+##	diff.mean = TRUE option force to make asymmetric the distribution.
+
 a$set.waypoints(
-    data.frame( p = c( 0.1, 0.4, 0.6, 0.9 ), q = c( -1.92, -0.20, 0.20, 1.92 ) ),
-    this.type1.type = 3, v.grad = TRUE )
+	data.frame( p = c( 0.1, 0.3, 0.5 ), q = c( -1.28, -0.42, 0 ) ),
+	this.type1.type = 3, v.grad = TRUE, diff.mean = TRUE )
 plot( seq( -3, 3, 0.01 ), a$d( seq( -3, 3, 0.01 ) ), type = "l" )
 
 ## 3-Mean/Sigma-Differed Vertical Gradational Example:
-##  the number of p of waypoints must be from 3 to 6.
-##  where number of p is 4 or 6, you must not set p[i] = 0.5 for any i.
+##	The type1.type = 3 without v.grad option also gives a vertical gradational distribution
+##	but the normal distributions of both tail sides will be different each other.
+##	The number of p of waypoints must be from 3 to 6.
 a$set.waypoints(
-    data.frame( p = c( 0.1, 0.4, 0.6, 0.9 ), q = c( -1.92, -0.20, 0.20, 1.92 ) ),
-    this.type1.type = 3, v.grad = FALSE )
+	data.frame( p = c( 0.1, 0.4, 0.6, 0.9 ), q = c( -1.92, -0.20, 0.20, 1.92 ) ),
+	this.type1.type = 3, v.grad = FALSE )
 plot( seq( -3, 3, 0.01 ), a$d( seq( -3, 3, 0.01 ) ), type = "l" )
 
 ## Vertical-Horizontal Gradational Examples:
-##  the number of p of waypoints must be from 5 to 8.
-##  where number of p is 6 or 8, you must not set p[i] = 0.5 for any i.
+##	The type1.type = 4 option gives a vertical-horizontal gradational distribution.
+##	The number of p of waypoints must be from 5 to 8.
 a$set.waypoints(
-    data.frame(
-        p = c( 0.1, 0.25, 0.4, 0.5, 0.6, 0.75, 0.9 ),
-        q = c( -1.38, -0.76, -0.28, 0.02, 0.36, 1.10, 2.79 ) ),
-this.type1.type = 4 )
+	data.frame(
+		p = c( 0.1, 0.25, 0.4, 0.5, 0.6, 0.75, 0.9 ),
+		q = c( -1.38, -0.76, -0.28, 0.02, 0.36, 1.10, 2.79 ) ),
+	this.type1.type = 4 )
 plot( seq( -3, 3, 0.01 ), a$d( seq( -3, 3, 0.01 ) ), type = "l" )
 
 a$set.waypoints(
-    data.frame(
-        p = c( 0.1, 0.2, 0.3, 0.4, 0.6, 0.7, 0.8, 0.9 ),
-        q = c( -1.40, -0.96, -0.61, -0.30, 0.32, 0.72, 1.23, 2.21 ) ),
-this.type1.type = 4 )
+	data.frame(
+		p = c( 0.1, 0.2, 0.3, 0.4, 0.6, 0.7, 0.8, 0.9 ),
+		q = c( -1.40, -0.96, -0.61, -0.30, 0.32, 0.72, 1.23, 2.21 ) ),
+	this.type1.type = 4 )
 plot( seq( -3, 3, 0.01 ), a$d( seq( -3, 3, 0.01 ) ), type = "l" )
 }
 \seealso{
-\href{https://github.com/Kimitsuna-Goblin/CGD}{README.md} (GitHub)
+\link[cgd]{trace.q}, \href{https://github.com/Kimitsuna-Goblin/CGD}{README.md} (GitHub)
 }

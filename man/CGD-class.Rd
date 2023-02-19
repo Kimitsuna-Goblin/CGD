@@ -9,7 +9,8 @@
 複数の正規分布をX軸方向に連結したモデルを表すクラス。
 }
 \details{
-連結ガウス分布は、任意のクォンタイルをゼロ誤差で満たす分布を構成できる。
+連結ガウス分布は、
+任意のクォンタイルとその点における確率をゼロ誤差で満たす分布を構成できる。
 そのため、何かクォンタイルが与えられたときに、
 それを高精度に再現する分布が欲しいときなどに使うことができる。
 ただし、確率密度関数は一般に不連続であり、歪んだ形になる。
@@ -21,7 +22,7 @@
 不連続な連結ガウス分布を使って滑らかなグラフを得るには、
 ランダムサンプルを取得して、そのヒストグラムを描画するとよい。
 
-また、 \link[cgd]{CGD$nls.freq} や \link[cgd]{CGD$nls.freq.all} を使うと、
+また、 \link[cgd]{nls.freq} や \link[cgd]{nls.freq.all} を使うと、
 データの度数分布をもとに、その分布に近い連続分布モデルを得ることもできる。
 このとき、データは正規分布に従っていなくてもよい。
 むしろ、このクラスはデータが正規分布に従わない場合
@@ -49,7 +50,7 @@
 
 
 \seealso{
-\link[cgd]{CGDInterval}, \link[cgd]{CGD$set.waypoints},
-		\link[cgd]{CGD$nls.freq}, \link[cgd]{CGD$nls.freq.all},
+\link[cgd]{CGDInterval}, \link[cgd]{CGD$set.waypoints}, \link[cgd]{trace.q},
+		\link[cgd]{CGD$nls.freq}, \link[cgd]{nls.freq}, \link[cgd]{nls.freq.all},
 		\href{https://github.com/Kimitsuna-Goblin/CGD}{README.md} (GitHub)
 }

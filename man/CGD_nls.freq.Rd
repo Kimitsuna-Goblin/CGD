@@ -147,6 +147,6 @@ a
 plot.freq.and.d( a, x, freq, total )
 }
 \seealso{
-\link[stats]{nls}, \link[stats]{nls.control}, \link[cgd]{nls.freq.all},
+\link[stats]{nls}, \link[stats]{nls.control}, \link[cgd]{nls.freq}, \link[cgd]{nls.freq.all},
 		\link[cgd]{nls.start.template}
 }
