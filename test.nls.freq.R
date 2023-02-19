@@ -1,3 +1,5 @@
+#### This file is for testing CGD$nls.freq and CGD$nls.freq.all.
+
 library( "cgd" )
 a<-CGD$new()
 dev.new(); plot.new()

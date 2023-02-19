@@ -141,6 +141,6 @@ result$cor[[15]]	## grater than result$cor[[13]]
 plot.freq.and.d( result$cgd[[15]], x, freq, total )
 }
 \seealso{
-\link[cgd]{nls.freq}, \link[stats]{cor},
+\link[cgd]{CGD$nls.freq}, \link[cgd]{nls.freq}, \link[stats]{cor},
 		\link[cgd]{init.start.list}, \link[cgd]{nls.start.template}
 }

@@ -4,7 +4,7 @@
 \alias{CGD$get.adjusted.mean}
 \title{平均値取得}
 \usage{
-a$get.adjusted.mean()
+CGD$get.adjusted.mean()
 }
 \value{
 平均値 (intervals 未設定時は NaN)
