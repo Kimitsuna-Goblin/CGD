@@ -1,7 +1,7 @@
 ##############################################################################
 # 連結ガウス分布 (Connected Gaussian Distribution) クラス
 # @file			CGD.R
-# @version		2.3.0
+# @version		2.3.1
 # @author		Kimitsuna-Goblin
 # @copyright	Copyright (C) 2023 Ura Kimitsuna
 # @license		Released under the MIT license.
@@ -1458,7 +1458,7 @@ CGD$methods(
 
 		if ( ( type1.type == 1 || type1.type == 2 ) && !continuous && !symmetric )
 		{
-			is.discontinuous = TRUE
+			is.discontinuous <- TRUE
 		}
 		else
 		{
@@ -1796,7 +1796,7 @@ CGD$methods(
 						# 歪みが大きい場合は、他の点で交差しないと失敗することがある
 						wp <- wp.with.mean
 
-						successed = FALSE
+						successed <- FALSE
 						for ( i in c( 2, 3, 1 ) )
 						{
 							if ( wp$p[i] == 0.5 )
@@ -1833,7 +1833,7 @@ CGD$methods(
 
 								set.intervals( gen.t3.intervals( c( means[1], means[2], means[1] ),
 																	c( sds[1], sds[2], sds[1] ) ) )
-								successed = TRUE
+								successed <- TRUE
 								break
 							}
 
@@ -2717,7 +2717,7 @@ t3.wp4.intervals <- function( wp, uni.sigma, control )
 		pseudos <- list( ms.qp.norm( wp$q[1:2], wp$p[1:2] ), ms.qp.norm( wp$q[3:4], wp$p[3:4] ) )
 	}
 
-	pseudos.2 = list( mean = ( pseudos[[1]]$mean + pseudos[[2]]$mean ) / 2,
+	pseudos.2 <- list( mean = ( pseudos[[1]]$mean + pseudos[[2]]$mean ) / 2,
 						sd = ( pseudos[[1]]$sd + pseudos[[2]]$sd ) / 2 )
 
 	if ( uni.sigma )
