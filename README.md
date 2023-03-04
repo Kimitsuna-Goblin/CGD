@@ -616,7 +616,7 @@ $\Phi^\ast_i(x)$ は正規分布 $N( \mu_i, ( \dfrac{ \sigma_i }{ \sqrt2 } )^2 )
 | type1.type = 3, <br> v.grad = TRUE <br> (縦方向グラデーション) |  $\Psi( x ) = \Phi_1( x ) - \dfrac{1}{ \sqrt{2} } \Phi^\ast_1( x ) + \dfrac{1}{ \sqrt{2} } \Phi^\ast_2( x )$ <br> $g( x ) = ( 1 - \dfrac{ f_1( x ) }{ f_1( \mu_1 ) } ) f_1( x ) + \dfrac{ f_2( x ) }{ f_2( \mu_2 ) } f_2( x )$ | 3～4点 | $[0, 0]$, $[1, 1]$ の2点 <br> あるいは $[0.5, 0.5]$ を加えた3点 | 連続<br>( $C^\infty$ 級) |
 | type1.type = 4 <br> (縦横グラデーション) |  $\Psi( x ) = \Psi_1( x ) - \dfrac{1}{2} \Psi_1( x )^2 + \dfrac{1}{2} \Psi_2( x )^2$ <br> $\qquad \Psi_1( x ) = \Phi_{1, 1}( x ) - \dfrac{1}{ \sqrt{2} } \Phi^\ast_{1, 1}( x ) + \dfrac{1}{ \sqrt{2} } \Phi^\ast_{1, 2}( x )$ <br> $\qquad \Psi_2( x ) = \Phi_{2, 1}( x ) - \dfrac{1}{ \sqrt{2} } \Phi^\ast_{2, 1}( x ) + \dfrac{1}{ \sqrt{2} } \Phi^\ast_{2, 2}( x )$ <br> $g( x ) = ( 1 - \Psi_1( x ) ) g_1( x ) + \Psi_2( x ) g_2( x )$ <br> $\qquad g_1( x ) = ( 1 - \dfrac{ f_{1, 1}( x ) }{ f_{1, 1}( \mu_{1, 1} ) } ) f_{1, 1}( x ) + \dfrac{ f_{1, 2}( x ) }{ f_{1, 2}( \mu_{1, 2} ) } f_{1, 2}( x )$ <br> $\qquad g_2 ( x ) = ( 1 - \dfrac{ f_{2, 1}( x ) }{ f_{2, 1}( \mu_{2, 1} ) } ) f_{2, 1}( x ) + \dfrac{ f_{2, 2}( x ) }{ f_{2, 2}( \mu_{2, 2} ) } f_{2, 2}( x )$ | 5～8点 | $[0, 0]$, $[1, 1]$ の2点 | 連続<br>( $C^\infty$ 級) |
 
-なお、 type1.type = 1, continuous = TRUE (or symmetric = TRUE) (2つの正規分布の平均) は、正確には不連続分布の type 1 の接続関数の拡張ではなく、 type 3a/3b の接続関数の拡張であるが、便宜上、このようなオプションにて実装した。
+なお、 type1.type = 1, continuous = TRUE (or symmetric = TRUE) (2つの正規分布の平均) は、正確には不連続分布の type 1 の接続関数の拡張ではなく、 type 2/3a/3b の接続関数の拡張であるが、便宜上、このようなオプションにて実装した。
 
 v1.2.0 にあった type1.type = 3, symmetric = TRUE (縦方向グラデーションの旧バージョン) のオプションは廃止され、 v1.3.8 以降、 type1.type = 3, v.grad = TRUE に上位互換的に変更された。
 
