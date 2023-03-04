@@ -456,9 +456,9 @@ $$
 また、接続区間 $Q_i = ( b_i, a_{i + 1} )$ について、
 両端の確率に対するX座標を $\beta_i, \alpha_{i+1}$ とする (すなわち、 $\Phi_i( \beta_i ) = b_i, \Phi_{i + 1}( \alpha_{i+1} ) = a_{i + 1}$ とする)。
 
-#### Type 1 - 接続区間 $Q_i = ( b_i, a_{i + 1} )$ が平均値 $\mu$ を含まない場合 その1
-+ 接続区間 $Q_i$ の範囲が平均値 $\mu$ よりも小さく、標準偏差が $\sigma_i < \sigma_{i + 1}$ の場合
-+ 接続区間 $Q_i$ の範囲が平均値 $\mu$ よりも大きく、標準偏差が $\sigma_i > \sigma_{i + 1}$ の場合
+#### Type 1 - 接続区間 $Q_i = ( b_i, a_{i + 1} )$ が 0.5 を含まない場合 その1
++ 接続区間 $Q_i$ の範囲が 0.5 よりも小さく、標準偏差が $\sigma_i < \sigma_{i + 1}$ の場合
++ 接続区間 $Q_i$ の範囲が 0.5 よりも大きく、標準偏差が $\sigma_i > \sigma_{i + 1}$ の場合
 
 この場合はすべての $x \in (\beta_i, \alpha_{i+1})$ に対して、
 累積分布関数 $\Phi_i( x ), \Phi_{i + 1}( x )$ の値が両方とも接続区間 $Q_i$ の範囲内に収まり、範囲外に出ることがない。
@@ -478,9 +478,9 @@ $\bar \Phi_i( x ) = ( \Phi_i( x ) + \Phi_{i+1}( x ) ) / 2$ である。
 | type1.type = 1 | $\Psi_i( x ) = \dfrac{ \alpha_{i+1} - x }{ \alpha_{i+1} - \beta_i } \Phi_i( x ) + \dfrac{ x - \beta_i }{ \alpha_{i+1} - \beta_i } \Phi_{i+1}( x )$ <br> $g_i( x ) = \dfrac{ \alpha_{i+1} - x }{ \alpha_{i+1} - \beta_i } f_i( x ) + \dfrac{ x - \beta_i }{ \alpha_{i+1} - \beta_i } f_{i+1}( x ) + \dfrac{ \Phi_{i+1}( x ) - \Phi_i( x ) }{ \alpha_{i+1} - \beta_i }$ | 任意 <br> (1個以上、上限なし) | 不連続 | 1.0.0 |
 | type1.type = 2  | $\Psi_i( x ) = \dfrac{ \bar \Phi_i( \alpha_{i+1} ) - \bar \Phi_i( x ) }{ \bar \Phi_i( \alpha_{i+1} ) - \bar \Phi_i( \beta_i ) } \Phi_i( x ) + \dfrac{ \bar \Phi_i( x ) - \bar \Phi_i( \beta_i ) }{ \bar \Phi_i( \alpha_{i+1} ) - \bar \Phi_i( \beta_i ) } \Phi_{i+1}( x )$ <br> $g_i( x ) = \dfrac{ \bar \Phi_i( \alpha_{i+1} ) -\Phi_i( x ) }{ \bar \Phi_i( \alpha_{i+1} ) - \bar \Phi_i( \beta_i ) } f_i( x ) + \dfrac{ \Phi_{i+1}( x ) - \bar \Phi_i( \beta_i ) }{ \bar \Phi_i( \alpha_{i+1} ) - \bar \Phi_i( \beta_i ) } f_{i+1}( x )$ | 任意 <br> (1個以上、上限なし) | 不連続 | 1.1.0 |
 
-#### Type 2 - 接続区間 $Q_i = ( b_i, a_{i + 1} )$ が平均値 $\mu$ を含まない場合 その2
-+ 接続区間 $Q_i$ の範囲が平均値 $\mu$ よりも小さく、標準偏差が $\sigma_i \geq \sigma_{i + 1}$ の場合
-+ 接続区間 $Q_i$ の範囲が平均値 $\mu$ よりも大きく、標準偏差が $\sigma_i \leq \sigma_{i + 1}$ の場合
+#### Type 2 - 接続区間 $Q_i = ( b_i, a_{i + 1} )$ が 0.5 を含まない場合 その2
++ 接続区間 $Q_i$ の範囲が 0.5 よりも小さく、標準偏差が $\sigma_i \geq \sigma_{i + 1}$ の場合
++ 接続区間 $Q_i$ の範囲が 0.5 よりも大きく、標準偏差が $\sigma_i \leq \sigma_{i + 1}$ の場合
 
 この場合は一部の $x \in (\beta_i, \alpha_{i+1})$ に対して、 $\Phi_i( x )$ と $\Phi_{i+1}( x )$ の値が
 接続区間 $Q_i$ の範囲外に出てしまう。
@@ -513,8 +513,8 @@ $$
 
 となる。このとき、 $f( x )$ は多くの点で不連続になる。
 
-#### Type 3a - 接続区間 $Q_i = ( b_i, a_{i + 1} )$ が平均値 $\mu$ を含む場合 その1
-+ 接続区間 $Q_i$ の範囲に平均値 $\mu$ が含まれ、標準偏差が $\sigma_i < \sigma_{i + 1}$ の場合
+#### Type 3a - 接続区間 $Q_i = ( b_i, a_{i + 1} )$ が 0.5 を含む場合 その1
++ 接続区間 $Q_i$ の範囲に 0.5 が含まれ、標準偏差が $\sigma_i < \sigma_{i + 1}$ の場合
 
 この場合は $x \in (\beta_i, \alpha_{i+1})$ に対して、 $\Phi_{i+1}( x )$ は接続区間 $Q_i$ の範囲内に常に収まるが、
 $\Phi_i( x )$ は $x > \mu$ の範囲の後半部分で、 $\Phi_i( x ) > a_{i+1}$ となり、 $Q_i$ の範囲外に出ることがある。
@@ -544,8 +544,8 @@ $$
 
 type1.type = 1, continuous = TRUE のときは、この type 3 の計算を拡張して、2つの正規分布の平均とする。
 
-#### Type 3b - 接続区間 $Q_i = ( b_i, a_{i + 1} )$ が平均値 $\mu$ を含む場合 その2
-+ 接続区間 $Q_i$ の範囲に平均値 $\mu$ が含まれ、標準偏差が $\sigma_i > \sigma_{i + 1}$ の場合
+#### Type 3b - 接続区間 $Q_i = ( b_i, a_{i + 1} )$ が 0.5 を含む場合 その2
++ 接続区間 $Q_i$ の範囲に 0.5 が含まれ、標準偏差が $\sigma_i > \sigma_{i + 1}$ の場合
 
 この場合は type 3a と対称的である。
 すなわち、 $x \in (\beta_i, \alpha_{i+1})$ に対して、 $\Phi_i( x )$ は接続区間 $Q_i$ の範囲内に常に収まるが、
