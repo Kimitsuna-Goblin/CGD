@@ -13,7 +13,7 @@ X座標 (クォンタイル) は昇順にソートしておくこと。
 平均値は p = 0.5 の点のX座標として与えること。}
 
 \item{continuous}{TRUE にすると、 type1.type = 1 または 2 のとき、独立区間を [0, 0] と [1, 1] の 2点にして、
-確率密度関数が全区間 (-∞, ∞) で連続になるように分布構成を試みる (デフォルト: FALSE)。
+確率密度関数が全区間 \eqn{(-\infty, \infty)} で連続になるように構成を試みる (デフォルト: FALSE)。
 type1.type = 1 または 2 のときに有効 (type1.type >= 3 では常に連続)。}
 
 \item{symmetric}{TRUE にすると、確率密度関数が、平均点を中心として左右対称になるように試みる (デフォルト: FALSE)。
@@ -36,86 +36,14 @@ type1.type = 2, symmetric = TRUE のときは、確率が 0.5 の点を waypoint
 なお、 diff.mean = TRUE としても、結果的に、各正規分布の平均値が等しくなることもあり得る。}
 
 \item{control}{nleqslv に渡す、同関数の control オプションのリスト (デフォルト: list())。
-詳細は \href{https://cran.r-project.org/web/packages/nleqslv/nleqslv.pdf}{nleqslv} を参照。
+詳細は \link[nleqslv]{nleqslv} の Control options を参照。
 デフォルトは空だが、条件不足のため "Jacobian is singular" のエラーになる可能性が高い場合は
 allowSingular = TRUE が暗黙のうちに設定される。
 ただし、引数 control のリストに allowSingular が与えられている場合は、引数のリストを優先する。}
 
 \item{this.type1.type}{フィールドの type1.type に設定する値。 1、2、3、4 のいずれかを指定すること。
-                            NULL の場合は type1.type の値を変更しない (デフォルト: NULL)。
-
-            type1.type の値によって、接続区間 (β_i, α_{i+1}) が type 1 の場合
-             (この type 1 の詳細については \href{https://github.com/Kimitsuna-Goblin/CGD}{README.md} を参照)、
-            接続区間の累積分布関数 Ψ_i(x) を以下のように計算する。
-
-            1: Ψ_i(x) = ( α_{i+1} - x ) / ( α_{i+1} - β_i ) * Φ_i(x) +
-                         ( x - β_i ) / ( α_{i+1} - β_i ) * Φ_{i+1}(x)
-
-            2: Ψ_i(x) = ( Φ~_i(α_{i+1}) - Φ~_i(x) ) / ( Φ~_i(α_{i+1}) - Φ~_i(β_i) ) * Φ_i(x) +
-                         ( Φ~_i(x) - Φ~_i(β_i) ) / ( Φ~_i(α_{i+1}) - Φ~_i(β_i) ) * Φ_{i+1}(x)
-
-            3: Ψ(x) = ∫_{-∞}^{min( x, μ_1 )} ( 1 - f_1(t) / f_1(μ_1) ) f_1(t) dt
-                        + ∫_{-∞}^x f_2(t)^2 / f_2(μ) dt
-                        + ∫_{min( x, μ_3 )}^x ( 1 - f_3(t) / f_3(μ_3) ) f_3(t) dt
-                     = min( Φ_1(x) - Φ^*_1(x) / √2, ( 2 - √2 ) / 4 )
-                        + Φ^*_2(x) / √2
-                        + max( 0, Φ_3(x) - Φ^*_3(x) / √2 - ( 2 - √2 ) / 4 )
-
-            4: Ψ(x) = Ψ_1(x) - Ψ_1(x)^2 / 2 + Ψ_2(x)^2 / 2,
-                    Ψ_1(x) = Φ_1(x) - Φ^*_1(x) / √2 + Φ^*_2(x) / √2,
-                    Ψ_2(x) = Φ_3(x) - Φ^*_3(x) / √2 + Φ^*_4(x) / √2
-
-            ただし、Φ_i, Φ_{i+1} は当該接続区間の前後の独立区間を負担する正規分布の累積分布関数、
-            Φ~_i(x) = ( Φ_i(x) + Φ_{i+1}(x) ) / 2 、
-            f_i, f_{i+1} は当該接続区間の前後の独立区間を負担する正規分布の確率密度関数、μ は平均値、
-            Φ^*_i は正規分布 N(μ_i, (σ_i / √2)^2) の累積分布関数である。
-
-            type1.type = 1 は、不連続分布を構成するための、最も単純な連結方法である。
-                            また、 continuous = TRUE または symmetric = TRUE のオプションにより、
-                            左右対称な連続分布である「平均値が等しい2つの正規分布の平均」が構成できる。
-                            なお、このとき、累積分布関数は Ψ(x) = ( Φ_i(x) + Φ_{i+1}(x) ) / 2 となる。
-                            ただし、他のオプションとの兼ね合いのために、
-                            便宜上、このように作っているだけであって、
-                            この type1.type = 1 の連続分布の累積分布関数は、
-                            上の 1: に示した不連続分布の累積分布関数の自然な拡張ではない。
-
-            type1.type = 2 は、 1 と同様に、不連続分布を構成するための連結方法であるが、
-                            不連続分布の累積分布関数 Ψ_i(x) を β_i → -∞, α_{i+1} → ∞ と自然に拡張することで、
-                            連続分布も構成できるように工夫している。
-                            continuous = TRUE にすると、2つの確率密度関数の「横方向グラデーション」が構成できる。
-                            つまり、確率密度関数の形が、 x = -∞ の点から x = ∞ の点に向かって、
-                            横方向に徐々に変化していくようなイメージの分布を構成できる。
-                            この type1.type = 2 の連続分布の累積分布関数は、
-                            上の 2: に示した不連続分布の累積分布関数の自然な拡張である。
-                            また、 symmetric = TRUE にすると、
-                            平均値の点で折り返したような左右対称な分布を構成できる
-                             (ただし、文字通り「折り返している」ため、平均値の点において微分可能ではない)。
-
-            type1.type = 3 は連続分布に特化した、「縦方向グラデーション」の連結方法である。
-                            つまり、確率密度関数の形が、平均値から遠い裾部から、平均値に近い山部に向かって、
-                            縦方向に徐々に変化していくようなイメージの分布を構成できる。
-                            v.grad = TRUE にすると、構成要素の正規分布は裾部と山部の2つになる (上の式では f_1 = f_3)。
-                            v.grad = FALSE にすると、裾部の両側がそれぞれ別の分布になるので、正規分布は3つになる。
-
-            type1.type = 4 は正規分布の連結ではなく、
-                            2つの連続な連結ガウス分布を連結した、「縦横グラデーション」の構成方法である。
-                            つまり、2つの type1.type = 3, v.grad = TRUE (縦方向グラデーション) の分布を
-                            type1.type = 2, continuous = TRUE (横方向グラデーション) で連結する。
-                            これは、本ライブラリの連続分布の構成方法の中では、最も自由度が高い方法である。
-                            ただし、通常、左右対称な分布にはならない。
-
-            連続分布を構成する場合、経路の構成点は一定の個数でなければならない。
-            具体的には、構成点の個数は以下のようにする必要がある。
-
-            ・type1.type = 1 :    continuous = TRUE or symmetric = TRUE ⇒ 3点
-
-            ・type1.type = 2 :    continuous = TRUE ⇒ 3～4点、
-                                symmetric = TRUE ⇒ 3点 (必ず確率 0.5 の点を含めること)
-
-            ・type1.type = 3 :    v.grad = TRUE ⇒ 3～4点、
-                                v.grad = FALSE ⇒ 3～6点
-
-            ・type1.type = 4 :    5～8点}
+NULL の場合は type1.type の値を変更しない (デフォルト: NULL)。
+詳細は Details を参照。}
 }
 \value{
 nleqslv() を内部で実行した場合はその結果。それ以外は NULL
@@ -123,6 +51,141 @@ nleqslv() を内部で実行した場合はその結果。それ以外は NULL
 \description{
 累積分布関数の経路 (クォンタイル) を設定する。
 ジェネレータ関数 \link[cgd]{trace.q} はこのメソッドを関数化したものである。
+}
+\details{
+\subsection{type1.type}{
+		type1.type フィールドは連結ガウス分布の累積分布関数を決定するためのオプションである。
+
+		連結ガウス分布には、連続分布と不連続分布があるが、連続分布は不連続分布の拡張である。
+		そのため、まず、不連続分布から説明する。
+
+		不連続分布では、
+		確率密度関数や累積分布関数の定義域 \eqn{[-\infty, \infty]} において、
+		1つの正規分布が独立的に分布を負担する\bold{独立区間}の定義域 \eqn{[\alpha_i, \beta_i]} と、
+		2つの正規分布が分布を負担し合う\bold{接続区間}の定義域 \eqn{(\beta_i, \alpha_{i+1})} が交互に現れる。
+
+		\bold{接続区間}は、その定義域の範囲に平均値 \eqn{\mu} を含むかどうかという条件と、
+		前後の独立区間を負担する正規分布の標準偏差の大小の条件によって、次の4つの type に分類される。
+
+		\itemize{
+			\item type 1 : 定義域に平均値 \eqn{\mu} を含まない。標準偏差は山側の正規分布の方が裾側よりも大きい。
+			\item type 2 : 定義域に平均値 \eqn{\mu} を含まない。標準偏差は山側の正規分布の方が裾側よりも小さい。
+			\item type 3a : 定義域に平均値 \eqn{\mu} を含む。標準偏差は前側の正規分布の方が後側よりも小さい。
+			\item type 3b : 定義域に平均値 \eqn{\mu} を含む。標準偏差は前側の正規分布の方が後側よりも大きい。
+		}
+
+		本パッケージでは、 type 2/3a/3b の接続区間では、連結ガウス分布は
+		原則として、2つの正規分布の平均とする (ただし、細かい場合分けがある。定義式は省略)。
+
+		一方、 type 1 の接続区間では、 type1.type のオプションに応じて、以下のように2つの正規分布を混合する。
+
+		\bold{type1.type = 1} は、不連続分布を構成する最も単純な方法であり、
+						2つの正規分布の混合比率を線形的に変えて混合する。
+						また、 continuous = TRUE または symmetric = TRUE のオプションにより、
+						左右対称な連続分布である \bold{「平均値が等しい2つの正規分布の平均」} が構成できる
+						 (ただし、これは後述の type1.type = 2 のオプションと異なり、
+						  type 1 の接続区間の拡張ではなく、 type 2/3a/3b の拡張である)。
+
+		\bold{type1.type = 2} は、 1 と同様、不連続分布を構成する方法であるが、
+						混合比率の変化は線形的ではない。
+						このオプションでは、接続区間 \eqn{(\beta_1, \alpha_2)} を
+						\eqn{\beta_1 = -\infty, \alpha_2 = \infty} と拡張すれば、
+						連続分布も構成できるように工夫している。
+						連続分布を構成するには、 continuous = TRUE のオプションを使う。
+						このオプションでは、2つの確率密度関数による \bold{「横方向グラデーション」} が構成できる。
+						この分布の確率密度関数の形は \eqn{x = -\infty} の点から \eqn{x = \infty} の点に向かって、
+						横方向に徐々に変化していくようなイメージになる。
+						また、 symmetric = TRUE のオプションにより、
+						平均値の点で二つに線対称に折り返した、左右対称な連続分布を構成できる
+						 (ただし、文字通り「折り返して」いるため、平均値の点において微分可能ではない)。
+
+		\bold{type1.type = 3} は連続分布に特化した、 \bold{「縦方向グラデーション」} の連結方法である。
+						このとき、確率密度関数の形は平均値から遠い裾部から、平均値に近い山部に向かって、
+						縦方向に徐々に変化していくようなイメージになる。
+						v.grad = TRUE のオプションでは、構成要素の正規分布は裾部と山部の2つになる。
+						v.grad = FALSE のオプションでは、裾部の両側が異なる分布になるので、構成要素の正規分布は3つになる。
+
+		\bold{type1.type = 4} は正規分布の連結ではなく、
+						2つの連続な連結ガウス分布を連結した、 \bold{「縦横グラデーション」} の構成方法である。
+						このオプションでは、2つの type1.type = 3, v.grad = TRUE (縦方向グラデーション) の分布を
+						type1.type = 2, continuous = TRUE (横方向グラデーション) で連結する。
+						この構成方法は、本ライブラリの連続分布の構成方法の中では、最も自由度が高い。
+
+		連続分布を構成する場合、経路の構成点は一定の個数でなければならない。
+		具体的には、構成点の個数は以下のようにする必要がある。
+
+		\itemize{
+			\item type1.type = 1 : continuous or symmetric = TRUE \eqn{\Rightarrow} 3点
+			\item type1.type = 2 : continuous = TRUE \eqn{\Rightarrow} 3～4点、
+									symmetric = TRUE \eqn{\Rightarrow} 3点 (必ず確率 0.5 の点を含めること)
+			\item type1.type = 3 : v.grad = TRUE \eqn{\Rightarrow} 3～4点、
+									v.grad = FALSE \eqn{\Rightarrow} 3～6点
+			\item type1.type = 4 : 5～8点
+		}
+}
+
+\subsection{累積分布関数の定義式}{
+		不連続分布では、
+		\eqn{i} 番目の接続区間が type 1 のとき、定義域 \eqn{(\beta_i, \alpha_{i+1})} における
+		累積分布関数 \eqn{\Psi_i(x)} は以下の式によって定める。
+
+		\describe{
+			\item{type1.type = 1}{\deqn{
+				\Psi_i( x ) = \dfrac{ \alpha_{i+1} - x }{ \alpha_{i+1} - \beta_i } \Phi_i( x ) +
+					\dfrac{ x - \beta_i }{ \alpha_{i+1} - \beta_i } \Phi_{i+1}( x )}}
+			\item{type1.type = 2}{\deqn{
+				\Psi_i( x ) = \dfrac{ \bar \Phi_i( \alpha_{i+1} ) -
+					\bar \Phi_i( x ) }{ \bar \Phi_i( \alpha_{i+1} ) -
+					\bar \Phi_i( \beta_i ) } \Phi_i( x ) +
+					\dfrac{ \bar \Phi_i( x ) - \bar \Phi_i( \beta_i ) }
+					{ \bar \Phi_i( \alpha_{i+1} ) - \bar \Phi_i( \beta_i ) } \Phi_{i+1}( x )}}
+		}
+
+		ここで、 \eqn{\Phi_i, \Phi_{i+1}} は当該接続区間の前後の独立区間を負担する正規分布の累積分布関数である。
+		\eqn{\bar \Phi_i} は \eqn{\Phi_i} と \eqn{\Phi_{i+1}} の平均である。
+
+		連続分布では、累積分布関数 \eqn{\Psi(x)} を以下のように定める。
+
+		\describe{
+			\item{type1.type = 1, continuous or symmetric = TRUE}{\deqn{
+				\Psi( x ) = \dfrac{\Phi_1( x ) + \Phi_2( x )}{2}}}
+			\item{type1.type = 2, continuous = TRUE}{\deqn{
+				\Psi( x ) = \displaystyle \int_{-\infty}^{x}
+					\left \lbrace ( 1 - \dfrac{f_1(t)}{\Phi_1(t)} ) f_1(t)
+					+ \dfrac{f_2(t)}{\Phi_2(t)} f_2(t) \right \rbrace dt \\
+				= \Phi_1( x ) - \dfrac{\Phi_1( x )^2}{2} + \dfrac{\Phi_2( x )^2}{2}
+					\qquad \quad \ \ \ }}
+			\item{type1.type = 2, symmetric = TRUE}{\deqn{
+				\Psi( x ) = \genfrac{\lbrace}{}{0pt}{0}
+					{ \Psi_1( x ) = \Phi_1( x ) - \Phi_1( x )^2 + \Phi_2( x )^2 \quad ( x \leq \mu ) }
+					{ \Psi_2( x ) = 1 - \Psi_1( 2\mu - x ) \qquad \quad \, \, \ \ \ \ \ \ \ ( x > \mu ) }}}
+			\item{type1.type = 3, v.grad = TRUE}{\deqn{
+				\Psi(x) = \displaystyle \int_{-\infty}^{x}
+					\left \lbrace ( 1 - \dfrac{f_1(t)}{f_1(\mu_1)} ) f_1(t)
+					+ \dfrac{f_2(t)}{f_2(\mu_2)} f_2(t) \right \rbrace dt \\
+				= \Phi_1(x) - \dfrac{\Phi^*_1(x)}{\sqrt{2}} + \dfrac{\Phi^*_2(x)}{\sqrt{2}}
+					\qquad \qquad \quad \ \ }}
+			\item{type1.type = 3, v.grad = FALSE}{\deqn{
+				\Psi(x) = \displaystyle \int_{-\infty}^{\min( x, \mu_1 )}
+					( 1 - \dfrac{f_1(t)}{f_1(\mu_1)} ) f_1(t) \ dt
+					+ \displaystyle \int_{-\infty}^x \dfrac{f_2(t)^2}{f_2(\mu_2)} \ dt
+					+ \displaystyle \int_{\min( x, \mu_3 )}^x ( 1 - \dfrac{f_3(t)}{f_3(\mu_3)} ) f_3(t) \ dt \\
+				\quad \ \ \ = \min( \Phi_1(x) - \dfrac{\Phi^*_1(x)}{\sqrt{2}}, \ \dfrac{2 - \sqrt{2}}{4} )
+					+ \dfrac{\Phi^*_2(x)}{\sqrt{2}}
+					+ \max( 0, \ \Phi_3(x) - \dfrac{\Phi^*_3(x)}{\sqrt{2}} - \dfrac{2 - \sqrt{2}}{4} ) }}
+			\item{type1.type = 4}{\deqn{
+				\Psi(x) = \Psi_1(x) - \dfrac{\Psi_1(x)^2}{2} + \dfrac{\Psi_2(x)^2}{2} \qquad \qquad \quad \\
+				\Psi_i(x) =
+					\Phi_{i,1}(x) - \dfrac{\Phi^*_{i,1}(x)}{\sqrt{2}} + \dfrac{\Phi^*_{i,2}(x)}{\sqrt{2}}
+					\quad (i = 1, 2)}}
+		}
+
+		ただし、\eqn{\Phi_i} および \eqn{\Phi_{i,j}} は構成要素の正規分布の累積分布関数、
+		\eqn{f_i} は構成要素の正規分布の確率密度関数、\eqn{\mu_i} は構成要素の正規分布の平均値、
+		\eqn{\Phi^*_i} および \eqn{\Phi^*_{i,j}} は
+		正規分布 \eqn{N(\mu_i, (\sigma_i / \sqrt{2})^2)} および
+		\eqn{N(\mu_{i,j}, (\sigma_{i,j} / \sqrt{2})^2)} の累積分布関数である。
+}
 }
 \examples{
 ## Discontinuous Example:

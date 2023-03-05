@@ -39,7 +39,7 @@
 
 \item{\code{intervals}}{連結区間 (\link[cgd]{CGDInterval} クラスのリスト)}
 
-\item{\code{type1.type}}{接続区間が type 1 の場合の計算方法 (詳細は \link[cgd]{CGD$set.waypoints} を参照)}
+\item{\code{type1.type}}{接続区間が type 1 の場合の計算方法 (詳細は \link[cgd]{trace.q} の Details を参照)}
 
 \item{\code{m.sd}}{計算済みの標準偏差 (クラス外からは直接参照しないこと)}
 

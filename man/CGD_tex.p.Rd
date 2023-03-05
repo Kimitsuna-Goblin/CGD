@@ -2,7 +2,7 @@
 % Please edit documentation in R/CGD.R
 \name{CGD$tex.p}
 \alias{CGD$tex.p}
-\title{累積分布関数 Ψ(x) の TeX 形式表示}
+\title{累積分布関数の TeX 形式表示}
 \usage{
 CGD$tex.p( decimal = 6, write.comma = TRUE )
 }
@@ -15,7 +15,7 @@ CGD$tex.p( decimal = 6, write.comma = TRUE )
 なし
 }
 \description{
-累積分布関数 Ψ(x) を TeX 形式で表示する (連続分布の場合のみ有効)。
+累積分布関数 \eqn{\Psi(x)} を TeX 形式で表示する (連続分布の場合のみ有効)。
 }
 \examples{
 a <- CGD$new()

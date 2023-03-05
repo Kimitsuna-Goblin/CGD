@@ -8,7 +8,7 @@ CGD$new(type1.type = 1)
 }
 \arguments{
 \item{type1.type}{type 1 の場合の計算方法。 1、2、3、4 のいずれかを指定すること (デフォルト: 1)。
-1～4 の詳細については、 \link[cgd]{CGD$set.waypoints} の this.type1.type の説明を参照。}
+1～4 の詳細については、 \link[cgd]{trace.q} の Details を参照。}
 }
 \description{
 \link[cgd]{CGD} クラスオブジェクトを生成する。

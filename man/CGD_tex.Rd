@@ -15,7 +15,8 @@ CGD$tex( decimal = 6, write.comma = TRUE )
 なし
 }
 \description{
-累積分布関数 Ψ(x) と確率密度関数 g(x) を TeX 形式で表示する (連続分布の場合のみ有効)。
+累積分布関数 \eqn{\Psi(x)} と確率密度関数 \eqn{g(x)} を
+TeX 形式で表示する (連続分布の場合のみ有効)。
 }
 \examples{
 a <- CGD$new()

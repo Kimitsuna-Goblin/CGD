@@ -11,7 +11,7 @@ CGD$set.intervals(this.intervals, this.type1.type = NULL)
 
 \item{this.type1.type}{フィールドの type1.type に設定する値。 1、2、3、4 のいずれかを指定すること。
 NULL の場合は type1.type の値を変更しない (デフォルト: NULL)。
-1～4 の詳細については、 \link[cgd]{CGD$set.waypoints} の this.type1.type の説明を参照。}
+1～4 の詳細については、 \link[cgd]{trace.q} の Details を参照。}
 }
 \value{
 分布の種類のインデックス番号
@@ -20,7 +20,6 @@ NULL の場合は type1.type の値を変更しない (デフォルト: NULL)。
 予め連結区間の構成が分かっている場合に、連結区間を設定する。
 フィールド mean は intervals の内容に応じて適切に設定され、
 フィールド m.sd, m.lsd, m.usd は初期化される。
-詳細については、 \link[cgd]{CGD$set.waypoints} を参照。
 }
 \examples{
 a1 <- CGD$new()
@@ -48,5 +47,6 @@ a3$sd()
 plot( seq( 0.1, 0.6, 0.001 ), a3$d( seq( 0.1, 0.6, 0.001 ) ), type = "l" )
 }
 \seealso{
-\link[cgd]{CGDInterval}, \link[cgd]{CGD$set.waypoints}
+\link[cgd]{CGDInterval}, \link[cgd]{trace.q}, \link[cgd]{CGD$set.waypoints},
+		\link[cgd]{nls.freq}, \link[cgd]{nls.freq.all}
 }

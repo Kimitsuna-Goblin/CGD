@@ -11,21 +11,21 @@
 \section{Fields}{
 
 \describe{
-\item{\code{mean}}{平均値}
+\item{\code{mean}}{独立区間を負担する正規分布の平均値}
 
-\item{\code{sd}}{標準偏差}
+\item{\code{sd}}{独立区間を負担する正規分布の標準偏差}
 
-\item{\code{q.ind}}{独立区間に対するX座標 (クォンタイル)}
+\item{\code{q.ind}}{独立区間の定義域 (クォンタイル)}
 
-\item{\code{q.conn.prev}}{前の区間との接続区間の確率内に収まる、この正規分布の累積密度関数のX座標 (クォンタイル)}
+\item{\code{q.conn.prev}}{前の接続区間の確率内に値が収まる、この正規分布の累積密度関数の定義域 (クォンタイル)}
 
-\item{\code{q.conn.next}}{次の区間との接続区間の確率内に収まる、この正規分布の累積密度関数のX座標 (クォンタイル)}
+\item{\code{q.conn.next}}{次の接続区間の確率内に値が収まる、この正規分布の累積密度関数の定義域 (クォンタイル)}
 
-\item{\code{p.ind}}{独立区間}
+\item{\code{p.ind}}{この正規分布が負担する独立確率区間}
 
-\item{\code{p.conn.prev}}{前の区間との接続区間 (type1.type = 3 では、1個目または3個目の正規分布の確率密度関数が寄与する区間)}
+\item{\code{p.conn.prev}}{前の接続区間の確率 (type1.type = 3 では、1個目または3個目の正規分布の確率密度関数が寄与する区間)}
 
-\item{\code{p.conn.next}}{次の区間との接続区間 (type1.type = 3 では、1個目または3個目の正規分布の確率密度関数が寄与する区間)}
+\item{\code{p.conn.next}}{次の接続区間の確率 (type1.type = 3 では、1個目または3個目の正規分布の確率密度関数が寄与する区間)}
 }}
 
 

@@ -2,7 +2,7 @@
 % Please edit documentation in R/CGD.R
 \name{CGD$tex.d}
 \alias{CGD$tex.d}
-\title{確率密度関数 g(x) の TeX 形式表示}
+\title{確率密度関数の TeX 形式表示}
 \usage{
 CGD$tex.d( decimal = 6, write.comma = TRUE )
 }
@@ -15,7 +15,7 @@ CGD$tex.d( decimal = 6, write.comma = TRUE )
 なし
 }
 \description{
-確率密度関数 g(x) を TeX 形式で表示する (連続分布の場合のみ有効)。
+確率密度関数 \eqn{g(x)} を TeX 形式で表示する (連続分布の場合のみ有効)。
 }
 \examples{
 a <- CGD$new()

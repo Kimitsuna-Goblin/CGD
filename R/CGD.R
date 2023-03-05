@@ -1,7 +1,7 @@
 ##############################################################################
 # 連結ガウス分布 (Connected Gaussian Distribution) クラス
 # @file			CGD.R
-# @version		2.3.1
+# @version		2.3.2
 # @author		Kimitsuna-Goblin
 # @copyright	Copyright (C) 2023 Ura Kimitsuna
 # @license		Released under the MIT license.
@@ -233,7 +233,7 @@ tex.d.all <-
 #' 正規分布の累積分布関数において、与えられた確率に当たる点が、平均値から何σ離れているかを得る。
 #' @export
 #' @param	p			確率。
-#' @return	平均値からの相対位置(σ単位)
+#' @return	平均値からの相対位置(\eqn{\sigma} 単位)
 #' @examples
 #'	sqnorm( 0.5 ) # 0
 #'	sqnorm( pnorm( -2, 0, 1 ) ) # -2
@@ -287,7 +287,7 @@ ms.qp.norm <- function( q, p )
 ###############################################################################
 #' 閉区間内における正規分布の分散の算出
 #'
-#' 正規分布の分散は通常、定義域を (-∞, ∞) として、広義積分により算出するが、
+#' 正規分布の分散は通常、定義域を \eqn{(-\infty, \infty)} として、広義積分により算出するが、
 #' その定義域をある閉区間 [x.bound[1], x.bound[2]] に限って、定積分した値を得る。
 #' @export
 #' @param	x.bound		閉区間を指定する、要素2個のベクトル。 x.bound[1] < x.bound[2] であること。
@@ -364,14 +364,14 @@ bisection.sub <- function( f, interval, tol )
 #' 連結ガウス分布クラス (\link[cgd]{CGD}) で使用する区間を表すクラス。
 #' @export		CGDInterval
 #' @exportClass	CGDInterval
-#' @field	mean			平均値
-#' @field	sd				標準偏差
-#' @field	q.ind			独立区間に対するX座標 (クォンタイル)
-#' @field	q.conn.prev		前の区間との接続区間の確率内に収まる、この正規分布の累積密度関数のX座標 (クォンタイル)
-#' @field	q.conn.next		次の区間との接続区間の確率内に収まる、この正規分布の累積密度関数のX座標 (クォンタイル)
-#' @field	p.ind			独立区間
-#' @field	p.conn.prev		前の区間との接続区間 (type1.type = 3 では、1個目または3個目の正規分布の確率密度関数が寄与する区間)
-#' @field	p.conn.next		次の区間との接続区間 (type1.type = 3 では、1個目または3個目の正規分布の確率密度関数が寄与する区間)
+#' @field	mean			独立区間を負担する正規分布の平均値
+#' @field	sd				独立区間を負担する正規分布の標準偏差
+#' @field	q.ind			独立区間の定義域 (クォンタイル)
+#' @field	q.conn.prev		前の接続区間の確率内に値が収まる、この正規分布の累積密度関数の定義域 (クォンタイル)
+#' @field	q.conn.next		次の接続区間の確率内に値が収まる、この正規分布の累積密度関数の定義域 (クォンタイル)
+#' @field	p.ind			この正規分布が負担する独立確率区間
+#' @field	p.conn.prev		前の接続区間の確率 (type1.type = 3 では、1個目または3個目の正規分布の確率密度関数が寄与する区間)
+#' @field	p.conn.next		次の接続区間の確率 (type1.type = 3 では、1個目または3個目の正規分布の確率密度関数が寄与する区間)
 #' @seealso	\link[cgd]{CGD}
 ###############################################################################
 CGDInterval <- setRefClass(
@@ -381,14 +381,14 @@ CGDInterval <- setRefClass(
 
 	# フィールド
 	fields = list(
-		mean = "numeric",			# 平均値
-		sd = "numeric",				# 標準偏差
-		q.ind = "vector",			# 独立区間に対するX座標 (クォンタイル)
-		q.conn.prev = "vector",		# 前の区間との接続区間の確率内に収まる、この正規分布の累積密度関数のX座標 (クォンタイル)
-		q.conn.next = "vector",		# 次の区間との接続区間の確率内に収まる、この正規分布の累積密度関数のX座標 (クォンタイル)
-		p.ind = "vector",			# 独立区間
-		p.conn.prev = "vector",		# 前の区間との接続区間
-		p.conn.next = "vector"		# 次の区間との接続区間
+		mean = "numeric",			# 独立区間を負担する正規分布の平均値
+		sd = "numeric",				# 独立区間を負担する正規分布の標準偏差
+		q.ind = "vector",			# 独立区間の定義域 (クォンタイル)
+		q.conn.prev = "vector",		# 前の接続区間の確率内に値が収まる、この正規分布の累積密度関数の定義域 (クォンタイル)
+		q.conn.next = "vector",		# 次の接続区間の確率内に値が収まる、この正規分布の累積密度関数の定義域 (クォンタイル)
+		p.ind = "vector",			# この正規分布が負担する独立区間の確率
+		p.conn.prev = "vector",		# 前の接続区間の確率
+		p.conn.next = "vector"		# 次の接続区間の確率
 	)
 )
 
@@ -441,7 +441,7 @@ CGDInterval$methods(
 #' @field	kind			分布の種類名
 #' @field	mean			平均値
 #' @field	intervals		連結区間 (\link[cgd]{CGDInterval} クラスのリスト)
-#' @field	type1.type		接続区間が type 1 の場合の計算方法 (詳細は \link[cgd]{CGD$set.waypoints} を参照)
+#' @field	type1.type		接続区間が type 1 の場合の計算方法 (詳細は \link[cgd]{trace.q} の Details を参照)
 #' @field	m.sd			計算済みの標準偏差 (クラス外からは直接参照しないこと)
 #' @field	m.lsd			計算済みの下側標準偏差 (クラス外からは直接参照しないこと)
 #' @field	m.usd			計算済みの上側標準偏差 (クラス外からは直接参照しないこと)
@@ -480,7 +480,7 @@ CGD <- setRefClass(
 #' @name	CGD_initialize
 #' @usage	CGD$new(type1.type = 1)
 #' @param	type1.type		type 1 の場合の計算方法。 1、2、3、4 のいずれかを指定すること (デフォルト: 1)。
-#'							1～4 の詳細については、 \link[cgd]{CGD_set.waypoints} の this.type1.type の説明を参照。
+#'							1～4 の詳細については、 \link[cgd]{trace.q} の Details を参照。
 #' @seealso	\link[cgd]{CGDInterval}, \link[cgd]{CGD_set.intervals}, \link[cgd]{CGD_set.waypoints}
 #' @examples
 #'	CGD$new()
@@ -575,15 +575,15 @@ CGD$methods(
 #' 予め連結区間の構成が分かっている場合に、連結区間を設定する。
 #' フィールド mean は intervals の内容に応じて適切に設定され、
 #' フィールド m.sd, m.lsd, m.usd は初期化される。
-#' 詳細については、 \link[cgd]{CGD$set.waypoints} を参照。
 #' @name	CGD_set.intervals
 #' @usage	CGD$set.intervals(this.intervals, this.type1.type = NULL)
 #' @param	new.intervals		連結区間 (\link[cgd]{CGDInterval} クラスのリスト)。
 #' @param	this.type1.type		フィールドの type1.type に設定する値。 1、2、3、4 のいずれかを指定すること。
 #'								NULL の場合は type1.type の値を変更しない (デフォルト: NULL)。
-#'								1～4 の詳細については、 \link[cgd]{CGD_set.waypoints} の this.type1.type の説明を参照。
+#'								1～4 の詳細については、 \link[cgd]{trace.q} の Details を参照。
 #' @return	分布の種類のインデックス番号
-#' @seealso	\link[cgd]{CGDInterval}, \link[cgd]{CGD_set.waypoints}
+#' @seealso	\link[cgd]{CGDInterval}, \link[cgd]{trace.q}, \link[cgd]{CGD_set.waypoints},
+#'			\link[cgd]{nls.freq}, \link[cgd]{nls.freq.all}
 #' @examples
 #'	a1 <- CGD$new()
 #'	a2 <- CGD$new()
@@ -788,7 +788,7 @@ NULL
 CGD$methods(
 	adjust.kind.index = function()
 	{
-		index <- NaN
+		index <- integer()
 
 		if ( length( intervals ) > 0 )
 		{
@@ -796,31 +796,31 @@ CGD$methods(
 
 			if ( is.uni.mean() && is.uni.sigma() )
 			{
-				index <- 1	# Normal Distribution
+				index <- 1L	# Normal Distribution
 			}
 			else if ( type1.type <= 2 )
 			{
 				if ( type1.type == 1 && is.continuous() )
 				{
-					index <- 2	# Mean of Mean-Equaled Sigma-Differed 2 Normal Distributions
+					index <- 2L	# Mean of Mean-Equaled Sigma-Differed 2 Normal Distributions
 				}
 				else if ( type1.type == 2 && is.symmetric() )
 				{
-					index <- 3	# Symmetric Horizontal Gradational Distribution
+					index <- 3L	# Symmetric Horizontal Gradational Distribution
 				}
 				else if ( type1.type == 2 && is.continuous() )
 				{
 					if ( is.uni.sigma() )
 					{
-						index <- 4	# Mean-Differed Sigma-Equaled Horizontal Gradational Distribution
+						index <- 4L	# Mean-Differed Sigma-Equaled Horizontal Gradational Distribution
 					}
 					else if ( is.uni.mean() )
 					{
-						index <- 5	# Mean-Equaled Sigma-Differed Horizontal Gradational Distribution
+						index <- 5L	# Mean-Equaled Sigma-Differed Horizontal Gradational Distribution
 					}
 					else
 					{
-						index <- 6	# Mean-Differed Sigma-Differed Horizontal Gradational Distribution
+						index <- 6L	# Mean-Differed Sigma-Differed Horizontal Gradational Distribution
 					}
 				}
 				else if ( intervals[[1]]$p.conn.prev[2] == 0 && intervals[[length( intervals )]]$p.conn.next[1] == 1 )
@@ -834,30 +834,30 @@ CGD$methods(
 				{
 					if ( is.uni.sigma() )
 					{
-						index <- 7	# Mean-Differed Sigma-Equaled Vertical Gradational Distribution
+						index <- 7L	# Mean-Differed Sigma-Equaled Vertical Gradational Distribution
 					}
 					else if ( is.uni.mean() )
 					{
-						index <- 8	# Mean-Equaled Sigma-Differed Vertical Gradational Distribution
+						index <- 8L	# Mean-Equaled Sigma-Differed Vertical Gradational Distribution
 					}
 					else
 					{
-						index <- 9	# Mean-Differed Sigma-Differed Vertical Gradational Distribution
+						index <- 9L	# Mean-Differed Sigma-Differed Vertical Gradational Distribution
 					}
 				}
 				else
 				{
 					if ( is.uni.sigma() )
 					{
-						index <- 10	# 3-Mean-Differed Sigma-Equaled Vertical Gradational Distribution
+						index <- 10L	# 3-Mean-Differed Sigma-Equaled Vertical Gradational Distribution
 					}
 					else if ( is.uni.mean() )
 					{
-						index <- 11	# Mean-Equaled 3-Sigma-Differed Vertical Gradational Distribution
+						index <- 11L	# Mean-Equaled 3-Sigma-Differed Vertical Gradational Distribution
 					}
 					else
 					{
-						index <- 12	# Mean-Differed 3-Sigma-Differed Vertical Gradational Distribution
+						index <- 12L	# Mean-Differed 3-Sigma-Differed Vertical Gradational Distribution
 					}
 				}
 			}
@@ -865,21 +865,28 @@ CGD$methods(
 			{
 				if ( is.uni.sigma() )
 				{
-					index <- 13	# Mean-Differed Sigma-Equaled Vertical-Horizontal Gradational Distribution
+					index <- 13L	# Mean-Differed Sigma-Equaled Vertical-Horizontal Gradational Distribution
 				}
 				else if ( is.uni.mean() )
 				{
-					index <- 14	# Mean-Equaled Sigma-Differed Vertical-Horizontal Gradational Distribution
+					index <- 14L	# Mean-Equaled Sigma-Differed Vertical-Horizontal Gradational Distribution
 				}
 				else
 				{
-					index <- 15	# Mean-Differed Sigma-Differed Vertical-Horizontal Gradational Distribution
+					index <- 15L	# Mean-Differed Sigma-Differed Vertical-Horizontal Gradational Distribution
 				}
 			}
 		}
 
 		kind.index <<- index
-		kind <<- kinds[index]
+		if ( length( index ) == 0 )
+		{
+			kind <<- character()
+		}
+		else
+		{
+			kind <<- kinds[index]
+		}
 
 		return ( index )
 	}
@@ -895,7 +902,8 @@ CGD$methods(
 #'								X座標 (クォンタイル) は昇順にソートしておくこと。
 #'								平均値は p = 0.5 の点のX座標として与えること。
 #' @param	continuous			TRUE にすると、 type1.type = 1 または 2 のとき、独立区間を [0, 0] と [1, 1] の 2点にして、
-#'								確率密度関数が全区間 (-∞, ∞) で連続になるように分布構成を試みる (デフォルト: FALSE)。
+#'								確率密度関数が全区間 \eqn{(-\infty, \infty)} で連続になるように
+#'								分布構成を試みる (デフォルト: FALSE)。
 #'								type1.type = 1 または 2 のときに有効 (type1.type >= 3 では常に連続)。
 #' @param	symmetric			TRUE にすると、確率密度関数が、平均点を中心として左右対称になるように試みる (デフォルト: FALSE)。
 #'								type1.type = 1 または 2 のときのみ有効。
@@ -911,84 +919,147 @@ CGD$methods(
 #'								不連続分布および type1.type = 1 または symmetric = TRUE では無効。
 #'								なお、 diff.mean = TRUE としても、結果的に、各正規分布の平均値が等しくなることもあり得る。
 #' @param	control				nleqslv に渡す、同関数の control オプションのリスト (デフォルト: list())。
-#'								詳細は \href{https://cran.r-project.org/web/packages/nleqslv/nleqslv.pdf}{nleqslv} を参照。
+#'								詳細は \link[nleqslv]{nleqslv} の Control options を参照。
 #'								デフォルトは空だが、条件不足のため "Jacobian is singular" のエラーになる可能性が高い場合は
 #'								allowSingular = TRUE が暗黙のうちに設定される。
 #'								ただし、引数 control のリストに allowSingular が与えられている場合は、引数のリストを優先する。
 #' @param	type1.type			フィールドの type1.type に設定する値。 1、2、3、4 のいずれかを指定すること (デフォルト: 1)。
+#'								詳細は Details を参照。
 #'
-#'				type1.type の値によって、接続区間 (β_i, α_{i+1}) が type 1 の場合
-#'				 (この type 1 の詳細については \href{https://github.com/Kimitsuna-Goblin/CGD}{README.md} を参照)、
-#'				接続区間の累積分布関数 Ψ_i(x) を以下のように計算する。
+#' @details
+#' 	\subsection{type1.type}{
+#'			type1.type フィールドは連結ガウス分布の累積分布関数を決定するためのオプションである。
 #'
-#'				1: Ψ_i(x) = ( α_{i+1} - x ) / ( α_{i+1} - β_i ) * Φ_i(x) +
-#'							 ( x - β_i ) / ( α_{i+1} - β_i ) * Φ_{i+1}(x)
+#'			連結ガウス分布には、連続分布と不連続分布があるが、連続分布は不連続分布の拡張である。
+#'			そのため、まず、不連続分布から説明する。
 #'
-#'				2: Ψ_i(x) = ( Φ~_i(α_{i+1}) - Φ~_i(x) ) / ( Φ~_i(α_{i+1}) - Φ~_i(β_i) ) * Φ_i(x) +
-#'							 ( Φ~_i(x) - Φ~_i(β_i) ) / ( Φ~_i(α_{i+1}) - Φ~_i(β_i) ) * Φ_{i+1}(x)
+#'			不連続分布では、
+#'			確率密度関数や累積分布関数の定義域 \eqn{[-\infty, \infty]} において、
+#'			1つの正規分布が独立的に分布を負担する\bold{独立区間}の定義域 \eqn{[\alpha_i, \beta_i]} と、
+#'			2つの正規分布が分布を負担し合う\bold{接続区間}の定義域 \eqn{(\beta_i, \alpha_{i+1})} が交互に現れる。
 #'
-#'				3: Ψ(x) = ∫_{-∞}^{min( x, μ_1 )} ( 1 - f_1(t) / f_1(μ_1) ) f_1(t) dt
-#'							+ ∫_{-∞}^x f_2(t)^2 / f_2(μ) dt
-#'							+ ∫_{min( x, μ_3 )}^x ( 1 - f_3(t) / f_3(μ_3) ) f_3(t) dt
-#'						 = min( Φ_1(x) - Φ^*_1(x) / √2, ( 2 - √2 ) / 4 )
-#'							+ Φ^*_2(x) / √2
-#'							+ max( 0, Φ_3(x) - Φ^*_3(x) / √2 - ( 2 - √2 ) / 4 )
+#'			\bold{接続区間}は、その定義域の範囲に平均値 \eqn{\mu} を含むかどうかという条件と、
+#'			前後の独立区間を負担する正規分布の標準偏差の大小の条件によって、次の4つの type に分類される。
 #'
-#'				4: Ψ(x) = Ψ_1(x) - Ψ_1(x)^2 / 2 + Ψ_2(x)^2 / 2,
-#'						Ψ_1(x) = Φ_1(x) - Φ^*_1(x) / √2 + Φ^*_2(x) / √2,
-#'						Ψ_2(x) = Φ_3(x) - Φ^*_3(x) / √2 + Φ^*_4(x) / √2
+#'			\itemize{
+#'				\item type 1 : 定義域に平均値 \eqn{\mu} を含まない。標準偏差は山側の正規分布の方が裾側よりも大きい。
+#'				\item type 2 : 定義域に平均値 \eqn{\mu} を含まない。標準偏差は山側の正規分布の方が裾側よりも小さい。
+#'				\item type 3a : 定義域に平均値 \eqn{\mu} を含む。標準偏差は前側の正規分布の方が後側よりも小さい。
+#'				\item type 3b : 定義域に平均値 \eqn{\mu} を含む。標準偏差は前側の正規分布の方が後側よりも大きい。
+#'			}
 #'
-#'				ただし、Φ_i, Φ_{i+1} は当該接続区間の前後の独立区間を負担する正規分布の累積分布関数、
-#'				Φ~_i(x) = ( Φ_i(x) + Φ_{i+1}(x) ) / 2 、
-#'				f_i, f_{i+1} は当該接続区間の前後の独立区間を負担する正規分布の確率密度関数、μ は平均値、
-#'				Φ^*_i は正規分布 N(μ_i, (σ_i / √2)^2) の累積分布関数である。
+#'			本パッケージでは、 type 2/3a/3b の接続区間では、連結ガウス分布は
+#'			原則として、2つの正規分布の平均とする (ただし、細かい場合分けがある。定義式は省略)。
 #'
-#'				type1.type = 1 は、不連続分布を構成するための、最も単純な連結方法である。
-#'								また、 continuous = TRUE または symmetric = TRUE のオプションにより、
-#'								左右対称な連続分布である「平均値が等しい2つの正規分布の平均」が構成できる。
-#'								なお、このとき、累積分布関数は Ψ(x) = ( Φ_i(x) + Φ_{i+1}(x) ) / 2 となる。
-#'								ただし、他のオプションとの兼ね合いのために、
-#'								便宜上、このように作っているだけであって、
-#'								この type1.type = 1 の連続分布の累積分布関数は、
-#'								上の 1: に示した不連続分布の累積分布関数の自然な拡張ではない。
+#'			一方、 type 1 の接続区間では、 type1.type のオプションに応じて、以下のように2つの正規分布を混合する。
 #'
-#'				type1.type = 2 は、 1 と同様に、不連続分布を構成するための連結方法であるが、
-#'								不連続分布の累積分布関数 Ψ_i(x) を β_i → -∞, α_{i+1} → ∞ と自然に拡張することで、
-#'								連続分布も構成できるように工夫している。
-#'								continuous = TRUE にすると、2つの確率密度関数の「横方向グラデーション」が構成できる。
-#'								つまり、確率密度関数の形が、 x = -∞ の点から x = ∞ の点に向かって、
-#'								横方向に徐々に変化していくようなイメージの分布を構成できる。
-#'								この type1.type = 2 の連続分布の累積分布関数は、
-#'								上の 2: に示した不連続分布の累積分布関数の自然な拡張である。
-#'								また、 symmetric = TRUE にすると、
-#'								平均値の点で折り返したような左右対称な分布を構成できる
-#'								 (ただし、文字通り「折り返している」ため、平均値の点において微分可能ではない)。
+#'			\bold{type1.type = 1} は、不連続分布を構成する最も単純な方法であり、
+#'							2つの正規分布の混合比率を線形的に変えて混合する。
+#'							また、 continuous = TRUE または symmetric = TRUE のオプションにより、
+#'							左右対称な連続分布である \bold{「平均値が等しい2つの正規分布の平均」} が構成できる
+#'							 (ただし、これは後述の type1.type = 2 のオプションと異なり、
+#'							  type 1 の接続区間の拡張ではなく、 type 2/3a/3b の拡張である)。
 #'
-#'				type1.type = 3 は連続分布に特化した、「縦方向グラデーション」の連結方法である。
-#'								つまり、確率密度関数の形が、平均値から遠い裾部から、平均値に近い山部に向かって、
-#'								縦方向に徐々に変化していくようなイメージの分布を構成できる。
-#'								v.grad = TRUE にすると、構成要素の正規分布は裾部と山部の2つになる (上の式では f_1 = f_3)。
-#'								v.grad = FALSE にすると、裾部の両側がそれぞれ別の分布になるので、正規分布は3つになる。
+#'			\bold{type1.type = 2} は、 1 と同様、不連続分布を構成する方法であるが、
+#'							混合比率の変化は線形的ではない。
+#'							このオプションでは、接続区間 \eqn{(\beta_1, \alpha_2)} を
+#'							\eqn{\beta_1 = -\infty, \alpha_2 = \infty} と拡張すれば、
+#'							連続分布も構成できるように工夫している。
+#'							連続分布を構成するには、 continuous = TRUE のオプションを使う。
+#'							このオプションでは、2つの確率密度関数による \bold{「横方向グラデーション」} が構成できる。
+#'							この分布の確率密度関数の形は \eqn{x = -\infty} の点から \eqn{x = \infty} の点に向かって、
+#'							横方向に徐々に変化していくようなイメージになる。
+#'							また、 symmetric = TRUE のオプションにより、
+#'							平均値の点で二つに線対称に折り返した、左右対称な連続分布を構成できる
+#'							 (ただし、文字通り「折り返して」いるため、平均値の点において微分可能ではない)。
 #'
-#'				type1.type = 4 は正規分布の連結ではなく、
-#'								2つの連続な連結ガウス分布を連結した、「縦横グラデーション」の構成方法である。
-#'								つまり、2つの type1.type = 3, v.grad = TRUE (縦方向グラデーション) の分布を
-#'								type1.type = 2, continuous = TRUE (横方向グラデーション) で連結する。
-#'								これは、本ライブラリの連続分布の構成方法の中では、最も自由度が高い方法である。
-#'								ただし、通常、左右対称な分布にはならない。
+#'			\bold{type1.type = 3} は連続分布に特化した、 \bold{「縦方向グラデーション」} の連結方法である。
+#'							このとき、確率密度関数の形は平均値から遠い裾部から、平均値に近い山部に向かって、
+#'							縦方向に徐々に変化していくようなイメージになる。
+#'							v.grad = TRUE のオプションでは、構成要素の正規分布は裾部と山部の2つになる。
+#'							v.grad = FALSE のオプションでは、裾部の両側が異なる分布になるので、構成要素の正規分布は3つになる。
 #'
-#'				連続分布を構成する場合、経路の構成点は一定の個数でなければならない。
-#'				具体的には、構成点の個数は以下のようにする必要がある。
+#'			\bold{type1.type = 4} は正規分布の連結ではなく、
+#'							2つの連続な連結ガウス分布を連結した、 \bold{「縦横グラデーション」} の構成方法である。
+#'							このオプションでは、2つの type1.type = 3, v.grad = TRUE (縦方向グラデーション) の分布を
+#'							type1.type = 2, continuous = TRUE (横方向グラデーション) で連結する。
+#'							この構成方法は、本ライブラリの連続分布の構成方法の中では、最も自由度が高い。
 #'
-#'				・type1.type = 1 :	continuous = TRUE or symmetric = TRUE ⇒ 3点
+#'			連続分布を構成する場合、経路の構成点は一定の個数でなければならない。
+#'			具体的には、構成点の個数は以下のようにする必要がある。
 #'
-#'				・type1.type = 2 :	continuous = TRUE ⇒ 3～4点、
-#'									symmetric = TRUE ⇒ 3点 (必ず確率 0.5 の点を含めること)
+#'			\itemize{
+#'				\item type1.type = 1 : continuous or symmetric = TRUE \eqn{\Rightarrow} 3点
+#'				\item type1.type = 2 : continuous = TRUE \eqn{\Rightarrow} 3～4点、
+#'										symmetric = TRUE \eqn{\Rightarrow} 3点 (必ず確率 0.5 の点を含めること)
+#'				\item type1.type = 3 : v.grad = TRUE \eqn{\Rightarrow} 3～4点、
+#'										v.grad = FALSE \eqn{\Rightarrow} 3～6点
+#'				\item type1.type = 4 : 5～8点
+#'			}
+#'	}
 #'
-#'				・type1.type = 3 :	v.grad = TRUE ⇒ 3～4点、
-#'									v.grad = FALSE ⇒ 3～6点
+#'	\subsection{累積分布関数の定義式}{
+#'			不連続分布では、
+#'			\eqn{i} 番目の接続区間が type 1 のとき、定義域 \eqn{(\beta_i, \alpha_{i+1})} における
+#'			累積分布関数 \eqn{\Psi_i(x)} は以下の式によって定める。
 #'
-#'				・type1.type = 4 :	5～8点
+#'			\describe{
+#'				\item{type1.type = 1}{\deqn{
+#'					\Psi_i( x ) = \dfrac{ \alpha_{i+1} - x }{ \alpha_{i+1} - \beta_i } \Phi_i( x ) +
+#'						\dfrac{ x - \beta_i }{ \alpha_{i+1} - \beta_i } \Phi_{i+1}( x )}}
+#'				\item{type1.type = 2}{\deqn{
+#'					\Psi_i( x ) = \dfrac{ \bar \Phi_i( \alpha_{i+1} ) -
+#'						\bar \Phi_i( x ) }{ \bar \Phi_i( \alpha_{i+1} ) -
+#'						\bar \Phi_i( \beta_i ) } \Phi_i( x ) +
+#'						\dfrac{ \bar \Phi_i( x ) - \bar \Phi_i( \beta_i ) }
+#'						{ \bar \Phi_i( \alpha_{i+1} ) - \bar \Phi_i( \beta_i ) } \Phi_{i+1}( x )}}
+#'			}
+#'
+#'			ここで、 \eqn{\Phi_i, \Phi_{i+1}} は当該接続区間の前後の独立区間を負担する正規分布の累積分布関数である。
+#'			\eqn{\bar \Phi_i} は \eqn{\Phi_i} と \eqn{\Phi_{i+1}} の平均である。
+#'
+#'			連続分布では、累積分布関数 \eqn{\Psi(x)} を以下のように定める。
+#'
+#'			\describe{
+#'				\item{type1.type = 1, continuous or symmetric = TRUE}{\deqn{
+#'					\Psi( x ) = \dfrac{\Phi_1( x ) + \Phi_2( x )}{2}}}
+#'				\item{type1.type = 2, continuous = TRUE}{\deqn{
+#'					\Psi( x ) = \displaystyle \int_{-\infty}^{x}
+#'						\left \lbrace ( 1 - \dfrac{f_1(t)}{\Phi_1(t)} ) f_1(t)
+#'						+ \dfrac{f_2(t)}{\Phi_2(t)} f_2(t) \right \rbrace dt \\
+#'					= \Phi_1( x ) - \dfrac{\Phi_1( x )^2}{2} + \dfrac{\Phi_2( x )^2}{2}
+#'						\qquad \quad \ \ \ }}
+#'				\item{type1.type = 2, symmetric = TRUE}{\deqn{
+#'					\Psi( x ) = \genfrac{\lbrace}{}{0pt}{0}
+#'						{ \Psi_1( x ) = \Phi_1( x ) - \Phi_1( x )^2 + \Phi_2( x )^2 \quad ( x \leq \mu ) }
+#'						{ \Psi_2( x ) = 1 - \Psi_1( 2\mu - x ) \qquad \quad \, \, \ \ \ \ \ \ \ ( x > \mu ) }}}
+#'				\item{type1.type = 3, v.grad = TRUE}{\deqn{
+#'					\Psi(x) = \displaystyle \int_{-\infty}^{x}
+#'						\left \lbrace ( 1 - \dfrac{f_1(t)}{f_1(\mu_1)} ) f_1(t)
+#'						+ \dfrac{f_2(t)}{f_2(\mu_2)} f_2(t) \right \rbrace dt \\
+#'					= \Phi_1(x) - \dfrac{\Phi^*_1(x)}{\sqrt{2}} + \dfrac{\Phi^*_2(x)}{\sqrt{2}}
+#'						\qquad \qquad \quad \ \ }}
+#'				\item{type1.type = 3, v.grad = FALSE}{\deqn{
+#'					\Psi(x) = \displaystyle \int_{-\infty}^{\min( x, \mu_1 )}
+#'						( 1 - \dfrac{f_1(t)}{f_1(\mu_1)} ) f_1(t) \ dt
+#'						+ \displaystyle \int_{-\infty}^x \dfrac{f_2(t)^2}{f_2(\mu_2)} \ dt
+#'						+ \displaystyle \int_{\min( x, \mu_3 )}^x ( 1 - \dfrac{f_3(t)}{f_3(\mu_3)} ) f_3(t) \ dt \\
+#'					\quad \ \ \ = \min( \Phi_1(x) - \dfrac{\Phi^*_1(x)}{\sqrt{2}}, \ \dfrac{2 - \sqrt{2}}{4} )
+#'						+ \dfrac{\Phi^*_2(x)}{\sqrt{2}}
+#'						+ \max( 0, \ \Phi_3(x) - \dfrac{\Phi^*_3(x)}{\sqrt{2}} - \dfrac{2 - \sqrt{2}}{4} ) }}
+#'				\item{type1.type = 4}{\deqn{
+#'					\Psi(x) = \Psi_1(x) - \dfrac{\Psi_1(x)^2}{2} + \dfrac{\Psi_2(x)^2}{2} \qquad \qquad \quad \\
+#'					\Psi_i(x) =
+#'						\Phi_{i,1}(x) - \dfrac{\Phi^*_{i,1}(x)}{\sqrt{2}} + \dfrac{\Phi^*_{i,2}(x)}{\sqrt{2}}
+#'						\quad (i = 1, 2)}}
+#'			}
+#'
+#'			ただし、\eqn{\Phi_i} および \eqn{\Phi_{i,j}} は構成要素の正規分布の累積分布関数、
+#'			\eqn{f_i} は構成要素の正規分布の確率密度関数、\eqn{\mu_i} は構成要素の正規分布の平均値、
+#'			\eqn{\Phi^*_i} および \eqn{\Phi^*_{i,j}} は
+#'			正規分布 \eqn{N(\mu_i, (\sigma_i / \sqrt{2})^2)} および
+#'			\eqn{N(\mu_{i,j}, (\sigma_{i,j} / \sqrt{2})^2)} の累積分布関数である。
+#'	}
 #' @return	nleqslv() を内部で実行した場合はその結果。それ以外は NULL
 #' @importFrom	nleqslv		nleqslv
 #' @seealso	\link[cgd]{CGD_set.waypoints}, \href{https://github.com/Kimitsuna-Goblin/CGD}{README.md} (GitHub)
@@ -1117,7 +1188,7 @@ trace.q <- function( quantiles, continuous = FALSE, symmetric = FALSE, v.grad = 
 #'								X座標 (クォンタイル) は昇順にソートしておくこと。
 #'								平均値は p = 0.5 の点のX座標として与えること。
 #' @param	continuous			TRUE にすると、 type1.type = 1 または 2 のとき、独立区間を [0, 0] と [1, 1] の 2点にして、
-#'								確率密度関数が全区間 (-∞, ∞) で連続になるように分布構成を試みる (デフォルト: FALSE)。
+#'								確率密度関数が全区間 \eqn{(-\infty, \infty)} で連続になるように構成を試みる (デフォルト: FALSE)。
 #'								type1.type = 1 または 2 のときに有効 (type1.type >= 3 では常に連続)。
 #' @param	symmetric			TRUE にすると、確率密度関数が、平均点を中心として左右対称になるように試みる (デフォルト: FALSE)。
 #'								type1.type = 1 または 2 のときのみ有効。
@@ -1135,85 +1206,149 @@ trace.q <- function( quantiles, continuous = FALSE, symmetric = FALSE, v.grad = 
 #'								不連続分布および type1.type = 1 または symmetric = TRUE では無効。
 #'								なお、 diff.mean = TRUE としても、結果的に、各正規分布の平均値が等しくなることもあり得る。
 #' @param	control				nleqslv に渡す、同関数の control オプションのリスト (デフォルト: list())。
-#'								詳細は \href{https://cran.r-project.org/web/packages/nleqslv/nleqslv.pdf}{nleqslv} を参照。
+#'								詳細は \link[nleqslv]{nleqslv} の Control options を参照。
 #'								デフォルトは空だが、条件不足のため "Jacobian is singular" のエラーになる可能性が高い場合は
 #'								allowSingular = TRUE が暗黙のうちに設定される。
 #'								ただし、引数 control のリストに allowSingular が与えられている場合は、引数のリストを優先する。
 #' @param	this.type1.type		フィールドの type1.type に設定する値。 1、2、3、4 のいずれかを指定すること。
 #'								NULL の場合は type1.type の値を変更しない (デフォルト: NULL)。
+#'								詳細は Details を参照。
 #'
-#'				type1.type の値によって、接続区間 (β_i, α_{i+1}) が type 1 の場合
-#'				 (この type 1 の詳細については \href{https://github.com/Kimitsuna-Goblin/CGD}{README.md} を参照)、
-#'				接続区間の累積分布関数 Ψ_i(x) を以下のように計算する。
+#' @details
+#' @details
+#' 	\subsection{type1.type}{
+#'			type1.type フィールドは連結ガウス分布の累積分布関数を決定するためのオプションである。
 #'
-#'				1: Ψ_i(x) = ( α_{i+1} - x ) / ( α_{i+1} - β_i ) * Φ_i(x) +
-#'							 ( x - β_i ) / ( α_{i+1} - β_i ) * Φ_{i+1}(x)
+#'			連結ガウス分布には、連続分布と不連続分布があるが、連続分布は不連続分布の拡張である。
+#'			そのため、まず、不連続分布から説明する。
 #'
-#'				2: Ψ_i(x) = ( Φ~_i(α_{i+1}) - Φ~_i(x) ) / ( Φ~_i(α_{i+1}) - Φ~_i(β_i) ) * Φ_i(x) +
-#'							 ( Φ~_i(x) - Φ~_i(β_i) ) / ( Φ~_i(α_{i+1}) - Φ~_i(β_i) ) * Φ_{i+1}(x)
+#'			不連続分布では、
+#'			確率密度関数や累積分布関数の定義域 \eqn{[-\infty, \infty]} において、
+#'			1つの正規分布が独立的に分布を負担する\bold{独立区間}の定義域 \eqn{[\alpha_i, \beta_i]} と、
+#'			2つの正規分布が分布を負担し合う\bold{接続区間}の定義域 \eqn{(\beta_i, \alpha_{i+1})} が交互に現れる。
 #'
-#'				3: Ψ(x) = ∫_{-∞}^{min( x, μ_1 )} ( 1 - f_1(t) / f_1(μ_1) ) f_1(t) dt
-#'							+ ∫_{-∞}^x f_2(t)^2 / f_2(μ) dt
-#'							+ ∫_{min( x, μ_3 )}^x ( 1 - f_3(t) / f_3(μ_3) ) f_3(t) dt
-#'						 = min( Φ_1(x) - Φ^*_1(x) / √2, ( 2 - √2 ) / 4 )
-#'							+ Φ^*_2(x) / √2
-#'							+ max( 0, Φ_3(x) - Φ^*_3(x) / √2 - ( 2 - √2 ) / 4 )
+#'			\bold{接続区間}は、その定義域の範囲に平均値 \eqn{\mu} を含むかどうかという条件と、
+#'			前後の独立区間を負担する正規分布の標準偏差の大小の条件によって、次の4つの type に分類される。
 #'
-#'				4: Ψ(x) = Ψ_1(x) - Ψ_1(x)^2 / 2 + Ψ_2(x)^2 / 2,
-#'						Ψ_1(x) = Φ_1(x) - Φ^*_1(x) / √2 + Φ^*_2(x) / √2,
-#'						Ψ_2(x) = Φ_3(x) - Φ^*_3(x) / √2 + Φ^*_4(x) / √2
+#'			\itemize{
+#'				\item type 1 : 定義域に平均値 \eqn{\mu} を含まない。標準偏差は山側の正規分布の方が裾側よりも大きい。
+#'				\item type 2 : 定義域に平均値 \eqn{\mu} を含まない。標準偏差は山側の正規分布の方が裾側よりも小さい。
+#'				\item type 3a : 定義域に平均値 \eqn{\mu} を含む。標準偏差は前側の正規分布の方が後側よりも小さい。
+#'				\item type 3b : 定義域に平均値 \eqn{\mu} を含む。標準偏差は前側の正規分布の方が後側よりも大きい。
+#'			}
 #'
-#'				ただし、Φ_i, Φ_{i+1} は当該接続区間の前後の独立区間を負担する正規分布の累積分布関数、
-#'				Φ~_i(x) = ( Φ_i(x) + Φ_{i+1}(x) ) / 2 、
-#'				f_i, f_{i+1} は当該接続区間の前後の独立区間を負担する正規分布の確率密度関数、μ は平均値、
-#'				Φ^*_i は正規分布 N(μ_i, (σ_i / √2)^2) の累積分布関数である。
+#'			本パッケージでは、 type 2/3a/3b の接続区間では、連結ガウス分布は
+#'			原則として、2つの正規分布の平均とする (ただし、細かい場合分けがある。定義式は省略)。
 #'
-#'				type1.type = 1 は、不連続分布を構成するための、最も単純な連結方法である。
-#'								また、 continuous = TRUE または symmetric = TRUE のオプションにより、
-#'								左右対称な連続分布である「平均値が等しい2つの正規分布の平均」が構成できる。
-#'								なお、このとき、累積分布関数は Ψ(x) = ( Φ_i(x) + Φ_{i+1}(x) ) / 2 となる。
-#'								ただし、他のオプションとの兼ね合いのために、
-#'								便宜上、このように作っているだけであって、
-#'								この type1.type = 1 の連続分布の累積分布関数は、
-#'								上の 1: に示した不連続分布の累積分布関数の自然な拡張ではない。
+#'			一方、 type 1 の接続区間では、 type1.type のオプションに応じて、以下のように2つの正規分布を混合する。
 #'
-#'				type1.type = 2 は、 1 と同様に、不連続分布を構成するための連結方法であるが、
-#'								不連続分布の累積分布関数 Ψ_i(x) を β_i → -∞, α_{i+1} → ∞ と自然に拡張することで、
-#'								連続分布も構成できるように工夫している。
-#'								continuous = TRUE にすると、2つの確率密度関数の「横方向グラデーション」が構成できる。
-#'								つまり、確率密度関数の形が、 x = -∞ の点から x = ∞ の点に向かって、
-#'								横方向に徐々に変化していくようなイメージの分布を構成できる。
-#'								この type1.type = 2 の連続分布の累積分布関数は、
-#'								上の 2: に示した不連続分布の累積分布関数の自然な拡張である。
-#'								また、 symmetric = TRUE にすると、
-#'								平均値の点で折り返したような左右対称な分布を構成できる
-#'								 (ただし、文字通り「折り返している」ため、平均値の点において微分可能ではない)。
+#'			\bold{type1.type = 1} は、不連続分布を構成する最も単純な方法であり、
+#'							2つの正規分布の混合比率を線形的に変えて混合する。
+#'							また、 continuous = TRUE または symmetric = TRUE のオプションにより、
+#'							左右対称な連続分布である \bold{「平均値が等しい2つの正規分布の平均」} が構成できる
+#'							 (ただし、これは後述の type1.type = 2 のオプションと異なり、
+#'							  type 1 の接続区間の拡張ではなく、 type 2/3a/3b の拡張である)。
 #'
-#'				type1.type = 3 は連続分布に特化した、「縦方向グラデーション」の連結方法である。
-#'								つまり、確率密度関数の形が、平均値から遠い裾部から、平均値に近い山部に向かって、
-#'								縦方向に徐々に変化していくようなイメージの分布を構成できる。
-#'								v.grad = TRUE にすると、構成要素の正規分布は裾部と山部の2つになる (上の式では f_1 = f_3)。
-#'								v.grad = FALSE にすると、裾部の両側がそれぞれ別の分布になるので、正規分布は3つになる。
+#'			\bold{type1.type = 2} は、 1 と同様、不連続分布を構成する方法であるが、
+#'							混合比率の変化は線形的ではない。
+#'							このオプションでは、接続区間 \eqn{(\beta_1, \alpha_2)} を
+#'							\eqn{\beta_1 = -\infty, \alpha_2 = \infty} と拡張すれば、
+#'							連続分布も構成できるように工夫している。
+#'							連続分布を構成するには、 continuous = TRUE のオプションを使う。
+#'							このオプションでは、2つの確率密度関数による \bold{「横方向グラデーション」} が構成できる。
+#'							この分布の確率密度関数の形は \eqn{x = -\infty} の点から \eqn{x = \infty} の点に向かって、
+#'							横方向に徐々に変化していくようなイメージになる。
+#'							また、 symmetric = TRUE のオプションにより、
+#'							平均値の点で二つに線対称に折り返した、左右対称な連続分布を構成できる
+#'							 (ただし、文字通り「折り返して」いるため、平均値の点において微分可能ではない)。
 #'
-#'				type1.type = 4 は正規分布の連結ではなく、
-#'								2つの連続な連結ガウス分布を連結した、「縦横グラデーション」の構成方法である。
-#'								つまり、2つの type1.type = 3, v.grad = TRUE (縦方向グラデーション) の分布を
-#'								type1.type = 2, continuous = TRUE (横方向グラデーション) で連結する。
-#'								これは、本ライブラリの連続分布の構成方法の中では、最も自由度が高い方法である。
-#'								ただし、通常、左右対称な分布にはならない。
+#'			\bold{type1.type = 3} は連続分布に特化した、 \bold{「縦方向グラデーション」} の連結方法である。
+#'							このとき、確率密度関数の形は平均値から遠い裾部から、平均値に近い山部に向かって、
+#'							縦方向に徐々に変化していくようなイメージになる。
+#'							v.grad = TRUE のオプションでは、構成要素の正規分布は裾部と山部の2つになる。
+#'							v.grad = FALSE のオプションでは、裾部の両側が異なる分布になるので、構成要素の正規分布は3つになる。
 #'
-#'				連続分布を構成する場合、経路の構成点は一定の個数でなければならない。
-#'				具体的には、構成点の個数は以下のようにする必要がある。
+#'			\bold{type1.type = 4} は正規分布の連結ではなく、
+#'							2つの連続な連結ガウス分布を連結した、 \bold{「縦横グラデーション」} の構成方法である。
+#'							このオプションでは、2つの type1.type = 3, v.grad = TRUE (縦方向グラデーション) の分布を
+#'							type1.type = 2, continuous = TRUE (横方向グラデーション) で連結する。
+#'							この構成方法は、本ライブラリの連続分布の構成方法の中では、最も自由度が高い。
 #'
-#'				・type1.type = 1 :	continuous = TRUE or symmetric = TRUE ⇒ 3点
+#'			連続分布を構成する場合、経路の構成点は一定の個数でなければならない。
+#'			具体的には、構成点の個数は以下のようにする必要がある。
 #'
-#'				・type1.type = 2 :	continuous = TRUE ⇒ 3～4点、
-#'									symmetric = TRUE ⇒ 3点 (必ず確率 0.5 の点を含めること)
+#'			\itemize{
+#'				\item type1.type = 1 : continuous or symmetric = TRUE \eqn{\Rightarrow} 3点
+#'				\item type1.type = 2 : continuous = TRUE \eqn{\Rightarrow} 3～4点、
+#'										symmetric = TRUE \eqn{\Rightarrow} 3点 (必ず確率 0.5 の点を含めること)
+#'				\item type1.type = 3 : v.grad = TRUE \eqn{\Rightarrow} 3～4点、
+#'										v.grad = FALSE \eqn{\Rightarrow} 3～6点
+#'				\item type1.type = 4 : 5～8点
+#'			}
+#'	}
 #'
-#'				・type1.type = 3 :	v.grad = TRUE ⇒ 3～4点、
-#'									v.grad = FALSE ⇒ 3～6点
+#'	\subsection{累積分布関数の定義式}{
+#'			不連続分布では、
+#'			\eqn{i} 番目の接続区間が type 1 のとき、定義域 \eqn{(\beta_i, \alpha_{i+1})} における
+#'			累積分布関数 \eqn{\Psi_i(x)} は以下の式によって定める。
 #'
-#'				・type1.type = 4 :	5～8点
+#'			\describe{
+#'				\item{type1.type = 1}{\deqn{
+#'					\Psi_i( x ) = \dfrac{ \alpha_{i+1} - x }{ \alpha_{i+1} - \beta_i } \Phi_i( x ) +
+#'						\dfrac{ x - \beta_i }{ \alpha_{i+1} - \beta_i } \Phi_{i+1}( x )}}
+#'				\item{type1.type = 2}{\deqn{
+#'					\Psi_i( x ) = \dfrac{ \bar \Phi_i( \alpha_{i+1} ) -
+#'						\bar \Phi_i( x ) }{ \bar \Phi_i( \alpha_{i+1} ) -
+#'						\bar \Phi_i( \beta_i ) } \Phi_i( x ) +
+#'						\dfrac{ \bar \Phi_i( x ) - \bar \Phi_i( \beta_i ) }
+#'						{ \bar \Phi_i( \alpha_{i+1} ) - \bar \Phi_i( \beta_i ) } \Phi_{i+1}( x )}}
+#'			}
+#'
+#'			ここで、 \eqn{\Phi_i, \Phi_{i+1}} は当該接続区間の前後の独立区間を負担する正規分布の累積分布関数である。
+#'			\eqn{\bar \Phi_i} は \eqn{\Phi_i} と \eqn{\Phi_{i+1}} の平均である。
+#'
+#'			連続分布では、累積分布関数 \eqn{\Psi(x)} を以下のように定める。
+#'
+#'			\describe{
+#'				\item{type1.type = 1, continuous or symmetric = TRUE}{\deqn{
+#'					\Psi( x ) = \dfrac{\Phi_1( x ) + \Phi_2( x )}{2}}}
+#'				\item{type1.type = 2, continuous = TRUE}{\deqn{
+#'					\Psi( x ) = \displaystyle \int_{-\infty}^{x}
+#'						\left \lbrace ( 1 - \dfrac{f_1(t)}{\Phi_1(t)} ) f_1(t)
+#'						+ \dfrac{f_2(t)}{\Phi_2(t)} f_2(t) \right \rbrace dt \\
+#'					= \Phi_1( x ) - \dfrac{\Phi_1( x )^2}{2} + \dfrac{\Phi_2( x )^2}{2}
+#'						\qquad \quad \ \ \ }}
+#'				\item{type1.type = 2, symmetric = TRUE}{\deqn{
+#'					\Psi( x ) = \genfrac{\lbrace}{}{0pt}{0}
+#'						{ \Psi_1( x ) = \Phi_1( x ) - \Phi_1( x )^2 + \Phi_2( x )^2 \quad ( x \leq \mu ) }
+#'						{ \Psi_2( x ) = 1 - \Psi_1( 2\mu - x ) \qquad \quad \, \, \ \ \ \ \ \ \ ( x > \mu ) }}}
+#'				\item{type1.type = 3, v.grad = TRUE}{\deqn{
+#'					\Psi(x) = \displaystyle \int_{-\infty}^{x}
+#'						\left \lbrace ( 1 - \dfrac{f_1(t)}{f_1(\mu_1)} ) f_1(t)
+#'						+ \dfrac{f_2(t)}{f_2(\mu_2)} f_2(t) \right \rbrace dt \\
+#'					= \Phi_1(x) - \dfrac{\Phi^*_1(x)}{\sqrt{2}} + \dfrac{\Phi^*_2(x)}{\sqrt{2}}
+#'						\qquad \qquad \quad \ \ }}
+#'				\item{type1.type = 3, v.grad = FALSE}{\deqn{
+#'					\Psi(x) = \displaystyle \int_{-\infty}^{\min( x, \mu_1 )}
+#'						( 1 - \dfrac{f_1(t)}{f_1(\mu_1)} ) f_1(t) \ dt
+#'						+ \displaystyle \int_{-\infty}^x \dfrac{f_2(t)^2}{f_2(\mu_2)} \ dt
+#'						+ \displaystyle \int_{\min( x, \mu_3 )}^x ( 1 - \dfrac{f_3(t)}{f_3(\mu_3)} ) f_3(t) \ dt \\
+#'					\quad \ \ \ = \min( \Phi_1(x) - \dfrac{\Phi^*_1(x)}{\sqrt{2}}, \ \dfrac{2 - \sqrt{2}}{4} )
+#'						+ \dfrac{\Phi^*_2(x)}{\sqrt{2}}
+#'						+ \max( 0, \ \Phi_3(x) - \dfrac{\Phi^*_3(x)}{\sqrt{2}} - \dfrac{2 - \sqrt{2}}{4} ) }}
+#'				\item{type1.type = 4}{\deqn{
+#'					\Psi(x) = \Psi_1(x) - \dfrac{\Psi_1(x)^2}{2} + \dfrac{\Psi_2(x)^2}{2} \qquad \qquad \quad \\
+#'					\Psi_i(x) =
+#'						\Phi_{i,1}(x) - \dfrac{\Phi^*_{i,1}(x)}{\sqrt{2}} + \dfrac{\Phi^*_{i,2}(x)}{\sqrt{2}}
+#'						\quad (i = 1, 2)}}
+#'			}
+#'
+#'			ただし、\eqn{\Phi_i} および \eqn{\Phi_{i,j}} は構成要素の正規分布の累積分布関数、
+#'			\eqn{f_i} は構成要素の正規分布の確率密度関数、\eqn{\mu_i} は構成要素の正規分布の平均値、
+#'			\eqn{\Phi^*_i} および \eqn{\Phi^*_{i,j}} は
+#'			正規分布 \eqn{N(\mu_i, (\sigma_i / \sqrt{2})^2)} および
+#'			\eqn{N(\mu_{i,j}, (\sigma_{i,j} / \sqrt{2})^2)} の累積分布関数である。
+#'	}
 #' @return	nleqslv() を内部で実行した場合はその結果。それ以外は NULL
 #' @importFrom	nleqslv		nleqslv
 #' @seealso	\link[cgd]{trace.q}, \href{https://github.com/Kimitsuna-Goblin/CGD}{README.md} (GitHub)
@@ -3199,7 +3334,7 @@ CGD$methods(
 			index <- cgd.kind.index( kind )[1]
 		}
 
-		if ( !is.nan( index ) )
+		if ( !is.na( index ) )
 		{
 			normal		<- ( index == 1 )
 			symmetric	<- ( index == 3 )
@@ -4037,7 +4172,7 @@ nls.start.template <- function( target )
 {
 	kind.index <- cgd.kind.index( target )[1]
 
-	if ( is.na( kind.index ) || kind.index < 1 || kind.index > ( length( kinds ) - 1 ) )
+	if ( is.na( kind.index ) || any( kind.index == 1:( length( kinds ) - 1 ) ) )
 	{
 		warning( paste( target, "is not suitable for cgd.kind.index." ) )
 		return ( NULL )
@@ -4118,7 +4253,9 @@ nls.start.template <- function( target )
 #'						ベクトルまたはリストの要素は
 #'						\link[cgd]{CGD} クラスオブジェクト か、
 #'						cgd:::kinds の要素の文字列か、またはそのインデックス番号であること。
-#' @return	分布の種類 (kinds) のインデックス番号のベクトル
+#' @return	分布の種類 (kinds) のインデックス番号のベクトルを返す。
+#'			引数に NULL が与えられた場合は NULL を返し、
+#'			それ以外で対象となるインデックス番号が存在しない場合は NA を返す。
 #' @seealso	\link[cgd]{kind}
 #' @examples
 #'	cgd.kind.index( cgd:::kinds )
@@ -4152,13 +4289,27 @@ cgd.kind.index <- function( targets )
 		{
 			result <- target$kind.index
 		}
-		else if ( inherits( target[[1]], "numeric" ) || inherits( target[[1]], "integer" ) )
+		else if ( is.numeric( target[[1]] ) )
 		{
-			result <- as.integer( target[( target >= 1 ) & ( target <= length( kinds ) )] )
+			if ( complete.cases( target ) && any( target == 1:length( kinds ) ) )
+			{
+				result <- as.integer( target )
+			}
+			else
+			{
+				result <- as.integer( NA )
+			}
 		}
 		else
 		{
-			result <- ( 1:length( kinds ) )[( !is.na( target ) ) & ( kinds == target )]
+			if ( complete.cases( target ) )
+			{
+				result <- ( 1:length( kinds ) )[( kinds == target )]
+			}
+			else
+			{
+				result <- as.integer( NA )
+			}
 		}
 
 		return ( result )
@@ -5482,7 +5633,8 @@ CGD$methods(
 ###############################################################################
 #' TeX 形式表示
 #'
-#' 累積分布関数 Ψ(x) と確率密度関数 g(x) を TeX 形式で表示する (連続分布の場合のみ有効)。
+#' 累積分布関数 \eqn{\Psi(x)} と確率密度関数 \eqn{g(x)} を
+#' TeX 形式で表示する (連続分布の場合のみ有効)。
 #' @name	CGD_tex
 #' @usage	CGD$tex( decimal = 6, write.comma = TRUE )
 #' @param	decimal			小数点以下桁数 (デフォルト: 6)。
@@ -5565,9 +5717,9 @@ CGD$methods(
 )
 
 ###############################################################################
-#' 累積分布関数 Ψ(x) の TeX 形式表示
+#' 累積分布関数の TeX 形式表示
 #'
-#' 累積分布関数 Ψ(x) を TeX 形式で表示する (連続分布の場合のみ有効)。
+#' 累積分布関数 \eqn{\Psi(x)} を TeX 形式で表示する (連続分布の場合のみ有効)。
 #' @name	CGD_tex.p
 #' @usage	CGD$tex.p( decimal = 6, write.comma = TRUE )
 #' @param	decimal			小数点以下桁数 (デフォルト: 6)。
@@ -5646,9 +5798,9 @@ CGD$methods(
 )
 
 ###############################################################################
-#' 確率密度関数 g(x) の TeX 形式表示
+#' 確率密度関数の TeX 形式表示
 #'
-#' 確率密度関数 g(x) を TeX 形式で表示する (連続分布の場合のみ有効)。
+#' 確率密度関数 \eqn{g(x)} を TeX 形式で表示する (連続分布の場合のみ有効)。
 #' @name	CGD_tex.d
 #' @usage	CGD$tex.d( decimal = 6, write.comma = TRUE )
 #' @param	decimal			小数点以下桁数 (デフォルト: 6)。
