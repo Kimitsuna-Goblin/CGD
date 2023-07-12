@@ -13,22 +13,22 @@ CGD$is.uni.mean()
 分布を構成するすべての正規分布の平均値が等しいかどうかを調べる。
 }
 \examples{
-a <- CGD$new()
-a$kind	## Normal Distribution
-a$is.uni.mean()	## TRUE
+ a <- CGD$new()
+ a$kind  ## Normal Distribution
+ a$is.uni.mean() ## TRUE
 
-a$set.waypoints(
-	data.frame( p = c( 0.1, 0.4, 0.6, 0.9 ), q = c( -1.92, -0.20, 0.20, 1.92 ) ),
-	this.type1.type = 3, v.grad = TRUE )
-a$kind	## Mean-Differed Sigma-Differed Vertical Gradational Distribution
-a$is.uni.mean()	## FALSE
+ a$set.waypoints(
+     data.frame( p = c( 0.1, 0.4, 0.6, 0.9 ), q = c( -1.92, -0.20, 0.20, 1.92 ) ),
+     this.type1.type = 3, v.grad = TRUE )
+ a$kind  ## Median-Differed Sigma-Differed Vertical Gradational Distribution
+ a$is.uni.mean() ## FALSE
 
-a <- CGD$new()
-a$set.waypoints(
-	data.frame(
-		p = c( 0.2, 0.5, 0.6, 0.7 ),
-		q = c( qnorm( c( 0.2, 0.5, 0.6 ), 0, 1 ), 0.5 ) ),
-	this.type1.type = 1 )
-a$kind	## Discontinuous Connected Gaussian Distribution
-a$is.uni.mean()	## TRUE
+ a <- CGD$new()
+ a$set.waypoints(
+     data.frame(
+         p = c( 0.2, 0.5, 0.6, 0.7 ),
+         q = c( qnorm( c( 0.2, 0.5, 0.6 ), 0, 1 ), 0.5 ) ),
+     this.type1.type = 1 )
+ a$kind  ## Discontinuous Connected Gaussian Distribution
+ a$is.uni.mean() ## TRUE
 }

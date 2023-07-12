@@ -16,10 +16,10 @@ x における確率密度関数の値
 X座標 (クォンタイル) を指定して、確率密度を取得する。
 }
 \examples{
-a <- CGD$new()
-a$set.waypoints(
-	data.frame( p = c( 0.25, 0.5, 0.75 ), q = c( -0.67, 0, 0.53 ) ),
-	this.type1.type = 2, continuous = TRUE )
-a$d( c( -0.67, 0, 0.53 ) )
-plot( seq( -3, 3, 0.01 ), a$d( seq( -3, 3, 0.01 ) ), type = "l" )
+ a <- CGD$new()
+ a$set.waypoints(
+     data.frame( p = c( 0.25, 0.5, 0.75 ), q = c( -0.67, 0, 0.53 ) ),
+     this.type1.type = 2, continuous = TRUE )
+ a$d( c( -0.67, 0, 0.53 ) )
+ plot( seq( -3, 3, 0.01 ), a$d( seq( -3, 3, 0.01 ) ), type = "l" )
 }

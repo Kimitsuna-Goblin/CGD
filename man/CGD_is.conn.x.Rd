@@ -11,22 +11,23 @@ CGD$is.conn.x(x)
 }
 \value{
 第1要素 (bool) に、接続区間に入っていれば TRUE、入っていなければ FALSE。
-			ただし、type1.type = 3 では、2番目の独立区間が接続区間と互いに重なることがあるが、
-			指定された座標が独立区間と接続区間の両方に入っているときは、 FALSE を返す。
-		第2要素 (i.1) に、前の intervals のインデックス番号。
-			bool = FALSE の場合は 独立区間の intervals のインデックス。
-		第3要素 (i.2) に、後の intervals のインデックス番号が入ったリスト。
-			bool = FALSE の場合は NaN。
+             ただし、type1.type = 3 では、
+             2番目の独立区間が接続区間と互いに重なることがあるが、
+             指定された座標が独立区間と接続区間の両方に入っているときは FALSE を返す。
+         第2要素 (i.1) に、前の intervals のインデックス番号。
+             bool = FALSE の場合は 独立区間の intervals のインデックス。
+         第3要素 (i.2) に、後の intervals のインデックス番号が入ったリスト。
+             bool = FALSE の場合は NaN。
 }
 \description{
 指定されたX座標 (クォンタイル) が接続区間に入っているかどうかを調べる。
 }
 \examples{
-a <- CGD$new()
-a$set.waypoints(
-data.frame(
-	p = c( 0.2, 0.5, 0.6, 0.7 ),
-	q = c( qnorm( c( 0.2, 0.5, 0.6 ), 0, 1 ), 0.5 ) ),
-this.type1.type = 1 )
-a$is.conn.x( c( -Inf, -0.3, 0.3, 3.0, Inf ) )
+ a <- CGD$new()
+ a$set.waypoints(
+ data.frame(
+     p = c( 0.2, 0.5, 0.6, 0.7 ),
+     q = c( qnorm( c( 0.2, 0.5, 0.6 ), 0, 1 ), 0.5 ) ),
+ this.type1.type = 1 )
+ a$is.conn.x( c( -Inf, -0.3, 0.3, 3.0, Inf ) )
 }

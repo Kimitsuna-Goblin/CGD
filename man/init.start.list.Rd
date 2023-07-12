@@ -21,30 +21,30 @@ length( cgd:::kinds ) - 1 個の NULL が入ったリスト
 また、 \link[cgd]{nls.start.template} で、リストの各要素のテンプレートが得られる。
 }
 \examples{
-## preparing
-x <- seq( -2, 2, 0.2 )
-freq <- c( 15.164, 22.923, 25.134, 27.631, 37.239, 40.464,
-		47.126, 79.469, 109.966, 118.241, 111.333, 78.674,
-		46.921, 41.026, 36.975, 27.403, 25.493, 22.838,
-		14.992, 11.468, 9.174 )
-total <- sum( freq )
+ ## preparing
+ x <- seq( -2, 2, 0.2 )
+ freq <- c( 15.164, 22.923, 25.134, 27.631, 37.239, 40.464,
+         47.126, 79.469, 109.966, 118.241, 111.333, 78.674,
+         46.921, 41.026, 36.975, 27.403, 25.493, 22.838,
+         14.992, 11.468, 9.174 )
+ total <- sum( freq )
 
-## getting the initial list
-start.list <- init.start.list()
+ ## getting the initial list
+ start.list <- init.start.list()
 
-## setting the start parameters of cgd:::kinds[13]
-start.list[[13]] <- nls.start.template( 13 )
-start.list[[13]]	## checking the names of parameters for setting the start of cgd:::kinds[13]
+ ## setting the start parameters of cgd:::kinds[13]
+ start.list[[13]] <- nls.start.template( 13 )
+ start.list[[13]]    ## checking the names of parameters for cgd:::kinds[13]
 
-start.list[[13]]$mean.1.1 <- -0.671
-start.list[[13]]$mean.1.2 <- -0.198
-start.list[[13]]$mean.2.1 <- 0.293
-start.list[[13]]$mean.2.2 <- -0.198
-start.list[[13]]$sqrt.sd <- sqrt( 0.640 )	## sqrt.sd is the square root of the standard deviation.
+ start.list[[13]]$mean.1.1 <- -0.671
+ start.list[[13]]$mean.1.2 <- -0.198
+ start.list[[13]]$mean.2.1 <- 0.293
+ start.list[[13]]$mean.2.2 <- -0.198
+ start.list[[13]]$sqrt.sd <- sqrt( 0.640 )   ## the sqrt of the standard deviation.
 
-## try nls.freq.all
-result <- nls.freq.all( x, freq, total, start = start.list )
-result$cor
+ ## try nls.freq.all
+ result <- nls.freq.all( x, freq, total, start = start.list )
+ result$cor
 }
 \seealso{
 \link[cgd]{nls.freq.all}, \link[cgd]{nls.start.template}

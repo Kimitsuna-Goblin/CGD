@@ -7,38 +7,39 @@
 cgd.kind.index(targets)
 }
 \arguments{
-\item{targets}{分布の種類を特定する変数 (ベクトルまたはリストまたは \link[cgd]{CGD} クラスオブジェクト)。
+\item{targets}{分布の種類を特定する変数
+ (ベクトルまたはリストまたは \link[cgd]{CGD} クラスオブジェクト)。
 ベクトルまたはリストの要素は
 \link[cgd]{CGD} クラスオブジェクト か、
 cgd:::kinds の要素の文字列か、またはそのインデックス番号であること。}
 }
 \value{
 分布の種類 (kinds) のインデックス番号のベクトルを返す。
-		引数に NULL が与えられた場合は NULL を返し、
-		それ以外で対象となるインデックス番号が存在しない場合は NA を返す。
+         引数に NULL が与えられた場合は NULL を返し、
+         それ以外で対象となるインデックス番号が存在しない場合は NA を返す。
 }
 \description{
 分布の種類を表すインデックス番号を取得する。
 }
 \examples{
-cgd.kind.index( cgd:::kinds )
-cgd.kind.index( 1:16 )
-cgd.kind.index( 6 )
-cgd.kind.index( "3-Mean-Differed 3-Sigma-Differed Vertical Gradational Distribution" )
+ cgd.kind.index( cgd:::kinds )
+ cgd.kind.index( 1:16 )
+ cgd.kind.index( 6 )
+ cgd.kind.index( "3-Median-Differed 3-Sigma-Differed Vertical Gradational Distribution" )
 
-a <- CGD$new()
-cgd.kind.index( a )
+ a <- CGD$new()
+ cgd.kind.index( a )
 
-x <- seq( -2, 2, 0.2 )
-freq <- c( 0.057, 0.277, 1.002, 3.178, 9.646, 22.109,
-		42.723, 80.646, 117.625, 139.181, 162.319, 150.870,
-		109.947, 78.736, 46.616, 21.058, 9.211, 3.466,
-		0.976, 0.260, 0.061 )
-total <- sum( freq )
+ x <- seq( -2, 2, 0.2 )
+ freq <- c( 0.057, 0.277, 1.002, 3.178, 9.646, 22.109,
+         42.723, 80.646, 117.625, 139.181, 162.319, 150.870,
+         109.947, 78.736, 46.616, 21.058, 9.211, 3.466,
+         0.976, 0.260, 0.061 )
+ total <- sum( freq )
 
-cgds <- nls.freq.all( x, freq, total )
-cgd.kind.index( cgds$cgd )
+ cgds <- nls.freq.all( x, freq, total )
+ cgd.kind.index( cgds$cgd )
 }
 \seealso{
-\link[cgd]{kind}
+\link[cgd]{cgd.kind}
 }

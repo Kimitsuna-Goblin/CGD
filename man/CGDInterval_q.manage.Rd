@@ -13,6 +13,6 @@ CGDInterval$q.manage()
 負担区間 (前の区間との接続区間～次の区間との接続区間) に対するX座標 (クォンタイル) を取得する。
 }
 \examples{
-a <- CGD$new()
-a$intervals[[1]]$q.manage()
+ a <- CGD$new()
+ a$intervals[[1]]$q.manage()
 }

@@ -2,7 +2,7 @@
 % Please edit documentation in R/CGD.R
 \name{CGD$intervals.sd}
 \alias{CGD$intervals.sd}
-\title{標準偏差のベクトル取得}
+\title{構成要素の各正規分布の標準偏差取得}
 \usage{
 CGD$intervals.sd()
 }
@@ -10,19 +10,19 @@ CGD$intervals.sd()
 intervals の sd の値を並べたベクトル
 }
 \description{
-intervals の sd の値をベクトルに整列して返す。
+intervals フィールドの sd の値をベクトルに整列して返す。
 }
 \examples{
-a <- CGD$new()
-a$set.waypoints(
-	data.frame( p = c( 0.25, 0.5, 0.75 ), q = c( -0.67, 0, 0.53 ) ),
-	this.type1.type = 2, continuous = TRUE )
-a$intervals.sd()
+ a <- CGD$new()
+ a$set.waypoints(
+     data.frame( p = c( 0.25, 0.5, 0.75 ), q = c( -0.67, 0, 0.53 ) ),
+     this.type1.type = 2, continuous = TRUE )
+ a$intervals.sd()
 
-a$set.waypoints(
-	data.frame(
-		p = c( 0.1, 0.2, 0.3, 0.4, 0.6, 0.7, 0.8, 0.9 ),
-		q = c( -1.40, -0.96, -0.61, -0.30, 0.32, 0.72, 1.23, 2.21 ) ),
-this.type1.type = 4 )
-a$intervals.sd()
+ a$set.waypoints(
+     data.frame(
+         p = c( 0.1, 0.2, 0.3, 0.4, 0.6, 0.7, 0.8, 0.9 ),
+         q = c( -1.40, -0.96, -0.61, -0.30, 0.32, 0.72, 1.23, 2.21 ) ),
+ this.type1.type = 4 )
+ a$intervals.sd()
 }

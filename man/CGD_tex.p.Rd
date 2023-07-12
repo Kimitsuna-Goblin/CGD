@@ -4,12 +4,13 @@
 \alias{CGD$tex.p}
 \title{累積分布関数の TeX 形式表示}
 \usage{
-CGD$tex.p( decimal = 6, write.comma = TRUE )
+CGD$tex.p(decimal = 6, write.comma = TRUE)
 }
 \arguments{
 \item{decimal}{小数点以下桁数 (デフォルト: 6)。}
 
-\item{write.comma}{論文のように "," と "." を付けるかどうかのフラグ (デフォルト: TRUE)。}
+\item{write.comma}{論文のように "," と "." を付けるかどうかのフラグ
+(デフォルト: TRUE)。}
 }
 \value{
 なし
@@ -18,18 +19,18 @@ CGD$tex.p( decimal = 6, write.comma = TRUE )
 累積分布関数 \eqn{\Psi(x)} を TeX 形式で表示する (連続分布の場合のみ有効)。
 }
 \examples{
-a <- CGD$new()
-a$set.waypoints(
-data.frame( p = c( 0.25, 0.5, 0.75 ), q = c( -0.67, 0, 0.53 ) ),
-this.type1.type = 2, continuous = TRUE )
-a$tex.p()
+ a <- CGD$new()
+ a$set.waypoints(
+ data.frame( p = c( 0.25, 0.5, 0.75 ), q = c( -0.67, 0, 0.53 ) ),
+ this.type1.type = 2, continuous = TRUE )
+ a$tex.p()
 
-x <- seq( -2, 2, 0.2 )
-freq <- c( 15.164, 22.923, 25.134, 27.631, 37.239, 40.464,
-		47.126, 79.469, 109.966, 118.241, 111.333, 78.674,
-		46.921, 41.026, 36.975, 27.403, 25.493, 22.838,
-		14.992, 11.468, 9.174 )
-total <- sum( freq )
-a$nls.freq( x, freq, total, this.type1.type = 1 )
-a$tex.p( 3, FALSE )
+ x <- seq( -2, 2, 0.2 )
+ freq <- c( 15.164, 22.923, 25.134, 27.631, 37.239, 40.464,
+         47.126, 79.469, 109.966, 118.241, 111.333, 78.674,
+         46.921, 41.026, 36.975, 27.403, 25.493, 22.838,
+         14.992, 11.468, 9.174 )
+ total <- sum( freq )
+ a$nls.freq( x, freq, total, this.type1.type = 1 )
+ a$tex.p( 3, FALSE )
 }

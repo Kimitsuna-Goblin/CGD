@@ -18,5 +18,5 @@ gen.t3.intervals(means, sds)
 type1.type=3 の intervals を生成する。
 }
 \examples{
-gen.t3.intervals( means = c( 1.625, 0.032, -1.37 ), sds = rep( 0.828, 3 ) )
+ gen.t3.intervals( means = c( 1.625, 0.032, -1.37 ), sds = rep( 0.828, 3 ) )
 }

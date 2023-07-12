@@ -18,9 +18,9 @@ CGD$r(n, tol = 2^(-17))
 ランダムサンプルを取得する。
 }
 \examples{
-a <- CGD$new()
-a$set.waypoints(
-data.frame( p = c( 0.25, 0.5, 0.75 ), q = c( -0.67, 0, 0.53 ) ),
-this.type1.type = 2, continuous = TRUE )
-hist( a$r( 400 ) )
+ a <- CGD$new()
+ a$set.waypoints(
+ data.frame( p = c( 0.25, 0.5, 0.75 ), q = c( -0.67, 0, 0.53 ) ),
+ this.type1.type = 2, continuous = TRUE )
+ hist( a$r( 400 ) )
 }

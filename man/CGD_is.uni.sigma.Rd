@@ -13,19 +13,19 @@ CGD$is.uni.sigma()
 分布を構成するすべての正規分布の標準偏差が等しいかどうかを調べる。
 }
 \examples{
-a <- CGD$new()
-a$kind	## Normal Distribution
-a$is.uni.sigma()	## TRUE
+ a <- CGD$new()
+ a$kind  ## Normal Distribution
+ a$is.uni.sigma()    ## TRUE
 
-a$set.waypoints(
-	data.frame( p = c( 0.1, 0.4, 0.6, 0.9 ), q = c( -1.92, -0.20, 0.20, 1.92 ) ),
-	this.type1.type = 3, v.grad = TRUE )
-a$kind	## Mean-Differed Sigma-Differed Vertical Gradational Distribution
-a$is.uni.sigma()	## FALSE
+ a$set.waypoints(
+     data.frame( p = c( 0.1, 0.4, 0.6, 0.9 ), q = c( -1.92, -0.20, 0.20, 1.92 ) ),
+     this.type1.type = 3, v.grad = TRUE )
+ a$kind  ## Median-Differed Sigma-Differed Vertical Gradational Distribution
+ a$is.uni.sigma()    ## FALSE
 
-a$set.waypoints(
-	data.frame( p = c( 0.25, 0.5, 0.70 ), q = c( -0.67, 0, 0.53 ) ),
-	this.type1.type = 2, continuous = TRUE, uni.sigma = TRUE )
-plot( seq( -3, 3, 0.01 ), a$d( seq( -3, 3, 0.01 ) ), type = "l" )
-a$is.uni.sigma()	## TRUE
+ a$set.waypoints(
+     data.frame( p = c( 0.25, 0.5, 0.70 ), q = c( -0.67, 0, 0.53 ) ),
+     this.type1.type = 2, continuous = TRUE, uni.sigma = TRUE )
+ plot( seq( -3, 3, 0.01 ), a$d( seq( -3, 3, 0.01 ) ), type = "l" )
+ a$is.uni.sigma()    ## TRUE
 }

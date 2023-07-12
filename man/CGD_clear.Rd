@@ -7,7 +7,8 @@
 CGD$clear(clear.intervals = TRUE)
 }
 \arguments{
-\item{clear.intervals}{intervals フィールドを初期化するかどうかのフラグ (デフォルト: TRUE)。
+\item{clear.intervals}{intervals フィールドを初期化するかどうかのフラグ
+ (デフォルト: TRUE)。
 FALSE にすると、 intervals フィールドはクリアされないが、
 mean などの他のフィールドはクリアされてしまうので、
 他のフィールドを明示的に再設定しないと、
@@ -20,11 +21,11 @@ mean などの他のフィールドはクリアされてしまうので、
 コンストラクタを使わずに、 type1.type 以外のフィールドを初期状態にする。
 }
 \examples{
-a <- CGD$new()
-a$set.waypoints(
-	data.frame( p = c( 0.25, 0.5, 0.75 ), q = c( -0.67, 0, 0.53 ) ),
-	this.type1.type = 2, continuous = TRUE )
-a
-a$clear()
-a
+ a <- CGD$new()
+ a$set.waypoints(
+     data.frame( p = c( 0.25, 0.5, 0.75 ), q = c( -0.67, 0, 0.53 ) ),
+     this.type1.type = 2, continuous = TRUE )
+ a
+ a$clear()
+ a
 }

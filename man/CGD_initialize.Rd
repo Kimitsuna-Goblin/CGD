@@ -2,13 +2,17 @@
 % Please edit documentation in R/CGD.R
 \name{CGD$initialize}
 \alias{CGD$initialize}
+\alias{CGD$new}
 \title{コンストラクタ}
 \usage{
 CGD$new(type1.type = 1)
 }
 \arguments{
-\item{type1.type}{type 1 の場合の計算方法。 1、2、3、4 のいずれかを指定すること (デフォルト: 1)。
-1～4 の詳細については、 \link[cgd]{trace.q} の Details を参照。}
+\item{type1.type}{type 1 の場合の計算方法。 0、1、2、3、4 のいずれかを指定すること
+ (デフォルト: 1)。
+それ以外の数値を指定した場合は警告が表示され、
+type1.type はデフォルトの 1 になる。
+0～4 の詳細については、 \link[cgd]{trace.q} の Details を参照。}
 }
 \description{
 \link[cgd]{CGD} クラスオブジェクトを生成する。
@@ -18,11 +22,12 @@ CGD$new(type1.type = 1)
 連結区間の構成が分かっている場合は \link[cgd]{CGD$set.intervals} を使用すること。
 }
 \examples{
-CGD$new()
-CGD$new( type1.type = 2 )
-CGD$new( 3 )
-CGD$new( 4 )
+ CGD$new()
+ CGD$new( type1.type = 2 )
+ CGD$new( 3 )
+ CGD$new( 4 )
 }
 \seealso{
-\link[cgd]{CGDInterval}, \link[cgd]{CGD$set.intervals}, \link[cgd]{CGD$set.waypoints}
+\link[cgd]{CGDInterval}, \link[cgd]{CGD$set.intervals},
+         \link[cgd]{CGD$set.waypoints}
 }

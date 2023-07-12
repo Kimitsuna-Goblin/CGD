@@ -16,39 +16,57 @@ trace.q(
 )
 }
 \arguments{
-\item{quantiles}{分位点を指定する data.frame( q = X座標 (クォンタイル), p = その点における確率 )
-X座標 (クォンタイル) は昇順にソートしておくこと。
-平均値は p = 0.5 の点のX座標として与えること。}
+\item{quantiles}{分位点を指定する
+ data.frame( q = X座標 (クォンタイル), p = 確率 )。
+ X座標 (クォンタイル) は昇順にソートしておくこと。
+ 不連続分布を構成する場合は、
+中央値 (p = 0.5 の点) を必ず与えること。}
 
-\item{continuous}{TRUE にすると、 type1.type = 1 または 2 のとき、独立区間を [0, 0] と [1, 1] の 2点にして、
+\item{continuous}{TRUE にすると、 type1.type = 1 または 2 のとき、
+独立区間を [0, 0] と [1, 1] の 2点にして、
 確率密度関数が全区間 \eqn{(-\infty, \infty)} で連続になるように
-分布構成を試みる (デフォルト: FALSE)。
-type1.type = 1 または 2 のときに有効 (type1.type >= 3 では常に連続)。}
+構成を試みる (デフォルト: FALSE)。
+type1.type = 1 または 2 のときのみ有効。}
 
-\item{symmetric}{TRUE にすると、確率密度関数が、平均点を中心として左右対称になるように試みる (デフォルト: FALSE)。
+\item{symmetric}{TRUE にすると、確率密度関数が
+中央値を中心として左右対称になるように試みる (デフォルト: FALSE)。
 type1.type = 1 または 2 のときのみ有効。
-type1.type = 2, symmetric = TRUE のときは、確率が 0.5 の点を quantiles に必ず指定する必要がある。
-なお、 type1.type = 2, symmetric = TRUE のときの確率密度関数は平均値の点において微分できない。}
+ただし、 type1.type = 2, symmetric = TRUE の確率密度関数は、
+一般に、中央値の点で微分できない関数になる。
+type1.type = 2, symmetric = TRUE のときは、
+必ず中央値 (p = 0.5 の点) を quantiles に指定する必要がある。}
 
 \item{v.grad}{TRUE にすると、 type1.type = 3 のとき、
-裾部の左右の標準偏差が等しい、縦方向グラデーションの分布を構成する (デフォルト: FALSE)。}
+裾部の左右の標準偏差が等しい、上下2つの正規分布による
+縦方向グラデーションの分布を構成する (デフォルト: FALSE)。}
 
 \item{uni.sigma}{TRUE にすると、連続分布に対して、
-構成要素の各正規分布の標準偏差を強制的に等しくする (デフォルト: FALSE)。
+intervals の各正規分布の標準偏差を強制的に等しくする
+ (デフォルト: FALSE)。
 経路の構成点が少ない場合のみ有効
- (type1.type = 2 では 3点、type1.type = 3 では 3～4点、type1.type = 4 では 5点)。}
+ (type1.type = 2 では 3点、
+  type1.type = 3 では 3～4点 (v.grad = TRUE の場合は 3点のみ)、
+  type1.type = 4 では 5点 の場合に有効)。}
 
-\item{diff.mean}{TRUE にすると、構成要素の各正規分布の平均値が異なるようになるように試みる (デフォルト: FALSE)。
+\item{diff.mean}{TRUE にすると、 intervals の各正規分布の平均値が
+異なる値になるよう試みる (デフォルト: FALSE)。
 不連続分布および type1.type = 1 または symmetric = TRUE では無効。
-なお、 diff.mean = TRUE としても、結果的に、各正規分布の平均値が等しくなることもあり得る。}
+なお、 diff.mean = TRUE としても、
+与えられた分位点の条件によっては、
+各要素の平均値がすべて等しくなることもあり得る。}
 
-\item{control}{nleqslv に渡す、同関数の control オプションのリスト (デフォルト: list())。
+\item{control}{3nleqslv に渡す、同関数の control オプションのリスト
+ (デフォルト: list())。
 詳細は \link[nleqslv]{nleqslv} の Control options を参照。
-デフォルトは空だが、条件不足のため "Jacobian is singular" のエラーになる可能性が高い場合は
+デフォルトは空だが、分位点の個数が少ない場合など、
+条件不足で "Jacobian is singular" のエラーになる可能性が高い場合は
 allowSingular = TRUE が暗黙のうちに設定される。
-ただし、引数 control のリストに allowSingular が与えられている場合は、引数のリストを優先する。}
+ただし、引数 control のリストに
+allowSingular が与えられている場合は、引数のリストを優先する。}
 
-\item{type1.type}{フィールドの type1.type に設定する値。 1、2、3、4 のいずれかを指定すること (デフォルト: 1)。
+\item{type1.type}{フィールドの type1.type に設定する値。
+0、1、2、3、4 のいずれかを指定すること (デフォルト: 1)。
+0、1、2、3、4 以外の数値を指定した場合はエラーになる。
 詳細は Details を参照。}
 }
 \value{
@@ -60,243 +78,321 @@ nleqslv() を内部で実行した場合はその結果。それ以外は NULL
 }
 \details{
 \subsection{type1.type}{
-		type1.type フィールドは連結ガウス分布の累積分布関数を決定するためのオプションである。
+         type1.type フィールドは
+         連結ガウス分布の累積分布関数を決定するためのオプションである。
 
-		連結ガウス分布には、連続分布と不連続分布があるが、連続分布は不連続分布の拡張である。
-		そのため、まず、不連続分布から説明する。
+         連結ガウス分布には、連続分布と不連続分布があるが、
+         連続分布は不連続分布の拡張である。そのため、まず、不連続分布から説明する。
 
-		不連続分布では、
-		確率密度関数や累積分布関数の定義域 \eqn{[-\infty, \infty]} において、
-		1つの正規分布が独立的に分布を負担する\bold{独立区間}の定義域 \eqn{[\alpha_i, \beta_i]} と、
-		2つの正規分布が分布を負担し合う\bold{接続区間}の定義域 \eqn{(\beta_i, \alpha_{i+1})} が交互に現れる。
+         \bold{不連続分布}では、
+         確率密度関数や累積分布関数の定義域 \eqn{[-\infty, \infty]} において、
+         1つの正規分布が独立的に分布を負担する
+         \bold{独立区間}の定義域 \eqn{[\alpha_i, \beta_i]} と、
+         2つの正規分布が分布を負担し合う
+         \bold{接続区間}の定義域 \eqn{(\beta_i, \alpha_{i+1})} が交互に現れる。
 
-		\bold{接続区間}は、その定義域の範囲に平均値 \eqn{\mu} を含むかどうかという条件と、
-		前後の独立区間を負担する正規分布の標準偏差の大小の条件によって、次の4つの type に分類される。
+         \bold{接続区間}は、その定義域の範囲に
+         中央値 \eqn{m} を含むかどうかという条件と、
+         前後の独立区間を負担する正規分布の標準偏差の大小の条件によって、
+         次の4つの type に分類される。
 
-		\itemize{
-			\item type 1 : 定義域に平均値 \eqn{\mu} を含まない。標準偏差は山側の正規分布の方が裾側よりも大きい。
-			\item type 2 : 定義域に平均値 \eqn{\mu} を含まない。標準偏差は山側の正規分布の方が裾側よりも小さい。
-			\item type 3a : 定義域に平均値 \eqn{\mu} を含む。標準偏差は前側の正規分布の方が後側よりも小さい。
-			\item type 3b : 定義域に平均値 \eqn{\mu} を含む。標準偏差は前側の正規分布の方が後側よりも大きい。
-		}
+         \itemize{
+             \item type 1 : 定義域に \eqn{m} を含まない。標準偏差は山側の方が裾側よりも大。
+             \item type 2 : 定義域に \eqn{m} を含まない。標準偏差は山側の方が裾側よりも小。
+             \item type 3a : 定義域に \eqn{m} を含む。標準偏差は前側の方が後側よりも小。
+             \item type 3b : 定義域に \eqn{m} を含む。標準偏差は前側の方が後側よりも大。
+         }
 
-		本パッケージでは、 type 2/3a/3b の接続区間では、連結ガウス分布は
-		原則として、2つの正規分布の平均とする (ただし、細かい場合分けがある。定義式は省略)。
+         本パッケージでは、 type 2/3a/3b の接続区間では、連結ガウス分布は
+         原則として、2つの正規分布の平均とする
+          (ただし、累積分布関数の単調増加性を保証するために、細かい場合分けがある。
+           定義式は省略)。
 
-		一方、 type 1 の接続区間では、 type1.type のオプションに応じて、以下のように2つの正規分布を混合する。
+         一方、 type 1 の接続区間では、 type1.type のオプションに応じて、
+         以下のように2つの正規分布を混合する。
 
-		\bold{type1.type = 1} は、不連続分布を構成する最も単純な方法であり、
-						2つの正規分布の混合比率を線形的に変えて混合する。
-						また、 continuous = TRUE または symmetric = TRUE のオプションにより、
-						左右対称な連続分布である \bold{「平均値が等しい2つの正規分布の平均」} が構成できる
-						 (ただし、これは後述の type1.type = 2 のオプションと異なり、
-						  type 1 の接続区間の拡張ではなく、 type 2/3a/3b の拡張である)。
+         \bold{type1.type = 1} は、不連続分布を構成する最も単純な方法であり、
+                         2つの正規分布の混合比率を線形的に変えて混合する。
+                         また、 continuous = TRUE または symmetric = TRUE
+                         のオプションにより、
+                         左右対称な連続分布である
+                         \bold{「平均値が等しい2つの正規分布の平均」} が構成できる
+                          (ただし、これは後述の type1.type = 2 のオプションと異なり、
+                           type 1 の接続区間の拡張ではなく、
+                           type 2/3a/3b の接続区間の拡張である)。
 
-		\bold{type1.type = 2} は、 1 と同様、不連続分布を構成する方法であるが、
-						混合比率の変化は線形的ではない。
-						このオプションでは、接続区間 \eqn{(\beta_1, \alpha_2)} を
-						\eqn{\beta_1 = -\infty, \alpha_2 = \infty} と拡張すれば、
-						連続分布も構成できるように工夫している。
-						連続分布を構成するには、 continuous = TRUE のオプションを使う。
-						このオプションでは、2つの確率密度関数による \bold{「横方向グラデーション」} が構成できる。
-						この分布の確率密度関数の形は \eqn{x = -\infty} の点から \eqn{x = \infty} の点に向かって、
-						横方向に徐々に変化していくようなイメージになる。
-						また、 symmetric = TRUE のオプションにより、
-						平均値の点で二つに線対称に折り返した、左右対称な連続分布を構成できる
-						 (ただし、文字通り「折り返して」いるため、平均値の点において微分可能ではない)。
+         \bold{type1.type = 2} は、 1 と同様、不連続分布を構成する方法であるが、
+                         混合比率の変化は線形的ではない。
+                         このオプションでは、接続区間 \eqn{(\beta_1, \alpha_2)} を
+                         \eqn{\beta_1 = -\infty, \alpha_2 = \infty} と拡張すれば、
+                         連続分布も構成できるように工夫している。
+                         連続分布を構成するには、 continuous = TRUE のオプションを使う。
+                         このオプションでは、2つの確率密度関数による
+                         \bold{「横方向グラデーション」} が構成できる。
+                         この分布の確率密度関数の形は
+                         \eqn{x = -\infty} の点から \eqn{x = \infty} の点に向かって、
+                         横方向に徐々に変化していくようなイメージになる。
+                         また、 symmetric = TRUE のオプションにより、
+                         x = 中央値 の点で二つに線対称に折り返した、
+                         左右対称な連続分布を構成できる
+                          (ただし、文字通り「折り返して」いるため、
+                           x = 中央値 の点において微分可能ではない)。
 
-		\bold{type1.type = 3} は連続分布に特化した、 \bold{「縦方向グラデーション」} の連結方法である。
-						このとき、確率密度関数の形は平均値から遠い裾部から、平均値に近い山部に向かって、
-						縦方向に徐々に変化していくようなイメージになる。
-						v.grad = TRUE のオプションでは、構成要素の正規分布は裾部と山部の2つになる。
-						v.grad = FALSE のオプションでは、裾部の両側が異なる分布になるので、構成要素の正規分布は3つになる。
+         \bold{type1.type = 3} は連続分布に特化した、
+                         \bold{「縦方向グラデーション」} の構成方法である。
+                         このオプションでは、確率密度関数の形は、
+                         中央値から遠い裾部から、中央値に近い山部に向かって、
+                         縦方向に徐々に変化していくようなイメージになる。
+                         v.grad = TRUE のオプションでは、
+                         構成要素の正規分布は裾部と山部の2つになる。
+                         v.grad = FALSE のオプションでは、
+                         裾部の両側が異なる分布になるので、構成要素の正規分布は3つになる。
 
-		\bold{type1.type = 4} は正規分布の連結ではなく、
-						2つの連続な連結ガウス分布を連結した、 \bold{「縦横グラデーション」} の構成方法である。
-						このオプションでは、2つの type1.type = 3, v.grad = TRUE (縦方向グラデーション) の分布を
-						type1.type = 2, continuous = TRUE (横方向グラデーション) で連結する。
-						この構成方法は、本ライブラリの連続分布の構成方法の中では、最も自由度が高い。
+         \bold{type1.type = 4} は正規分布の連結ではなく、
+                         2つの連続な連結ガウス分布を連結した、
+                         \bold{「縦横グラデーション」} の構成方法である。
+                         このオプションでは、
+                         2つの type1.type = 3, v.grad = TRUE (縦方向グラデーション) の分布を
+                         type1.type = 2, continuous = TRUE (横方向グラデーション) で連結する。
+                         この構成方法は、
+                         本パッケージの連続分布の構成方法の中では、最も自由度が高い。
 
-		連続分布を構成する場合、経路の構成点は一定の個数でなければならない。
-		具体的には、構成点の個数は以下のようにする必要がある。
+         \bold{type1.type = 0} は不連続分布に特化した構成方法である。
+                         このオプションでは、
+                         経路の隣接する2点 \eqn{(q_i, p_i), (q_{i+1}, p_{i+1})}
+                         を通る正規分布の累積分布関数をそのまま連続的に並べることによって、
+                         連結ガウス分布を構成する。
+                         その結果、接続区間の定義域は空集合となり、
+                         全定義域 \eqn{x \in [-\infty, \infty]} の \eqn{x} が、
+                         必ずいずれかの独立区間に含まれることになる。
 
-		\itemize{
-			\item type1.type = 1 : continuous or symmetric = TRUE \eqn{\Rightarrow} 3点
-			\item type1.type = 2 : continuous = TRUE \eqn{\Rightarrow} 3～4点、
-									symmetric = TRUE \eqn{\Rightarrow} 3点 (必ず確率 0.5 の点を含めること)
-			\item type1.type = 3 : v.grad = TRUE \eqn{\Rightarrow} 3～4点、
-									v.grad = FALSE \eqn{\Rightarrow} 3～6点
-			\item type1.type = 4 : 5～8点
-		}
-}
+         \bold{連続分布}は、不連続分布の独立区間の定義域を特別な2つの区間
+         \eqn{[-\infty, -\infty], [\infty, \infty]} のみとし、
+         それら2つの区間を接続する接続区間の定義域を
+         \eqn{(-\infty, \infty)} と拡張することによって、
+         確率密度関数が \eqn{x \in (-\infty, \infty)} の範囲で
+         連続になるように定義した分布である
+          (ただし、 type1.type = 2, symmetric = TRUE のオプションでは、
+           独立区間の定義域は
+           \eqn{[-\infty, -\infty], [\mu, \mu], [\infty, \infty]} の3つ、
+           接続区間の定義域は \eqn{(-\infty, \mu), (\mu, \infty)} の2つ)。
 
-\subsection{累積分布関数の定義式}{
-		不連続分布では、
-		\eqn{i} 番目の接続区間が type 1 のとき、定義域 \eqn{(\beta_i, \alpha_{i+1})} における
-		累積分布関数 \eqn{\Psi_i(x)} は以下の式によって定める。
+         \itemize{
+             \item type1.type = 1 : continuous or symmetric = TRUE \eqn{\Rightarrow} 3点
+             \item type1.type = 2 : continuous = TRUE \eqn{\Rightarrow} 3～4点、
+                                    symmetric = TRUE \eqn{\Rightarrow} 3点
+                                     (必ず確率 0.5 の点を含めること)
+             \item type1.type = 3 : v.grad = TRUE \eqn{\Rightarrow} 3～4点、
+                                    v.grad = FALSE \eqn{\Rightarrow} 3～6点
+             \item type1.type = 4 : 5～8点
+         }
+ }
 
-		\describe{
-			\item{type1.type = 1}{\deqn{
-				\Psi_i( x ) = \dfrac{ \alpha_{i+1} - x }{ \alpha_{i+1} - \beta_i } \Phi_i( x ) +
-					\dfrac{ x - \beta_i }{ \alpha_{i+1} - \beta_i } \Phi_{i+1}( x )}}
-			\item{type1.type = 2}{\deqn{
-				\Psi_i( x ) = \dfrac{ \bar \Phi_i( \alpha_{i+1} ) -
-					\bar \Phi_i( x ) }{ \bar \Phi_i( \alpha_{i+1} ) -
-					\bar \Phi_i( \beta_i ) } \Phi_i( x ) +
-					\dfrac{ \bar \Phi_i( x ) - \bar \Phi_i( \beta_i ) }
-					{ \bar \Phi_i( \alpha_{i+1} ) - \bar \Phi_i( \beta_i ) } \Phi_{i+1}( x )}}
-		}
+ \subsection{累積分布関数の定義式}{
+         不連続分布では、
+         独立区間については、
+         \eqn{i} 番目の独立区間の
+         定義域が \eqn{[\alpha_i, \beta_i]}、確率が \eqn{[a_i, b_i]} のとき、
+         累積分布関数は \eqn{\Phi_i( \alpha_i ) = a_i, \Phi_i( \beta_i ) = b_i} を満たす
+         正規分布の累積分布関数 \eqn{\Phi_i} とする。
 
-		ここで、 \eqn{\Phi_i, \Phi_{i+1}} は当該接続区間の前後の独立区間を負担する正規分布の累積分布関数である。
-		\eqn{\bar \Phi_i} は \eqn{\Phi_i} と \eqn{\Phi_{i+1}} の平均である。
+         ただし、
+         type1.type = 1, 2 の場合は、
+         すべての正規分布の平均値を連結ガウス分布の中央値 \eqn{m} に統一するが、
+         type1.type = 0 の場合は、
+         それぞれの正規分布の平均値を統一しない (接続区間が無いため、統一できない)。
 
-		連続分布では、累積分布関数 \eqn{\Psi(x)} を以下のように定める。
+         接続区間については、
+         \eqn{i} 番目の接続区間が type 1 のとき、定義域 \eqn{(\beta_i, \alpha_{i+1})} における
+         累積分布関数 \eqn{\Psi_i(x)} を以下の式によって定める。
 
-		\describe{
-			\item{type1.type = 1, continuous or symmetric = TRUE}{\deqn{
-				\Psi( x ) = \dfrac{\Phi_1( x ) + \Phi_2( x )}{2}}}
-			\item{type1.type = 2, continuous = TRUE}{\deqn{
-				\Psi( x ) = \displaystyle \int_{-\infty}^{x}
-					\left \lbrace ( 1 - \dfrac{f_1(t)}{\Phi_1(t)} ) f_1(t)
-					+ \dfrac{f_2(t)}{\Phi_2(t)} f_2(t) \right \rbrace dt \\
-				= \Phi_1( x ) - \dfrac{\Phi_1( x )^2}{2} + \dfrac{\Phi_2( x )^2}{2}
-					\qquad \quad \ \ \ }}
-			\item{type1.type = 2, symmetric = TRUE}{\deqn{
-				\Psi( x ) = \genfrac{\lbrace}{}{0pt}{0}
-					{ \Psi_1( x ) = \Phi_1( x ) - \Phi_1( x )^2 + \Phi_2( x )^2 \quad ( x \leq \mu ) }
-					{ \Psi_2( x ) = 1 - \Psi_1( 2\mu - x ) \qquad \quad \, \, \ \ \ \ \ \ \ ( x > \mu ) }}}
-			\item{type1.type = 3, v.grad = TRUE}{\deqn{
-				\Psi(x) = \displaystyle \int_{-\infty}^{x}
-					\left \lbrace ( 1 - \dfrac{f_1(t)}{f_1(\mu_1)} ) f_1(t)
-					+ \dfrac{f_2(t)}{f_2(\mu_2)} f_2(t) \right \rbrace dt \\
-				= \Phi_1(x) - \dfrac{\Phi^*_1(x)}{\sqrt{2}} + \dfrac{\Phi^*_2(x)}{\sqrt{2}}
-					\qquad \qquad \quad \ \ }}
-			\item{type1.type = 3, v.grad = FALSE}{\deqn{
-				\Psi(x) = \displaystyle \int_{-\infty}^{\min( x, \mu_1 )}
-					( 1 - \dfrac{f_1(t)}{f_1(\mu_1)} ) f_1(t) \ dt
-					+ \displaystyle \int_{-\infty}^x \dfrac{f_2(t)^2}{f_2(\mu_2)} \ dt
-					+ \displaystyle \int_{\min( x, \mu_3 )}^x ( 1 - \dfrac{f_3(t)}{f_3(\mu_3)} ) f_3(t) \ dt \\
-				\quad \ \ \ = \min( \Phi_1(x) - \dfrac{\Phi^*_1(x)}{\sqrt{2}}, \ \dfrac{2 - \sqrt{2}}{4} )
-					+ \dfrac{\Phi^*_2(x)}{\sqrt{2}}
-					+ \max( 0, \ \Phi_3(x) - \dfrac{\Phi^*_3(x)}{\sqrt{2}} - \dfrac{2 - \sqrt{2}}{4} ) }}
-			\item{type1.type = 4}{\deqn{
-				\Psi(x) = \Psi_1(x) - \dfrac{\Psi_1(x)^2}{2} + \dfrac{\Psi_2(x)^2}{2} \qquad \qquad \quad \\
-				\Psi_i(x) =
-					\Phi_{i,1}(x) - \dfrac{\Phi^*_{i,1}(x)}{\sqrt{2}} + \dfrac{\Phi^*_{i,2}(x)}{\sqrt{2}}
-					\quad (i = 1, 2)}}
-		}
+         \describe{
+             \item{type1.type = 1}{\deqn{
+                 \Psi_i( x ) =
+                     \dfrac{ \alpha_{i+1} - x }{ \alpha_{i+1} - \beta_i } \Phi_i( x ) +
+                     \dfrac{ x - \beta_i }{ \alpha_{i+1} - \beta_i } \Phi_{i+1}( x )}}
 
-		ただし、\eqn{\Phi_i} および \eqn{\Phi_{i,j}} は構成要素の正規分布の累積分布関数、
-		\eqn{f_i} は構成要素の正規分布の確率密度関数、\eqn{\mu_i} は構成要素の正規分布の平均値、
-		\eqn{\Phi^*_i} および \eqn{\Phi^*_{i,j}} は
-		正規分布 \eqn{N(\mu_i, (\sigma_i / \sqrt{2})^2)} および
-		\eqn{N(\mu_{i,j}, (\sigma_{i,j} / \sqrt{2})^2)} の累積分布関数である。
-}
+             \item{type1.type = 2}{\deqn{
+                 \Psi_i( x ) = \dfrac{ \bar \Phi_i( \alpha_{i+1} ) -
+                     \bar \Phi_i( x ) }{ \bar \Phi_i( \alpha_{i+1} ) -
+                     \bar \Phi_i( \beta_i ) } \Phi_i( x ) +
+                     \dfrac{ \bar \Phi_i( x ) - \bar \Phi_i( \beta_i ) }
+                     { \bar \Phi_i( \alpha_{i+1} ) - \bar \Phi_i( \beta_i ) } \Phi_{i+1}( x )}}
+         }
+
+         ここで、 \eqn{\Phi_i, \Phi_{i+1}} は
+         当該接続区間の前後の独立区間を負担する正規分布の累積分布関数である。
+         \eqn{\bar \Phi_i} は \eqn{\Phi_i} と \eqn{\Phi_{i+1}} の平均である。
+
+         連続分布では、累積分布関数 \eqn{\Psi(x)} を以下のように定める。
+
+         \describe{
+             \item{type1.type = 1, continuous or symmetric = TRUE}{\deqn{
+                 \Psi( x ) = \dfrac{\Phi_1( x ) + \Phi_2( x )}{2}}}
+
+             \item{type1.type = 2, continuous = TRUE}{\deqn{
+                 \Psi( x ) = \displaystyle \int_{-\infty}^{x}
+                     \left \lbrace ( 1 - \dfrac{f_1(t)}{\Phi_1(t)} ) f_1(t)
+                     + \dfrac{f_2(t)}{\Phi_2(t)} f_2(t) \right \rbrace dt \\
+                 = \Phi_1( x ) - \dfrac{\Phi_1( x )^2}{2} + \dfrac{\Phi_2( x )^2}{2}
+                     \qquad \quad \ \ \ }}
+
+             \item{type1.type = 2, symmetric = TRUE}{\deqn{
+                 \Psi( x ) = \genfrac{\lbrace}{}{0pt}{0}
+                     { \Psi_1( x ) = \Phi_1( x ) - \Phi_1( x )^2 + \Phi_2( x )^2
+                                     \quad ( x \leq \mu ) }
+                     { \Psi_2( x ) = 1 - \Psi_1( 2\mu - x )
+                                     \qquad \quad \, \, \ \ \ \ \ \ \ ( x > \mu ) }}}
+
+             \item{type1.type = 3, v.grad = TRUE}{\deqn{
+                 \Psi(x) = \displaystyle \int_{-\infty}^{x}
+                     \left \lbrace ( 1 - \dfrac{f_1(t)}{f_1(\mu_1)} ) f_1(t)
+                     + \dfrac{f_2(t)}{f_2(\mu_2)} f_2(t) \right \rbrace dt \\
+                 = \Phi_1(x) - \dfrac{\Phi^*_1(x)}{\sqrt{2}} + \dfrac{\Phi^*_2(x)}{\sqrt{2}}
+                     \qquad \qquad \quad \ \ }}
+
+             \item{type1.type = 3, v.grad = FALSE}{\deqn{
+                 \Psi(x) = \displaystyle \int_{-\infty}^{\min( x, \mu_1 )}
+                     ( 1 - \dfrac{f_1(t)}{f_1(\mu_1)} ) f_1(t) \ dt
+                     + \displaystyle \int_{-\infty}^x \dfrac{f_2(t)^2}{f_2(\mu_2)} \ dt
+                     + \displaystyle \int_{\min( x, \mu_3 )}^x
+                         ( 1 - \dfrac{f_3(t)}{f_3(\mu_3)} ) f_3(t) \ dt \\
+                 \quad \ \ \ = \min( \Phi_1(x) - \dfrac{\Phi^*_1(x)}{\sqrt{2}}, \
+                                     \dfrac{2 - \sqrt{2}}{4} )
+                     + \dfrac{\Phi^*_2(x)}{\sqrt{2}}
+                     + \max( 0, \ \Phi_3(x) -
+                                  \dfrac{\Phi^*_3(x)}{\sqrt{2}} - \dfrac{2 - \sqrt{2}}{4} ) }}
+
+             \item{type1.type = 4}{\deqn{
+                 \Psi(x) = \Psi_1(x) - \dfrac{\Psi_1(x)^2}{2} +
+                                       \dfrac{\Psi_2(x)^2}{2} \qquad \qquad \quad \\
+                 \Psi_i(x) =
+                     \Phi_{i,1}(x) - \dfrac{\Phi^*_{i,1}(x)}{\sqrt{2}} +
+                                     \dfrac{\Phi^*_{i,2}(x)}{\sqrt{2}}
+                     \quad (i = 1, 2)}}
+         }
+
+         ただし、\eqn{\Phi_i} および \eqn{\Phi_{i,j}} は各構成要素の正規分布の累積分布関数、
+         \eqn{f_i} は i 番目の構成要素の正規分布の確率密度関数、
+         \eqn{\mu_i} は i 番目の構成要素の正規分布の平均値、
+         \eqn{\Phi^*_i} および \eqn{\Phi^*_{i,j}} は
+         正規分布 \eqn{N(\mu_i, (\sigma_i / \sqrt{2})^2)} および
+         \eqn{N(\mu_{i,j}, (\sigma_{i,j} / \sqrt{2})^2)} の累積分布関数である。
+ }
 }
 \examples{
-## Discontinuous Example:
-##	For discontinuous distribution, you can set waypoints as any.
-##	The type1.type must be 1 or 2.
-a <- trace.q(
-	data.frame(
-		p = c( 0.2, 0.5, 0.6, 0.7 ),
-		q = c( qnorm( c( 0.2, 0.5, 0.6 ), 0, 1 ), 0.5 ) ),
-	type1.type = 1 )
-plot( seq( -3, 3, 0.01 ), a$d( seq( -3, 3, 0.01 ) ), type = "l" )
+ ## Discontinuous Example:
+ ##  For discontinuous distribution, you can set waypoints as any.
+ ##  The type1.type must be 1 or 2 or 0.
+ a <- trace.q(
+     data.frame(
+         p = c( 0.2, 0.5, 0.6, 0.7 ),
+         q = c( qnorm( c( 0.2, 0.5, 0.6 ), 0, 1 ), 0.5 ) ),
+     type1.type = 1 )
+ plot( seq( -3, 3, 0.01 ), a$d( seq( -3, 3, 0.01 ) ), type = "l" )
 
-## Mean of 2 Normal Distributions Example:
-##	The type1.type = 1, continuous = TRUE option-set gives mean of 2 normal distributions.
-##	The number of p of waypoints must be 3.
-##	And it is better for every point to take different distance from the mean.
-a <- trace.q(
-	data.frame(
-		p = c( 0.1, 0.5, 0.6 ),
-		q = c( qnorm( 0.1, 0, 1 ), 0, qnorm( 0.6, 0, 0.75 ) ) ),
-	type1.type = 1, continuous = TRUE )
-plot( seq( -3, 3, 0.01 ), a$d( seq( -3, 3, 0.01 ) ), type = "l" )
+ a <- trace.q(
+     data.frame(
+         p = c( 0.2, 0.5, 0.6, 0.7 ),
+         q = c( qnorm( c( 0.2, 0.5, 0.6 ), 0, 1 ), 0.5 ) ),
+     type1.type = 0 )
+ plot( seq( -3, 3, 0.01 ), a$d( seq( -3, 3, 0.01 ) ), type = "l" )
 
-## Horizontal Gradational Example:
-##	The type1.type = 2, continuous = TRUE option-set gives a horizontal gradational distribution.
-##	The number of p of the waypoints must be 3 or 4.
-a <- trace.q(
-	data.frame( p = c( 0.25, 0.5, 0.75 ), q = c( -0.67, 0, 0.53 ) ),
-	type1.type = 2, continuous = TRUE )
-plot( seq( -3, 3, 0.01 ), a$d( seq( -3, 3, 0.01 ) ), type = "l" )
+ ## Mean of 2 Normal Distributions Example:
+ ##  The type1.type = 1, continuous = TRUE option-set gives mean of 2 normal distributions.
+ ##  The number of p of waypoints must be 3.
+ ##  And it is better for every point to take different distance from the mean.
+ a <- trace.q(
+     data.frame(
+         p = c( 0.1, 0.5, 0.6 ),
+         q = c( qnorm( 0.1, 0, 1 ), 0, qnorm( 0.6, 0, 0.75 ) ) ),
+     type1.type = 1, continuous = TRUE )
+ plot( seq( -3, 3, 0.01 ), a$d( seq( -3, 3, 0.01 ) ), type = "l" )
 
-## symmetric Example:
-##	This option provides a distribution with a symmetric continuous
-##	probability density function for type1.type = 2
-##	 (and you can use this option for type1.type = 1 as same meaning of "continuous").
-##	With this option, the number of p of waypoints must be 3. And one of p[i] must be 0.5.
-##	And it is recommended that two of quantiles are set as on the same side of
-##	the probability density function as below.
-a <- trace.q(
-	data.frame( p = c( 0.25, 0.4, 0.5 ), q = c( -0.67, -0.15, 0 ) ),
-	type1.type = 2, symmetric = TRUE )
-plot( seq( -3, 3, 0.01 ), a$d( seq( -3, 3, 0.01 ) ), type = "l" )
+ ## Horizontal Gradational Example:
+ ##  The type1.type = 2, continuous = TRUE option-set
+ ##  gives a horizontal gradational distribution.
+ ##  The number of p of the waypoints must be 3 or 4.
+ a <- trace.q(
+     data.frame( p = c( 0.25, 0.5, 0.75 ), q = c( -0.67, 0, 0.53 ) ),
+     type1.type = 2, continuous = TRUE )
+ plot( seq( -3, 3, 0.01 ), a$d( seq( -3, 3, 0.01 ) ), type = "l" )
 
-## uni.sigma Example:
-##	This option constructs a distribution in which the standard deviations
-##	of the normal distributions of the components are all equal.
-##	Since this option reduces the degrees of freedom,
-##	you can specify only limited number of quantile-probability points.
-a <- trace.q(
-	data.frame( p = c( 0.25, 0.4, 0.5 ), q = c( -0.64, -0.25, 0 ) ),
-	type1.type = 2, continuous = TRUE, uni.sigma = TRUE )
-plot( seq( -3, 3, 0.01 ), a$d( seq( -3, 3, 0.01 ) ), type = "l" )
+ ## symmetric Example:
+ ##  This option provides a distribution with a symmetric continuous
+ ##  probability density function for type1.type = 2
+ ##   (and you can use this option for type1.type = 1 as same meaning of "continuous").
+ ##  With this option, the number of p of waypoints must be 3. And one of p[i] must be 0.5.
+ ##  And it is recommended that two of quantiles are set as on the same side of
+ ##  the probability density function as below.
+ a <- trace.q(
+     data.frame( p = c( 0.25, 0.4, 0.5 ), q = c( -0.67, -0.15, 0 ) ),
+     type1.type = 2, symmetric = TRUE )
+ plot( seq( -3, 3, 0.01 ), a$d( seq( -3, 3, 0.01 ) ), type = "l" )
 
-## Vertical Gradational Example:
-##	The type1.type = 3, v.grad = TRUE option-set gives a vertical gradational distribution.
-##	The number of p of waypoints must be 3 or 4.
-##
-##	Where number of p is 3, you should give each of 3 waypoints a specific role.
-##	One is to specify a waypoint on the tail, one is for a waypoint on the head
-##	and the other is to specify the mean.
-a <- trace.q(
-	data.frame( p = c( 0.1, 0.4, 0.5 ), q = c( -1.28, -0.23, 0 ) ),
-	type1.type = 3, v.grad = TRUE )
-plot( seq( -3, 3, 0.01 ), a$d( seq( -3, 3, 0.01 ) ), type = "l" )
+ ## uni.sigma Example:
+ ##  This option constructs a distribution in which the standard deviations
+ ##  of the normal distributions of the components are all equal.
+ ##  Since this option reduces the degrees of freedom,
+ ##  you can specify only limited number of quantile-probability points.
+ a <- trace.q(
+     data.frame( p = c( 0.25, 0.4, 0.5 ), q = c( -0.64, -0.25, 0 ) ),
+     type1.type = 2, continuous = TRUE, uni.sigma = TRUE )
+ plot( seq( -3, 3, 0.01 ), a$d( seq( -3, 3, 0.01 ) ), type = "l" )
 
-a <- trace.q(
-	data.frame( p = c( 0.1, 0.4, 0.6, 0.9 ), q = c( -1.92, -0.20, 0.20, 1.92 ) ),
-	type1.type = 3, v.grad = TRUE )
-plot( seq( -3, 3, 0.01 ), a$d( seq( -3, 3, 0.01 ) ), type = "l" )
+ ## Vertical Gradational Example:
+ ##  The type1.type = 3, v.grad = TRUE option-set gives a vertical gradational distribution.
+ ##  The number of p of waypoints must be 3 or 4.
+ ##
+ ##  Where number of p is 3, you should give each of 3 waypoints a specific role.
+ ##  One is to specify a waypoint on the tail, one is for a waypoint on the head
+ ##  and the other is to specify the median of the whole distribution.
+ a <- trace.q(
+     data.frame( p = c( 0.1, 0.4, 0.5 ), q = c( -1.28, -0.23, 0 ) ),
+     type1.type = 3, v.grad = TRUE )
+ plot( seq( -3, 3, 0.01 ), a$d( seq( -3, 3, 0.01 ) ), type = "l" )
 
-##	diff.mean = TRUE option force to make different all standard deviations
-##	of the normal distributions of the components.
-##	But even with this option, some of the standard deviations can be equal sometimes.
+ a <- trace.q(
+     data.frame( p = c( 0.1, 0.4, 0.6, 0.9 ), q = c( -1.92, -0.20, 0.20, 1.92 ) ),
+     type1.type = 3, v.grad = TRUE )
+ plot( seq( -3, 3, 0.01 ), a$d( seq( -3, 3, 0.01 ) ), type = "l" )
 
-a <- trace.q(
-	data.frame( p = c( 0.1, 0.3, 0.5 ), q = c( -1.28, -0.42, 0 ) ),
-	type1.type = 3, v.grad = TRUE, diff.mean = TRUE )
-plot( seq( -3, 3, 0.01 ), a$d( seq( -3, 3, 0.01 ) ), type = "l" )
+ ##  diff.mean = TRUE option force to make different all standard deviations
+ ##  of the normal distributions of the components.
+ ##  But even with this option, some of the standard deviations can be equal sometimes.
 
-## 3-Mean/Sigma-Differed Vertical Gradational Example:
-##	The type1.type = 3 without v.grad option also gives a vertical gradational distribution
-##	but the normal distributions of both tail sides will be different each other.
-##	The number of p of waypoints must be from 3 to 6.
-a <- trace.q(
-	data.frame( p = c( 0.1, 0.4, 0.6, 0.9 ), q = c( -1.92, -0.20, 0.20, 1.92 ) ),
-	type1.type = 3, v.grad = FALSE )
-plot( seq( -3, 3, 0.01 ), a$d( seq( -3, 3, 0.01 ) ), type = "l" )
+ a <- trace.q(
+     data.frame( p = c( 0.1, 0.3, 0.5 ), q = c( -1.28, -0.42, 0 ) ),
+     type1.type = 3, v.grad = TRUE, diff.mean = TRUE )
+ plot( seq( -3, 3, 0.01 ), a$d( seq( -3, 3, 0.01 ) ), type = "l" )
 
-## Vertical-Horizontal Gradational Examples:
-##	The type1.type = 4 option gives a vertical-horizontal gradational distribution.
-##	The number of p of waypoints must be from 5 to 8.
-a <- trace.q(
-	data.frame(
-		p = c( 0.1, 0.25, 0.4, 0.5, 0.6, 0.75, 0.9 ),
-		q = c( -1.38, -0.76, -0.28, 0.02, 0.36, 1.10, 2.79 ) ),
-	type1.type = 4 )
-plot( seq( -3, 3, 0.01 ), a$d( seq( -3, 3, 0.01 ) ), type = "l" )
+ ## 3-Median/Sigma-Differed Vertical Gradational Example:
+ ##  The type1.type = 3 without v.grad option also gives a vertical gradational distribution
+ ##  but the normal distributions of both tail sides will be different each other.
+ ##  The number of p of waypoints must be from 3 to 6.
+ a <- trace.q(
+     data.frame( p = c( 0.1, 0.4, 0.6, 0.9 ), q = c( -1.92, -0.20, 0.20, 1.92 ) ),
+     type1.type = 3, v.grad = FALSE )
+ plot( seq( -3, 3, 0.01 ), a$d( seq( -3, 3, 0.01 ) ), type = "l" )
 
-a <- trace.q(
-	data.frame(
-		p = c( 0.1, 0.2, 0.3, 0.4, 0.6, 0.7, 0.8, 0.9 ),
-		q = c( -1.40, -0.96, -0.61, -0.30, 0.32, 0.72, 1.23, 2.21 ) ),
-	type1.type = 4 )
-plot( seq( -3, 3, 0.01 ), a$d( seq( -3, 3, 0.01 ) ), type = "l" )
+ ## Vertical-Horizontal Gradational Examples:
+ ##  The type1.type = 4 option gives a vertical-horizontal gradational distribution.
+ ##  The number of p of waypoints must be from 5 to 8.
+ a <- trace.q(
+     data.frame(
+         p = c( 0.1, 0.25, 0.4, 0.5, 0.6, 0.75, 0.9 ),
+         q = c( -1.38, -0.76, -0.28, 0.02, 0.36, 1.10, 2.79 ) ),
+     type1.type = 4 )
+ plot( seq( -3, 3, 0.01 ), a$d( seq( -3, 3, 0.01 ) ), type = "l" )
+
+ a <- trace.q(
+     data.frame(
+         p = c( 0.1, 0.2, 0.3, 0.4, 0.6, 0.7, 0.8, 0.9 ),
+         q = c( -1.40, -0.96, -0.61, -0.30, 0.32, 0.72, 1.23, 2.21 ) ),
+     type1.type = 4 )
+ plot( seq( -3, 3, 0.01 ), a$d( seq( -3, 3, 0.01 ) ), type = "l" )
 }
 \seealso{
-\link[cgd]{CGD$set.waypoints}, \href{https://github.com/Kimitsuna-Goblin/CGD}{README.md} (GitHub)
+\link[cgd]{CGD$set.waypoints},
+         \href{https://github.com/Kimitsuna-Goblin/CGD}{README.md} (GitHub)
 }
