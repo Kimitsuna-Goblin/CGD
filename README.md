@@ -33,7 +33,7 @@
 のような連続分布の分布モデルが作れます。たとえば、こんな形の分布が作れます。
 
 ![横方向グラデーションのサンプル1](./img/conituous.sample.1.png) ![縦方向グラデーションのサンプル](./img/conituous.sample.2.png)
-![横グラデーションのサンプル2](./img/conituous.sample.3.png) ![縦横グラデーションのサンプル](./img/conituous.sample.3.png)
+![横グラデーションのサンプル2](./img/conituous.sample.3.png) ![縦横グラデーションのサンプル](./img/conituous.sample.4.png)
 
 これらの分布モデルは、正規分布に従わない、歪んだ分布や、裾野の広い分布のモデルなどに使えると思われます。
 
