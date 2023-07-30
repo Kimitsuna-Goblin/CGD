@@ -42,7 +42,7 @@ sd.via.integrate <- function( a )
 }
 
 ## This function should be run after each non-error test to confirm the result.
-show.results <- function( obj = a, plot.range = 3, sumple.num = 1000, is.extreme.case = FALSE )
+show.results <- function( obj = a, plot.range = 3, sample.num = 1000, is.extreme.case = FALSE )
 {
 	if ( wait.before.new.graph )
 	{
@@ -76,7 +76,7 @@ show.results <- function( obj = a, plot.range = 3, sumple.num = 1000, is.extreme
 		Sys.sleep( 0.3 )
 	}
 	cat( "r:" )
-	print( system.time( sample <- obj$r( sumple.num ) ) ); hist( sample )
+	print( system.time( sample <- obj$r( sample.num ) ) ); hist( sample )
 
 	print( obj )
 
@@ -2101,7 +2101,7 @@ a$set.waypoints(
 	p = c( 0.2, 0.4, 0.8 ),
 	q = qs ),
 	this.type1.type = 2, continuous = TRUE, uni.sigma = TRUE )
-expect_equal( c( a$sd, a$lsd, a$usd ), c( 0.9637276, 0.9637276, 0.9637276 ), tolerance = 5e-7 )
+expect_equal( c( a$sd, a$lsd, a$usd ), c( 0.9637277, 0.9637277, 0.9637277 ), tolerance = 5e-7 )
 expect_equal( c( a$sd, a$sd ), c( a$lsd, a$usd ) )
 expect_equal( a$p( qs ), c( 0.2, 0.4, 0.8 ), tolerance = 5e-7 )
 plot.waypoints.and.p( a,
@@ -2498,7 +2498,7 @@ expect_error( a$set.waypoints(
 		p = c( 0.1, 0.5, 0.6, 0.75, 0.9 ),
 		q = qs ),
 		this.type1.type = 4 ),
-		"Failed to determine the drop-in parameters of the lower distribution" )
+		"Failed to determine the tentative parameters of the lower side distribution" )
 
 # Error case
 qs <- c( qnorm( 0.1, 0, 0.9 ), qnorm( 0.25, 0, 0.95 ),
@@ -2508,7 +2508,7 @@ expect_error( a$set.waypoints(
 		p = c( 0.1, 0.25, 0.4, 0.5, 0.9 ),
 		q = qs ),
 		this.type1.type = 4 ),
-		"Failed to determine the drop-in parameters of the upper distribution" )
+		"Failed to determine the tentative parameters of the upper side distribution" )
 
 # Error case
 expect_error( a$set.waypoints(
@@ -2516,7 +2516,7 @@ expect_error( a$set.waypoints(
 		p = c( 0.1, 0.25, 0.4, 0.6, 0.9 ),
 		q = qs ),
 		this.type1.type = 4 ),
-		"Failed to determine the drop-in parameters of the upper distribution" )
+		"Failed to determine the tentative parameters of the upper side distribution" )
 
 # Error case
 qs <- c( qnorm( 0.1, 0, 0.9 ), qnorm( 0.25, 0, 0.95 ), qnorm( 0.4, 0, 0.98 ),

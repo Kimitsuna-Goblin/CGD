@@ -16,21 +16,21 @@ cgd:::kinds の要素の文字列 または、そのインデックス番号が�
           (平均値 (mean) は 0 、標準偏差の平方根 (sqrt.sd) は 1 になっている)
 }
 \description{
-\link[cgd]{nls.freq} や \link[cgd]{nls.freq.all} の初期値 start を
-自分で指定したいとき、初期値の list のテンプレートを得る。
+\link[cgd]{nls.freq} の引数 start または \link[cgd]{nls.freq.all} の引数 start.lists の要素に
+\link[stats]{nls} の初期値 start を与えるための、テンプレートのリストを得る。
 }
 \examples{
  ## preparing
  x <- seq( -2, 2, 0.2 )
- freq <- c( 15.164, 22.923, 25.134, 27.631, 37.239, 40.464,
-         47.126, 79.469, 109.966, 118.241, 111.333, 78.674,
-         46.921, 41.026, 36.975, 27.403, 25.493, 22.838,
-         14.992, 11.468, 9.174 )
+ freq <- c( 15.164, 22.923,  25.134,  27.631,  37.239, 40.464,
+            47.126, 79.469, 109.966, 118.241, 111.333, 78.674,
+            46.921, 41.026,  36.975,  27.403,  25.493, 22.838,
+            14.992, 11.468,   9.174 )
  total <- sum( freq )
 
  ## setting the start parameters
  start.list <- nls.start.template( 13 )
- start.list  ## checking the names of parameters for cgd:::kinds[13]
+ start.list  ## checking the parameters for cgd:::kinds[13]
 
  start.list$mean.1.1 <- -0.671
  start.list$mean.1.2 <- -0.198
@@ -42,5 +42,5 @@ cgd:::kinds の要素の文字列 または、そのインデックス番号が�
  nls.freq( x, freq, total, start = start.list, kind = 13 )
 }
 \seealso{
-\link[cgd]{nls.freq}, \link[cgd]{nls.freq.all}, \link[cgd]{init.start.list}
+\link[cgd]{nls.freq}, \link[cgd]{nls.freq.all}, \link[cgd]{init.start.lists}
 }

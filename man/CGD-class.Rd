@@ -60,7 +60,7 @@ type1.type = 4 の場合、
 
 
 \seealso{
-\link[cgd]{CGDInterval}, \link[cgd]{CGD$set.waypoints}, \link[cgd]{trace.q},
-         \link[cgd]{CGD$nls.freq}, \link[cgd]{nls.freq}, \link[cgd]{nls.freq.all},
+\link[cgd]{CGDInterval}, \link[cgd]{set.waypoints}, \link[cgd]{trace.q},
+         \link[cgd]{nls.freq}, \link[cgd]{nls.freq.all},
          \href{https://github.com/Kimitsuna-Goblin/CGD}{README.md} (GitHub)
 }

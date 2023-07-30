@@ -23,7 +23,7 @@ get.intervals.with.nls.coef(
 
 \item{v.grad}{type1.type = 3, v.grad = TRUE で近似するフラグ。}
 
-\item{uni.sigma}{type1.type = 2, uni.sigma = TRUE で近似するフラグ。}
+\item{uni.sigma}{uni.sigma = TRUE で近似するフラグ。}
 
 \item{uni.mean}{構成要素の正規分布の平均値をすべて同じ値に揃えるかどうかのフラグ。}
 

@@ -194,8 +194,8 @@ expect_equal( unname( diff.check( cgds$cgd[[13]], x, freq, total )$summary["cor"
 expect_equal( unname( diff.check( cgds$cgd[[13]], x, freq, total )$summary["cor"] <
 					  diff.check( cgds$cgd[[10]], x, freq, total )$summary["cor"] ), TRUE )
 
-expect_equal( cgds$cgd[[10]]$kind, "3-Median-Differed Sigma-Equaled Vertical Gradational Distribution" )
-expect_equal( cgds$cgd[[13]]$kind, "Median-Differed Sigma-Equaled Vertical-Horizontal Gradational Distribution" )
+expect_equal( cgds$cgd[[10]]$kind, "3-Median-Differed-Sigma-Equaled Vertical Gradational Distribution" )
+expect_equal( cgds$cgd[[13]]$kind, "Median-Differed-Sigma-Equaled Vertical-Horizontal Gradational Distribution" )
 
 expect_equal( cgds$cgd[[10]]$intervals.mean(), c( -0.6709839, -0.1977604, 0.2928316 ), tolerance = 1e-5 )
 expect_equal( cgds$cgd[[10]]$intervals.sd(), c( 0.6400899, 0.6400899, 0.6400899 ), tolerance = 1e-5 )
@@ -218,22 +218,22 @@ expect_equal( unname( diff.check( a, x, freq, total )$summary[5]
 # a revenge is done.
 
 # then retrying nls.freq.all
-start.list <- init.start.list()
-expect_equal( length( start.list ), 15 )
-start.list # All elements are NULL.
+start.lists <- init.start.lists()
+expect_equal( length( start.lists ), 15 )
+start.lists # All elements are NULL.
 
-start.list[[13]] <- nls.start.template( cgds$cgd[[13]]$kind )
+start.lists[[13]] <- nls.start.template( cgds$cgd[[13]]$kind )
 
-start.list[[13]]$mean.1.1 <- -0.6709839
-start.list[[13]]$mean.1.2 <- -0.1977604
-start.list[[13]]$mean.2.1 <- 0.2928316
-start.list[[13]]$mean.2.2 <- -0.1977604
-start.list[[13]]$sqrt.sd <- sqrt( 0.64 ) # sqrt( 0.64 ) == 0.8
-start.list
+start.lists[[13]]$mean.1.1 <- -0.6709839
+start.lists[[13]]$mean.1.2 <- -0.1977604
+start.lists[[13]]$mean.2.1 <- 0.2928316
+start.lists[[13]]$mean.2.2 <- -0.1977604
+start.lists[[13]]$sqrt.sd <- sqrt( 0.64 ) # sqrt( 0.64 ) == 0.8
+start.lists
 
 # (3 times warnings)
 expect_warning( expect_warning( expect_warning(
-	cgds <- nls.freq.all( x, freq, total, start = start.list ) ) ) )
+	cgds <- nls.freq.all( x, freq, total, start.lists ) ) ) )
 cgds
 cgds$cgd
 expect_equal( cgds$best$kind.index, 15 )
@@ -495,39 +495,39 @@ expect_equal( nls.start.template( 1 ), list( mean = 0, sqrt.sd = 1 ) )
 expect_equal( nls.start.template( 15 ),
 			  list( mean.1.1 = 0, mean.1.2 = 0, sqrt.sd.1.1 = 1, sqrt.sd.1.2 = 1,
 			  		mean.2.1 = 0, mean.2.2 = 0, sqrt.sd.2.1 = 1, sqrt.sd.2.2 = 1 ) )
-expect_equal( nls.start.template( "Mean of Median-Equaled Sigma-Differed 2 Normal Distributions" ),
+expect_equal( nls.start.template( "Mean of Median-Equaled-Sigma-Differed 2 Normal Distributions" ),
 			  list( mean = 0, sqrt.sd.1 = 1, sqrt.sd.2 = 1 ) )
 
 # Warning case
 expect_warning( nls.start.template( 0 ), "not suitable for cgd.kind.index" )
 expect_warning( nls.start.template( 16 ), "not suitable for cgd.kind.index" )
 
-start.list <- init.start.list()
-start.list[[ 1]] <- list( mean = 0,						sqrt.sd = sqrt( 1 ) )
-start.list[[ 2]] <- list( mean = 0,						sqrt.sd.1 = sqrt( 2 ), sqrt.sd.2 = sqrt( 1 ) )
-start.list[[ 3]] <- list( mean = 0,						sqrt.sd.1 = sqrt( 2 ), sqrt.sd.2 = sqrt( 1 ) )
-start.list[[ 4]] <- list( mean.1 = -1, mean.2 = 1,		sqrt.sd = sqrt( 1 ) )
-start.list[[ 5]] <- list( mean = 0,						sqrt.sd.1 = sqrt( 1 ), sqrt.sd.2 = sqrt( 1 ) )
-start.list[[ 6]] <- list( mean.1 = -1, mean.2 = 1,		sqrt.sd.1 = sqrt( 1 ), sqrt.sd.2 = sqrt( 1 ) )
-start.list[[ 7]] <- list( mean.1 = 0, mean.2 = 0,		sqrt.sd = sqrt( 1 ) )
-start.list[[ 8]] <- list( mean = 0,						sqrt.sd.1 = sqrt( 2 ), sqrt.sd.2 = sqrt( 1 ) )
-start.list[[ 9]] <- list( mean.1 = 0, mean.2 = 0,		sqrt.sd.1 = sqrt( 2 ), sqrt.sd.2 = sqrt( 1 ) )
-start.list[[10]] <- list( mean.1 = 0, mean.2 = 0, mean.3 = 0,
+start.lists <- init.start.lists()
+start.lists[[ 1]] <- list( mean = 0,					sqrt.sd = sqrt( 1 ) )
+start.lists[[ 2]] <- list( mean = 0,					sqrt.sd.1 = sqrt( 2 ), sqrt.sd.2 = sqrt( 1 ) )
+start.lists[[ 3]] <- list( mean = 0,					sqrt.sd.1 = sqrt( 2 ), sqrt.sd.2 = sqrt( 1 ) )
+start.lists[[ 4]] <- list( mean.1 = -1, mean.2 = 1,		sqrt.sd = sqrt( 1 ) )
+start.lists[[ 5]] <- list( mean = 0,					sqrt.sd.1 = sqrt( 1 ), sqrt.sd.2 = sqrt( 1 ) )
+start.lists[[ 6]] <- list( mean.1 = -1, mean.2 = 1,		sqrt.sd.1 = sqrt( 1 ), sqrt.sd.2 = sqrt( 1 ) )
+start.lists[[ 7]] <- list( mean.1 = 0, mean.2 = 0,		sqrt.sd = sqrt( 1 ) )
+start.lists[[ 8]] <- list( mean = 0,					sqrt.sd.1 = sqrt( 2 ), sqrt.sd.2 = sqrt( 1 ) )
+start.lists[[ 9]] <- list( mean.1 = 0, mean.2 = 0,		sqrt.sd.1 = sqrt( 2 ), sqrt.sd.2 = sqrt( 1 ) )
+start.lists[[10]] <- list( mean.1 = 0, mean.2 = 0, mean.3 = 0,
 														sqrt.sd = sqrt( 1 ) )
-start.list[[11]] <- list( mean = 0,						sqrt.sd.1 = sqrt( 2 ), sqrt.sd.2 = sqrt( 1 ), sqrt.sd.3 = sqrt( 2 ) )
-start.list[[12]] <- list( mean.1 = 0, mean.2 = 0, mean.3 = 0,
+start.lists[[11]] <- list( mean = 0,					sqrt.sd.1 = sqrt( 2 ), sqrt.sd.2 = sqrt( 1 ), sqrt.sd.3 = sqrt( 2 ) )
+start.lists[[12]] <- list( mean.1 = 0, mean.2 = 0, mean.3 = 0,
 														sqrt.sd.1 = sqrt( 2 ), sqrt.sd.2 = sqrt( 1 ), sqrt.sd.3 = sqrt( 2 ) )
-start.list[[13]] <- list( mean.1.1 = 0, mean.1.2 = 0, mean.2.1 = 0, mean.2.2 = 0,
+start.lists[[13]] <- list( mean.1.1 = 0, mean.1.2 = 0, mean.2.1 = 0, mean.2.2 = 0,
 														sqrt.sd = sqrt( 1 ) )
-start.list[[14]] <- list( mean = 0,						sqrt.sd.1.1 = sqrt( 2 ), sqrt.sd.1.2 = sqrt( 1 ),
+start.lists[[14]] <- list( mean = 0,					sqrt.sd.1.1 = sqrt( 2 ), sqrt.sd.1.2 = sqrt( 1 ),
 														sqrt.sd.2.1 = sqrt( 2 ), sqrt.sd.2.2 = sqrt( 1 ) )
-start.list[[15]] <- list( mean.1.1 = 0, mean.1.2 = 0,	sqrt.sd.1.1 = sqrt( 2 ), sqrt.sd.1.2 = sqrt( 1 ),
+start.lists[[15]] <- list( mean.1.1 = 0, mean.1.2 = 0,	sqrt.sd.1.1 = sqrt( 2 ), sqrt.sd.1.2 = sqrt( 1 ),
 						  mean.2.1 = 0, mean.2.2 = 0,	sqrt.sd.2.1 = sqrt( 2 ), sqrt.sd.2.2 = sqrt( 1 ) )
 
 # (9 times warnings)
 expect_warning( expect_warning( expect_warning( expect_warning( expect_warning(
 expect_warning( expect_warning( expect_warning( expect_warning(
-	cgds <- nls.freq.all( x, freq, total, start = start.list ) ) ) ) ) ) ) ) ) )
+	cgds <- nls.freq.all( x, freq, total, start.lists ) ) ) ) ) ) ) ) ) )
 cgds
 cgds$cgd
 cgds$best

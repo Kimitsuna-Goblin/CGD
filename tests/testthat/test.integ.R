@@ -3684,14 +3684,14 @@ expect_equal( all( vapply( means,
                 print( paste( "whole mean:", mean ) )
                 check.integ.2(
                     function( mean.1, sd.1, mean.2, sd.2, x )
-                    { cgd:::v.sub.t4( mean, c( mean.1, mean.2 ), c( sd.1, sd.2 ) ) },
+                    { cgd:::v.sub.t4( c( mean.1, mean.2 ), c( sd.1, sd.2 ) ) },
                     function( mean.1, sd.1, mean.2, sd.2, x )
                     { v.sub.t4.via.integrate( mean, mean.1, sd.1, mean.2, sd.2 ) },
                     inf.to.inf = TRUE,
                     permit.d = function( d, abs.error, info, parent.info )
                                 {
                                     ( abs( d ) < 1 && abs( d ) < abs.error * 64 ) ||
-                                    abs( cgd:::v.sub.t4( mean, c( mean.1, mean.2 - 0.05 ), c( sd.1, sd.2 ) ) -
+                                    abs( cgd:::v.sub.t4( c( mean.1, mean.2 - 0.05 ), c( sd.1, sd.2 ) ) -
                                          v.sub.t4.via.integrate( mean, mean.1, sd.1,
                                                                  mean.2 - 0.05, sd.2 )$value ) < abs.error * 64
                                 } )

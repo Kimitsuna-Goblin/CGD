@@ -1,7 +1,7 @@
 Package: cgd
 Type: Package
 Title: 連結ガウス分布 (Connected Gaussian Distribution) クラス
-Version: 3.0.0
+Version: 3.1.0
 Author: Kimitsuna-Goblin
 Maintainer: Kimitsuna-Goblin <kimitsuna@i.softbank.jp>
 Description: 連結ガウス分布とは,

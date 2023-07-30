@@ -4,11 +4,9 @@
 \alias{v.sub.t4}
 \title{[内部関数] 分散計算用サブ関数 (type1.type = 4)}
 \usage{
-v.sub.t4(mean, means, sds)
+v.sub.t4(means, sds)
 }
 \arguments{
-\item{mean}{分布全体の平均値。}
-
 \item{means}{2つの正規分布 \eqn{N_{i,1}, N_{i,2}} の平均値。}
 
 \item{sds}{2つの正規分布 \eqn{N_{i,1}, N_{i,2}} の標準偏差。}
@@ -23,6 +21,6 @@ type1.type = 4 の場合の分散の計算に用いるサブ関数。
 \eqn{\Psi_i(x) = \Phi_{i,1}(x) - \dfrac{1}{\sqrt{2}} \Phi_{i,1}^*(x) +
                                  \dfrac{1}{\sqrt{2}} \Phi_{i,2}^*(x)}、
 \eqn{g_i(x) = ( 1 - f_{i,1}(x) / f_{i,1}(\mu_{i,1}) ) f_{i,1}(x) +
-              f_{i,2}(x)^2 / f_{i,2}(\mu_{i,"})}
+              f_{i,2}(x)^2 / f_{i,2}(\mu_{i,2})}。
 \link[stats]{integrate} は使用しない。
 }

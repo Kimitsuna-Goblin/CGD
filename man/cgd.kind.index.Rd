@@ -25,18 +25,20 @@ cgd:::kinds の要素の文字列か、またはそのインデックス番号�
  cgd.kind.index( cgd:::kinds )
  cgd.kind.index( 1:16 )
  cgd.kind.index( 6 )
- cgd.kind.index( "3-Median-Differed 3-Sigma-Differed Vertical Gradational Distribution" )
+ cgd.kind.index( "3-Median-Differed-Sigma-Differed Vertical Gradational Distribution" )
 
  a <- CGD$new()
  cgd.kind.index( a )
 
  x <- seq( -2, 2, 0.2 )
- freq <- c( 0.057, 0.277, 1.002, 3.178, 9.646, 22.109,
-         42.723, 80.646, 117.625, 139.181, 162.319, 150.870,
-         109.947, 78.736, 46.616, 21.058, 9.211, 3.466,
-         0.976, 0.260, 0.061 )
+ freq <- c(   0.057,  0.277,   1.002,   3.178,   9.646,  22.109,
+             42.723, 80.646, 117.625, 139.181, 162.319, 150.870,
+            109.947, 78.736,  46.616,  21.058,   9.211,   3.466,
+              0.976,  0.260,   0.061 )
  total <- sum( freq )
 
+ ## some distribution models are not good at approximating frequency distributions,
+ ## so when you execute nls.freq.alls, some warnings will occur often, but please don't mind.
  cgds <- nls.freq.all( x, freq, total )
  cgd.kind.index( cgds$cgd )
 }

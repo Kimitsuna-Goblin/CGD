@@ -7,7 +7,7 @@
 dp.t3(x, means, sds, f.t3)
 }
 \arguments{
-\item{x}{X座標 (クォンタイル) のベクトル。}
+\item{x}{X座標のベクトル。}
 
 \item{means}{intervals の平均値のベクトル。}
 

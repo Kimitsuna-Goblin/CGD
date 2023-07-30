@@ -8,7 +8,7 @@ nls.freq.all(
   x,
   freq,
   total,
-  start = NULL,
+  start.lists = NULL,
   control = list(maxiter = 300, warnOnly = TRUE),
   method = NULL,
   ...
@@ -16,7 +16,8 @@ nls.freq.all(
 }
 \arguments{
 \item{x}{X座標のベクトル。
-最低 3 個以上の要素を含み、昇順に並べておくこと。また、値に重複がないこと。}
+最低 3 個以上の要素を含み、昇順に並べておくこと。
+また、値に重複がないこと。}
 
 \item{freq}{X座標に対する度数分布のベクトル。要素数は x と同数であること。}
 
@@ -24,22 +25,28 @@ nls.freq.all(
 前処理で除外された外れ値の数を合計に含めるかどうかは、
 この関数の使用者の判断に委ねられる。そのため、この引数は省略できない。}
 
-\item{start}{\link[stats]{nls} に渡す初期値のリスト (リストのリスト)。
-start を与える場合は、
-length( cgd:::kinds ) - 1 個の要素からなるリストを用意し、
-上の並び順に従って、
-\link[stats]{nls} に与える start のリストを入れること
- (デフォルト: NULL)。
-なお、ここで使用するリストのリストを作成するための補助ツールとして、
-\link[cgd]{init.start.list} が利用できる。
-また、各要素のリストのテンプレートが
-\link[cgd]{nls.start.template} で得られる。
-それらのツールの具体的な使用方法は examples を参照のこと。}
+\item{start.lists}{\link[stats]{nls} に渡す初期値のリスト (リストのリスト) (デフォルト: NULL)。
+                         この start.lists を自分で与える場合は、
+                         (length(cgd:::kinds) - 1) 個の要素からなるリストを用意し、
+                         cgd:::kinds の順番に従って、
+                         それぞれ \link[stats]{nls} に与える初期値のリストを入れること。
+
+                         start.lists の要素がNULLの場合、内部で計算されたデフォルトの値が、
+                         その要素が表す分布の初期値 (start) として使用される。
+                         従って、初期値をデフォルトから変更したい分布に当たる要素のみ
+                         リストを設定し、他の要素はNULLのままにしておくとよい。
+
+                         start.lists のリストを作成するための補助ツールとして、
+                         \link[cgd]{init.start.lists} が利用できる。この関数は
+                         (length(cgd:::kinds) - 1) 個の要素がすべて NULL のリストを返す。
+                         また、各初期値のリストのテンプレートが
+                         \link[cgd]{nls.start.template} で得られる。
+                         それらのツールの具体的な使用方法は examples を参照のこと。}
 
 \item{control}{\link[stats]{nls} に渡す設定。詳細は \link[stats]{nls.control} を参照
 (デフォルト: list( maxiter = 300, warnOnly = TRUE ) )。}
 
-\item{method}{\link[stats]{cor} で用いる相関係数名。
+\item{method}{\link[stats]{cor} で用いる相関係数名。詳細は \link[stats]{cor} を参照。
 NULL の場合、\link[stats]{cor} のデフォルトを用いる (デフォルト: NULL )。}
 
 \item{...}{その他、 \link[stats]{nls} の各引数を指定できる。
@@ -52,29 +59,29 @@ list(   best        = 与えられた度数分布に最も近い \link[cgd]{CGD}
                  cors        = 与えられた度数分布に対する cgd の各要素の相関係数のベクトル )
 }
 \description{
-\link[cgd]{nls.freq} のすべてのオプションを試して、
-与えられた度数分布に最も近くなるように、連続な連結ガウス分布を構成する。
-度数分布との近さは相関係数 (\link[stats]{cor}) によって調べる。
+\link[cgd]{nls.freq} のすべてのオプションによって、
+与えられた度数分布に最も近くなるような連続分布を構成し、それらの精度を比較分析する。
+精度は度数分布との相関係数 (\link[stats]{cor}) によって調べる。
+出力の \link[cgd]{CGD} クラスオブジェクトのリストは次の順番の通りに並ぶ
+(不連続分布を除いた cgd:::kinds の順番)。
+\itemize{
+ \item  1: 正規分布
+ \item  2: 2つの正規分布の平均
+ \item  3: 左右対称な横方向グラデーション、
+ \item  4: 左右の正規分布の平均値が異なり、標準偏差が等しい横方向グラデーション
+ \item  5: 左右の正規分布の平均値が等しく、標準偏差が異なる横方向グラデーション
+ \item  6: 左右の正規分布の平均と標準偏差が異なる横方向グラデーション
+ \item  7: 裾側と山側で平均値が異なり、標準偏差が等しい縦方向グラデーション
+ \item  8: 裾側と山側で平均値が等しく、標準偏差が異なる縦方向グラデーション
+ \item  9: 裾側と山側で平均値と標準偏差が異なる縦方向グラデーション
+ \item 10: 裾側の左右と山側でそれぞれ平均値が異なり、裾側と山側で標準偏差が等しい縦方向グラデーション
+ \item 11: 裾側と山側で平均値が等しく、裾側の左右と山側でそれぞれ標準偏差が異なる縦方向グラデーション
+ \item 12: 裾側の左右と山側でそれぞれ平均値と標準偏差が異なる縦方向グラデーション
+ \item 13: 4つの正規分布の平均値がすべて異なり、標準偏差がすべて等しい縦横方向グラデーション
+ \item 14: 4つの正規分布の平均値がすべて等しく、標準偏差がすべて異なる縦横方向グラデーション
+ \item 15: 4つの正規分布の平均値と標準偏差がすべて異なる縦横方向グラデーション
 }
-\details{
-出力の cgd は次の順番に並ぶ。
-  1: 正規分布、
-  2: 2つの正規分布の平均、
-  3: 左右対称な横方向グラデーション、
-  4: 左右の正規分布の平均値が異なり、標準偏差が等しい横方向グラデーション、
-  5: 左右の正規分布の平均値が等しく、標準偏差が異なる横方向グラデーション、
-  6: 左右の正規分布の平均と標準偏差が異なる横方向グラデーション、
-  7: 裾側と山側で平均値が異なり、標準偏差が等しい縦方向グラデーション、
-  8: 裾側と山側で平均値が等しく、標準偏差が異なる縦方向グラデーション、
-  9: 裾側と山側で平均値と標準偏差が異なる縦方向グラデーション、
- 10: 裾側の左右と山側でそれぞれ平均値が異なり、裾側と山側で標準偏差が等しい縦方向グラデーション、
- 11: 裾側と山側で平均値が等しく、裾側の左右と山側でそれぞれ標準偏差が異なる縦方向グラデーション、
- 12: 裾側の左右と山側でそれぞれ平均値と標準偏差が異なる縦方向グラデーション、
- 13: 4つの正規分布の平均値がすべて異なり、標準偏差がすべて等しい縦横方向グラデーション、
- 14: 4つの正規分布の平均値がすべて等しく、標準偏差がすべて異なる縦横方向グラデーション、
- 15: 4つの正規分布の平均値と標準偏差がすべて異なる縦横方向グラデーション。
-
-相関係数が同率首位の分布がある場合、出力の best には、上の並び順の早い方を優先する。
+相関係数が同率首位の分布がある場合、出力の best には、このリストの並び順の早い方を優先する。
 }
 \examples{
  ## preparing
@@ -89,13 +96,14 @@ list(   best        = 与えられた度数分布に最も近い \link[cgd]{CGD}
  }
 
  x <- seq( -2, 2, 0.2 )
- freq <- c( 15.164, 22.923, 25.134, 27.631, 37.239, 40.464,
-         47.126, 79.469, 109.966, 118.241, 111.333, 78.674,
-         46.921, 41.026, 36.975, 27.403, 25.493, 22.838,
-         14.992, 11.468, 9.174 )
+ freq <- c( 15.164, 22.923,  25.134,  27.631,  37.239, 40.464,
+            47.126, 79.469, 109.966, 118.241, 111.333, 78.674,
+            46.921, 41.026,  36.975,  27.403,  25.493, 22.838,
+            14.992, 11.468,   9.174 )
  total <- sum( freq )
 
  ## try nls.freq.all
+ ##   remark that some warnings will occur but please don't mind..
  result <- nls.freq.all( x, freq, total )
 
  ## show the results
@@ -110,32 +118,45 @@ list(   best        = 与えられた度数分布に最も近い \link[cgd]{CGD}
  result$cor[[10]]
  result$cor[[13]]    ## smaller than result$cor[[10]]
 
- result$cgd[[10]]$kind ## "3-Median-Differed Sigma-Equaled Vertical Gradational Distribution"
- result$cgd[[13]]$kind ## "Median-Differed Sigma-Equaled Vertical-Horizontal Gradational Distri..."
+ ## "3-Median-Differed-Sigma-Equaled Vertical Gradational Distribution"
+ result$cgd[[10]]$kind
+ ## "Median-Differed-Sigma-Equaled Vertical-Horizontal Gradational Distribution"
+ result$cgd[[13]]$kind
+
+ ## Also cgd.kind and cgd.kind.index functions work well
+ ## to check the kind/kind.index of the distribution.
+ cgd.kind( 10 )
+ cgd.kind( 13 )
+
+ cgd.kind.index(
+     "3-Median-Differed-Sigma-Equaled Vertical Gradational Distribution" )
+ cgd.kind.index(
+     "Median-Differed-Sigma-Equaled Vertical-Horizontal Gradational Distribution" )
 
  ## see the plots
  plot.freq.and.d( result$cgd[[10]], x, freq, total )
  plot.freq.and.d( result$cgd[[13]], x, freq, total )
 
  ## so we are going to retry nls.freq.all
- ## with setting the start of cgd:::kinds[13] as the result$cgd[[10]].
- start.list <- init.start.list()
- start.list[[13]] <- nls.start.template( result$cgd[[13]] )
- start.list[[13]]    ## checking the names of parameters for cgd:::kinds[13]
+ ## with changing the start for cgd:::kinds[13] to the result$cgd[[10]].
+ start.lists <- init.start.lists()
+ start.lists[[13]] <- nls.start.template( result$cgd[[13]] )
+ start.lists[[13]]   ## checking the parameters for cgd:::kinds[13]
 
  ## checking the values of result$cgd[[10]]
  result$cgd[[10]]$intervals.mean()   ## -0.6709851 -0.1977602  0.2928311 (about)
  result$cgd[[10]]$intervals.sd() ## 0.6400895 0.6400895 0.6400895 (about)
 
- ## setting the start parameters of cgd:::kinds[13]
- start.list[[13]]$mean.1.1 <- -0.6709851
- start.list[[13]]$mean.1.2 <- -0.1977602
- start.list[[13]]$mean.2.1 <- 0.2928311
- start.list[[13]]$mean.2.2 <- -0.1977602
- start.list[[13]]$sqrt.sd <- sqrt( 0.6400895 )   ## the sqrt of the standard deviation.
+ ## setting the start parameters for cgd:::kinds[13]
+ start.lists[[13]]$mean.1.1 <- -0.6709851
+ start.lists[[13]]$mean.1.2 <- -0.1977602
+ start.lists[[13]]$mean.2.1 <- 0.2928311
+ start.lists[[13]]$mean.2.2 <- -0.1977602
+ start.lists[[13]]$sqrt.sd <- sqrt( 0.6400895 )  ## the sqrt of the standard deviation.
 
  ## now retry nls.freq.all
- result <- nls.freq.all( x, freq, total, start = start.list )
+ ##   some warnings will also occur but please don't mind.
+ result <- nls.freq.all( x, freq, total, start.lists )
  result$cor
  result$cor[[10]]
  result$cor[[13]]    ## grater than result$cor[[10]]
@@ -143,12 +164,12 @@ list(   best        = 与えられた度数分布に最も近い \link[cgd]{CGD}
  ## see the suitability of new result$cgd[[13]]
  plot.freq.and.d( result$cgd[[13]], x, freq, total )
 
- ## but result$cgd[[15]] is the best
+ ## but still result$cgd[[15]] is the best
  result$best$kind.index  ## 15
  result$cor[[15]]    ## grater than result$cor[[13]]
  plot.freq.and.d( result$cgd[[15]], x, freq, total )
 }
 \seealso{
-\link[cgd]{CGD$nls.freq}, \link[cgd]{nls.freq}, \link[stats]{cor},
-         \link[cgd]{init.start.list}, \link[cgd]{nls.start.template}
+\link[cgd]{nls.freq}, \link[stats]{cor},
+         \link[cgd]{init.start.lists}, \link[cgd]{nls.start.template}
 }

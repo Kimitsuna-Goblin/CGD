@@ -37,7 +37,7 @@ get.nls.params(
 \item{uni.mean}{構成要素の正規分布の平均値をすべて等しくするかどうかのフラグ。}
 }
 \value{
-nls に渡す format と start のリスト
+nls に渡す formula と start のリスト
 }
 \description{
 設定値をもとに、 nls に渡す主要な引数を取得する
