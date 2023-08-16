@@ -13,7 +13,7 @@ get.d(x, freq, total)
 
 \item{freq}{度数分布のベクトル。要素数は x と同数であること。}
 
-\item{total}{度数の合計。}
+\item{total}{度数の合計の数値。}
 }
 \value{
 座標 x において期待される確率密度の値のベクトル

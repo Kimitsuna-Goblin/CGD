@@ -21,9 +21,11 @@ nls.freq.all(
 
 \item{freq}{X座標に対する度数分布のベクトル。要素数は x と同数であること。}
 
-\item{total}{度数の合計。
-前処理で除外された外れ値の数を合計に含めるかどうかは、
-この関数の使用者の判断に委ねられる。そのため、この引数は省略できない。}
+\item{total}{度数の合計の数値。
+
+                         通常は、 sum(freq) を指定すればよい。
+                         ただし、前処理で除外された外れ値の数を合計に含めるか場合などは、
+                         それ以外の値を指定することもできる。}
 
 \item{start.lists}{\link[stats]{nls} に渡す初期値のリスト (リストのリスト) (デフォルト: NULL)。
                          この start.lists を自分で与える場合は、
@@ -43,11 +45,13 @@ nls.freq.all(
                          \link[cgd]{nls.start.template} で得られる。
                          それらのツールの具体的な使用方法は examples を参照のこと。}
 
-\item{control}{\link[stats]{nls} に渡す設定。詳細は \link[stats]{nls.control} を参照
-(デフォルト: list( maxiter = 300, warnOnly = TRUE ) )。}
+\item{control}{\link[stats]{nls} に渡す設定
+ (デフォルト: list( maxiter = 300, warnOnly = TRUE ) )。
+詳細は \link[stats]{nls.control} を参照。}
 
-\item{method}{\link[stats]{cor} で用いる相関係数名。詳細は \link[stats]{cor} を参照。
-NULL の場合、\link[stats]{cor} のデフォルトを用いる (デフォルト: NULL )。}
+\item{method}{\link[stats]{cor} で用いる相関係数名 (デフォルト: NULL )。
+詳細は \link[stats]{cor} を参照。
+NULL の場合、\link[stats]{cor} のデフォルトを用いる。}
 
 \item{...}{その他、 \link[stats]{nls} の各引数を指定できる。
 詳細は \link[stats]{nls} の Arguments を参照。}
@@ -103,7 +107,7 @@ list(   best        = 与えられた度数分布に最も近い \link[cgd]{CGD}
  total <- sum( freq )
 
  ## try nls.freq.all
- ##   remark that some warnings will occur but please don't mind..
+ ##   remark that some warnings will occur but please don't mind.
  result <- nls.freq.all( x, freq, total )
 
  ## show the results
@@ -118,9 +122,9 @@ list(   best        = 与えられた度数分布に最も近い \link[cgd]{CGD}
  result$cor[[10]]
  result$cor[[13]]    ## smaller than result$cor[[10]]
 
- ## "3-Median-Differed-Sigma-Equaled Vertical Gradational Distribution"
+ ## "3-Mean-Differed-Sigma-Equaled Vertical Gradational Distribution"
  result$cgd[[10]]$kind
- ## "Median-Differed-Sigma-Equaled Vertical-Horizontal Gradational Distribution"
+ ## "Mean-Differed-Sigma-Equaled Vertical-Horizontal Gradational Distribution"
  result$cgd[[13]]$kind
 
  ## Also cgd.kind and cgd.kind.index functions work well
@@ -129,9 +133,9 @@ list(   best        = 与えられた度数分布に最も近い \link[cgd]{CGD}
  cgd.kind( 13 )
 
  cgd.kind.index(
-     "3-Median-Differed-Sigma-Equaled Vertical Gradational Distribution" )
+     "3-Mean-Differed-Sigma-Equaled Vertical Gradational Distribution" )
  cgd.kind.index(
-     "Median-Differed-Sigma-Equaled Vertical-Horizontal Gradational Distribution" )
+     "Mean-Differed-Sigma-Equaled Vertical-Horizontal Gradational Distribution" )
 
  ## see the plots
  plot.freq.and.d( result$cgd[[10]], x, freq, total )

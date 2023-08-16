@@ -8,10 +8,10 @@ cgd.kind(target)
 }
 \arguments{
 \item{target}{分布の種類を特定する変数
- (ベクトルまたはリストまたは \link[cgd]{CGD} クラスオブジェクト)。
+ (ベクトルまたは、リストまたは、 \link[cgd]{CGD} クラスオブジェクト)。
 ベクトルまたはリストの要素は、
-\link[cgd]{CGD} クラスオブジェクト か、
-cgd:::kinds の要素の文字列か、またはそのインデックス番号であること。}
+cgd:::kinds の要素の文字列か、またはそのインデックス番号、
+あるいは \link[cgd]{CGD} クラスオブジェクト であること。}
 }
 \value{
 分布の種類を表す文字列
@@ -23,7 +23,7 @@ cgd:::kinds の要素の文字列か、またはそのインデックス番号�
  cgd.kind( cgd:::kinds )
  cgd.kind( 1:16 )
  cgd.kind( 6 )
- cgd.kind( "3-Median-Differed-Sigma-Differed Vertical Gradational Distribution" )
+ cgd.kind( "3-Mean-Differed-Sigma-Differed Vertical Gradational Distribution" )
 
  a <- CGD$new()
  cgd.kind( a )
@@ -36,7 +36,7 @@ cgd:::kinds の要素の文字列か、またはそのインデックス番号�
  total <- sum( freq )
 
  ## some distribution models are not good at approximating frequency distributions,
- ## so when you execute nls.freq.alls, some warnings will occur often, but please don't mind.
+ ## so when you execute nls.freq.alls, some warnings will occur often.
  cgds <- nls.freq.all( x, freq, total )
  cgd.kind( cgds$cgd )
 }

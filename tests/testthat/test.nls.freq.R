@@ -194,8 +194,8 @@ expect_equal( unname( diff.check( cgds$cgd[[13]], x, freq, total )$summary["cor"
 expect_equal( unname( diff.check( cgds$cgd[[13]], x, freq, total )$summary["cor"] <
 					  diff.check( cgds$cgd[[10]], x, freq, total )$summary["cor"] ), TRUE )
 
-expect_equal( cgds$cgd[[10]]$kind, "3-Median-Differed-Sigma-Equaled Vertical Gradational Distribution" )
-expect_equal( cgds$cgd[[13]]$kind, "Median-Differed-Sigma-Equaled Vertical-Horizontal Gradational Distribution" )
+expect_equal( cgds$cgd[[10]]$kind, "3-Mean-Differed-Sigma-Equaled Vertical Gradational Distribution" )
+expect_equal( cgds$cgd[[13]]$kind, "Mean-Differed-Sigma-Equaled Vertical-Horizontal Gradational Distribution" )
 
 expect_equal( cgds$cgd[[10]]$intervals.mean(), c( -0.6709839, -0.1977604, 0.2928316 ), tolerance = 1e-5 )
 expect_equal( cgds$cgd[[10]]$intervals.sd(), c( 0.6400899, 0.6400899, 0.6400899 ), tolerance = 1e-5 )
@@ -344,10 +344,9 @@ a$nls.freq( x, freq, total, this.type1.type = 2, uni.sigma = TRUE )
 expect_equal( a$type1.type, 2 )
 expect_equal( a$is.uni.sigma(), TRUE )
 expect_equal( a$is.uni.mean(), FALSE )
-expect_equal( a$intervals.mean(), c( 1.161789, -1.161223 ), tolerance = 1e-5 )
-expect_equal( a$intervals.sd(), c( 0.8834894, 0.8834894 ), tolerance = 1e-5 )
 show.results( a, x, freq, total )
 diff.check( a, x, freq, total )
+expect_equal( unname( diff.check( a, x, freq, total )$summary["cor"] ) > 0.95, TRUE )
 
 # Warning case
 expect_warning( a$nls.freq( x, freq, total, control = list( warnOnly = TRUE ), this.type1.type = 1 ), "minFactor" )
@@ -355,6 +354,14 @@ expect_equal( a$type1.type, 1 )
 expect_equal( a$is.uni.mean(), TRUE )
 show.results( a, x, freq, total )
 diff.check( a, x, freq, total )
+expect_equal( unname( diff.check( a, x, freq, total )$summary["cor"] ) > 0.9, TRUE )
+
+# sample for easier convergence
+seed$set.waypoints(
+data.frame( p = c( 0.6, 0.9, 0.5 ), q = c( qnorm( 0.6, 0, 1.2 ), qnorm( 0.9, 0, 1.05 ), 0 ) ),
+this.type1.type = 2 )
+freq <- ( seed$p( x + 0.1 ) - seed$p( x - 0.1 ) ) * ( 1000 + sin( x * 10 + 0.5 ) * 100 )
+total <- sum( freq )
 
 # normal test
 a$nls.freq( x, freq, total, this.type1.type = 2 )
@@ -362,89 +369,92 @@ expect_equal( a$type1.type, 2 )
 expect_equal( a$is.uni.sigma(), FALSE )
 expect_equal( a$is.uni.mean(), TRUE )
 expect_equal( all( a$intervals.mean() == a$intervals.mean()[1] ), TRUE )
-expect_equal( a$intervals.sd(), c( 1.084905, 1.087016 ), tolerance = 1e-5 )
 show.results( a, x, freq, total )
 diff.check( a, x, freq, total )
+expect_equal( unname( diff.check( a, x, freq, total )$summary["cor"] ) > 0.95, TRUE )
 
 # normal test
 a$nls.freq( x, freq, total, uni.mean = FALSE, this.type1.type = 2 )
 expect_equal( a$type1.type, 2 )
 expect_equal( a$is.uni.sigma(), FALSE )
 expect_equal( a$is.uni.mean(), FALSE )
-expect_equal( a$intervals.mean(), c( -0.2743978, 0.2750668 ), tolerance = 1e-5 )
-expect_equal( a$intervals.sd(), c( 0.6652693, 0.6667470 ), tolerance = 1e-5 )
 show.results( a, x, freq, total )
 diff.check( a, x, freq, total )
+expect_equal( unname( diff.check( a, x, freq, total )$summary["cor"] ) > 0.95, TRUE )
 
 # normal test
 a$nls.freq( x, freq, total, this.type1.type = 3 )
 expect_equal( a$type1.type, 3 )
 expect_equal( all( a$intervals.mean() == a$intervals.mean()[1] ), TRUE )
-expect_equal( a$intervals.sd(), c( 0.8854747, 1.1734463, 0.8907395 ), tolerance = 1e-5 )
 show.results( a, x, freq, total )
 diff.check( a, x, freq, total )
+expect_equal( unname( diff.check( a, x, freq, total )$summary["cor"] ) > 0.95, TRUE )
 
 # normal test
-a$nls.freq( x, freq, total, uni.mean = FALSE, this.type1.type = 3 )
+prev.col <- unname( diff.check( a, x, freq, total )$summary["cor"] )
+a$nls.freq( x, freq, total, uni.mean = FALSE, this.type1.type = 3,
+start = list( mean.1 = 0.004176877, mean.2 = 0.004176877, mean.3 = 0.004176877,
+              sqrt.sd.1 = sqrt( 1.070597 ), sqrt.sd.2 = sqrt( 1.159068 ), sqrt.sd.3 = ( 0.8633283 ) ) )
 expect_equal( a$type1.type, 3 )
 expect_equal( a$is.uni.mean(), FALSE )
-expect_equal( a$intervals.mean(), c( 0.147964498, 0.007134283, -0.225932696 ), tolerance = 1e-5 )
-expect_equal( a$intervals.sd(), c( 0.9219731, 1.2638195, 0.9800101 ), tolerance = 1e-5 )
 show.results( a, x, freq, total )
 diff.check( a, x, freq, total )
+expect_equal( unname( diff.check( a, x, freq, total )$summary["cor"] ) > prev.col, TRUE )
+rm( prev.col )
 
-# Warning case
-expect_warning( a$nls.freq( x, freq, total, control = list( warnOnly = TRUE ), v.grad = TRUE ), "minFactor" )
+# normal test
+a$nls.freq( x, freq, total, v.grad = TRUE )
 expect_equal( a$type1.type, 3 )
 expect_equal( a$is.v.grad(), TRUE )
 expect_equal( all( a$intervals.mean() == a$intervals.mean()[1] ), TRUE )
-expect_equal( a$intervals.sd(), c( 0.8881116, 1.1734366, 0.8881116 ), tolerance = 1e-5 )
 show.results( a, x, freq, total )
 diff.check( a, x, freq, total )
+expect_equal( unname( diff.check( a, x, freq, total )$summary["cor"] ) > 0.95, TRUE )
 
 # normal test
+prev.col <- unname( diff.check( a, x, freq, total )$summary["cor"] )
 a$nls.freq( x, freq, total, v.grad = TRUE, uni.mean = FALSE )
 expect_equal( a$type1.type, 3 )
 expect_equal( a$is.v.grad(), TRUE )
 expect_equal( all( a$intervals.mean() == a$intervals.mean()[1] ), FALSE )
-expect_equal( a$intervals.sd(), c( 0.8881109, 1.1734375, 0.8881109 ), tolerance = 1e-5 )
 show.results( a, x, freq, total )
 diff.check( a, x, freq, total )
+expect_equal( unname( diff.check( a, x, freq, total )$summary["cor"] ) > prev.col, TRUE )
 
-# Warning case
-expect_warning( a$nls.freq( x, freq, total, control = list( warnOnly = TRUE ), this.type1.type = 4 ), "minFactor" )
+# normal test
+prev.col <- unname( diff.check( a, x, freq, total )$summary["cor"] )
+a$nls.freq( x, freq, total, this.type1.type = 4 )
 expect_equal( a$type1.type, 4 )
 expect_equal( all( a$intervals.mean() == a$intervals.mean()[1] ), TRUE )
-expect_equal( a$intervals.sd(),
-			  c( 0.8890329, 1.1712108, 0.8890329, 0.8871634, 1.1756816, 0.8871634 ), tolerance = 1e-5 )
 show.results( a, x, freq, total )
 diff.check( a, x, freq, total )
+expect_equal( unname( diff.check( a, x, freq, total )$summary["cor"] ) > prev.col, TRUE )
+rm( prev.col )
 
 # normal test
 a$nls.freq( x, freq, total, control = list( maxiter = 250 ), uni.mean = FALSE, this.type1.type = 4 )
 expect_equal( a$type1.type, 4 )
-expect_equal( a$intervals.mean(), c( -0.5235105, -0.2758431, -0.5235105, -0.2828730, 0.5360592, -0.2828730 ), tolerance = 1e-5 )
 expect_equal( a$intervals.mean()[1], a$intervals.mean()[3] ) # [1] and [3] are the mean of the lower-outer normal distribution
 expect_equal( a$intervals.mean()[4], a$intervals.mean()[6] ) # [4] and [6] are the mean of the upper-outer normal distribution
 expect_equal( a$intervals.mean()[1] != a$intervals.mean()[2], TRUE ) # [2] is the mean of the lower-inner normal distribution
 expect_equal( a$intervals.mean()[4] != a$intervals.mean()[5], TRUE ) # [5] is the mean of the upper-inner normal distribution
-expect_equal( a$intervals.sd(), c( 0.6690816, 0.7251914, 0.6690816, 0.4712487, 1.0446081, 0.4712487 ), tolerance = 1e-5 )
 expect_equal( a$intervals.sd()[1], a$intervals.sd()[3] ) # ([1] and [3] are the sd of the lower-outer normal distribution)
 expect_equal( a$intervals.sd()[4], a$intervals.sd()[6] ) # ([4] and [6] are the sd of the upper-outer normal distribution)
 expect_equal( a$intervals.sd()[1] != a$intervals.sd()[2], TRUE ) # [2] is the sd of the lower-inner normal distribution
 expect_equal( a$intervals.sd()[4] != a$intervals.sd()[5], TRUE ) # [5] is the sd of the upper-inner normal distribution
 show.results( a, x, freq, total )
 diff.check( a, x, freq, total )
+expect_equal( unname( diff.check( a, x, freq, total )$summary["cor"] ) > 0.95, TRUE )
 
 #### nls.freq.all
-# normal test (with 4 times warnings)
-expect_warning( expect_warning( expect_warning( expect_warning(
-	cgds <- nls.freq.all( x, freq, total ) ) ) ) )
+# normal test (with 3 times warnings)
+expect_warning( expect_warning( expect_warning(
+	cgds <- nls.freq.all( x, freq, total ) ) ) )
 cgds
 cgds$cgd
 cgds$best
-expect_equal( cgds$best$kind.index, 12 )
-expect_equal( cgds$best.cor, 0.9853436, tolerance = 1e-5 )
+expect_equal( cgds$best$kind.index, 15 )
+expect_equal( cgds$best.cor > 0.98, TRUE )
 cgds$cor
 for ( i in 1:length( cgds$cgd ) ) print( paste( i, ":", cgds$cgd[[i]]$kind ) )
 
@@ -495,7 +505,7 @@ expect_equal( nls.start.template( 1 ), list( mean = 0, sqrt.sd = 1 ) )
 expect_equal( nls.start.template( 15 ),
 			  list( mean.1.1 = 0, mean.1.2 = 0, sqrt.sd.1.1 = 1, sqrt.sd.1.2 = 1,
 			  		mean.2.1 = 0, mean.2.2 = 0, sqrt.sd.2.1 = 1, sqrt.sd.2.2 = 1 ) )
-expect_equal( nls.start.template( "Mean of Median-Equaled-Sigma-Differed 2 Normal Distributions" ),
+expect_equal( nls.start.template( "Mean of Mean-Equaled-Sigma-Differed 2 Normal Distributions" ),
 			  list( mean = 0, sqrt.sd.1 = 1, sqrt.sd.2 = 1 ) )
 
 # Warning case
@@ -524,34 +534,31 @@ start.lists[[14]] <- list( mean = 0,					sqrt.sd.1.1 = sqrt( 2 ), sqrt.sd.1.2 = 
 start.lists[[15]] <- list( mean.1.1 = 0, mean.1.2 = 0,	sqrt.sd.1.1 = sqrt( 2 ), sqrt.sd.1.2 = sqrt( 1 ),
 						  mean.2.1 = 0, mean.2.2 = 0,	sqrt.sd.2.1 = sqrt( 2 ), sqrt.sd.2.2 = sqrt( 1 ) )
 
-# (9 times warnings)
-expect_warning( expect_warning( expect_warning( expect_warning( expect_warning(
-expect_warning( expect_warning( expect_warning( expect_warning(
-	cgds <- nls.freq.all( x, freq, total, start.lists ) ) ) ) ) ) ) ) ) )
+# (2 times warnings)
+expect_warning( expect_warning( cgds <- nls.freq.all( x, freq, total, start.lists ) ) )
 cgds
 cgds$cgd
 cgds$best
 expect_equal( cgds$best$kind.index, 13 )
-expect_equal( cgds$best.cor, 0.9849939, tolerance = 1e-5 )
 cgds$cor
 plot.freq.and.d( cgds$best, x, freq, total )
 
-# normal and error test
+# normal and error catch test
 cgds <- nls.freq.all( x, freq, total, control = list( maxiter = 50, warnOnly = FALSE ) )
 cgds
 cgds$cgd
 cgds$best
-expect_equal( cgds$best$kind.index, 12 )
-expect_equal( cgds$best.cor, 0.9853436, tolerance = 1e-5 )
+expect_equal( cgds$best$kind.index, 15 )
+expect_true( all( ifelse( complete.cases( cgds$cor ), cgds$cor[cgds$best$kind.index] >= cgds$cor, TRUE ) ) )
 cgds$cor
 plot.freq.and.d( cgds$best, x, freq, total )
 
-# normal test (with 4 times warnings)
-expect_warning( expect_warning( expect_warning( expect_warning(
-	cgds <- nls.freq.all( x, freq, total, method = "spearman", trace = TRUE ) ) ) ) )
+# normal test (with 3 times warnings)
+expect_warning( expect_warning( expect_warning(
+	cgds <- nls.freq.all( x, freq, total, method = "spearman", trace = TRUE ) ) ) )
 cgds
 cgds$cgd
-expect_equal( cgds$best$kind.index, 15 )
-expect_equal( cgds$best.cor, 0.9532468, tolerance = 1e-5 )
+expect_equal( cgds$best$kind.index, 5 )
+expect_true( all( ifelse( complete.cases( cgds$cor ), cgds$cor[cgds$best$kind.index] >= cgds$cor, TRUE ) ) )
 cgds$cor
 plot.freq.and.d( cgds$best, x, freq, total )

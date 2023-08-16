@@ -1,7 +1,7 @@
 ################################################################################################
 # 連結ガウス分布 (Connected Gaussian Distribution) クラス
 # @file         CGD.R
-# @version      3.1.0
+# @version      3.2.0
 # @author       Kimitsuna-Goblin
 # @copyright    Copyright (C) 2023 Ura Kimitsuna
 # @license      Released under the MIT license.
@@ -27,20 +27,20 @@ f.t3.p <- list( function( x, m, s ) { pnorm( x, m, s ) - pnorm( x, m, s * sqrt( 
 
 # 連結ガウス分布の種類 (1～15は連続分布)													# kind.index
 kinds <- c( "Normal Distribution",															# 1
-			"Mean of Median-Equaled-Sigma-Differed 2 Normal Distributions",					# 2
+			"Mean of Mean-Equaled-Sigma-Differed 2 Normal Distributions",					# 2
 			"Symmetric Horizontal Gradational Distribution",								# 3
-			"Median-Differed-Sigma-Equaled Horizontal Gradational Distribution",			# 4
-			"Median-Equaled-Sigma-Differed Horizontal Gradational Distribution",			# 5
-			"Median-Differed-Sigma-Differed Horizontal Gradational Distribution", 			# 6
-			"2-Median-Differed-Sigma-Equaled Vertical Gradational Distribution",			# 7
-			"2-Median-Equaled-Sigma-Differed Vertical Gradational Distribution",			# 8
-			"2-Median-Differed-Sigma-Differed Vertical Gradational Distribution",			# 9
-			"3-Median-Differed-Sigma-Equaled Vertical Gradational Distribution",			#10
-			"3-Median-Equaled-Sigma-Differed Vertical Gradational Distribution",			#11
-			"3-Median-Differed-Sigma-Differed Vertical Gradational Distribution",			#12
-			"Median-Differed-Sigma-Equaled Vertical-Horizontal Gradational Distribution", 	#13
-			"Median-Equaled-Sigma-Differed Vertical-Horizontal Gradational Distribution", 	#14
-			"Median-Differed-Sigma-Differed Vertical-Horizontal Gradational Distribution",	#15
+			"Mean-Differed-Sigma-Equaled Horizontal Gradational Distribution",				# 4
+			"Mean-Equaled-Sigma-Differed Horizontal Gradational Distribution",				# 5
+			"Mean-Differed-Sigma-Differed Horizontal Gradational Distribution", 			# 6
+			"2-Mean-Differed-Sigma-Equaled Vertical Gradational Distribution",				# 7
+			"2-Mean-Equaled-Sigma-Differed Vertical Gradational Distribution",				# 8
+			"2-Mean-Differed-Sigma-Differed Vertical Gradational Distribution",				# 9
+			"3-Mean-Differed-Sigma-Equaled Vertical Gradational Distribution",				#10
+			"3-Mean-Equaled-Sigma-Differed Vertical Gradational Distribution",				#11
+			"3-Mean-Differed-Sigma-Differed Vertical Gradational Distribution",				#12
+			"Mean-Differed-Sigma-Equaled Vertical-Horizontal Gradational Distribution", 	#13
+			"Mean-Equaled-Sigma-Differed Vertical-Horizontal Gradational Distribution", 	#14
+			"Mean-Differed-Sigma-Differed Vertical-Horizontal Gradational Distribution",	#15
 			"Discontinuous Connected Gaussian Distribution" )								#16
 
 # TeX 形式 テンプレート (累積分布関数・確率密度関数共通)
@@ -1394,7 +1394,7 @@ CGD$methods(
 #' @param   clear.intervals     intervals フィールドを初期化するかどうかのフラグ
 #'                               (デフォルト: TRUE)。
 #'                              FALSE にすると、 intervals フィールドはクリアされないが、
-#'                              mean などの他のフィールドはクリアされてしまうので、
+#'                              median などの他のフィールドはクリアされてしまうので、
 #'                              他のフィールドを明示的に再設定しないと、
 #'                              オブジェクトは使い物にならなくなるので注意。
 #' @return  なし
@@ -1783,7 +1783,7 @@ CGD$methods(
 			{
 				if ( type1.type == 1 && is.continuous() )
 				{
-					index <- 2L # Mean of Median-Equaled-Sigma-Differed 2 Normal Distributions
+					index <- 2L # Mean of Mean-Equaled-Sigma-Differed 2 Normal Distributions
 				}
 				else if ( type1.type == 2 && is.symmetric() )
 				{
@@ -1793,15 +1793,15 @@ CGD$methods(
 				{
 					if ( is.uni.sigma() )
 					{
-						index <- 4L # Median-Differed-Sigma-Equaled Horizontal Gradational Distribution
+						index <- 4L # Mean-Differed-Sigma-Equaled Horizontal Gradational Distribution
 					}
 					else if ( is.uni.mean() )
 					{
-						index <- 5L # Median-Equaled-Sigma-Differed Horizontal Gradational Distribution
+						index <- 5L # Mean-Equaled-Sigma-Differed Horizontal Gradational Distribution
 					}
 					else
 					{
-						index <- 6L # Median-Differed-Sigma-Differed Horizontal Gradational Distribution
+						index <- 6L # Mean-Differed-Sigma-Differed Horizontal Gradational Distribution
 					}
 				}
 				else if ( intervals[[1]]$p.conn.prev[2] == 0 && intervals[[length( intervals )]]$p.conn.next[1] == 1 )
@@ -1815,30 +1815,30 @@ CGD$methods(
 				{
 					if ( is.uni.sigma() )
 					{
-						index <- 7L # 2-Median-Differed-Sigma-Equaled Vertical Gradational Distribution
+						index <- 7L # 2-Mean-Differed-Sigma-Equaled Vertical Gradational Distribution
 					}
 					else if ( is.uni.mean() )
 					{
-						index <- 8L # 2-Median-Equaled-Sigma-Differed Vertical Gradational Distribution
+						index <- 8L # 2-Mean-Equaled-Sigma-Differed Vertical Gradational Distribution
 					}
 					else
 					{
-						index <- 9L # 2-Median-Differed-Sigma-Differed Vertical Gradational Distribution
+						index <- 9L # 2-Mean-Differed-Sigma-Differed Vertical Gradational Distribution
 					}
 				}
 				else
 				{
 					if ( is.uni.sigma() )
 					{
-						index <- 10L	# 3-Median-Differed-Sigma-Equaled Vertical Gradational Distribution
+						index <- 10L	# 3-Mean-Differed-Sigma-Equaled Vertical Gradational Distribution
 					}
 					else if ( is.uni.mean() )
 					{
-						index <- 11L	# 3-Median-Equaled-Sigma-Differed Vertical Gradational Distribution
+						index <- 11L	# 3-Mean-Equaled-Sigma-Differed Vertical Gradational Distribution
 					}
 					else
 					{
-						index <- 12L	# 3-Median-Differed-Sigma-Differed Vertical Gradational Distribution
+						index <- 12L	# 3-Mean-Differed-Sigma-Differed Vertical Gradational Distribution
 					}
 				}
 			}
@@ -1846,15 +1846,15 @@ CGD$methods(
 			{
 				if ( is.uni.sigma() )
 				{
-					index <- 13L	# Median-Differed-Sigma-Equaled Vertical-Horizontal Gradational Distribution
+					index <- 13L	# Mean-Differed-Sigma-Equaled Vertical-Horizontal Gradational Distribution
 				}
 				else if ( is.uni.mean() )
 				{
-					index <- 14L	# Median-Equaled-Sigma-Differed Vertical-Horizontal Gradational Distribution
+					index <- 14L	# Mean-Equaled-Sigma-Differed Vertical-Horizontal Gradational Distribution
 				}
 				else
 				{
-					index <- 15L	# Median-Differed-Sigma-Differed Vertical-Horizontal Gradational Distribution
+					index <- 15L	# Mean-Differed-Sigma-Differed Vertical-Horizontal Gradational Distribution
 				}
 			}
 		}
@@ -2039,48 +2039,67 @@ CGD$methods(
 #' 累積分布関数で分位点をトレースする \link[cgd]{CGD} クラスオブジェクトを生成する。
 #' 本関数の本体は \link[cgd]{set.waypoints} メソッドである。
 #' @export
-#' @param   quantiles       分位点を指定する
-#'                          data.frame( q = X座標, p = 確率 )。
+#' @param   quantiles       分位点を指定する data.frame( q = X座標, p = 確率 )。
 #'
 #'                          X座標は必ずしもソートしておく必要はないが、
 #'                          X座標の並びと確率の並びは揃えておく必要がある。
-#'                           (例: q = c( No.2, No.1, No.3 ), p = c( No.2, No.1, No.3 )).
+#'                           (例: q = c( 0, -1, 2 ), p = c( 0.5, 0.25, 0.75 ))。
 #'
 #'                          不連続分布を構成する場合は、
 #'                          中央値 (p = 0.5 の点) を必ず与えること。
-#' @param   continuous      TRUE にすると、 type1.type = 1 または 2 のとき、
-#'                          独立区間を [0, 0] と [1, 1] の 2点にして、
-#'                          確率密度関数が全区間 \eqn{(-\infty, \infty)} で連続になるように
-#'                          構成を試みる (デフォルト: FALSE)。
-#'                          type1.type = 1 または 2 のときのみ有効。
-#' @param   symmetric       TRUE にすると、確率密度関数が
-#'                          中央値を中心として左右対称になるように試みる (デフォルト: FALSE)。
+#'
+#' @param   continuous      type1.type = 1 または 2 のときに、
+#'                          分布を連続分布にするかどうかを指定するフラグ (デフォルト: FALSE)。
 #'                          type1.type = 1 または 2 のときのみ有効。
 #'
-#'                          ただし、 type1.type = 2, symmetric = TRUE の確率密度関数は、
-#'                          一般に、中央値の点で微分できない関数になる。
+#'                          TRUE にすると、独立区間を [0, 0] と [1, 1] の 2点にして、
+#'                          確率密度関数が全区間 \eqn{(-\infty, \infty)} で連続になるように
+#'                          構成を試みる。
+#'
+#' @param   symmetric       左右対称な単峰性の連続分布を構成するかどうかのフラグ
+#'                           (デフォルト: FALSE)。
+#'                          type1.type = 1 または 2 のときのみ有効。
+#'
+#'                          TRUE にすると、確率密度関数が、
+#'                          中央値を中心として左右対称になるように試みる。
+#'                          ただし、 type1.type = 1 の場合は、 continuous と機能は同じ。
+#'                          type1.type = 2 の場合は、 symmetric = TRUE にすると、
+#'                          通常、確率密度関数が中央値の点で微分できない関数になる。
+#'
 #'                          type1.type = 2, symmetric = TRUE のときは、
 #'                          必ず中央値 (p = 0.5 の点) を quantiles に指定する必要がある。
-#' @param   v.grad          TRUE にすると、 type1.type = 3 のとき、
-#'                          上下2つの正規分布による縦方向グラデーションの分布を構成する
-#'                           (デフォルト: FALSE)。
-#' @param   uni.sigma       TRUE にすると、連続分布に対して、
-#'                          intervals の各正規分布の標準偏差を強制的に等しくする
-#'                           (デフォルト: FALSE)。
 #'
-#'                          経路の構成点が少ない場合のみ有効。具体的には、以下の場合に有効。
+#' @param   v.grad          上下2つの正規分布による縦方向グラデーションの分布を構成するか
+#'                          どうかのフラグ (デフォルト: FALSE)。
+#'                          type1.type = 3 のときのみ有効。
+#'
+#'                          TRUE にすると、 type1.type = 3 のとき、
+#'                          上下2つの正規分布による縦方向グラデーションの分布を構成する。
+#'
+#' @param   uni.sigma       連続分布の場合に、構成要素の各正規分布の標準偏差を
+#'                          すべて等しくするかどうかのフラグ (デフォルト: FALSE)。
+#'
+#'                          TRUE にすると、連続分布に対して、
+#'                          構成要素の各正規分布の標準偏差を強制的に等しくする。
+#'
+#'                          分位点が少ない場合のみ有効。具体的には、以下の場合に有効。
 #'                          \itemize{
 #'                              \item type1.type = 2 : 3点
 #'                              \item type1.type = 3 : 3～4点 (v.grad = TRUE の場合は 3点のみ)
 #'                              \item type1.type = 4 : 5点
 #'                          }
-#' @param   diff.mean       TRUE にすると、 intervals の各正規分布の平均値が
-#'                          異なる値になるよう試みる (デフォルト: FALSE)。
+#'
+#' @param   diff.mean       連続分布の場合に、構成要素の各正規分布の平均値を
+#'                          異なるようにするかどうかのフラグ (デフォルト: FALSE)。
+#'
+#'                          TRUE にすると、構成要素の各正規分布の平均値が
+#'                          異なる値になるよう試みる。
 #'
 #'                          不連続分布および type1.type = 1 または symmetric = TRUE では無効。
 #'                          なお、 diff.mean = TRUE としても、
 #'                          与えられた分位点の条件によっては、
 #'                          各要素の平均値がすべて等しくなることもあり得る。
+#'
 #' @param   control         nleqslv に渡す、同関数の control オプションのリスト
 #'                           (デフォルト: list())。
 #'                          詳細は \link[nleqslv]{nleqslv} の Control options を参照。
@@ -2090,10 +2109,12 @@ CGD$methods(
 #'                          allowSingular = TRUE が暗黙のうちに設定される。
 #'                          ただし、引数 control のリストに
 #'                          allowSingular が与えられている場合は、引数のリストを優先する。
-#' @param   type1.type      フィールドの type1.type に設定する値。
-#'                          0、1、2、3、4 のいずれかを指定すること (デフォルト: 1)。
+#'
+#' @param   type1.type      フィールドの type1.type に設定する数値 (デフォルト: 1)。
+#'                          0、1、2、3、4 のいずれかを指定すること。
 #'                          0、1、2、3、4 以外の数値を指定した場合はエラーになる。
 #'                          詳細は Details を参照。
+#'
 #' @return  分位点をトレースする \link[cgd]{CGD} クラスオブジェクト
 #' @importFrom  nleqslv     nleqslv
 #' @importFrom  methods     new
@@ -2102,7 +2123,7 @@ CGD$methods(
 #' @details
 #'  \subsection{type1.type}{
 #'          type1.type は
-#'          連結ガウス分布の構成要素の正規分布の混合方法を決定する重要なフィールドである。
+#'          連結ガウス分布の構成要素の正規分布の混合方法を決定する、重要なフィールドである。
 #'          このフィールドの詳細を説明するには、
 #'          連続ガウス分布の仕組みについて、詳しく説明しておく必要がある。
 #'
@@ -2117,15 +2138,15 @@ CGD$methods(
 #'          \bold{接続区間}の定義域 \eqn{(\beta_i, \alpha_{i+1})} が交互に現れる。
 #'
 #'          \bold{接続区間}は、その定義域の範囲に
-#'          中央値 \eqn{m} を含むかどうかという条件と、
+#'          分布の中央値 (p = 0.5 の点) を含むかどうかという条件と、
 #'          前後の独立区間を負担する正規分布の標準偏差の大小の条件によって、
 #'          次の4つの type に分類される。
 #'
 #'          \itemize{
-#'              \item type 1 : 定義域に \eqn{m} を含まない。標準偏差は山側の方が裾側よりも大。
-#'              \item type 2 : 定義域に \eqn{m} を含まない。標準偏差は山側の方が裾側よりも小。
-#'              \item type 3a : 定義域に \eqn{m} を含む。標準偏差は前側の方が後側よりも小。
-#'              \item type 3b : 定義域に \eqn{m} を含む。標準偏差は前側の方が後側よりも大。
+#'              \item type 1 : 定義域に中央値を含まない。標準偏差は山側の方が裾側よりも大。
+#'              \item type 2 : 定義域に中央値を含まない。標準偏差は山側の方が裾側よりも小。
+#'              \item type 3a : 定義域に中央値を含む。標準偏差は前側の方が後側よりも小。
+#'              \item type 3b : 定義域に中央値を含む。標準偏差は前側の方が後側よりも大。
 #'          }
 #'
 #'          本パッケージでは、 type 2/3a/3b の接続区間では、連結ガウス分布は
@@ -2202,9 +2223,9 @@ CGD$methods(
 #'            \eqn{[-\infty, -\infty], [\mu, \mu], [\infty, \infty]} の3つ、
 #'            接続区間の定義域は \eqn{(-\infty, \mu), (\mu, \infty)} の2つ)。
 #'
-#'          不連続分布は任意の数の分位点を通過できるが、
+#'          不連続分布は任意の個数の分位点を通過できるが、
 #'          連続分布では、限られた数の分位点しか通過することができない。
-#'          具体的には、通過できる分位点の数は以下の通りである。
+#'          具体的には、本パッケージでは、通過できる分位点の数は以下の通りである。
 #'
 #'          \itemize{
 #'              \item type1.type = 1 : continuous or symmetric = TRUE \eqn{\Rightarrow} 3点
@@ -2225,9 +2246,8 @@ CGD$methods(
 #'          累積分布関数は \eqn{\Phi_i( \alpha_i ) = a_i, \Phi_i( \beta_i ) = b_i} を満たす
 #'          正規分布の累積分布関数 \eqn{\Phi_i} とする。
 #'
-#'          ただし、
 #'          type1.type = 1, 2 の場合は、
-#'          すべての正規分布の平均値を連結ガウス分布の中央値 \eqn{m} に統一するが、
+#'          すべての正規分布の平均値を分布の中央値 (p = 0.5 の点) に統一する。
 #'          type1.type = 0 の場合は、
 #'          それぞれの正規分布の平均値を統一しない (接続区間が無いため、統一できない)。
 #'
@@ -2421,12 +2441,12 @@ CGD$methods(
 #'  plot( seq( -3, 3, 0.01 ), a$d( seq( -3, 3, 0.01 ) ), type = "l" )
 ################################################################################################
 trace.q <- function( quantiles, continuous = FALSE, symmetric = FALSE, v.grad = FALSE,
-					 uni.sigma = FALSE, diff.mean = FALSE, control = list(), type1.type = 1 )
+                     uni.sigma = FALSE, diff.mean = FALSE, control = list(), type1.type = 1 )
 {
-	obj <- CGD$new()
-	obj$set.waypoints( quantiles, continuous, symmetric, v.grad,
-						uni.sigma, diff.mean, control, type1.type )
-	return ( obj )
+    obj <- CGD$new()
+    obj$set.waypoints( quantiles, continuous, symmetric, v.grad,
+                        uni.sigma, diff.mean, control, type1.type )
+    return ( obj )
 }
 
 ################################################################################################
@@ -2440,34 +2460,49 @@ trace.q <- function( quantiles, continuous = FALSE, symmetric = FALSE, v.grad = 
 #' @usage   \S4method{set.waypoints}{CGD}(waypoints, continuous = FALSE, symmetric = FALSE,
 #'          v.grad = FALSE, uni.sigma = FALSE, diff.mean = FALSE,
 #'          control = list(), this.type1.type = NULL )
-#' @param   waypoints       経路の data.frame( q = 経路のX座標, p = 確率 )。
-#'                          data.frame( q = X座標, p = 確率 )。
+#' @param   waypoints       経路を指定する data.frame( q = X座標, p = 確率 )。
 #'
 #'                          X座標は必ずしもソートしておく必要はないが、
 #'                          X座標の並びと確率の並びは揃えておく必要がある。
-#'                           (例: q = c( No.2, No.1, No.3 ), p = c( No.2, No.1, No.3 )).
+#'                           (例: q = c( 0, -1, 2 ), p = c( 0.5, 0.25, 0.75 ))。
 #'
 #'                          不連続分布を構成する場合は、
 #'                          中央値 (p = 0.5 の点) を必ず与えること。
-#' @param   continuous      TRUE にすると、 type1.type = 1 または 2 のとき、
-#'                          独立区間を [0, 0] と [1, 1] の 2点にして、
-#'                          確率密度関数が全区間 \eqn{(-\infty, \infty)} で連続になるように
-#'                          構成を試みる (デフォルト: FALSE)。
-#'                          type1.type = 1 または 2 のときのみ有効。
-#' @param   symmetric       TRUE にすると、確率密度関数が、
-#'                          中央値を中心として左右対称になるように試みる (デフォルト: FALSE)。
+#'
+#' @param   continuous      type1.type = 1 または 2 のときに、
+#'                          分布を連続分布にするかどうかを指定するフラグ (デフォルト: FALSE)。
 #'                          type1.type = 1 または 2 のときのみ有効。
 #'
-#'                          ただし、 type1.type = 2, symmetric = TRUE の確率密度関数は、
-#'                          一般に、中央値の点で微分できない関数になる。
+#'                          TRUE にすると、独立区間を [0, 0] と [1, 1] の 2点にして、
+#'                          確率密度関数が全区間 \eqn{(-\infty, \infty)} で連続になるように
+#'                          構成を試みる。
+#'
+#' @param   symmetric       左右対称な単峰性の連続分布を構成するかどうかのフラグ
+#'                           (デフォルト: FALSE)。
+#'                          type1.type = 1 または 2 のときのみ有効。
+#'
+#'                          TRUE にすると、確率密度関数が、
+#'                          中央値を中心として左右対称になるように試みる。
+#'                          ただし、 type1.type = 1 の場合は、 continuous と機能は同じ。
+#'                          type1.type = 2 の場合は、 symmetric = TRUE にすると、
+#'                          通常、確率密度関数が中央値の点で微分できない関数になる。
+#'
 #'                          type1.type = 2, symmetric = TRUE のときは、
 #'                          必ず中央値 (p = 0.5 の点) を waypoints に指定する必要がある。
-#' @param   v.grad          TRUE にすると、 type1.type = 3 のとき、
-#'                          上下2つの正規分布による縦方向グラデーションの分布を構成する
-#'                           (デフォルト: FALSE)。
-#' @param   uni.sigma       TRUE にすると、連続分布に対して、
-#'                          構成要素の各正規分布の標準偏差を強制的に等しくする
-#'                           (デフォルト: FALSE)。
+#'
+#' @param   v.grad          上下2つの正規分布による縦方向グラデーションの分布を構成するか
+#'                          どうかのフラグ (デフォルト: FALSE)。
+#'                          type1.type = 3 のときのみ有効。
+#'
+#'                          TRUE にすると、 type1.type = 3 のとき、
+#'                          上下2つの正規分布による縦方向グラデーションの分布を構成する。
+#'
+#' @param   uni.sigma       連続分布の場合に、構成要素の各正規分布の標準偏差を
+#'                          すべて等しくするかどうかのフラグ (デフォルト: FALSE)。
+#'
+#'                          TRUE にすると、連続分布に対して、
+#'                          構成要素の各正規分布の標準偏差を強制的に等しくする。
+#'                          その値は、分布全体の中央値になる (平均値になるとは限らない)。
 #'
 #'                          経路の構成点が少ない場合のみ有効。具体的には、
 #'                          \itemize{
@@ -2476,13 +2511,18 @@ trace.q <- function( quantiles, continuous = FALSE, symmetric = FALSE, v.grad = 
 #'                              \item type1.type = 3 : 3～4点 (v.grad = TRUE の場合は 3点のみ)
 #'                              \item type1.type = 4 : 5点
 #'                          } の場合に有効。
-#' @param   diff.mean       TRUE にすると、各構成要素の正規分布の平均値が
-#'                          異なるようになるように試みる (デフォルト: FALSE)。
+#'
+#' @param   diff.mean       連続分布の場合に、構成要素の各正規分布の平均値を
+#'                          異なるようにするかどうかのフラグ (デフォルト: FALSE)。
+#'
+#'                          TRUE にすると、構成要素の各正規分布の平均値が
+#'                          異なるようになるように試みる。
 #'
 #'                          不連続分布および type1.type = 1 または symmetric = TRUE では無効。
 #'                          なお、 diff.mean = TRUE としても、
 #'                          与えられた経路の条件によっては、
 #'                          各要素の平均値がすべて等しくなることもあり得る。
+#'
 #' @param   control         nleqslv に渡す、同関数の control オプションのリスト
 #'                           (デフォルト: list())。
 #'                          詳細は \link[nleqslv]{nleqslv} の Control options を参照。
@@ -2492,11 +2532,13 @@ trace.q <- function( quantiles, continuous = FALSE, symmetric = FALSE, v.grad = 
 #'                          暗黙のうちに設定される。
 #'                          ただし、引数 control のリストに
 #'                          allowSingular が与えられている場合は、引数のリストを優先する。
-#' @param   this.type1.type フィールドの type1.type に設定する値。
+#'
+#' @param   this.type1.type フィールドの type1.type に設定する数値 (デフォルト: NULL)。
 #'                          0、1、2、3、4 のいずれかを指定すること。
-#'                          NULL の場合は type1.type の値を変更しない (デフォルト: NULL)。
+#'                          NULL の場合は type1.type の値を変更しない。
 #'                          0、1、2、3、4 以外の数値を指定した場合はエラーになる。
 #'                          詳細は Details を参照。
+#'
 #' @return  nleqslv() を内部で実行した場合はその結果。それ以外は NULL
 #' @importFrom  nleqslv     nleqslv
 #' @importFrom  methods     new
@@ -2505,7 +2547,7 @@ trace.q <- function( quantiles, continuous = FALSE, symmetric = FALSE, v.grad = 
 #' @details
 #'  \subsection{type1.type}{
 #'          type1.type は
-#'          連結ガウス分布の構成要素の正規分布の混合方法を決定する重要なフィールドである。
+#'          連結ガウス分布の構成要素の正規分布の混合方法を決定する、重要なフィールドである。
 #'          このフィールドの詳細を説明するには、
 #'          連続ガウス分布の仕組みについて、詳しく説明しておく必要がある。
 #'
@@ -2520,15 +2562,15 @@ trace.q <- function( quantiles, continuous = FALSE, symmetric = FALSE, v.grad = 
 #'          \bold{接続区間}の定義域 \eqn{(\beta_i, \alpha_{i+1})} が交互に現れる。
 #'
 #'          \bold{接続区間}は、その定義域の範囲に
-#'          中央値 \eqn{m} を含むかどうかという条件と、
+#'          分布の中央値 (p = 0.5 の点) を含むかどうかという条件と、
 #'          前後の独立区間を負担する正規分布の標準偏差の大小の条件によって、
 #'          次の4つの type に分類される。
 #'
 #'          \itemize{
-#'              \item type 1 : 定義域に \eqn{m} を含まない。標準偏差は山側の方が裾側よりも大。
-#'              \item type 2 : 定義域に \eqn{m} を含まない。標準偏差は山側の方が裾側よりも小。
-#'              \item type 3a : 定義域に \eqn{m} を含む。標準偏差は前側の方が後側よりも小。
-#'              \item type 3b : 定義域に \eqn{m} を含む。標準偏差は前側の方が後側よりも大。
+#'              \item type 1 : 定義域に中央値を含まない。標準偏差は山側の方が裾側よりも大。
+#'              \item type 2 : 定義域に中央値を含まない。標準偏差は山側の方が裾側よりも小。
+#'              \item type 3a : 定義域に中央値を含む。標準偏差は前側の方が後側よりも小。
+#'              \item type 3b : 定義域に中央値を含む。標準偏差は前側の方が後側よりも大。
 #'          }
 #'
 #'          本パッケージでは、 type 2/3a/3b の接続区間では、連結ガウス分布は
@@ -2607,7 +2649,7 @@ trace.q <- function( quantiles, continuous = FALSE, symmetric = FALSE, v.grad = 
 #'
 #'          不連続分布は任意の経路を通過できるが、
 #'          連続分布では、限られた点の数からなる経路しか通過することができない。
-#'          具体的には、通過できる経路の点の数は以下の通りである。
+#'          具体的には、本パッケージでは、通過できる経路の点の数は以下の通りである。
 #'
 #'          \itemize{
 #'              \item type1.type = 1 : continuous or symmetric = TRUE \eqn{\Rightarrow} 3点
@@ -2628,9 +2670,8 @@ trace.q <- function( quantiles, continuous = FALSE, symmetric = FALSE, v.grad = 
 #'          累積分布関数は \eqn{\Phi_i( \alpha_i ) = a_i, \Phi_i( \beta_i ) = b_i} を満たす
 #'          正規分布の累積分布関数 \eqn{\Phi_i} とする。
 #'
-#'          ただし、
 #'          type1.type = 1, 2 の場合は、
-#'          すべての正規分布の平均値を連結ガウス分布の中央値 \eqn{m} に統一するが、
+#'          すべての正規分布の平均値を分布の中央値 (p = 0.5 の点) に統一する。
 #'          type1.type = 0 の場合は、
 #'          それぞれの正規分布の平均値を統一しない (接続区間が無いため、統一できない)。
 #'
@@ -4477,7 +4518,7 @@ t3.mid.sd <- function( mean.2, wp.near )
 #' 与えられた度数分布に最も近くなるように、連続な連結ガウス分布を構成する。
 #' この関数内では、度数分布の外れ値の除外は行わない。
 #' 外れ値の除外は、必要に応じて、前処理で行うこと。
-#' 度数の合計 (total) に外れ値の分を含めるかどうかは、ライブラリの利用者の判断に委ねられる。
+#' 度数の合計 (total) に外れ値の分を含めるかどうかは、パッケージの利用者の判断に委ねられている。
 #' そのため、引数 total は省略できない。
 #' @export
 #' @aliases nls.freq
@@ -4493,12 +4534,15 @@ t3.mid.sd <- function( mean.2, wp.near )
 #'          this.type1.type = NULL, uni.sigma = FALSE, uni.mean = TRUE, ...)
 #' @param   x               X座標のベクトル。最低 3 個以上の要素を含み、昇順に並べておくこと。
 #'                          また、値に重複がないようにすること。
-#' @param   freq            X座標に対する度数分布のベクトル。要素数は x と同数であること。
-#' @param   total           度数の合計。
 #'
-#'                          前処理で除外された外れ値の数を合計に含めるかどうかは、
-#'                          この関数の使用者の判断に委ねられる。
-#'                          そのため、この引数は省略できない。
+#' @param   freq            X座標に対する度数分布のベクトル。要素数は x と同数であること。
+#'
+#' @param   total           度数の合計の数値。
+#'
+#'                          通常は、 sum(freq) を指定すればよい。
+#'                          ただし、前処理で除外された外れ値の数を合計に含めるか場合などは、
+#'                          それ以外の値を指定することもできる。
+#'
 #' @param   start           \link[stats]{nls} に渡す初期値のリスト (デフォルト: NULL)。
 #'
 #'                          デフォルト (NULL) の場合は、
@@ -4517,14 +4561,19 @@ t3.mid.sd <- function( mean.2, wp.near )
 #'                          なお、リストのテンプレートが
 #'                          \link[cgd]{nls.start.template} で得られるので、
 #'                          初期値は、そのテンプレートの各変数に与えてやればよい。
+#'
 #' @param   control         \link[stats]{nls} に渡す設定。
 #'                          詳細は \link[stats]{nls.control} を参照 (デフォルト: list())。
-#' @param   set.by.start    \link[stats]{nls} を実行せず、
-#'                          start の初期値をそのまま結果として出力し、分布を構成するフラグ。
 #'
-#'                          start の値は、引数で与えられた場合は、それをそのまま使い、
-#'                          引数で与えられていない場合は、
-#'                          内部で計算した暫定的な初期値を使う (デフォルト: FALSE)。
+#' @param   set.by.start    \link[stats]{nls} を実行せず、
+#'                          start の初期値をそのまま結果として出力し、
+#'                          分布を構成するフラグ (デフォルト: FALSE)。
+#'
+#'                          TRUE にすると、 start の引数で初期値が与えられた場合は、
+#'                          それをそのまま出力し、
+#'                          start が与えられていない場合は、
+#'                          内部で計算した暫定的な初期値を出力する。
+#'
 #' @param   kind            分布の種類を特定する変数 (1要素のみ有効) (デフォルト: NULL)。
 #'
 #'                          変数の種類は、 \link[cgd]{CGD} クラスオブジェクト か、
@@ -4534,6 +4583,7 @@ t3.mid.sd <- function( mean.2, wp.near )
 #'                          以下の normal から uni.mean までの 6 個の引数は無視され、
 #'                          kind で指定された分布の種類に沿うように、
 #'                          それらのオプションの値が内部で決定される。
+#'
 #' @param   normal          正規分布で近似するフラグ。
 #'
 #'                          normal = TRUE にすると、
@@ -4544,16 +4594,20 @@ t3.mid.sd <- function( mean.2, wp.near )
 #'                           (引数 type1.type が与えられていれば、その値を上書きした結果)
 #'                          1 または 2 であればそのまま。
 #'                          それ以外は 1 に設定される (デフォルト: FALSE)。
+#'
 #' @param   symmetric       type1.type = 2, symmetric = TRUE で近似するフラグ。
 #'
 #'                          symmetric = TRUE にすると、
 #'                          type1.type, uni.sigma, uni.mean の引数は無視される
 #'                           (デフォルト: FALSE)。
-#' @param   v.grad          type1.type = 3, v.grad = TRUE で近似するフラグ。
 #'
-#'                          v.grad = TRUE にすると、 type1.type の引数は無視され、
-#'                          type1.type = 3 に設定される (デフォルト: FALSE)
-#' @param   type1.type      ジェネレータ関数用の引数。フィールドの type1.type に設定する値。
+#' @param   v.grad          type1.type = 3, v.grad = TRUE に設定するフラグ (デフォルト: FALSE)。
+#'
+#'                          v.grad = TRUE にすると、引数の type1.type は無視され、
+#'                          type1.type フィールドの値は 3 に設定される。
+#'
+#' @param   type1.type      ジェネレータ関数用の引数。
+#'                          フィールドの type1.type に設定する数値 (デフォルト: 2)。
 #'                          1、2、3、4 のいずれかを指定すること。
 #'
 #'                          分布の種類は type1.type の設定値によって、
@@ -4564,24 +4618,32 @@ t3.mid.sd <- function( mean.2, wp.near )
 #'                              \item 3:  (歪んだ) 縦方向グラデーション
 #'                              \item 4: 縦横グラデーション
 #'                          }
-#'                          となる (デフォルト: 2)。
+#'                          となる。
 #'                          1、2、3、4 以外の数値を指定した場合はエラーになる。
 #'                          本関数では、 type1.type = 0 は指定できない。
-#' @param   this.type1.type メソッド用の引数。フィールドの type1.type に設定する値。
-#'                          詳細は上の type1.type に同じ。
-#' @param   uni.sigma       構成要素の正規分布の標準偏差をすべて等しくするかどうかのフラグ。
+#'
+#' @param   this.type1.type メソッド用の引数。
+#'                          フィールドの type1.type に設定する数値 (デフォルト: NULL)。
+#'                          NULL の場合は、 type1.type フィールドの値を変更しない。
+#'                          その他、詳細は上の type1.type に同じ。
+#'
+#' @param   uni.sigma       構成要素の正規分布の標準偏差を
+#'                          すべて等しくするかどうかのフラグ (デフォルト: FALSE)。
 #'
 #'                          uni.sigma = TRUE にすると、
 #'                          uni.mean の引数は無視され、 uni.mean = FALSE になる。
-#'                          type1.type = 1 では無効 (デフォルト: FALSE)。
-#' @param   uni.mean        構成要素の正規分布の平均値をすべて等しくするかどうかのフラグ。
+#'                          type1.type = 1 では無効。
+#'
+#' @param   uni.mean        構成要素の正規分布の平均値を
+#'                          すべて等しくするかどうかのフラグ (デフォルト: TRUE)。
 #'
 #'                          type1.type = 1 では、 FALSE の設定は無効
 #'                           (注: 平均値が異なる2つの正規分布の平均は、
-#'                            本パッケージにおける不連続な連結ガウス分布の拡張にはならない)
-#'                           (デフォルト: TRUE)。
+#'                            本パッケージにおける不連続な連結ガウス分布の拡張にはならない)。
+#'
 #' @param   ...             その他、 \link[stats]{nls} の各引数を指定できる。
 #'                          詳細は \link[stats]{nls} の Arguments を参照。
+#'
 #' @return  生成した CGD クラスオブジェクト
 #' @importFrom  methods     new
 #' @seealso \link[stats]{nls}, \link[stats]{nls.control},
@@ -4624,7 +4686,7 @@ t3.mid.sd <- function( mean.2, wp.near )
 #'  plot.freq.and.d( a, x, freq, total )
 #'
 #'  a$nls.freq( x, freq, total,
-#'              kind = "2-Median-Equaled-Sigma-Differed Vertical Gradational Distribution" )
+#'              kind = "2-Mean-Equaled-Sigma-Differed Vertical Gradational Distribution" )
 #'  a
 #'  plot.freq.and.d( a, x, freq, total )
 #'
@@ -4808,7 +4870,7 @@ CGD$methods(
 #'                  最低 3 個以上の要素を含み、昇順に並べておくこと。
 #'                  また、値に重複がないようにすること。
 #' @param   freq    度数分布のベクトル。要素数は x と同数であること。
-#' @param   total   度数の合計。
+#' @param   total   度数の合計の数値。
 #' @return  座標 x において期待される確率密度の値のベクトル
 #' @examples
 #'  x <- seq( -2, 2, 0.2 )
@@ -5318,10 +5380,15 @@ get.intervals.with.nls.coef <- function( coefs, normal, symmetric, v.grad, uni.s
 #' @param   x               X座標のベクトル。
 #'                          最低 3 個以上の要素を含み、昇順に並べておくこと。
 #'                          また、値に重複がないこと。
+#'
 #' @param   freq            X座標に対する度数分布のベクトル。要素数は x と同数であること。
-#' @param   total           度数の合計。
-#'                          前処理で除外された外れ値の数を合計に含めるかどうかは、
-#'                          この関数の使用者の判断に委ねられる。そのため、この引数は省略できない。
+#'
+#' @param   total           度数の合計の数値。
+#'
+#'                          通常は、 sum(freq) を指定すればよい。
+#'                          ただし、前処理で除外された外れ値の数を合計に含めるか場合などは、
+#'                          それ以外の値を指定することもできる。
+#'
 #' @param   start.lists     \link[stats]{nls} に渡す初期値のリスト (リストのリスト) (デフォルト: NULL)。
 #'                          この start.lists を自分で与える場合は、
 #'                          (length(cgd:::kinds) - 1) 個の要素からなるリストを用意し、
@@ -5339,12 +5406,18 @@ get.intervals.with.nls.coef <- function( coefs, normal, symmetric, v.grad, uni.s
 #'                          また、各初期値のリストのテンプレートが
 #'                          \link[cgd]{nls.start.template} で得られる。
 #'                          それらのツールの具体的な使用方法は examples を参照のこと。
-#' @param   control         \link[stats]{nls} に渡す設定。詳細は \link[stats]{nls.control} を参照
+#'
+#' @param   control         \link[stats]{nls} に渡す設定
 #'                           (デフォルト: list( maxiter = 300, warnOnly = TRUE ) )。
-#' @param   method          \link[stats]{cor} で用いる相関係数名。詳細は \link[stats]{cor} を参照。
-#'                          NULL の場合、\link[stats]{cor} のデフォルトを用いる (デフォルト: NULL )。
+#'                          詳細は \link[stats]{nls.control} を参照。
+#'
+#' @param   method          \link[stats]{cor} で用いる相関係数名 (デフォルト: NULL )。
+#'                          詳細は \link[stats]{cor} を参照。
+#'                          NULL の場合、\link[stats]{cor} のデフォルトを用いる。
+#'
 #' @param   ...             その他、 \link[stats]{nls} の各引数を指定できる。
 #'                          詳細は \link[stats]{nls} の Arguments を参照。
+#'
 #' @return  list(   best        = 与えられた度数分布に最も近い \link[cgd]{CGD} クラスオブジェクト,
 #'                  best.cor    = 与えられた度数分布に対する best の相関係数,
 #'                  cgd         = length( cgd:::kinds ) - 1 個の \link[cgd]{CGD} クラスオブジェクトのリスト,
@@ -5373,7 +5446,7 @@ get.intervals.with.nls.coef <- function( coefs, normal, symmetric, v.grad, uni.s
 #'  total <- sum( freq )
 #'
 #'  ## try nls.freq.all
-#'  ##   remark that some warnings will occur but please don't mind..
+#'  ##   remark that some warnings will occur but please don't mind.
 #'  result <- nls.freq.all( x, freq, total )
 #'
 #'  ## show the results
@@ -5388,9 +5461,9 @@ get.intervals.with.nls.coef <- function( coefs, normal, symmetric, v.grad, uni.s
 #'  result$cor[[10]]
 #'  result$cor[[13]]    ## smaller than result$cor[[10]]
 #'
-#'  ## "3-Median-Differed-Sigma-Equaled Vertical Gradational Distribution"
+#'  ## "3-Mean-Differed-Sigma-Equaled Vertical Gradational Distribution"
 #'  result$cgd[[10]]$kind
-#'  ## "Median-Differed-Sigma-Equaled Vertical-Horizontal Gradational Distribution"
+#'  ## "Mean-Differed-Sigma-Equaled Vertical-Horizontal Gradational Distribution"
 #'  result$cgd[[13]]$kind
 #'
 #'  ## Also cgd.kind and cgd.kind.index functions work well
@@ -5399,9 +5472,9 @@ get.intervals.with.nls.coef <- function( coefs, normal, symmetric, v.grad, uni.s
 #'  cgd.kind( 13 )
 #'
 #'  cgd.kind.index(
-#'      "3-Median-Differed-Sigma-Equaled Vertical Gradational Distribution" )
+#'      "3-Mean-Differed-Sigma-Equaled Vertical Gradational Distribution" )
 #'  cgd.kind.index(
-#'      "Median-Differed-Sigma-Equaled Vertical-Horizontal Gradational Distribution" )
+#'      "Mean-Differed-Sigma-Equaled Vertical-Horizontal Gradational Distribution" )
 #'
 #'  ## see the plots
 #'  plot.freq.and.d( result$cgd[[10]], x, freq, total )
@@ -5655,10 +5728,10 @@ nls.start.template <- function( target )
 #' 分布の種類を表すインデックス番号を取得する。
 #' @export
 #' @param   targets     分布の種類を特定する変数
-#'                       (ベクトルまたはリストまたは \link[cgd]{CGD} クラスオブジェクト)。
+#'                       (ベクトルまたは、リストまたは、 \link[cgd]{CGD} クラスオブジェクト)。
 #'                      ベクトルまたはリストの要素は
-#'                      \link[cgd]{CGD} クラスオブジェクト か、
-#'                      cgd:::kinds の要素の文字列か、またはそのインデックス番号であること。
+#'                      cgd:::kinds の要素の文字列か、またはそのインデックス番号、
+#'                      あるいは \link[cgd]{CGD} クラスオブジェクト であること。
 #' @return  分布の種類 (kinds) のインデックス番号のベクトルを返す。
 #'          引数に NULL が与えられた場合は NULL を返し、
 #'          それ以外で対象となるインデックス番号が存在しない場合は NA を返す。
@@ -5668,7 +5741,7 @@ nls.start.template <- function( target )
 #'  cgd.kind.index( cgd:::kinds )
 #'  cgd.kind.index( 1:16 )
 #'  cgd.kind.index( 6 )
-#'  cgd.kind.index( "3-Median-Differed-Sigma-Differed Vertical Gradational Distribution" )
+#'  cgd.kind.index( "3-Mean-Differed-Sigma-Differed Vertical Gradational Distribution" )
 #'
 #'  a <- CGD$new()
 #'  cgd.kind.index( a )
@@ -5681,7 +5754,7 @@ nls.start.template <- function( target )
 #'  total <- sum( freq )
 #'
 #'  ## some distribution models are not good at approximating frequency distributions,
-#'  ## so when you execute nls.freq.alls, some warnings will occur often, but please don't mind.
+#'  ## so when you execute nls.freq.alls, some warnings will occur often.
 #'  cgds <- nls.freq.all( x, freq, total )
 #'  cgd.kind.index( cgds$cgd )
 ################################################################################################
@@ -5733,17 +5806,17 @@ cgd.kind.index <- function( targets )
 #' 分布の種類を表す文字列を取得する。
 #' @export
 #' @param   target      分布の種類を特定する変数
-#'                       (ベクトルまたはリストまたは \link[cgd]{CGD} クラスオブジェクト)。
+#'                       (ベクトルまたは、リストまたは、 \link[cgd]{CGD} クラスオブジェクト)。
 #'                      ベクトルまたはリストの要素は、
-#'                      \link[cgd]{CGD} クラスオブジェクト か、
-#'                      cgd:::kinds の要素の文字列か、またはそのインデックス番号であること。
+#'                      cgd:::kinds の要素の文字列か、またはそのインデックス番号、
+#'                      あるいは \link[cgd]{CGD} クラスオブジェクト であること。
 #' @return  分布の種類を表す文字列
 #' @seealso \link[cgd]{cgd.kind.index}
 #' @examples
 #'  cgd.kind( cgd:::kinds )
 #'  cgd.kind( 1:16 )
 #'  cgd.kind( 6 )
-#'  cgd.kind( "3-Median-Differed-Sigma-Differed Vertical Gradational Distribution" )
+#'  cgd.kind( "3-Mean-Differed-Sigma-Differed Vertical Gradational Distribution" )
 #'
 #'  a <- CGD$new()
 #'  cgd.kind( a )
@@ -5756,7 +5829,7 @@ cgd.kind.index <- function( targets )
 #'  total <- sum( freq )
 #'
 #'  ## some distribution models are not good at approximating frequency distributions,
-#'  ## so when you execute nls.freq.alls, some warnings will occur often, but please don't mind.
+#'  ## so when you execute nls.freq.alls, some warnings will occur often.
 #'  cgds <- nls.freq.all( x, freq, total )
 #'  cgd.kind( cgds$cgd )
 ################################################################################################
@@ -5785,7 +5858,7 @@ cgd.kind <- function( target )
 #'  a$set.waypoints(
 #'      data.frame( p = c( 0.25, 0.5, 0.75 ), q = c( -0.67, 0, 0.53 ) ),
 #'      this.type1.type = 2, continuous = TRUE )
-#'  a$kind  ## Median-Equaled-Sigma-Differed Horizontal Gradational Distribution
+#'  a$kind  ## Mean-Equaled-Sigma-Differed Horizontal Gradational Distribution
 #'  a$is.continuous()   ## TRUE
 ################################################################################################
 NULL
@@ -5853,7 +5926,7 @@ CGD$methods(
 #'  a$set.waypoints(
 #'      data.frame( p = c( 0.1, 0.4, 0.6, 0.9 ), q = c( -1.92, -0.20, 0.20, 1.92 ) ),
 #'      this.type1.type = 3, v.grad = TRUE )
-#'  a$kind  ## 2-Median-Differed-Sigma-Differed Vertical Gradational Distribution
+#'  a$kind  ## 2-Mean-Differed-Sigma-Differed Vertical Gradational Distribution
 #'  a$is.v.grad()   ## TRUE
 ################################################################################################
 NULL
@@ -5883,7 +5956,7 @@ CGD$methods(
 #'  a$set.waypoints(
 #'      data.frame( p = c( 0.1, 0.4, 0.6, 0.9 ), q = c( -1.92, -0.20, 0.20, 1.92 ) ),
 #'      this.type1.type = 3, v.grad = TRUE )
-#'  a$kind  ## 2-Median-Differed-Sigma-Differed Vertical Gradational Distribution
+#'  a$kind  ## 2-Mean-Differed-Sigma-Differed Vertical Gradational Distribution
 #'  a$is.uni.sigma()    ## FALSE
 #'
 #'  a$set.waypoints(
@@ -5918,7 +5991,7 @@ CGD$methods(
 #'  a$set.waypoints(
 #'      data.frame( p = c( 0.1, 0.4, 0.6, 0.9 ), q = c( -1.92, -0.20, 0.20, 1.92 ) ),
 #'      this.type1.type = 3, v.grad = TRUE )
-#'  a$kind  ## 2-Median-Differed-Sigma-Differed Vertical Gradational Distribution
+#'  a$kind  ## 2-Mean-Differed-Sigma-Differed Vertical Gradational Distribution
 #'  a$is.uni.mean() ## FALSE
 #'
 #'  a <- CGD$new()
@@ -7116,11 +7189,15 @@ CGD$methods(
 #' @aliases \S4method{tex}{CGD}
 #' @usage   \S4method{tex}{CGD}(decimal = 6, write.comma = TRUE, con = stdout(), sep = "\n")
 #' @param   decimal         小数点以下桁数 (デフォルト: 6)。
+#'
 #' @param   write.comma     論文のように "," と "." を付けるかどうかのフラグ
 #'                           (デフォルト: TRUE)。
+#'
 #' @param   con             出力先 (デフォルト: stdout())。
 #'                          詳細は \link[base]{writeLines} を参照。
+#'
 #' @param   sep             改行文字 (デフォルト: "\\n")。詳細は \link[base]{writeLines} を参照。
+#'
 #' @return  なし
 #' @examples
 #'  a <- CGD$new()
@@ -7208,11 +7285,15 @@ CGD$methods(
 #' @aliases \S4method{tex.p}{CGD}
 #' @usage   \S4method{tex.p}{CGD}(decimal = 6, write.comma = TRUE, con = stdout(), sep = "\n")
 #' @param   decimal         小数点以下桁数 (デフォルト: 6)。
+#'
 #' @param   write.comma     論文のように "," と "." を付けるかどうかのフラグ
 #'                           (デフォルト: TRUE)。
+#'
 #' @param   con             出力先 (デフォルト: stdout())。
 #'                          詳細は \link[base]{writeLines} を参照。
+#'
 #' @param   sep             改行文字 (デフォルト: "\\n")。詳細は \link[base]{writeLines} を参照。
+#'
 #' @return  なし
 #' @examples
 #'  a <- CGD$new()
@@ -7296,11 +7377,15 @@ CGD$methods(
 #' @aliases \S4method{tex.d}{CGD}
 #' @usage   \S4method{tex.d}{CGD}(decimal = 6, write.comma = TRUE, con = stdout(), sep = "\n")
 #' @param   decimal         小数点以下桁数 (デフォルト: 6)。
+#'
 #' @param   write.comma     論文のように "," と "." を付けるかどうかのフラグ
 #'                           (デフォルト: TRUE)。
+#'
 #' @param   con             出力先 (デフォルト: stdout())。
 #'                          詳細は \link[base]{writeLines} を参照。
+#'
 #' @param   sep             改行文字 (デフォルト: "\\n")。詳細は \link[base]{writeLines} を参照。
+#'
 #' @return  なし
 #' @examples
 #'  a <- CGD$new()

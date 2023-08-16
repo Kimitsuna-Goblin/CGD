@@ -1,7 +1,7 @@
 Package: cgd
 Type: Package
 Title: 連結ガウス分布 (Connected Gaussian Distribution) クラス
-Version: 3.1.0
+Version: 3.2.0
 Author: Kimitsuna-Goblin
 Maintainer: Kimitsuna-Goblin <kimitsuna@i.softbank.jp>
 Description: 連結ガウス分布とは,
@@ -31,7 +31,7 @@ Imports: nleqslv
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 7.2.1
+RoxygenNote: 7.2.3
 Suggests:
     testthat (>= 3.0.0)
 Config/testthat/edition: 3

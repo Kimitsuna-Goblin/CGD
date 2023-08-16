@@ -29,7 +29,7 @@ show.progress <- FALSE
 cat.progress <- function( x ) cat()
 if ( show.progress )
 {
-	cat.progress <- cat
+    cat.progress <- cat
 }
 
 ################################################################################################
@@ -62,9 +62,9 @@ if ( show.progress )
 #'                          The purpose of this function is to rescue the check evaluations from
 #'                          unreasonable results caused by singularities and other problems
 #'                          of the integrete function.
-#' @param   inf.to.x        When you check with intervals of from -Inf to a numeric, set TRUE.
-#' @param   inf.to.inf      When you check with intervals of from -Inf to Inf, set TRUE.
-#' @param   x.to.inf        When you check with intervals of from a numeric to Inf, set TRUE.
+#' @param   inf.to.x        When you check with integrals of from -Inf to a numeric, set TRUE.
+#' @param   inf.to.inf      When you check with integrals of from -Inf to Inf, set TRUE.
+#' @param   x.to.inf        When you check with integrals of from a numeric to Inf, set TRUE.
 #' @return  TRUE if all checks are succeeded.
 ################################################################################################
 check.integ <- function( integ = function( mean, sd, x ) {},
@@ -87,7 +87,7 @@ check.integ <- function( integ = function( mean, sd, x ) {},
     }
     else if ( x.to.inf )
     {
-        target.xs <- lapply( xs.inf, function( xs ) c( xs[2], xs[1] ) )
+        target.xs <- lapply( xs.inf, function( xs ) c( xs[2], Inf ) )
     }
     else
     {
@@ -179,9 +179,9 @@ check.integ <- function( integ = function( mean, sd, x ) {},
 #'                          The purpose of this function is to rescue the check evaluations from
 #'                          unreasonable results caused by singularities and other problems
 #'                          of the integrete function.
-#' @param   inf.to.x        When you check with intervals of from -Inf to a numeric, set TRUE.
-#' @param   inf.to.inf      When you check with intervals of from -Inf to Inf, set TRUE.
-#' @param   x.to.inf        When you check with intervals of from a numeric to Inf, set TRUE.
+#' @param   inf.to.x        When you check with integrals of from -Inf to a numeric, set TRUE.
+#' @param   inf.to.inf      When you check with integrals of from -Inf to Inf, set TRUE.
+#' @param   x.to.inf        When you check with integrals of from a numeric to Inf, set TRUE.
 #' @return  TRUE if all checks are succeeded.
 ################################################################################################
 check.integ.2 <- function( integ = function( mean.1, sd.1, mean.2, sd.2, x ) {},
@@ -241,8 +241,8 @@ check.integ.2 <- function( integ = function( mean.1, sd.1, mean.2, sd.2, x ) {},
 #'                          Otherwise, if this function returns FALSE,
 #'                          the sample is regarded as not suitable (ex. too strange),
 #'                          the check prosses will skipped.
-#' @param   inf.to.x        When you check with intervals of from -Inf to a numeric, set TRUE.
-#' @param   inf.to.inf      When you check with intervals of from -Inf to Inf, set TRUE.
+#' @param   inf.to.x        When you check with integrals of from -Inf to a numeric, set TRUE.
+#' @param   inf.to.inf      When you check with integrals of from -Inf to Inf, set TRUE.
 #' @param   print.result    If you want to display the results of this function, set TRUE.
 #' @return  A list of max.abs.error (value of max of abs.error),
 #'          mean (mean of the sample which gives max.abs.error),
@@ -337,8 +337,8 @@ check.max.absolute.error <- function( integ.func = function( mean, sd, x ) {},
 #'                          Otherwise, if this function returns FALSE,
 #'                          the sample is regarded as not suitable (ex. too strange),
 #'                          the check prosses will skipped.
-#' @param   inf.to.x        When you check with intervals of from -Inf to a numeric, set TRUE.
-#' @param   inf.to.inf      When you check with intervals of from -Inf to Inf, set TRUE.
+#' @param   inf.to.x        When you check with integrals of from -Inf to a numeric, set TRUE.
+#' @param   inf.to.inf      When you check with integrals of from -Inf to Inf, set TRUE.
 #' @return  A list of max.abs.error (value of max of abs.error),
 #'          mean.1 (mean.1 of the sample which gives max.abs.error),
 #'          sd.1 (sd.1 of the sample which gives max.abs.error),
@@ -447,8 +447,8 @@ check.max.absolute.error.2 <- function( integ.func = function( mean.1, sd.1, mea
 #'                          the check prosses will skipped.
 #' @param   d.range         The maximum abs-difference between integ and via.integrate values
 #'                          to consider as check is succeded.
-#' @param   inf.to.x        When you check with intervals of from -Inf to a numeric, set TRUE.
-#' @param   inf.to.inf      When you check with intervals of from -Inf to Inf, set TRUE.
+#' @param   inf.to.x        When you check with integrals of from -Inf to a numeric, set TRUE.
+#' @param   inf.to.inf      When you check with integrals of from -Inf to Inf, set TRUE.
 #' @return  TRUE if all checks are succeeded.
 ################################################################################################
 check.funcs <- function( f1 = function( mean, sd, x ) {}, f2 = function( mean, sd, x ) {},
@@ -531,8 +531,8 @@ check.funcs <- function( f1 = function( mean, sd, x ) {}, f2 = function( mean, s
 #'                          the check prosses will skipped.
 #' @param   d.range         The maximum abs-difference between integ and via.integrate values
 #'                          to consider as check is succeded.
-#' @param   inf.to.x        When you check with intervals of from -Inf to a numeric, set TRUE.
-#' @param   inf.to.inf      When you check with intervals of from -Inf to Inf, set TRUE.
+#' @param   inf.to.x        When you check with integrals of from -Inf to a numeric, set TRUE.
+#' @param   inf.to.inf      When you check with integrals of from -Inf to Inf, set TRUE.
 #' @return  TRUE if all checks are succeeded.
 ################################################################################################
 check.funcs.2 <- function( f1 = function( mean.1, sd.1, mean.2, sd.2, x ) {},
@@ -554,7 +554,8 @@ check.funcs.2 <- function( f1 = function( mean.1, sd.1, mean.2, sd.2, x ) {},
             print( paste( "mean.1:", mean.1, " sd.1:", sd.1 ) )
             check.funcs( function( mean, sd, x ) f1( mean.1, sd.1, mean, sd, x ),
                             function( mean, sd, x ) f2( mean.1, sd.1, mean, sd, x ),
-                            function( mean, sd, x ) target.cond( mean.1, sd.1, mean, sd, x ), d.range, inf.to.x )
+                            function( mean, sd, x ) target.cond( mean.1, sd.1, mean, sd, x ), d.range,
+                            inf.to.x, inf.to.inf )
         }
     }
 
@@ -566,7 +567,8 @@ check.funcs.2 <- function( f1 = function( mean.1, sd.1, mean.2, sd.2, x ) {},
             print( paste( "mean.2:", mean.2, " sd.2:", sd.2 ) )
             check.funcs( function( mean, sd, x ) f1( mean, sd, mean.2, sd.2, x ),
                             function( mean, sd, x ) f2( mean, sd, mean.2, sd.2, x ),
-                            function( mean, sd, x ) target.cond( mean, sd, mean.2, sd.2, x ), d.range, inf.to.x )
+                            function( mean, sd, x ) target.cond( mean, sd, mean.2, sd.2, x ), d.range,
+                            inf.to.x, inf.to.inf )
         }
     }
 
@@ -596,7 +598,7 @@ integ.x2.d.via.integrate <- function( mean, sd, x )
 }
 
 expect_equal( check.integ( function( mean, sd, x ) { integ.x2.d.inf( mean, sd, x[2] ) },
-			  integ.x2.d.via.integrate, inf.to.x = TRUE ), TRUE )
+              integ.x2.d.via.integrate, inf.to.x = TRUE ), TRUE )
 
 
 ################################################################################################
@@ -1765,7 +1767,7 @@ integ.m.x.d.pstar.psqrt2.m.sqrt2pisd2.x.d2.p.via.integrate <- function( mean, sd
 }
 
 expect_equal( check.integ( integ.m.x.d.pstar.psqrt2.m.sqrt2pisd2.x.d2.p,
-						   integ.m.x.d.pstar.psqrt2.m.sqrt2pisd2.x.d2.p.via.integrate ), TRUE )
+                           integ.m.x.d.pstar.psqrt2.m.sqrt2pisd2.x.d2.p.via.integrate ), TRUE )
 
 ## R1, R2 for t4.mean end
 
@@ -1794,7 +1796,7 @@ integ.x.d_1.pstar_2.psqrt2.via.integrate <- function( mean.1, sd.1, mean.2, sd.2
 }
 
 expect_equal( check.integ.2( integ.x.d_1.pstar_2.psqrt2,
-							 integ.x.d_1.pstar_2.psqrt2.via.integrate ), TRUE )
+                             integ.x.d_1.pstar_2.psqrt2.via.integrate ), TRUE )
 
 
 # B2 for t4.mean
@@ -1817,7 +1819,7 @@ integ.sqrt2pisd_22.x.d_22.pstar_1.via.integrate <- function( mean.1, sd.1, mean.
 }
 
 expect_equal( check.integ.2( integ.sqrt2pisd_22.x.d_22.pstar_1,
-							 integ.sqrt2pisd_22.x.d_22.pstar_1.via.integrate, d.range = 3e-8 ), TRUE )
+                             integ.sqrt2pisd_22.x.d_22.pstar_1.via.integrate, d.range = 3e-8 ), TRUE )
 
 
 # B1 + B2 for t4.mean
@@ -1866,7 +1868,7 @@ integ.B1.plus.B2.mean.inf.via.integrate <- function( mean.1, sd.1, mean.2, sd.2,
 }
 
 expect_equal( check.integ.2( integ.B1.plus.B2.mean.inf,
-							 integ.B1.plus.B2.mean.inf.via.integrate, inf.to.inf = TRUE, d.range = 7e-5 ), TRUE )
+                             integ.B1.plus.B2.mean.inf.via.integrate, inf.to.inf = TRUE, d.range = 7e-5 ), TRUE )
 
 ## B1, B2 for t4.mean end
 
@@ -1900,7 +1902,7 @@ integ.msqrtpi.sd_1.x.d_12.pstar_2.via.integrate <- function( mean.1, sd.1, mean.
 }
 
 expect_equal( check.integ.2( integ.msqrtpi.sd_1.x.d_12.pstar_2,
-							 integ.msqrtpi.sd_1.x.d_12.pstar_2.via.integrate, d.range = 3e-7 ), TRUE )
+                             integ.msqrtpi.sd_1.x.d_12.pstar_2.via.integrate, d.range = 3e-7 ), TRUE )
 
 
 integ.msqrtpi.sd_1.x.d_12.pstar_2.inf <- function( mean.1, sd.1, mean.2, sd.2, x )
@@ -1917,7 +1919,7 @@ integ.msqrtpi.sd_1.x.d_12.pstar_2.inf.via.integrate <- function( mean.1, sd.1, m
 }
 
 expect_equal( check.integ.2( integ.msqrtpi.sd_1.x.d_12.pstar_2.inf,
-							 integ.msqrtpi.sd_1.x.d_12.pstar_2.inf.via.integrate,
+                             integ.msqrtpi.sd_1.x.d_12.pstar_2.inf.via.integrate,
                 inf.to.inf = TRUE, d.range = 5e-4 ), TRUE )
 
 
@@ -1948,7 +1950,7 @@ integ.msqrtpi.sd_2.x.d_22.pstar_1.via.integrate <- function( mean.1, sd.1, mean.
 }
 
 expect_equal( check.integ.2( integ.msqrtpi.sd_2.x.d_22.pstar_1,
-							 integ.msqrtpi.sd_2.x.d_22.pstar_1.via.integrate, d.range = 3e-7 ), TRUE )
+                             integ.msqrtpi.sd_2.x.d_22.pstar_1.via.integrate, d.range = 3e-7 ), TRUE )
 
 
 integ.msqrtpi.sd_2.x.d_22.pstar_1.inf <- function( mean.1, sd.1, mean.2, sd.2, x )
@@ -1966,7 +1968,7 @@ integ.msqrtpi.sd_2.x.d_22.pstar_1.inf.via.integrate <- function( mean.1, sd.1, m
 }
 
 expect_equal( check.integ.2( integ.msqrtpi.sd_2.x.d_22.pstar_1.inf,
-							 integ.msqrtpi.sd_2.x.d_22.pstar_1.inf.via.integrate,
+                             integ.msqrtpi.sd_2.x.d_22.pstar_1.inf.via.integrate,
                 inf.to.inf = TRUE, d.range = 1e-3 ), TRUE )
 
 
@@ -1996,7 +1998,7 @@ integ.G1.plus.G2.mean.inf.via.integrate <- function( mean.1, sd.1, mean.2, sd.2,
 }
 
 expect_equal( check.integ.2( integ.G1.plus.G2.mean.inf,
-							 integ.G1.plus.G2.mean.inf.via.integrate, inf.to.inf = TRUE, d.range = 5e-4 ), TRUE )
+                             integ.G1.plus.G2.mean.inf.via.integrate, inf.to.inf = TRUE, d.range = 5e-4 ), TRUE )
 
 ## G1, G2 for t4.mean end
 
@@ -2084,7 +2086,7 @@ integ.t4.x.psi.g.inf.via.integrate <- function( mean.1, sd.1, mean.2, sd.2, x )
 }
 
 expect_equal( check.integ.2( integ.t4.x.psi.g.inf,
-							 integ.t4.x.psi.g.inf.via.integrate, inf.to.inf = TRUE, d.range = 6.5e-4 ), TRUE )
+                             integ.t4.x.psi.g.inf.via.integrate, inf.to.inf = TRUE, d.range = 6.5e-4 ), TRUE )
 
 
 ################################################################################################
@@ -2319,7 +2321,7 @@ integ.t4.x2.g.inf.via.integrate <- function( mean.1, sd.1, mean.2, sd.2, x )
 expect_equal( check.integ.2( integ.t4.x2.g, integ.t4.x2.g.via.integrate ), TRUE )
 
 expect_equal( check.integ.2( integ.t4.x2.g.inf,
-							 integ.t4.x2.g.inf.via.integrate, inf.to.inf = TRUE ), TRUE )
+                             integ.t4.x2.g.inf.via.integrate, inf.to.inf = TRUE ), TRUE )
 
 
 ################################################################################################
@@ -2372,7 +2374,7 @@ integ.sqrtpisd2.x2.d2.pstar.inf.via.integrate <- function( mean, sd, x )
 }
 
 expect_equal( check.integ( integ.sqrtpisd2.x2.d2.pstar.inf,
-						   integ.sqrtpisd2.x2.d2.pstar.inf.via.integrate, inf.to.inf = TRUE ), TRUE )
+                           integ.sqrtpisd2.x2.d2.pstar.inf.via.integrate, inf.to.inf = TRUE ), TRUE )
 
 
 ## Integral of R1, R2 for t4.sd begin
@@ -2470,7 +2472,7 @@ integ.R1.plus.R2.sd.inf.via.integrate <- function( mean, sd, x )
 }
 
 expect_equal( check.integ( integ.R1.plus.R2.sd.inf,
-						   integ.R1.plus.R2.sd.inf.via.integrate, inf.to.inf = TRUE ), TRUE )
+                           integ.R1.plus.R2.sd.inf.via.integrate, inf.to.inf = TRUE ), TRUE )
 
 # R1, R2 for sd end
 
@@ -2719,7 +2721,7 @@ integ.B1.plus.B2.sd.inf.via.integrate <- function( mean.1, sd.1, mean.2, sd.2, x
 }
 
 expect_equal( check.integ.2( integ.B1.plus.B2.sd.inf,
-							 integ.B1.plus.B2.sd.inf.via.integrate, inf.to.inf = TRUE, d.range = 1e-6 ), TRUE )
+                             integ.B1.plus.B2.sd.inf.via.integrate, inf.to.inf = TRUE, d.range = 1e-6 ), TRUE )
 
 # B1, B2 for sd end
 
@@ -2861,7 +2863,7 @@ integ.G1.plus.G2.sd.inf.via.integrate <- function( mean.1, sd.1, mean.2, sd.2, x
 }
 
 expect_equal( check.integ.2( integ.G1.plus.G2.sd.inf,
-							 integ.G1.plus.G2.sd.inf.via.integrate, inf.to.inf = TRUE ), TRUE )
+                             integ.G1.plus.G2.sd.inf.via.integrate, inf.to.inf = TRUE ), TRUE )
 
 # G1, G2 for sd end
 
@@ -2910,7 +2912,7 @@ integ.t4.x2.psi.g.inf.via.integrate <- function( mean.1, sd.1, mean.2, sd.2, x )
 }
 
 expect_equal( check.integ.2( integ.t4.x2.psi.g.inf,
-							 integ.t4.x2.psi.g.inf.via.integrate, inf.to.inf = TRUE, d.range = 2e-3 ), TRUE )
+                             integ.t4.x2.psi.g.inf.via.integrate, inf.to.inf = TRUE, d.range = 2e-3 ), TRUE )
 
 
 ################################
@@ -3324,62 +3326,62 @@ v.cont.via.integrate <- function( type1.type, mean.1, sd.1, mean.2, sd.2,
                                     mean.3 = mean.1, sd.3 = sd.1, mean.4 = mean.2, sd.4 = sd.2,
                                     symmetric = FALSE, get.lv = FALSE, get.uv = FALSE )
 {
-	if ( type1.type == 2 && symmetric )
-	{
-		if ( mean.1 != mean.2 )
-		{
-			stop( "Error: mean.1 and mean.2 must be equal where type1.type == 2 and symmetric = TRUE." )
-		}
+    if ( type1.type == 2 && symmetric )
+    {
+        if ( mean.1 != mean.2 )
+        {
+            stop( "Error: mean.1 and mean.2 must be equal where type1.type == 2 and symmetric = TRUE." )
+        }
 
-		mean <- mean.1
-	}
-	else
-	{
-	    mean <- cgd:::mean.cont( type1.type, c( mean.1, mean.2, mean.3, mean.4 ), c( sd.1, sd.2, sd.3, sd.4 ) )
-	}
+        mean <- mean.1
+    }
+    else
+    {
+        mean <- cgd:::mean.cont( type1.type, c( mean.1, mean.2, mean.3, mean.4 ), c( sd.1, sd.2, sd.3, sd.4 ) )
+    }
 
     if ( type1.type == 2 )
     {
-    	if ( symmetric )
-    	{
-	        f <- function( x )
-	        {
-	            ( x - mean )^2 *
-	            ( ( 1 - 2 * pnorm( x, mean, sd.1 ) ) * dnorm( x, mean, sd.1 ) +
-	              2 * pnorm( x, mean, sd.2 ) * dnorm( x, mean, sd.2 ) )
-	        }
+        if ( symmetric )
+        {
+            f <- function( x )
+            {
+                ( x - mean )^2 *
+                ( ( 1 - 2 * pnorm( x, mean, sd.1 ) ) * dnorm( x, mean, sd.1 ) +
+                  2 * pnorm( x, mean, sd.2 ) * dnorm( x, mean, sd.2 ) )
+            }
 
-	        if ( get.lv || get.uv )
-	        {
-	            result <- integrate( f, -Inf, mean )
-	        }
-	        else
-	        {
-	            result <- integrate( function( x ) { f( x ) * 2 }, -Inf, mean )
-	        }
-    	}
-    	else
-    	{
-	        f <- function( x )
-	        {
-	            ( x - mean )^2 *
-	            ( ( 1 - pnorm( x, mean.1, sd.1 ) ) * dnorm( x, mean.1, sd.1 ) +
-	              pnorm( x, mean.2, sd.2 ) * dnorm( x, mean.2, sd.2 ) )
-	        }
+            if ( get.lv || get.uv )
+            {
+                result <- integrate( f, -Inf, mean )
+            }
+            else
+            {
+                result <- integrate( function( x ) { f( x ) * 2 }, -Inf, mean )
+            }
+        }
+        else
+        {
+            f <- function( x )
+            {
+                ( x - mean )^2 *
+                ( ( 1 - pnorm( x, mean.1, sd.1 ) ) * dnorm( x, mean.1, sd.1 ) +
+                  pnorm( x, mean.2, sd.2 ) * dnorm( x, mean.2, sd.2 ) )
+            }
 
-	        if ( get.lv )
-	        {
-	            result <- integrate( f, -Inf, mean )
-	        }
-	        else if ( get.uv )
-	        {
-	            result <- integrate( f, mean, Inf )
-	        }
-	        else
-	        {
-	            result <- integrate( f, -Inf, Inf )
-	        }
-	   	}
+            if ( get.lv )
+            {
+                result <- integrate( f, -Inf, mean )
+            }
+            else if ( get.uv )
+            {
+                result <- integrate( f, mean, Inf )
+            }
+            else
+            {
+                result <- integrate( f, -Inf, Inf )
+            }
+        }
     }
     else if ( type1.type == 3 )
     {
@@ -3494,7 +3496,7 @@ v.cont.via.integrate <- function( type1.type, mean.1, sd.1, mean.2, sd.2,
     }
     #else if ( type1.type == 4 )
     #{
-    ##	For type1.type == 4, use cdg:::v.cont.t4.via.integrate instead of this fuction.
+    ##  For type1.type == 4, use cdg:::v.cont.t4.via.integrate instead of this fuction.
     #}
 
     return( result )
@@ -3514,7 +3516,7 @@ expect_equal( check.integ.2(  function( mean.1, sd.1, mean.2, sd.2, x )
 expect_equal( check.integ.2(  function( mean.1, sd.1, mean.2, sd.2, x )
                 cgd:::v.cont( 2, c( mean.1, mean.2 ), c( sd.1, sd.2 ), get.uv = TRUE ),
                 function( mean.1, sd.1, mean.2, sd.2, x )
-                v.cont.via.integrate( 2, mean.1, sd.1, mean.2, sd.2, get.uv = TRUE ), inf.to.x = TRUE ), TRUE )
+                v.cont.via.integrate( 2, mean.1, sd.1, mean.2, sd.2, get.uv = TRUE ), x.to.inf = TRUE ), TRUE )
 
 
 expect_equal( check.integ.2(  function( mean.1, sd.1, mean.2, sd.2, x )
@@ -3530,7 +3532,7 @@ expect_equal( check.integ.2(  function( mean.1, sd.1, mean.2, sd.2, x )
 expect_equal( check.integ.2(  function( mean.1, sd.1, mean.2, sd.2, x )
                 cgd:::v.cont( 2, c( mean.1, mean.1 ), c( sd.1, sd.2 ), symmetric = TRUE, get.uv = TRUE ),
                 function( mean.1, sd.1, mean.2, sd.2, x )
-                v.cont.via.integrate( 2, mean.1, sd.1, mean.1, sd.2, symmetric = TRUE, get.uv = TRUE ), inf.to.x = TRUE ), TRUE )
+                v.cont.via.integrate( 2, mean.1, sd.1, mean.1, sd.2, symmetric = TRUE, get.uv = TRUE ), x.to.inf = TRUE ), TRUE )
 
 
 expect_equal( check.integ.2(  function( mean.1, sd.1, mean.2, sd.2, x )
@@ -3546,7 +3548,7 @@ expect_equal( check.integ.2(  function( mean.1, sd.1, mean.2, sd.2, x )
 expect_equal( check.integ.2(  function( mean.1, sd.1, mean.2, sd.2, x )
                 cgd:::v.cont( 3, c( mean.1, mean.2, mean.1 ), c( sd.1, sd.2, sd.1 ), get.uv = TRUE ),
                 function( mean.1, sd.1, mean.2, sd.2, x )
-                v.cont.via.integrate( 3, mean.1, sd.1, mean.2, sd.2, get.uv = TRUE ), inf.to.x = TRUE ), TRUE )
+                v.cont.via.integrate( 3, mean.1, sd.1, mean.2, sd.2, get.uv = TRUE ), x.to.inf = TRUE ), TRUE )
 
 
 expect_equal( check.integ.2(  function( mean.1, sd.1, mean.2, sd.2, x )
@@ -3562,7 +3564,7 @@ expect_equal( check.integ.2(  function( mean.1, sd.1, mean.2, sd.2, x )
 expect_equal( check.integ.2(  function( mean.1, sd.1, mean.2, sd.2, x )
                 cgd:::v.cont( 3, c( mean.1, mean.1, mean.1 ), c( sd.1, sd.2, sd.1 ), symmetric = TRUE, get.uv = TRUE ),
                 function( mean.1, sd.1, mean.2, sd.2, x )
-                v.cont.via.integrate( 3, mean.1, sd.1, mean.1, sd.2, symmetric = TRUE, get.uv = TRUE ), inf.to.x = TRUE ), TRUE )
+                v.cont.via.integrate( 3, mean.1, sd.1, mean.1, sd.2, symmetric = TRUE, get.uv = TRUE ), x.to.inf = TRUE ), TRUE )
 
 expect_equal( all( vapply( means,
             function( mean.3 )
@@ -3769,13 +3771,13 @@ expect_equal( check.integ.2(  function( mean.1, sd.1, mean.2, sd.2, x )
                 cgd:::v.cont( 2, c( mean.1, mean.2 ), c( sd.1, sd.2 ), get.lv = TRUE ),
                 function( mean.1, sd.1, mean.2, sd.2, x )
                 cgd:::v.cont.t4.via.integrate( c( mean.1, mean.1, mean.2, mean.2 ),
-                                               c( sd.1, sd.1, sd.2, sd.2 ), get.lv = TRUE ), inf.to.inf = TRUE ), TRUE )
+                                               c( sd.1, sd.1, sd.2, sd.2 ), get.lv = TRUE ), inf.to.x = TRUE ), TRUE )
 
 expect_equal( check.integ.2(  function( mean.1, sd.1, mean.2, sd.2, x )
                 cgd:::v.cont( 2, c( mean.1, mean.2 ), c( sd.1, sd.2 ), get.uv = TRUE ),
                 function( mean.1, sd.1, mean.2, sd.2, x )
                 cgd:::v.cont.t4.via.integrate( c( mean.1, mean.1, mean.2, mean.2 ),
-                                               c( sd.1, sd.1, sd.2, sd.2 ), get.uv = TRUE ), inf.to.inf = TRUE ), TRUE )
+                                               c( sd.1, sd.1, sd.2, sd.2 ), get.uv = TRUE ), x.to.inf = TRUE ), TRUE )
 
 expect_equal( check.integ.2(  function( mean.1, sd.1, mean.2, sd.2, x )
                 cgd:::v.cont( 3, c( mean.1, mean.2, mean.1 ), c( sd.1, sd.2,sd.1 ) ),
@@ -3787,10 +3789,10 @@ expect_equal( check.integ.2(  function( mean.1, sd.1, mean.2, sd.2, x )
                 cgd:::v.cont( 3, c( mean.1, mean.2, mean.1 ), c( sd.1, sd.2,sd.1 ), get.lv = TRUE ),
                 function( mean.1, sd.1, mean.2, sd.2, x )
                 cgd:::v.cont.t4.via.integrate( c( mean.1, mean.2, mean.1, mean.2 ),
-                                               c( sd.1, sd.2, sd.1, sd.2 ), get.lv = TRUE ), inf.to.inf = TRUE ), TRUE )
+                                               c( sd.1, sd.2, sd.1, sd.2 ), get.lv = TRUE ), inf.to.x = TRUE ), TRUE )
 
 expect_equal( check.integ.2(  function( mean.1, sd.1, mean.2, sd.2, x )
                 cgd:::v.cont( 3, c( mean.1, mean.2, mean.1 ), c( sd.1, sd.2,sd.1 ), get.uv = TRUE ),
                 function( mean.1, sd.1, mean.2, sd.2, x )
                 cgd:::v.cont.t4.via.integrate( c( mean.1, mean.2, mean.1, mean.2 ),
-                                               c( sd.1, sd.2, sd.1, sd.2 ), get.uv = TRUE ), inf.to.inf = TRUE ), TRUE )
+                                               c( sd.1, sd.2, sd.1, sd.2 ), get.uv = TRUE ), x.to.inf = TRUE ), TRUE )

@@ -8,10 +8,10 @@ cgd.kind.index(targets)
 }
 \arguments{
 \item{targets}{分布の種類を特定する変数
- (ベクトルまたはリストまたは \link[cgd]{CGD} クラスオブジェクト)。
+ (ベクトルまたは、リストまたは、 \link[cgd]{CGD} クラスオブジェクト)。
 ベクトルまたはリストの要素は
-\link[cgd]{CGD} クラスオブジェクト か、
-cgd:::kinds の要素の文字列か、またはそのインデックス番号であること。}
+cgd:::kinds の要素の文字列か、またはそのインデックス番号、
+あるいは \link[cgd]{CGD} クラスオブジェクト であること。}
 }
 \value{
 分布の種類 (kinds) のインデックス番号のベクトルを返す。
@@ -25,7 +25,7 @@ cgd:::kinds の要素の文字列か、またはそのインデックス番号�
  cgd.kind.index( cgd:::kinds )
  cgd.kind.index( 1:16 )
  cgd.kind.index( 6 )
- cgd.kind.index( "3-Median-Differed-Sigma-Differed Vertical Gradational Distribution" )
+ cgd.kind.index( "3-Mean-Differed-Sigma-Differed Vertical Gradational Distribution" )
 
  a <- CGD$new()
  cgd.kind.index( a )
@@ -38,7 +38,7 @@ cgd:::kinds の要素の文字列か、またはそのインデックス番号�
  total <- sum( freq )
 
  ## some distribution models are not good at approximating frequency distributions,
- ## so when you execute nls.freq.alls, some warnings will occur often, but please don't mind.
+ ## so when you execute nls.freq.alls, some warnings will occur often.
  cgds <- nls.freq.all( x, freq, total )
  cgd.kind.index( cgds$cgd )
 }

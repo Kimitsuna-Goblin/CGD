@@ -22,11 +22,11 @@
 
 \item{freq}{X座標に対する度数分布のベクトル。要素数は x と同数であること。}
 
-\item{total}{度数の合計。
+\item{total}{度数の合計の数値。
 
-                         前処理で除外された外れ値の数を合計に含めるかどうかは、
-                         この関数の使用者の判断に委ねられる。
-                         そのため、この引数は省略できない。}
+                         通常は、 sum(freq) を指定すればよい。
+                         ただし、前処理で除外された外れ値の数を合計に含めるか場合などは、
+                         それ以外の値を指定することもできる。}
 
 \item{start}{\link[stats]{nls} に渡す初期値のリスト (デフォルト: NULL)。
 
@@ -51,11 +51,13 @@
 詳細は \link[stats]{nls.control} を参照 (デフォルト: list())。}
 
 \item{set.by.start}{\link[stats]{nls} を実行せず、
-                         start の初期値をそのまま結果として出力し、分布を構成するフラグ。
+                         start の初期値をそのまま結果として出力し、
+                         分布を構成するフラグ (デフォルト: FALSE)。
 
-                         start の値は、引数で与えられた場合は、それをそのまま使い、
-                         引数で与えられていない場合は、
-                         内部で計算した暫定的な初期値を使う (デフォルト: FALSE)。}
+                         TRUE にすると、 start の引数で初期値が与えられた場合は、
+                         それをそのまま出力し、
+                         start が与えられていない場合は、
+                         内部で計算した暫定的な初期値を出力する。}
 
 \item{kind}{分布の種類を特定する変数 (1要素のみ有効) (デフォルト: NULL)。
 
@@ -84,12 +86,13 @@
                          type1.type, uni.sigma, uni.mean の引数は無視される
                           (デフォルト: FALSE)。}
 
-\item{v.grad}{type1.type = 3, v.grad = TRUE で近似するフラグ。
+\item{v.grad}{type1.type = 3, v.grad = TRUE に設定するフラグ (デフォルト: FALSE)。
 
-                         v.grad = TRUE にすると、 type1.type の引数は無視され、
-                         type1.type = 3 に設定される (デフォルト: FALSE)}
+                         v.grad = TRUE にすると、引数の type1.type は無視され、
+                         type1.type フィールドの値は 3 に設定される。}
 
-\item{type1.type}{ジェネレータ関数用の引数。フィールドの type1.type に設定する値。
+\item{type1.type}{ジェネレータ関数用の引数。
+                         フィールドの type1.type に設定する数値 (デフォルト: 2)。
                          1、2、3、4 のいずれかを指定すること。
 
                          分布の種類は type1.type の設定値によって、
@@ -100,28 +103,31 @@
                              \item 3:  (歪んだ) 縦方向グラデーション
                              \item 4: 縦横グラデーション
                          }
-                         となる (デフォルト: 2)。
+                         となる。
                          1、2、3、4 以外の数値を指定した場合はエラーになる。
                          本関数では、 type1.type = 0 は指定できない。}
 
-\item{uni.sigma}{構成要素の正規分布の標準偏差をすべて等しくするかどうかのフラグ。
+\item{uni.sigma}{構成要素の正規分布の標準偏差を
+                         すべて等しくするかどうかのフラグ (デフォルト: FALSE)。
 
                          uni.sigma = TRUE にすると、
                          uni.mean の引数は無視され、 uni.mean = FALSE になる。
-                         type1.type = 1 では無効 (デフォルト: FALSE)。}
+                         type1.type = 1 では無効。}
 
-\item{uni.mean}{構成要素の正規分布の平均値をすべて等しくするかどうかのフラグ。
+\item{uni.mean}{構成要素の正規分布の平均値を
+                         すべて等しくするかどうかのフラグ (デフォルト: TRUE)。
 
                          type1.type = 1 では、 FALSE の設定は無効
                           (注: 平均値が異なる2つの正規分布の平均は、
-                           本パッケージにおける不連続な連結ガウス分布の拡張にはならない)
-                          (デフォルト: TRUE)。}
+                           本パッケージにおける不連続な連結ガウス分布の拡張にはならない)。}
 
 \item{...}{その他、 \link[stats]{nls} の各引数を指定できる。
 詳細は \link[stats]{nls} の Arguments を参照。}
 
-\item{this.type1.type}{メソッド用の引数。フィールドの type1.type に設定する値。
-詳細は上の type1.type に同じ。}
+\item{this.type1.type}{メソッド用の引数。
+フィールドの type1.type に設定する数値 (デフォルト: NULL)。
+NULL の場合は、 type1.type フィールドの値を変更しない。
+その他、詳細は上の type1.type に同じ。}
 }
 \value{
 生成した CGD クラスオブジェクト
@@ -131,7 +137,7 @@
 与えられた度数分布に最も近くなるように、連続な連結ガウス分布を構成する。
 この関数内では、度数分布の外れ値の除外は行わない。
 外れ値の除外は、必要に応じて、前処理で行うこと。
-度数の合計 (total) に外れ値の分を含めるかどうかは、ライブラリの利用者の判断に委ねられる。
+度数の合計 (total) に外れ値の分を含めるかどうかは、パッケージの利用者の判断に委ねられている。
 そのため、引数 total は省略できない。
 }
 \examples{
@@ -172,7 +178,7 @@
  plot.freq.and.d( a, x, freq, total )
 
  a$nls.freq( x, freq, total,
-             kind = "2-Median-Equaled-Sigma-Differed Vertical Gradational Distribution" )
+             kind = "2-Mean-Equaled-Sigma-Differed Vertical Gradational Distribution" )
  a
  plot.freq.and.d( a, x, freq, total )
 

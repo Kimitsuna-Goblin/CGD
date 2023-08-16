@@ -21,6 +21,6 @@ v.grad = TRUE として構成されているかどうかを調べる。
  a$set.waypoints(
      data.frame( p = c( 0.1, 0.4, 0.6, 0.9 ), q = c( -1.92, -0.20, 0.20, 1.92 ) ),
      this.type1.type = 3, v.grad = TRUE )
- a$kind  ## 2-Median-Differed-Sigma-Differed Vertical Gradational Distribution
+ a$kind  ## 2-Mean-Differed-Sigma-Differed Vertical Gradational Distribution
  a$is.v.grad()   ## TRUE
 }
