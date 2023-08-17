@@ -2803,6 +2803,14 @@ a$set.waypoints(
 	p = c( 0.1, 0.25, 0.4, 0.5, 0.6, 0.75, 0.9 ),
 	q = qs ),
 this.type1.type = 4, control = list( maxit = 1000 ) )
+# In this case, even for the same source,
+# the results may differ significantly depending on the machine environment.
+if ( a$sd > 1.2 )
+{
+	expect_equal( c( a$sd, a$lsd, a$usd ), c( 1.122107, 1.095699, 1.147907 ), tolerance = 5e-7 )
+} else {
+	expect_equal( c( a$sd, a$lsd, a$usd ), c( 0.864841, 0.888614, 0.840395 ), tolerance = 5e-7 )
+}
 expect_equal( a$p( qs ), c( 0.1, 0.25, 0.4, 0.5, 0.6, 0.75, 0.9 ), tolerance = 5e-7 )
 plot.waypoints.and.p( a,
 	c( 0.1, 0.25, 0.4, 0.5, 0.6, 0.75, 0.9 ), qs, c( -3, 3 ) )

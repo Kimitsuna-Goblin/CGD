@@ -1,7 +1,7 @@
 ################################################################################################
 # 連結ガウス分布 (Connected Gaussian Distribution) クラス
 # @file         CGD.R
-# @version      3.2.0
+# @version      3.2.1
 # @author       Kimitsuna-Goblin
 # @copyright    Copyright (C) 2023 Ura Kimitsuna
 # @license      Released under the MIT license.
