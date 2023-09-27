@@ -122,9 +122,9 @@ list(   best        = 与えられた度数分布に最も近い \link[cgd]{CGD}
  result$cor[[10]]
  result$cor[[13]]    ## smaller than result$cor[[10]]
 
- ## "3-Mean-Differed-Sigma-Equaled Vertical Gradational Distribution"
+ ## "3-Mean-Differed Sigma-Equaled Vertical Gradational Distribution"
  result$cgd[[10]]$kind
- ## "Mean-Differed-Sigma-Equaled Vertical-Horizontal Gradational Distribution"
+ ## "Mean-Differed Sigma-Equaled Horizontal-Vertical Gradational Distribution"
  result$cgd[[13]]$kind
 
  ## Also cgd.kind and cgd.kind.index functions work well
@@ -133,9 +133,9 @@ list(   best        = 与えられた度数分布に最も近い \link[cgd]{CGD}
  cgd.kind( 13 )
 
  cgd.kind.index(
-     "3-Mean-Differed-Sigma-Equaled Vertical Gradational Distribution" )
+     "3-Mean-Differed Sigma-Equaled Vertical Gradational Distribution" )
  cgd.kind.index(
-     "Mean-Differed-Sigma-Equaled Vertical-Horizontal Gradational Distribution" )
+     "Mean-Differed Sigma-Equaled Horizontal-Vertical Gradational Distribution" )
 
  ## see the plots
  plot.freq.and.d( result$cgd[[10]], x, freq, total )

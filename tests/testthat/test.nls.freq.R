@@ -4,24 +4,24 @@ library( "cgd" )
 library( "testthat" )
 
 a<-CGD$new()
-dev.new(); plot.new()
+if ( dev.cur() == 1 ) { dev.new(); plot.new() }
 
 diff.check <- function( a, x, freq, total )
 {
-	diff <- sqrt( ( a$d( x ) - cgd::get.d( x, freq, total ) )^2 )
-	summary <- c( min( diff ), max( diff ), mean( diff ), sd( diff ), cor( a$d( x ), cgd::get.d( x, freq, total ) ) )
-	names( summary ) <- c( "diff.min", "diff.max", "diff.mean", "diff.sd", "cor" )
+    diff <- sqrt( ( a$d( x ) - cgd::get.d( x, freq, total ) )^2 )
+    summary <- c( min( diff ), max( diff ), mean( diff ), sd( diff ), cor( a$d( x ), cgd::get.d( x, freq, total ) ) )
+    names( summary ) <- c( "diff.min", "diff.max", "diff.mean", "diff.sd", "cor" )
 
-	list( diff = diff, summary = summary )
+    list( diff = diff, summary = summary )
 }
 
 plot.freq.and.d <- function( a, x, freq, total )
 {
-	xlim <- c( min( x ), max( x ) )
-	ylim <- c( 0, max( cgd::get.d( x, freq, total ) ) * 1.2 )
-	plot( x, cgd::get.d( x, freq, total ), xlim = xlim, ylim = ylim, ylab = "" )
-	par( new = T )
-	plot( seq( min( x ), max( x ), 0.01 ), a$d( seq( min( x ), max( x ), 0.01 ) ), type = "l", xlim = xlim, ylim = ylim, xlab = "" )
+    xlim <- c( min( x ), max( x ) )
+    ylim <- c( 0, max( cgd::get.d( x, freq, total ) ) * 1.2 )
+    plot( x, cgd::get.d( x, freq, total ), xlim = xlim, ylim = ylim, ylab = "" )
+    par( new = T )
+    plot( seq( min( x ), max( x ), 0.01 ), a$d( seq( min( x ), max( x ), 0.01 ) ), type = "l", xlim = xlim, ylim = ylim, xlab = "" )
 }
 
 #### normal distribution base
@@ -42,8 +42,8 @@ diff.check( a, x, freq, total )
 ## This function should be run after each non-error test to confirm the result.
 show.results <- function( a, x, freq, total )
 {
-	print( a )
-	plot.freq.and.d( a, x, freq, total )
+    print( a )
+    plot.freq.and.d( a, x, freq, total )
 }
 
 ## Instead of the above function, you can each of these commands.
@@ -76,7 +76,7 @@ show.results( a, x, freq, total )
 diff.check( a, x, freq, total )
 
 # normal test
-freq <- dnorm( x, 0, 0.5 ) * 1000 + sin( x + 0.05 ) * 10
+freq <- dnorm( x, 0, 0.5 ) * ( 1000 + sin( x + 0.05 ) * 10 )
 total <- sum( freq ) * 1.1
 a$nls.freq( x, freq, total, normal = TRUE, this.type1.type = 3 )
 expect_equal( a$type1.type, 1 )
@@ -86,8 +86,8 @@ diff.check( a, x, freq, total )
 
 # normal test
 a$set.waypoints(
-	data.frame( p = c( 0.3, 0.5, 0.7 ), q = c( qnorm( 0.3, -0.2, 1 ), 0, qnorm( 0.7, 0.2, 0.8 ) ) ),
-	this.type1.type = 2, continuous = TRUE )
+    data.frame( p = c( 0.3, 0.5, 0.7 ), q = c( qnorm( 0.3, -0.2, 1 ), 0, qnorm( 0.7, 0.2, 0.8 ) ) ),
+    this.type1.type = 2, continuous = TRUE )
 a$nls.freq( x, freq, total, normal = TRUE )
 expect_equal( a$type1.type, 2 )
 expect_equal( a$kind, "Normal Distribution" )
@@ -96,8 +96,8 @@ diff.check( a, x, freq, total )
 
 # normal test
 a$set.waypoints(
-	data.frame( p = c( 0.1, 0.4, 0.5 ), q = c( qnorm( 0.1, 0, 1.2 ), qnorm( 0.4, 0, 0.9 ), 0 ) ),
-	this.type1.type = 3 )
+    data.frame( p = c( 0.1, 0.4, 0.5 ), q = c( qnorm( 0.1, 0, 1.2 ), qnorm( 0.4, 0, 0.9 ), 0 ) ),
+    this.type1.type = 3 )
 a$nls.freq( x, freq, total, normal = TRUE )
 expect_equal( a$type1.type, 1 )
 expect_equal( a$kind, "Normal Distribution" )
@@ -109,8 +109,8 @@ diff.check( a, x, freq, total )
 x <- seq( -2, 2, 0.2 )
 seed<-CGD$new()
 seed$set.waypoints(
-	data.frame( p = c( 0.3, 0.5, 0.9 ), q = c( qnorm( 0.3, -0.2, 0.7 ), -0.2, qnorm( 0.9, -0.2, 1 ) ) ),
-	this.type1.type = 2, symmetric = TRUE )
+    data.frame( p = c( 0.3, 0.5, 0.9 ), q = c( qnorm( 0.3, -0.2, 0.7 ), -0.2, qnorm( 0.9, -0.2, 1 ) ) ),
+    this.type1.type = 2, symmetric = TRUE )
 freq <- ( seed$p( x + 0.1 ) - seed$p( x - 0.1 ) ) * ( 1000 + sin( x * 10 + 0.5 ) * 100 )
 total <- sum( freq )
 plot( x, cgd::get.d( x, freq, total ) )
@@ -167,12 +167,12 @@ diff.check( a, x, freq, total )
 expect_equal( cgd.kind( 1:16 ), cgd:::kinds )
 expect_equal( cgd.kind.index( 1:16 ), 1:16 )
 expect_equal( cgd.kind.index( c( -1, 0, 1, 2, NA, Inf, NaN, 3, 4, 5, 15, 16, 17 ) ),
-			  c( NA, NA, 1, 2, NA, NA, NA, 3, 4, 5, 15, 16, NA ) )
+              c( NA, NA, 1, 2, NA, NA, NA, 3, 4, 5, 15, 16, NA ) )
 expect_equal( cgd.kind.index( c( NA, "Normal Distribution", "Null Distribution" ) ), c( NA, 1 ) )
 
 # normal test (with 4 times warnings)
 expect_warning( expect_warning( expect_warning( expect_warning(
-				cgds <- nls.freq.all( x, freq, total ) ) ) ) )
+                cgds <- nls.freq.all( x, freq, total ) ) ) ) )
 cgds
 cgds$cgd
 expect_equal( cgds$best$kind.index, 15 )
@@ -192,10 +192,10 @@ expect_equal( cgd.kind.index( cgds$cgd[[1]] ), cgds$cgd[[1]]$kind.index )
 expect_equal( unname( diff.check( cgds$cgd[[10]], x, freq, total )$summary["cor"] ), 0.9945, tolerance = 1e-4 )
 expect_equal( unname( diff.check( cgds$cgd[[13]], x, freq, total )$summary["cor"] ), 0.8879, tolerance = 1e-4 )
 expect_equal( unname( diff.check( cgds$cgd[[13]], x, freq, total )$summary["cor"] <
-					  diff.check( cgds$cgd[[10]], x, freq, total )$summary["cor"] ), TRUE )
+                      diff.check( cgds$cgd[[10]], x, freq, total )$summary["cor"] ), TRUE )
 
-expect_equal( cgds$cgd[[10]]$kind, "3-Mean-Differed-Sigma-Equaled Vertical Gradational Distribution" )
-expect_equal( cgds$cgd[[13]]$kind, "Mean-Differed-Sigma-Equaled Vertical-Horizontal Gradational Distribution" )
+expect_equal( cgds$cgd[[10]]$kind, "3-Mean-Differed Sigma-Equaled Vertical Gradational Distribution" )
+expect_equal( cgds$cgd[[13]]$kind, "Mean-Differed Sigma-Equaled Horizontal-Vertical Gradational Distribution" )
 
 expect_equal( cgds$cgd[[10]]$intervals.mean(), c( -0.6709839, -0.1977604, 0.2928316 ), tolerance = 1e-5 )
 expect_equal( cgds$cgd[[10]]$intervals.sd(), c( 0.6400899, 0.6400899, 0.6400899 ), tolerance = 1e-5 )
@@ -214,7 +214,7 @@ a$nls.freq( x, freq, total, start = start.list, kind = cgds$cgd[[13]] )
 expect_equal( a$kind, cgds$cgd[[13]]$kind )
 show.results( a, x, freq, total )
 expect_equal( unname( diff.check( a, x, freq, total )$summary[5]
-					  > diff.check( cgds$cgd[[10]], x, freq, total )$summary[5] ), TRUE )
+                      > diff.check( cgds$cgd[[10]], x, freq, total )$summary[5] ), TRUE )
 # a revenge is done.
 
 # then retrying nls.freq.all
@@ -233,7 +233,7 @@ start.lists
 
 # (3 times warnings)
 expect_warning( expect_warning( expect_warning(
-	cgds <- nls.freq.all( x, freq, total, start.lists ) ) ) )
+    cgds <- nls.freq.all( x, freq, total, start.lists ) ) ) )
 cgds
 cgds$cgd
 expect_equal( cgds$best$kind.index, 15 )
@@ -449,7 +449,7 @@ expect_equal( unname( diff.check( a, x, freq, total )$summary["cor"] ) > 0.95, T
 #### nls.freq.all
 # normal test (with 3 times warnings)
 expect_warning( expect_warning( expect_warning(
-	cgds <- nls.freq.all( x, freq, total ) ) ) )
+    cgds <- nls.freq.all( x, freq, total ) ) ) )
 cgds
 cgds$cgd
 cgds$best
@@ -460,18 +460,18 @@ for ( i in 1:length( cgds$cgd ) ) print( paste( i, ":", cgds$cgd[[i]]$kind ) )
 
 for ( i in 1:length( cgds$cgd ) )
 {
-	print( paste( "i:", i ) )
-	print( paste( "tex.p:", i ) )
-	cgds$cgd[[i]]$tex.p()
-	print( paste( "tex.d:", i ) )
-	cgds$cgd[[i]]$tex.d()
+    print( paste( "i:", i ) )
+    print( paste( "tex.p:", i ) )
+    cgds$cgd[[i]]$tex.p()
+    print( paste( "tex.d:", i ) )
+    cgds$cgd[[i]]$tex.d()
 }
 
 for ( i in 1:length( cgds$cgd ) )
 {
-	print( paste( "i:", i ) )
-	print( paste( "tex:", i ) )
-	cgds$cgd[[i]]$tex()
+    print( paste( "i:", i ) )
+    print( paste( "tex:", i ) )
+    cgds$cgd[[i]]$tex()
 }
 
 cgds$cgd[[10]]$tex.p( 3, TRUE )
@@ -503,36 +503,36 @@ plot.freq.and.d( cgds$best, x, freq, total )
 # normal test
 expect_equal( nls.start.template( 1 ), list( mean = 0, sqrt.sd = 1 ) )
 expect_equal( nls.start.template( 15 ),
-			  list( mean.1.1 = 0, mean.1.2 = 0, sqrt.sd.1.1 = 1, sqrt.sd.1.2 = 1,
-			  		mean.2.1 = 0, mean.2.2 = 0, sqrt.sd.2.1 = 1, sqrt.sd.2.2 = 1 ) )
-expect_equal( nls.start.template( "Mean of Mean-Equaled-Sigma-Differed 2 Normal Distributions" ),
-			  list( mean = 0, sqrt.sd.1 = 1, sqrt.sd.2 = 1 ) )
+              list( mean.1.1 = 0, mean.1.2 = 0, sqrt.sd.1.1 = 1, sqrt.sd.1.2 = 1,
+                    mean.2.1 = 0, mean.2.2 = 0, sqrt.sd.2.1 = 1, sqrt.sd.2.2 = 1 ) )
+expect_equal( nls.start.template( "Mean of Mean-Equaled Sigma-Differed 2 Normal Distributions" ),
+              list( mean = 0, sqrt.sd.1 = 1, sqrt.sd.2 = 1 ) )
 
 # Warning case
 expect_warning( nls.start.template( 0 ), "not suitable for cgd.kind.index" )
 expect_warning( nls.start.template( 16 ), "not suitable for cgd.kind.index" )
 
 start.lists <- init.start.lists()
-start.lists[[ 1]] <- list( mean = 0,					sqrt.sd = sqrt( 1 ) )
-start.lists[[ 2]] <- list( mean = 0,					sqrt.sd.1 = sqrt( 2 ), sqrt.sd.2 = sqrt( 1 ) )
-start.lists[[ 3]] <- list( mean = 0,					sqrt.sd.1 = sqrt( 2 ), sqrt.sd.2 = sqrt( 1 ) )
-start.lists[[ 4]] <- list( mean.1 = -1, mean.2 = 1,		sqrt.sd = sqrt( 1 ) )
-start.lists[[ 5]] <- list( mean = 0,					sqrt.sd.1 = sqrt( 1 ), sqrt.sd.2 = sqrt( 1 ) )
-start.lists[[ 6]] <- list( mean.1 = -1, mean.2 = 1,		sqrt.sd.1 = sqrt( 1 ), sqrt.sd.2 = sqrt( 1 ) )
-start.lists[[ 7]] <- list( mean.1 = 0, mean.2 = 0,		sqrt.sd = sqrt( 1 ) )
-start.lists[[ 8]] <- list( mean = 0,					sqrt.sd.1 = sqrt( 2 ), sqrt.sd.2 = sqrt( 1 ) )
-start.lists[[ 9]] <- list( mean.1 = 0, mean.2 = 0,		sqrt.sd.1 = sqrt( 2 ), sqrt.sd.2 = sqrt( 1 ) )
+start.lists[[ 1]] <- list( mean = 0,                    sqrt.sd = sqrt( 1 ) )
+start.lists[[ 2]] <- list( mean = 0,                    sqrt.sd.1 = sqrt( 2 ), sqrt.sd.2 = sqrt( 1 ) )
+start.lists[[ 3]] <- list( mean = 0,                    sqrt.sd.1 = sqrt( 2 ), sqrt.sd.2 = sqrt( 1 ) )
+start.lists[[ 4]] <- list( mean.1 = -1, mean.2 = 1,     sqrt.sd = sqrt( 1 ) )
+start.lists[[ 5]] <- list( mean = 0,                    sqrt.sd.1 = sqrt( 1 ), sqrt.sd.2 = sqrt( 1 ) )
+start.lists[[ 6]] <- list( mean.1 = -1, mean.2 = 1,     sqrt.sd.1 = sqrt( 1 ), sqrt.sd.2 = sqrt( 1 ) )
+start.lists[[ 7]] <- list( mean.1 = 0, mean.2 = 0,      sqrt.sd = sqrt( 1 ) )
+start.lists[[ 8]] <- list( mean = 0,                    sqrt.sd.1 = sqrt( 2 ), sqrt.sd.2 = sqrt( 1 ) )
+start.lists[[ 9]] <- list( mean.1 = 0, mean.2 = 0,      sqrt.sd.1 = sqrt( 2 ), sqrt.sd.2 = sqrt( 1 ) )
 start.lists[[10]] <- list( mean.1 = 0, mean.2 = 0, mean.3 = 0,
-														sqrt.sd = sqrt( 1 ) )
-start.lists[[11]] <- list( mean = 0,					sqrt.sd.1 = sqrt( 2 ), sqrt.sd.2 = sqrt( 1 ), sqrt.sd.3 = sqrt( 2 ) )
+                                                        sqrt.sd = sqrt( 1 ) )
+start.lists[[11]] <- list( mean = 0,                    sqrt.sd.1 = sqrt( 2 ), sqrt.sd.2 = sqrt( 1 ), sqrt.sd.3 = sqrt( 2 ) )
 start.lists[[12]] <- list( mean.1 = 0, mean.2 = 0, mean.3 = 0,
-														sqrt.sd.1 = sqrt( 2 ), sqrt.sd.2 = sqrt( 1 ), sqrt.sd.3 = sqrt( 2 ) )
+                                                        sqrt.sd.1 = sqrt( 2 ), sqrt.sd.2 = sqrt( 1 ), sqrt.sd.3 = sqrt( 2 ) )
 start.lists[[13]] <- list( mean.1.1 = 0, mean.1.2 = 0, mean.2.1 = 0, mean.2.2 = 0,
-														sqrt.sd = sqrt( 1 ) )
-start.lists[[14]] <- list( mean = 0,					sqrt.sd.1.1 = sqrt( 2 ), sqrt.sd.1.2 = sqrt( 1 ),
-														sqrt.sd.2.1 = sqrt( 2 ), sqrt.sd.2.2 = sqrt( 1 ) )
-start.lists[[15]] <- list( mean.1.1 = 0, mean.1.2 = 0,	sqrt.sd.1.1 = sqrt( 2 ), sqrt.sd.1.2 = sqrt( 1 ),
-						  mean.2.1 = 0, mean.2.2 = 0,	sqrt.sd.2.1 = sqrt( 2 ), sqrt.sd.2.2 = sqrt( 1 ) )
+                                                        sqrt.sd = sqrt( 1 ) )
+start.lists[[14]] <- list( mean = 0,                    sqrt.sd.1.1 = sqrt( 2 ), sqrt.sd.1.2 = sqrt( 1 ),
+                                                        sqrt.sd.2.1 = sqrt( 2 ), sqrt.sd.2.2 = sqrt( 1 ) )
+start.lists[[15]] <- list( mean.1.1 = 0, mean.1.2 = 0,  sqrt.sd.1.1 = sqrt( 2 ), sqrt.sd.1.2 = sqrt( 1 ),
+                          mean.2.1 = 0, mean.2.2 = 0,   sqrt.sd.2.1 = sqrt( 2 ), sqrt.sd.2.2 = sqrt( 1 ) )
 
 # (2 times warnings)
 expect_warning( expect_warning( cgds <- nls.freq.all( x, freq, total, start.lists ) ) )
@@ -555,7 +555,7 @@ plot.freq.and.d( cgds$best, x, freq, total )
 
 # normal test (with 3 times warnings)
 expect_warning( expect_warning( expect_warning(
-	cgds <- nls.freq.all( x, freq, total, method = "spearman", trace = TRUE ) ) ) )
+    cgds <- nls.freq.all( x, freq, total, method = "spearman", trace = TRUE ) ) ) )
 cgds
 cgds$cgd
 expect_equal( cgds$best$kind.index, 5 )

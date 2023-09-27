@@ -23,7 +23,7 @@ cgd:::kinds の要素の文字列か、またはそのインデックス番号�
  cgd.kind( cgd:::kinds )
  cgd.kind( 1:16 )
  cgd.kind( 6 )
- cgd.kind( "3-Mean-Differed-Sigma-Differed Vertical Gradational Distribution" )
+ cgd.kind( "3-Mean-Differed Sigma-Differed Vertical Gradational Distribution" )
 
  a <- CGD$new()
  cgd.kind( a )

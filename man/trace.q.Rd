@@ -403,7 +403,7 @@ trace.q(
      type1.type = 3, v.grad = FALSE )
  plot( seq( -3, 3, 0.01 ), a$d( seq( -3, 3, 0.01 ) ), type = "l" )
 
- ## Vertical-Horizontal Gradation Examples:
+ ## Horizontal-Vertical Gradation Examples:
  ##  The type1.type = 4 option gives a vertical-horizontal gradational distribution.
  ##  The number of p of waypoints must be from 5 to 8.
  a <- trace.q(

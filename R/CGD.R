@@ -1,7 +1,7 @@
 ################################################################################################
 # 連結ガウス分布 (Connected Gaussian Distribution) クラス
 # @file         CGD.R
-# @version      3.2.1
+# @version      3.3.0
 # @author       Kimitsuna-Goblin
 # @copyright    Copyright (C) 2023 Ura Kimitsuna
 # @license      Released under the MIT license.
@@ -18,211 +18,211 @@ sqrt.2pi <- sqrt( 2 * pi )
 
 # type1.type=3・確率密度用関数ハンドル
 f.t3.d <- list( function( x, m, s ) { ( 1 - dnorm( x, m, s ) * sqrt.2pi * s ) * dnorm( x, m, s ) },
-				function( x, m, s ) { dnorm( x, m, s )^2 * sqrt.2pi * s },
-				0 )
+                function( x, m, s ) { dnorm( x, m, s )^2 * sqrt.2pi * s },
+                0 )
 # type1.type=3・累積分布用関数ハンドル
 f.t3.p <- list( function( x, m, s ) { pnorm( x, m, s ) - pnorm( x, m, s * sqrt( 2 ) / 2 ) * sqrt( 2 ) / 2 },
-				function( x, m, s ) { pnorm( x, m, s * sqrt( 2 ) / 2 ) * sqrt( 2 ) / 2 },
-				( ( 2 - sqrt( 2 ) ) / 4 ) )
+                function( x, m, s ) { pnorm( x, m, s * sqrt( 2 ) / 2 ) * sqrt( 2 ) / 2 },
+                ( ( 2 - sqrt( 2 ) ) / 4 ) )
 
-# 連結ガウス分布の種類 (1～15は連続分布)													# kind.index
-kinds <- c( "Normal Distribution",															# 1
-			"Mean of Mean-Equaled-Sigma-Differed 2 Normal Distributions",					# 2
-			"Symmetric Horizontal Gradational Distribution",								# 3
-			"Mean-Differed-Sigma-Equaled Horizontal Gradational Distribution",				# 4
-			"Mean-Equaled-Sigma-Differed Horizontal Gradational Distribution",				# 5
-			"Mean-Differed-Sigma-Differed Horizontal Gradational Distribution", 			# 6
-			"2-Mean-Differed-Sigma-Equaled Vertical Gradational Distribution",				# 7
-			"2-Mean-Equaled-Sigma-Differed Vertical Gradational Distribution",				# 8
-			"2-Mean-Differed-Sigma-Differed Vertical Gradational Distribution",				# 9
-			"3-Mean-Differed-Sigma-Equaled Vertical Gradational Distribution",				#10
-			"3-Mean-Equaled-Sigma-Differed Vertical Gradational Distribution",				#11
-			"3-Mean-Differed-Sigma-Differed Vertical Gradational Distribution",				#12
-			"Mean-Differed-Sigma-Equaled Vertical-Horizontal Gradational Distribution", 	#13
-			"Mean-Equaled-Sigma-Differed Vertical-Horizontal Gradational Distribution", 	#14
-			"Mean-Differed-Sigma-Differed Vertical-Horizontal Gradational Distribution",	#15
-			"Discontinuous Connected Gaussian Distribution" )								#16
+# 連結ガウス分布の種類 (1～15は連続分布)                                                    # kind.index
+kinds <- c( "Normal Distribution",                                                          # 1
+            "Mean of Mean-Equaled Sigma-Differed 2 Normal Distributions",                   # 2
+            "Symmetric Horizontal Gradational Distribution",                                # 3
+            "Mean-Differed Sigma-Equaled Horizontal Gradational Distribution",              # 4
+            "Mean-Equaled Sigma-Differed Horizontal Gradational Distribution",              # 5
+            "Mean-Differed Sigma-Differed Horizontal Gradational Distribution",             # 6
+            "2-Mean-Differed Sigma-Equaled Vertical Gradational Distribution",              # 7
+            "2-Mean-Equaled Sigma-Differed Vertical Gradational Distribution",              # 8
+            "2-Mean-Differed Sigma-Differed Vertical Gradational Distribution",             # 9
+            "3-Mean-Differed Sigma-Equaled Vertical Gradational Distribution",              #10
+            "3-Mean-Equaled Sigma-Differed Vertical Gradational Distribution",              #11
+            "3-Mean-Differed Sigma-Differed Vertical Gradational Distribution",             #12
+            "Mean-Differed Sigma-Equaled Horizontal-Vertical Gradational Distribution",     #13
+            "Mean-Equaled Sigma-Differed Horizontal-Vertical Gradational Distribution",     #14
+            "Mean-Differed Sigma-Differed Horizontal-Vertical Gradational Distribution",    #15
+            "Discontinuous Connected Gaussian Distribution" )                               #16
 
 # TeX 形式 テンプレート (累積分布関数・確率密度関数共通)
 tex.form.header <- "\\begin{align}\n"
 tex.form.footer <- "\n\\end{align}"
 
 tex.val.sub.0 <-
-		paste0(
-			"\\\\\n",
-			"& \\begin{array}{l}\n",
-				"\\mu = mean; & \\sigma = sd;;\n",
-			"\\end{array}" )
+        paste0(
+            "\\\\\n",
+            "& \\begin{array}{l}\n",
+                "\\mu = mean; & \\sigma = sd;;\n",
+            "\\end{array}" )
 
 tex.val.sub.1 <-
-		paste0(
-			"\\\\\n",
-			"& \\begin{array}{l}\n",
-				"\\mu = mean; & \\sigma_1 = sd.1; & \\sigma_2 = sd.2;;\n",
-			"\\end{array}" )
+        paste0(
+            "\\\\\n",
+            "& \\begin{array}{l}\n",
+                "\\mu = mean; & \\sigma_1 = sd.1; & \\sigma_2 = sd.2;;\n",
+            "\\end{array}" )
 
 tex.val.sub.2 <-
-		paste0(
-			"\\\\\n",
-			"& \\begin{array}{l}\n",
-				"\\mu_1 = mean.1; & \\sigma_1 = sd.1;\\\\\n",
-				"\\mu_2 = mean.2; & \\sigma_2 = sd.2;;\n",
-			"\\end{array}" )
+        paste0(
+            "\\\\\n",
+            "& \\begin{array}{l}\n",
+                "\\mu_1 = mean.1; & \\sigma_1 = sd.1;\\\\\n",
+                "\\mu_2 = mean.2; & \\sigma_2 = sd.2;;\n",
+            "\\end{array}" )
 
 tex.val.sub.3 <-
-		paste0(
-			"\\\\\n",
-			"& \\begin{array}{l}\n",
-				"\\mu_1 = mean.1; & \\sigma_1 = sd.1;\\\\\n",
-				"\\mu_2 = mean.2; & \\sigma_2 = sd.2;\\\\\n",
-				"\\mu_3 = mean.3; & \\sigma_3 = sd.3;;\n",
-			"\\end{array}" )
+        paste0(
+            "\\\\\n",
+            "& \\begin{array}{l}\n",
+                "\\mu_1 = mean.1; & \\sigma_1 = sd.1;\\\\\n",
+                "\\mu_2 = mean.2; & \\sigma_2 = sd.2;\\\\\n",
+                "\\mu_3 = mean.3; & \\sigma_3 = sd.3;;\n",
+            "\\end{array}" )
 
 tex.val.sub.4 <-
-		paste0(
-			"\\\\\n",
-			"& \\begin{array}{l}\n",
-				"\\mu_{1,1} = mean.1.1; & \\sigma_{1,1} = sd.1.1;\\\\\n",
-				"\\mu_{1,2} = mean.1.2; & \\sigma_{1,2} = sd.1.2;\\\\\n",
-				"\\mu_{2,1} = mean.2.1; & \\sigma_{2,1} = sd.2.1;\\\\\n",
-				"\\mu_{2,2} = mean.2.2; & \\sigma_{2,2} = sd.2.2;;\n",
-			"\\end{array}" )
+        paste0(
+            "\\\\\n",
+            "& \\begin{array}{l}\n",
+                "\\mu_{1,1} = mean.1.1; & \\sigma_{1,1} = sd.1.1;\\\\\n",
+                "\\mu_{1,2} = mean.1.2; & \\sigma_{1,2} = sd.1.2;\\\\\n",
+                "\\mu_{2,1} = mean.2.1; & \\sigma_{2,1} = sd.2.1;\\\\\n",
+                "\\mu_{2,2} = mean.2.2; & \\sigma_{2,2} = sd.2.2;;\n",
+            "\\end{array}" )
 
 # TeX 形式 テンプレート (累積分布関数)
 tex.p.sub.0 <-
-		paste0(
-			"\\Phi(x) &= \\dfrac{1}{\\sqrt{2 \\pi \\sigma^2}} ",
-					"\\int_{-\\infty}^{x} \\exp \\left( -\\dfrac{(t - \\mu)^2}{2 \\sigma^2} \\right) dt;\\\\\n" )
+        paste0(
+            "\\Phi(x) &= \\dfrac{1}{\\sqrt{2 \\pi \\sigma^2}} ",
+                    "\\int_{-\\infty}^{x} \\exp \\left( -\\dfrac{(t - \\mu)^2}{2 \\sigma^2} \\right) dt;\\\\\n" )
 
 tex.p.sub.1 <-
-		paste0(
-			"\\Phi_i(x) &= \\dfrac{1}{\\sqrt{2 \\pi \\sigma_i^2}} ",
-					"\\int_{-\\infty}^{x} \\exp \\left( -\\dfrac{(t - \\mu)^2}{2 \\sigma_i^2} \\right) dt;\\\\\n" )
+        paste0(
+            "\\Phi_i(x) &= \\dfrac{1}{\\sqrt{2 \\pi \\sigma_i^2}} ",
+                    "\\int_{-\\infty}^{x} \\exp \\left( -\\dfrac{(t - \\mu)^2}{2 \\sigma_i^2} \\right) dt;\\\\\n" )
 
 tex.p.sub.2 <-
-		paste0(
-			"\\Phi_i(x) &= \\dfrac{1}{\\sqrt{2 \\pi \\sigma_i^2}} ",
-					"\\int_{-\\infty}^{x} \\exp \\left( -\\dfrac{(t - \\mu_i)^2}{2 \\sigma_i^2} \\right) dt;\\\\\n" )
+        paste0(
+            "\\Phi_i(x) &= \\dfrac{1}{\\sqrt{2 \\pi \\sigma_i^2}} ",
+                    "\\int_{-\\infty}^{x} \\exp \\left( -\\dfrac{(t - \\mu_i)^2}{2 \\sigma_i^2} \\right) dt;\\\\\n" )
 
 tex.p.sub.v <-
-		paste0(
-			"\\Phi_i(x) &= \\dfrac{1}{\\sqrt{2 \\pi \\sigma_i^2}} ",
-					"\\int_{-\\infty}^{x} \\exp \\left( -\\dfrac{(t - \\mu_i)^2}{2 \\sigma_i^2} \\right) dt;\\\\\n",
-			"\\Phi^\\ast_i(x) &= \\dfrac{1}",
-					"{\\sqrt{2 \\pi \\left( \\begin{array}{c} \\dfrac{\\sigma_i}{\\sqrt{2}} \\end{array} \\right)^2}} ",
-					"\\int_{-\\infty}^{x} \\exp \\left( \\begin{array}{c} -\\dfrac{(t - \\mu_i)^2}",
-					"{2 \\left( \\begin{array}{c} \\dfrac{\\sigma_i}",
-					"{\\sqrt{2}} \\end{array} \\right)^2} \\end{array} \\right) dt;\\\\\n" )
+        paste0(
+            "\\Phi_i(x) &= \\dfrac{1}{\\sqrt{2 \\pi \\sigma_i^2}} ",
+                    "\\int_{-\\infty}^{x} \\exp \\left( -\\dfrac{(t - \\mu_i)^2}{2 \\sigma_i^2} \\right) dt;\\\\\n",
+            "\\Phi^\\ast_i(x) &= \\dfrac{1}",
+                    "{\\sqrt{2 \\pi \\left( \\begin{array}{c} \\dfrac{\\sigma_i}{\\sqrt{2}} \\end{array} \\right)^2}} ",
+                    "\\int_{-\\infty}^{x} \\exp \\left( \\begin{array}{c} -\\dfrac{(t - \\mu_i)^2}",
+                    "{2 \\left( \\begin{array}{c} \\dfrac{\\sigma_i}",
+                    "{\\sqrt{2}} \\end{array} \\right)^2} \\end{array} \\right) dt;\\\\\n" )
 
 tex.p.sub.3 <- c(
-		paste0(
-			"\\Psi_1(x) &= \\mathrm{min} \\left( ",
-					"\\Phi_1(x) - \\dfrac{1}{\\sqrt{2}} \\Phi^\\ast_1(x), \\ \\dfrac{2 - \\sqrt{2}}{4} \\right);\\\\\n",
-			"\\Psi_2(x) &= \\dfrac{1}{\\sqrt{2}} \\Phi^\\ast_2(x);\\\\\n",
-			"\\Psi_3(x) &= \\mathrm{max} \\left( ",
-					"0, \\ \\Phi_3(x) - \\dfrac{1}{\\sqrt{2}} \\Phi^\\ast_3(x) - \\dfrac{2 - \\sqrt{2}}{4} \\right);\\\\\n" ),
-		paste0(
-			"\\Phi_i(x) &= \\dfrac{1}{\\sqrt{2 \\pi \\sigma_i^2}} ",
-					"\\int_{-\\infty}^{x} \\exp \\left( -\\dfrac{(t - \\mu_i)^2}{2 \\sigma_i^2} \\right) dt;\\\\\n",
-			"\\Phi^\\ast_i(x) &= \\dfrac{1}",
-					"{\\sqrt{2 \\pi \\left( \\begin{array}{c} \\dfrac{\\sigma_i}{\\sqrt{2}} \\end{array} \\right)^2}} ",
-					"\\int_{-\\infty}^{x} \\exp \\left( \\begin{array}{c} -\\dfrac{(t - \\mu_i)^2}",
-					"{2 \\left( \\begin{array}{c} \\dfrac{\\sigma_i}",
-					"{\\sqrt{2}} \\end{array} \\right)^2} \\end{array} \\right) dt;\\\\\n" ) )
+        paste0(
+            "\\Psi_1(x) &= \\mathrm{min} \\left( ",
+                    "\\Phi_1(x) - \\dfrac{1}{\\sqrt{2}} \\Phi^\\ast_1(x), \\ \\dfrac{2 - \\sqrt{2}}{4} \\right);\\\\\n",
+            "\\Psi_2(x) &= \\dfrac{1}{\\sqrt{2}} \\Phi^\\ast_2(x);\\\\\n",
+            "\\Psi_3(x) &= \\mathrm{max} \\left( ",
+                    "0, \\ \\Phi_3(x) - \\dfrac{1}{\\sqrt{2}} \\Phi^\\ast_3(x) - \\dfrac{2 - \\sqrt{2}}{4} \\right);\\\\\n" ),
+        paste0(
+            "\\Phi_i(x) &= \\dfrac{1}{\\sqrt{2 \\pi \\sigma_i^2}} ",
+                    "\\int_{-\\infty}^{x} \\exp \\left( -\\dfrac{(t - \\mu_i)^2}{2 \\sigma_i^2} \\right) dt;\\\\\n",
+            "\\Phi^\\ast_i(x) &= \\dfrac{1}",
+                    "{\\sqrt{2 \\pi \\left( \\begin{array}{c} \\dfrac{\\sigma_i}{\\sqrt{2}} \\end{array} \\right)^2}} ",
+                    "\\int_{-\\infty}^{x} \\exp \\left( \\begin{array}{c} -\\dfrac{(t - \\mu_i)^2}",
+                    "{2 \\left( \\begin{array}{c} \\dfrac{\\sigma_i}",
+                    "{\\sqrt{2}} \\end{array} \\right)^2} \\end{array} \\right) dt;\\\\\n" ) )
 
 tex.p.sub.4 <- c(
-		paste0(
-			"\\Psi_i(x) &= \\Phi_{i,1}(x) - ",
-					"\\dfrac{1}{\\sqrt{2}} \\Phi^\\ast_{i,1}(x) + \\dfrac{1}{\\sqrt{2}} \\Phi^\\ast_{i,2}(x);\\\\\n" ),
-		paste0(
-			"\\Phi_{i,j}(x) &= \\dfrac{1}{\\sqrt{2 \\pi \\sigma_{i,j}^2}} ",
-					"\\int_{-\\infty}^{x} ",
-					"\\exp \\left( -\\dfrac{(t - \\mu_{i,j})^2}{2 \\sigma_{i,j}^2} \\right) dt;\\\\\n",
-			"\\Phi^\\ast_{i,j}(x) &= \\dfrac{1}",
-					"{\\sqrt{2 \\pi \\left( \\begin{array}{c} \\dfrac{\\sigma_{i,j}}{\\sqrt{2}} \\end{array} \\right)^2}} ",
-					"\\int_{-\\infty}^{x} ",
-					"\\exp \\left( \\begin{array}{c} -\\dfrac{(t - \\mu_{i,j})^2}",
-					"{2 \\left( \\begin{array}{c} \\dfrac{\\sigma_{i,j}}",
-					"{\\sqrt{2}} \\end{array} \\right)^2} \\end{array} \\right) dt;\\\\\n" ) )
+        paste0(
+            "\\Psi_i(x) &= \\Phi_{i,1}(x) - ",
+                    "\\dfrac{1}{\\sqrt{2}} \\Phi^\\ast_{i,1}(x) + \\dfrac{1}{\\sqrt{2}} \\Phi^\\ast_{i,2}(x);\\\\\n" ),
+        paste0(
+            "\\Phi_{i,j}(x) &= \\dfrac{1}{\\sqrt{2 \\pi \\sigma_{i,j}^2}} ",
+                    "\\int_{-\\infty}^{x} ",
+                    "\\exp \\left( -\\dfrac{(t - \\mu_{i,j})^2}{2 \\sigma_{i,j}^2} \\right) dt;\\\\\n",
+            "\\Phi^\\ast_{i,j}(x) &= \\dfrac{1}",
+                    "{\\sqrt{2 \\pi \\left( \\begin{array}{c} \\dfrac{\\sigma_{i,j}}{\\sqrt{2}} \\end{array} \\right)^2}} ",
+                    "\\int_{-\\infty}^{x} ",
+                    "\\exp \\left( \\begin{array}{c} -\\dfrac{(t - \\mu_{i,j})^2}",
+                    "{2 \\left( \\begin{array}{c} \\dfrac{\\sigma_{i,j}}",
+                    "{\\sqrt{2}} \\end{array} \\right)^2} \\end{array} \\right) dt;\\\\\n" ) )
 
 tex.p.all <-
-		c(
-		paste0( "\\Psi(x) &= \\Phi(x);\\\\\n" ),
-		paste0( "\\Psi(x) &= \\dfrac{1}{2} ( \\Phi_1(x) + \\Phi_2(x) );\\\\\n" ),
-		paste0( "\\Psi(x) &= \\left\\lbrace",
-						"\\begin{array}{l}\n",
-							"\\Phi_1(x) - \\Phi_1(x)^2 + \\Phi_2(x)^2 & (x \\leq \\mu);\\\\\n",
-							"1 - (\\Phi_1(2 \\mu - x) - \\Phi_1(2 \\mu - x)^2 + \\Phi_2(2 \\mu - x)^2) & (x > \\mu);\n",
-						"\\end{array} \\right.\\\\\n" ),
-		rep( paste0( "\\Psi(x) &= \\Phi_1(x) - \\dfrac{1}{2} \\Phi_1(x)^2 + \\dfrac{1}{2} \\Phi_2(x)^2;\\\\\n" ), 3 ),
-		rep( paste0( "\\Psi(x) &= \\Phi_1(x) - \\dfrac{1}{\\sqrt{2}} \\Phi^\\ast_1(x) + ",
-							"\\dfrac{1}{\\sqrt{2}} \\Phi^\\ast_2(x);\\\\\n" ), 3 ),
-		rep( paste0( "\\Psi(x) &= \\Psi_1(x) + \\Psi_2(x) + \\Psi_3(x);\\\\\n" ), 3 ),
-		rep( paste0( "\\Psi(x) &= \\Psi_1(x) - \\dfrac{1}{2} \\Psi_1(x)^2 + \\dfrac{1}{2} \\Psi_2(x)^2;\\\\\n" ), 3 ),
-			"" )
+        c(
+        paste0( "\\Psi(x) &= \\Phi(x);\\\\\n" ),
+        paste0( "\\Psi(x) &= \\dfrac{1}{2} ( \\Phi_1(x) + \\Phi_2(x) );\\\\\n" ),
+        paste0( "\\Psi(x) &= \\left\\lbrace",
+                        "\\begin{array}{l}\n",
+                            "\\Phi_1(x) - \\Phi_1(x)^2 + \\Phi_2(x)^2 & (x \\leq \\mu);\\\\\n",
+                            "1 - (\\Phi_1(2 \\mu - x) - \\Phi_1(2 \\mu - x)^2 + \\Phi_2(2 \\mu - x)^2) & (x > \\mu);\n",
+                        "\\end{array} \\right.\\\\\n" ),
+        rep( paste0( "\\Psi(x) &= \\Phi_1(x) - \\dfrac{1}{2} \\Phi_1(x)^2 + \\dfrac{1}{2} \\Phi_2(x)^2;\\\\\n" ), 3 ),
+        rep( paste0( "\\Psi(x) &= \\Phi_1(x) - \\dfrac{1}{\\sqrt{2}} \\Phi^\\ast_1(x) + ",
+                            "\\dfrac{1}{\\sqrt{2}} \\Phi^\\ast_2(x);\\\\\n" ), 3 ),
+        rep( paste0( "\\Psi(x) &= \\Psi_1(x) + \\Psi_2(x) + \\Psi_3(x);\\\\\n" ), 3 ),
+        rep( paste0( "\\Psi(x) &= \\Psi_1(x) - \\dfrac{1}{2} \\Psi_1(x)^2 + \\dfrac{1}{2} \\Psi_2(x)^2;\\\\\n" ), 3 ),
+            "" )
 
 # TeX 形式 テンプレート (確率密度関数)
 tex.d.sub.0 <-
-		paste0(
-			"f(x) &= \\dfrac{1}{\\sqrt{2 \\pi \\sigma^2}} ",
-					"\\exp \\left( -\\dfrac{(x - \\mu)^2}{2 \\sigma^2} \\right);\\\\\n" )
+        paste0(
+            "f(x) &= \\dfrac{1}{\\sqrt{2 \\pi \\sigma^2}} ",
+                    "\\exp \\left( -\\dfrac{(x - \\mu)^2}{2 \\sigma^2} \\right);\\\\\n" )
 
 tex.d.sub.1 <-
-		paste0(
-			"f_i(x) &= \\dfrac{1}{\\sqrt{2 \\pi \\sigma_i^2}} ",
-					"\\exp \\left( -\\dfrac{(x - \\mu)^2}{2 \\sigma_i^2} \\right);\\\\\n" )
+        paste0(
+            "f_i(x) &= \\dfrac{1}{\\sqrt{2 \\pi \\sigma_i^2}} ",
+                    "\\exp \\left( -\\dfrac{(x - \\mu)^2}{2 \\sigma_i^2} \\right);\\\\\n" )
 
 tex.d.sub.2 <-
-		paste0(
-			"f_i(x) &= \\dfrac{1}{\\sqrt{2 \\pi \\sigma_i^2}} ",
-					"\\exp \\left( -\\dfrac{(x - \\mu_i)^2}{2 \\sigma_i^2} \\right);\\\\\n" )
+        paste0(
+            "f_i(x) &= \\dfrac{1}{\\sqrt{2 \\pi \\sigma_i^2}} ",
+                    "\\exp \\left( -\\dfrac{(x - \\mu_i)^2}{2 \\sigma_i^2} \\right);\\\\\n" )
 
 tex.d.sub.v <-
-		paste0(
-			"f_i(x) &= \\dfrac{1}{\\sqrt{2 \\pi \\sigma_i^2}} ",
-					"\\exp \\left( -\\dfrac{(x - \\mu_i)^2}{2 \\sigma_i^2} \\right);\\\\\n" )
+        paste0(
+            "f_i(x) &= \\dfrac{1}{\\sqrt{2 \\pi \\sigma_i^2}} ",
+                    "\\exp \\left( -\\dfrac{(x - \\mu_i)^2}{2 \\sigma_i^2} \\right);\\\\\n" )
 
 tex.d.sub.3 <- c(
-		paste0(
-			"g_1(x) &= \\left\\lbrace\n",
-					"\\begin{array}{l}\n",
-						"\\left( 1 - \\dfrac{f_1(x)}{f_1(\\mu_1)} \\right) f_1(x) & (x \\leq \\mu_1);\\\\\n",
-						"0 & (x > \\mu_1);\\\\\n",
-					"\\end{array} \\right.\\\\\n",
-			"g_2(x) &= \\dfrac{f_2(x)}{f_2(\\mu_2)} f_2(x);\\\\\n",
-			"g_3(x) &= \\left\\lbrace\n",
-					"\\begin{array}{l}\n",
-						"0 & (x < \\mu_3);\\\\\n",
-						"\\left( 1 - \\dfrac{f_3(x)}{f_3(\\mu_3)} \\right) f_3(x) & (x \\geq \\mu_3);\n",
-					"\\end{array} \\right.\\\\\n" ),
-		paste0(
-			"f_i(x) &= \\dfrac{1}{\\sqrt{2 \\pi \\sigma_i^2}} ",
-					"\\exp \\left( -\\dfrac{(x - \\mu_i)^2}{2 \\sigma_i^2} \\right);\\\\\n" ) )
+        paste0(
+            "g_1(x) &= \\left\\lbrace\n",
+                    "\\begin{array}{l}\n",
+                        "\\left( 1 - \\dfrac{f_1(x)}{f_1(\\mu_1)} \\right) f_1(x) & (x \\leq \\mu_1);\\\\\n",
+                        "0 & (x > \\mu_1);\\\\\n",
+                    "\\end{array} \\right.\\\\\n",
+            "g_2(x) &= \\dfrac{f_2(x)}{f_2(\\mu_2)} f_2(x);\\\\\n",
+            "g_3(x) &= \\left\\lbrace\n",
+                    "\\begin{array}{l}\n",
+                        "0 & (x < \\mu_3);\\\\\n",
+                        "\\left( 1 - \\dfrac{f_3(x)}{f_3(\\mu_3)} \\right) f_3(x) & (x \\geq \\mu_3);\n",
+                    "\\end{array} \\right.\\\\\n" ),
+        paste0(
+            "f_i(x) &= \\dfrac{1}{\\sqrt{2 \\pi \\sigma_i^2}} ",
+                    "\\exp \\left( -\\dfrac{(x - \\mu_i)^2}{2 \\sigma_i^2} \\right);\\\\\n" ) )
 
 tex.d.sub.4 <- c(
-		paste0(
-			"g_i(x) &= \\left( 1 - \\dfrac{f_{i,1}(x)}{f_{i,1}(\\mu_{i,1})} \\right) f_{i,1}(x) + ",
-					"\\dfrac{f_{i,2}(x)}{f_{i,2}(\\mu_{i,2})} f_{i,2}(x);\\\\\n" ),
-		paste0(
-			"f_{i,j}(x) &= \\dfrac{1}{\\sqrt{2 \\pi \\sigma_{i,j}^2}} ",
-					"\\exp \\left( -\\dfrac{(x - \\mu_{i,j})^2}{2 \\sigma_{i,j}^2} \\right);\\\\\n" ) )
+        paste0(
+            "g_i(x) &= \\left( 1 - \\dfrac{f_{i,1}(x)}{f_{i,1}(\\mu_{i,1})} \\right) f_{i,1}(x) + ",
+                    "\\dfrac{f_{i,2}(x)}{f_{i,2}(\\mu_{i,2})} f_{i,2}(x);\\\\\n" ),
+        paste0(
+            "f_{i,j}(x) &= \\dfrac{1}{\\sqrt{2 \\pi \\sigma_{i,j}^2}} ",
+                    "\\exp \\left( -\\dfrac{(x - \\mu_{i,j})^2}{2 \\sigma_{i,j}^2} \\right);\\\\\n" ) )
 
 tex.d.all <-
-		c(
-		paste0( "g(x) &= f(x);\\\\\n" ),
-		paste0( "g(x) &= \\dfrac{1}{2} ( f_1(x) + f_2(x) );\\\\\n" ),
-		paste0( "g(x) &= \\left\\lbrace\n",
-						"\\begin{array}{l}\n",
-							"(1 - 2 \\Phi_1(x)) f_1(x) + 2 \\Phi_2(x) f_2(x) & (x \\leq \\mu);\\\\\n",
-							"1 - \\left\\lbrace (1 - 2 \\Phi_1(2 \\mu - x)) f_1(2 \\mu - x) + 2 \\Phi_2(2 \\mu - x) ",
-									"f_2(2 \\mu - x) \\right\\rbrace & (x > \\mu);\n",
-						"\\end{array} \\right.\\\\\n" ),
-		rep( paste0( "g(x) &= \\left( 1 - \\Phi_1(x) \\right) f_1(x) + \\Phi_2(x) f_2(x);\\\\\n" ), 3 ),
-		rep( paste0( "g(x) &= \\left( 1 - \\dfrac{f_1(x)}{f_1(\\mu_1)} \\right) f_1(x) + ",
-							"\\dfrac{f_2(x)}{f_2(\\mu_2)} f_2(x);\\\\\n" ), 3 ),
-		rep( paste0( "g(x) &= g_1(x) + g_2(x) + g_3(x) ;\\\\\n" ), 3 ),
-		rep( paste0( "g(x) &= \\left( 1 - \\Psi_1(x) \\right) g_1(x) + \\Psi_2(x) g_2(x);\\\\\n" ), 3 ),
-		"" )
+        c(
+        paste0( "g(x) &= f(x);\\\\\n" ),
+        paste0( "g(x) &= \\dfrac{1}{2} ( f_1(x) + f_2(x) );\\\\\n" ),
+        paste0( "g(x) &= \\left\\lbrace\n",
+                        "\\begin{array}{l}\n",
+                            "(1 - 2 \\Phi_1(x)) f_1(x) + 2 \\Phi_2(x) f_2(x) & (x \\leq \\mu);\\\\\n",
+                            "1 - \\left\\lbrace (1 - 2 \\Phi_1(2 \\mu - x)) f_1(2 \\mu - x) + 2 \\Phi_2(2 \\mu - x) ",
+                                    "f_2(2 \\mu - x) \\right\\rbrace & (x > \\mu);\n",
+                        "\\end{array} \\right.\\\\\n" ),
+        rep( paste0( "g(x) &= \\left( 1 - \\Phi_1(x) \\right) f_1(x) + \\Phi_2(x) f_2(x);\\\\\n" ), 3 ),
+        rep( paste0( "g(x) &= \\left( 1 - \\dfrac{f_1(x)}{f_1(\\mu_1)} \\right) f_1(x) + ",
+                            "\\dfrac{f_2(x)}{f_2(\\mu_2)} f_2(x);\\\\\n" ), 3 ),
+        rep( paste0( "g(x) &= g_1(x) + g_2(x) + g_3(x) ;\\\\\n" ), 3 ),
+        rep( paste0( "g(x) &= \\left( 1 - \\Psi_1(x) \\right) g_1(x) + \\Psi_2(x) g_2(x);\\\\\n" ), 3 ),
+        "" )
 
 ################################################################################################
 #  クラス・関数
@@ -242,7 +242,7 @@ tex.d.all <-
 ################################################################################################
 sqnorm <- function( p )
 {
-	return ( qnorm( p, 0, 1 ) )
+    return ( qnorm( p, 0, 1 ) )
 }
 
 ################################################################################################
@@ -262,7 +262,7 @@ sqnorm <- function( p )
 ################################################################################################
 sd.mqp.norm <- function( mean, q, p )
 {
-	return ( ( q - mean ) / sqnorm( p ) )
+    return ( ( q - mean ) / sqnorm( p ) )
 }
 
 ################################################################################################
@@ -280,10 +280,10 @@ sd.mqp.norm <- function( mean, q, p )
 ################################################################################################
 ms.qp.norm <- function( q, p )
 {
-	d <- sqnorm( p[2] ) - sqnorm( p[1] )
+    d <- sqnorm( p[2] ) - sqnorm( p[1] )
 
-	return ( list( mean = ( sqnorm( p[2] ) * q[1] - sqnorm( p[1] ) * q[2] ) / d,
-					sd = ( q[2] - q[1] ) / d ) )
+    return ( list( mean = ( sqnorm( p[2] ) * q[1] - sqnorm( p[1] ) * q[2] ) / d,
+                    sd = ( q[2] - q[1] ) / d ) )
 }
 
 ################################################################################################
@@ -303,19 +303,19 @@ ms.qp.norm <- function( q, p )
 ################################################################################################
 mean.nd.bound <- function( obj.or.mean, sd = NULL, x = c( -Inf, Inf ) )
 {
-	if ( inherits( obj.or.mean, "CGDInterval" ) )
-	{
-		mean <- obj.or.mean$mean
-		sd <- obj.or.mean$sd
-		x <- obj.or.mean$q.ind
-	}
-	else
-	{
-		mean <- as.numeric( obj.or.mean )
-	}
+    if ( inherits( obj.or.mean, "CGDInterval" ) )
+    {
+        mean <- obj.or.mean$mean
+        sd <- obj.or.mean$sd
+        x <- obj.or.mean$q.ind
+    }
+    else
+    {
+        mean <- as.numeric( obj.or.mean )
+    }
 
-	mean * ( pnorm( x[2], mean, sd ) - pnorm( x[1], mean, sd ) ) -
-	sd^2 * ( dnorm( x[2], mean, sd ) - dnorm( x[1], mean, sd ) )
+    mean * ( pnorm( x[2], mean, sd ) - pnorm( x[1], mean, sd ) ) -
+    sd^2 * ( dnorm( x[2], mean, sd ) - dnorm( x[1], mean, sd ) )
 }
 
 ################################################################################################
@@ -355,129 +355,129 @@ mean.nd.bound <- function( obj.or.mean, sd = NULL, x = c( -Inf, Inf ) )
 #' @importFrom  stats       dnorm pnorm integrate
 ################################################################################################
 mean.conn.bound <- function( type1.type, itv.1.or.median, itv.2.or.sd.1,
-							 sd.2 = NULL, x = c( -Inf, Inf ), thsd.p.sum = 2e-4,
-							 force.type1 = !inherits( itv.1.or.median, "CGDInterval" ) )
+                             sd.2 = NULL, x = c( -Inf, Inf ), thsd.p.sum = 2e-4,
+                             force.type1 = !inherits( itv.1.or.median, "CGDInterval" ) )
 {
-	if ( type1.type == 0 )
-	{
-		# type1.type = 0 では接続区間は空集合
-		return ( 0 )
-	}
+    if ( type1.type == 0 )
+    {
+        # type1.type = 0 では接続区間は空集合
+        return ( 0 )
+    }
 
-	if ( inherits( itv.1.or.median, "CGDInterval" ) )
-	{
-		itv.1 <- itv.1.or.median
-		itv.2 <- itv.2.or.sd.1
+    if ( inherits( itv.1.or.median, "CGDInterval" ) )
+    {
+        itv.1 <- itv.1.or.median
+        itv.2 <- itv.2.or.sd.1
 
-		median <- mean.1 <- mean.2 <- itv.1$mean
-		sd.1 <- itv.1$sd
-		sd.2 <- itv.2$sd
+        median <- mean.1 <- mean.2 <- itv.1$mean
+        sd.1 <- itv.1$sd
+        sd.2 <- itv.2$sd
 
-		x <- c( itv.1$q.ind[2], itv.2$q.ind[1] )
-	}
-	else
-	{
-		median <- mean.1 <- mean.2 <- as.numeric( itv.1.or.median )
-		sd.1 <- as.numeric( itv.2.or.sd.1 )
-	}
+        x <- c( itv.1$q.ind[2], itv.2$q.ind[1] )
+    }
+    else
+    {
+        median <- mean.1 <- mean.2 <- as.numeric( itv.1.or.median )
+        sd.1 <- as.numeric( itv.2.or.sd.1 )
+    }
 
-	if ( ( x[1] == x[2] ) || ( x[2] - x[1] == 0 ) )
-	{
-		# 区間の幅が 0 ならば部分期待値も 0。
-		mean <- 0
-	}
-	else if ( sd.1 == sd.2 )
-	{
-		# 2つの正規分布の標準偏差が等しい ⇒ 接続区間の分布も正規分布
-		mean <- mean.nd.bound( median, sd.1, x )
-	}
-	else
-	{
-		d.1 <- dnorm( x, mean.1, sd.1 )
-		d.2 <- dnorm( x, mean.2, sd.2 )
-		p.1 <- pnorm( x, mean.1, sd.1 )
-		p.2 <- pnorm( x, mean.2, sd.2 )
-		mean <- numeric()
+    if ( ( x[1] == x[2] ) || ( x[2] - x[1] == 0 ) )
+    {
+        # 区間の幅が 0 ならば部分期待値も 0。
+        mean <- 0
+    }
+    else if ( sd.1 == sd.2 )
+    {
+        # 2つの正規分布の標準偏差が等しい ⇒ 接続区間の分布も正規分布
+        mean <- mean.nd.bound( median, sd.1, x )
+    }
+    else
+    {
+        d.1 <- dnorm( x, mean.1, sd.1 )
+        d.2 <- dnorm( x, mean.2, sd.2 )
+        p.1 <- pnorm( x, mean.1, sd.1 )
+        p.2 <- pnorm( x, mean.2, sd.2 )
+        mean <- numeric()
 
-		if ( force.type1 || ( x[2] <= median && sd.1 < sd.2 ) || ( x[1] >= median && sd.1 > sd.2 ) )
-		{
-			# type 1
-			if ( type1.type == 1 )
-			{
-				mean <- ( ( x[2] + x[1] ) * ( p.2[2] - p.1[1] ) -
-						  ( ( ( x[2] - mean.1 )^2 + sd.1^2 ) * ( p.1[2] - p.1[1] ) -
-							( ( x[1] - mean.2 )^2 + sd.2^2 ) * ( p.2[2] - p.2[1] ) +
-							sd.1^2 * ( ( x[2] - mean.1 ) * d.1[2] -
-									   ( 2 * x[2] - x[1] - mean.1 ) * d.1[1] ) +
-							sd.2^2 * ( ( x[2] - 2 * x[1] + mean.2 ) * d.2[2] +
-									   ( x[1] - mean.2 ) * d.2[1] )
-						  ) / ( x[2] - x[1] ) ) / 2
-			}
-			else if ( type1.type == 2 )
-			{
-				p.sum <- p.1 + p.2
+        if ( force.type1 || ( x[2] <= median && sd.1 < sd.2 ) || ( x[1] >= median && sd.1 > sd.2 ) )
+        {
+            # type 1
+            if ( type1.type == 1 )
+            {
+                mean <- ( ( x[2] + x[1] ) * ( p.2[2] - p.1[1] ) -
+                          ( ( ( x[2] - mean.1 )^2 + sd.1^2 ) * ( p.1[2] - p.1[1] ) -
+                            ( ( x[1] - mean.2 )^2 + sd.2^2 ) * ( p.2[2] - p.2[1] ) +
+                            sd.1^2 * ( ( x[2] - mean.1 ) * d.1[2] -
+                                       ( 2 * x[2] - x[1] - mean.1 ) * d.1[1] ) +
+                            sd.2^2 * ( ( x[2] - 2 * x[1] + mean.2 ) * d.2[2] +
+                                       ( x[1] - mean.2 ) * d.2[1] )
+                          ) / ( x[2] - x[1] ) ) / 2
+            }
+            else if ( type1.type == 2 )
+            {
+                p.sum <- p.1 + p.2
 
-				if ( ( p.sum[2] - p.sum[1] ) == 0 )
-				{
-					# 注: x[1] と x[2] の絶対値が非常に大きい/小さい場合、この処理を通ることがある。
-					mean <- 0
-				}
-				else if ( ( p.sum[2] - p.sum[1] ) < thsd.p.sum )
-				{
-					# p.sum の差の絶対値が小さい場合、
-					# 数値積分を使わずに計算しようとすると、
-					# 累積分布関数の差の計算で著しい桁落ち誤差が生じることがあるので、数値積分で計算する。
-					mean <- integrate( function( x )
-										{
-											x * ( ( p.sum[2] - 2 * pnorm( x, mean.1, sd.1 ) ) * dnorm( x, mean.1, sd.1 ) +
-												  ( 2 * pnorm( x, mean.2, sd.2 ) - p.sum[1] ) * dnorm( x, mean.2, sd.2 ) )
-										}, x[1], x[2] )$value / ( p.sum[2] - p.sum[1] )
-				}
-				else
-				{
-					pstar.1 <- pnorm( x, mean.1, sd.1 * sqrt( 2 ) / 2 )
-					pstar.2 <- pnorm( x, mean.2, sd.2 * sqrt( 2 ) / 2 )
+                if ( ( p.sum[2] - p.sum[1] ) == 0 )
+                {
+                    # 注: x[1] と x[2] の絶対値が非常に大きい/小さい場合、この処理を通ることがある。
+                    mean <- 0
+                }
+                else if ( ( p.sum[2] - p.sum[1] ) < thsd.p.sum )
+                {
+                    # p.sum の差の絶対値が小さい場合、
+                    # 数値積分を使わずに計算しようとすると、
+                    # 累積分布関数の差の計算で著しい桁落ち誤差が生じることがあるので、数値積分で計算する。
+                    mean <- integrate( function( x )
+                                        {
+                                            x * ( ( p.sum[2] - 2 * pnorm( x, mean.1, sd.1 ) ) * dnorm( x, mean.1, sd.1 ) +
+                                                  ( 2 * pnorm( x, mean.2, sd.2 ) - p.sum[1] ) * dnorm( x, mean.2, sd.2 ) )
+                                        }, x[1], x[2] )$value / ( p.sum[2] - p.sum[1] )
+                }
+                else
+                {
+                    pstar.1 <- pnorm( x, mean.1, sd.1 * sqrt( 2 ) / 2 )
+                    pstar.2 <- pnorm( x, mean.2, sd.2 * sqrt( 2 ) / 2 )
 
-					mean <- ( ( p.2[2] - p.1[1] ) * ( mean.1 * ( p.1[2] - p.1[1] ) +
-													  mean.2 * ( p.2[2] - p.2[1] ) ) +
-							  sd.1^2 * ( d.1[2] * ( p.1[2] - p.2[2] ) +
-										 d.1[1] * ( p.1[2] + p.2[2] - 2 * p.1[1] ) ) +
-							  sd.2^2 * ( d.2[2] * ( p.1[1] + p.2[1] - 2 * p.2[2] ) +
-										 d.2[1] * ( p.2[1] - p.1[1] ) ) -
-							  ( sd.1 * ( pstar.1[2] - pstar.1[1] ) -
-								sd.2 * ( pstar.2[2] - pstar.2[1] ) ) / sqrt( pi )
-							) / ( p.sum[2] - p.sum[1] )
-				}
-			}
-		}
-		else if ( x[2] <= median || x[1] >= median )
-		{
-			# type 2
-			mean <- ( mean.nd.bound( median, sd.1,
-									 c( x[1], itv.1$q.conn.next[2] ) ) +
-					  mean.nd.bound( median, sd.2,
-									 c( itv.2$q.conn.prev[1], x[2] ) ) ) / 2
+                    mean <- ( ( p.2[2] - p.1[1] ) * ( mean.1 * ( p.1[2] - p.1[1] ) +
+                                                      mean.2 * ( p.2[2] - p.2[1] ) ) +
+                              sd.1^2 * ( d.1[2] * ( p.1[2] - p.2[2] ) +
+                                         d.1[1] * ( p.1[2] + p.2[2] - 2 * p.1[1] ) ) +
+                              sd.2^2 * ( d.2[2] * ( p.1[1] + p.2[1] - 2 * p.2[2] ) +
+                                         d.2[1] * ( p.2[1] - p.1[1] ) ) -
+                              ( sd.1 * ( pstar.1[2] - pstar.1[1] ) -
+                                sd.2 * ( pstar.2[2] - pstar.2[1] ) ) / sqrt( pi )
+                            ) / ( p.sum[2] - p.sum[1] )
+                }
+            }
+        }
+        else if ( x[2] <= median || x[1] >= median )
+        {
+            # type 2
+            mean <- ( mean.nd.bound( median, sd.1,
+                                     c( x[1], itv.1$q.conn.next[2] ) ) +
+                      mean.nd.bound( median, sd.2,
+                                     c( itv.2$q.conn.prev[1], x[2] ) ) ) / 2
 
-		}
-		else if ( sd.2 > sd.1 )
-		{
-			# type 3a
-			mean <- mean.nd.bound( median, sd.1, c( x[1], median ) ) +
-					( mean.nd.bound( median, sd.1,
-									 c( median, itv.1$q.conn.next[2] ) ) +
-					  mean.nd.bound( median, sd.2, c( median, x[2] ) ) ) / 2
-		}
-		else
-		{
-			# type 3b
-			mean <- ( mean.nd.bound( median, sd.1, c( x[1], median ) ) +
-					  mean.nd.bound( median, sd.2,
-									 c( itv.2$q.conn.prev[1], median ) ) ) / 2 +
-					mean.nd.bound( median, sd.2, c( median, x[2] ) )
-		}
-	}
+        }
+        else if ( sd.2 > sd.1 )
+        {
+            # type 3a
+            mean <- mean.nd.bound( median, sd.1, c( x[1], median ) ) +
+                    ( mean.nd.bound( median, sd.1,
+                                     c( median, itv.1$q.conn.next[2] ) ) +
+                      mean.nd.bound( median, sd.2, c( median, x[2] ) ) ) / 2
+        }
+        else
+        {
+            # type 3b
+            mean <- ( mean.nd.bound( median, sd.1, c( x[1], median ) ) +
+                      mean.nd.bound( median, sd.2,
+                                     c( itv.2$q.conn.prev[1], median ) ) ) / 2 +
+                    mean.nd.bound( median, sd.2, c( median, x[2] ) )
+        }
+    }
 
-	return ( mean )
+    return ( mean )
 }
 
 ################################################################################################
@@ -497,17 +497,17 @@ mean.conn.bound <- function( type1.type, itv.1.or.median, itv.2.or.sd.1,
 ################################################################################################
 mean.cont.t4.sub <- function( means, sds )
 {
-	d.mean <- means[1] - means[2]
+    d.mean <- means[1] - means[2]
 
-	( ( ( 4 + sqrt( 2 ) - 2 * sqrt( 6 ) ) * sds[1] + sqrt( 2 ) * sds[2] ) / 8 +
-	  sqrt( ( 2 * sds[1]^2 + sds[2]^2 ) / 8 ) *
-	  exp( -d.mean^2 / ( 2 * sds[1]^2 + sds[2]^2 ) ) -
-	  sqrt( sds[1]^2 + sds[2]^2 ) *
-	  exp( -d.mean^2 / ( sds[1]^2 + sds[2]^2 ) ) / 4 ) / sqrt( pi ) +
-	( means[1] + means[2] ) / 4 -
-	d.mean *
-	( sqrt( 2 ) * pnorm( -d.mean / sqrt( sds[1]^2 + sds[2]^2 / 2 ), 0, 1 ) -
-	  pnorm( -sqrt( 2 ) * d.mean / sqrt( sds[1]^2 + sds[2]^2 ), 0, 1 ) ) / 2
+    ( ( ( 4 + sqrt( 2 ) - 2 * sqrt( 6 ) ) * sds[1] + sqrt( 2 ) * sds[2] ) / 8 +
+      sqrt( ( 2 * sds[1]^2 + sds[2]^2 ) / 8 ) *
+      exp( -d.mean^2 / ( 2 * sds[1]^2 + sds[2]^2 ) ) -
+      sqrt( sds[1]^2 + sds[2]^2 ) *
+      exp( -d.mean^2 / ( sds[1]^2 + sds[2]^2 ) ) / 4 ) / sqrt( pi ) +
+    ( means[1] + means[2] ) / 4 -
+    d.mean *
+    ( sqrt( 2 ) * pnorm( -d.mean / sqrt( sds[1]^2 + sds[2]^2 / 2 ), 0, 1 ) -
+      pnorm( -sqrt( 2 ) * d.mean / sqrt( sds[1]^2 + sds[2]^2 ), 0, 1 ) ) / 2
 }
 
 ################################################################################################
@@ -525,43 +525,43 @@ mean.cont.t4.sub <- function( means, sds )
 ################################################################################################
 mean.cont <- function( type1.type, means, sds )
 {
-	mean <- numeric()
+    mean <- numeric()
 
-	if ( type1.type == 1 )
-	{
-		mean <- means[1]
-	}
-	else if ( type1.type == 2 )
-	{
-		mean <- ( means[1] + means[2] - ( sds[1] - sds[2] ) / sqrt( pi ) ) / 2
-	}
-	else if ( type1.type == 3 )
-	{
-		if ( means[1] == means[3] && sds[1] == sds[3] )
-		{
-			mean <- means[1] - ( means[1] - means[2] ) * sqrt( 2 ) / 2
-		}
-		else
-		{
-			mean <- ( ( means[1] + means[3] ) * ( 2 - sqrt( 2 ) ) -
-					  ( sds[1] - sds[3] ) * sqrt( 2 ) / sqrt( pi ) ) / 4 +
-					means[2] * sqrt( 2 ) / 2
-		}
-	}
-	else if ( type1.type == 4 )
-	{
-		if ( length( means ) == 6 )
-		{
-			means <- means[c( 1, 2, 4, 5 )]
-			sds <- sds[c( 1, 2, 4, 5 )]
-		}
+    if ( type1.type == 1 )
+    {
+        mean <- means[1]
+    }
+    else if ( type1.type == 2 )
+    {
+        mean <- ( means[1] + means[2] - ( sds[1] - sds[2] ) / sqrt( pi ) ) / 2
+    }
+    else if ( type1.type == 3 )
+    {
+        if ( means[1] == means[3] && sds[1] == sds[3] )
+        {
+            mean <- means[1] - ( means[1] - means[2] ) * sqrt( 2 ) / 2
+        }
+        else
+        {
+            mean <- ( ( means[1] + means[3] ) * ( 2 - sqrt( 2 ) ) -
+                      ( sds[1] - sds[3] ) * sqrt( 2 ) / sqrt( pi ) ) / 4 +
+                    means[2] * sqrt( 2 ) / 2
+        }
+    }
+    else if ( type1.type == 4 )
+    {
+        if ( length( means ) == 6 )
+        {
+            means <- means[c( 1, 2, 4, 5 )]
+            sds <- sds[c( 1, 2, 4, 5 )]
+        }
 
-		mean <- means[1] - ( means[1] - means[2] ) * sqrt( 2 ) / 2 -
-				mean.cont.t4.sub( means[1:2], sds[1:2] ) +
-				mean.cont.t4.sub( means[3:4], sds[3:4] )
-	}
+        mean <- means[1] - ( means[1] - means[2] ) * sqrt( 2 ) / 2 -
+                mean.cont.t4.sub( means[1:2], sds[1:2] ) +
+                mean.cont.t4.sub( means[3:4], sds[3:4] )
+    }
 
-	return ( mean )
+    return ( mean )
 }
 
 ################################################################################################
@@ -582,25 +582,25 @@ mean.cont <- function( type1.type, means, sds )
 ################################################################################################
 v.nd.bound <- function( mean, mean.nd, sd.nd, x )
 {
-	d = dnorm( x, mean.nd, sd.nd )
-	p = pnorm( x, mean.nd, sd.nd )
+    d = dnorm( x, mean.nd, sd.nd )
+    p = pnorm( x, mean.nd, sd.nd )
 
-	if ( mean == mean.nd )
-	{
-		# v([x_1, x_2]) = \sd^2 * [( \Phi(x_2) - \Phi(x_1) ) - ( ( x_2 - \mu ) f(x_2) - ( x_1 - \mu ) f(x_1) )]
-		dd <- ifelse( is.infinite( x ), 0, ( x - mean.nd ) * d )
+    if ( mean == mean.nd )
+    {
+        # v([x_1, x_2]) = \sd^2 * [( \Phi(x_2) - \Phi(x_1) ) - ( ( x_2 - \mu ) f(x_2) - ( x_1 - \mu ) f(x_1) )]
+        dd <- ifelse( is.infinite( x ), 0, ( x - mean.nd ) * d )
 
-		return ( sd.nd^2 * ( p[2] - p[1] - dd[2] + dd[1] ) )
-	}
-	else
-	{
-		# v([x_1, x_2]) = ( ( \mu - \mu_i )^2 + sd_i^2 ) * ( \Phi(x_2) - \Phi(x_1) ) -
-		#				  \sd_i^2 * [( x_2 - 2\mu + \mu_i ) f(x_2) - ( x_1 - 2\mu + \mu_i ) f(x_1)]
-		dd <- ifelse( is.infinite( x ), 0, ( x - 2 * mean + mean.nd ) * d )
+        return ( sd.nd^2 * ( p[2] - p[1] - dd[2] + dd[1] ) )
+    }
+    else
+    {
+        # v([x_1, x_2]) = ( ( \mu - \mu_i )^2 + sd_i^2 ) * ( \Phi(x_2) - \Phi(x_1) ) -
+        #                 \sd_i^2 * [( x_2 - 2\mu + \mu_i ) f(x_2) - ( x_1 - 2\mu + \mu_i ) f(x_1)]
+        dd <- ifelse( is.infinite( x ), 0, ( x - 2 * mean + mean.nd ) * d )
 
-		return ( ( ( mean - mean.nd )^2 + sd.nd^2 ) * ( p[2] - p[1] ) -
-				 sd.nd^2 * ( dd[2] - dd[1] ) )
-	}
+        return ( ( ( mean - mean.nd )^2 + sd.nd^2 ) * ( p[2] - p[1] ) -
+                 sd.nd^2 * ( dd[2] - dd[1] ) )
+    }
 }
 
 ################################################################################################
@@ -656,50 +656,50 @@ v.nd.bound <- function( mean, mean.nd, sd.nd, x )
 ################################################################################################
 v.sub <- function( type1.type, mean, mean.i, sd.i, x, q = x, p.sum = 0, k = 0 )
 {
-	v <- numeric()
-	d.i <- dnorm( x, mean.i, sd.i )
-	p.i <- pnorm( x, mean.i, sd.i )
+    v <- numeric()
+    d.i <- dnorm( x, mean.i, sd.i )
+    p.i <- pnorm( x, mean.i, sd.i )
 
-	if ( type1.type == 1 )
-	{
-		v <- ( ( x - mean )^3 - 3 * q * ( mean.i - mean )^2 +
-			   3 * ( mean.i - mean ) * ( mean.i^2 + sd.i^2 ) +
-			   3 * sd.i^2 * ( mean.i - q ) + mean^3 - mean.i^3 ) * p.i -
-			 sd.i^2 * ( 2 * ( x^2 + mean.i * x + mean.i^2 + 2 * sd.i^2 ) -
-						3 * ( q + mean ) * ( x + mean.i ) + 6 * mean * q ) * d.i
-	}
-	else if ( type1.type == 2 )
-	{
-		pstar.i <- pnorm( x, mean.i, sd.i * sqrt( 2 ) / 2 )
+    if ( type1.type == 1 )
+    {
+        v <- ( ( x - mean )^3 - 3 * q * ( mean.i - mean )^2 +
+               3 * ( mean.i - mean ) * ( mean.i^2 + sd.i^2 ) +
+               3 * sd.i^2 * ( mean.i - q ) + mean^3 - mean.i^3 ) * p.i -
+             sd.i^2 * ( 2 * ( x^2 + mean.i * x + mean.i^2 + 2 * sd.i^2 ) -
+                        3 * ( q + mean ) * ( x + mean.i ) + 6 * mean * q ) * d.i
+    }
+    else if ( type1.type == 2 )
+    {
+        pstar.i <- pnorm( x, mean.i, sd.i * sqrt( 2 ) / 2 )
 
-		# 2つの正規分布の差が小さいときに生じる桁落ち誤差を緩和するために、
-		# ( p.i^2 - p.sum * p.i ) の p.i はカッコの外に出してない。
-		# ただし、これでも桁落ち誤差が生じることがある。
-		v <- ( ( mean.i - mean )^2 + sd.i^2 ) * ( p.i^2 - p.sum * p.i ) / 2 +
-			 ( mean.i - mean ) * sd.i * pstar.i / sqrt( pi ) -
-			 sd.i^2 * ( x + mean.i - 2 * mean ) * ( p.i - p.sum / 2 ) * d.i -
-			 sd.i^4 * d.i^2 / 2
-	}
-	else if ( type1.type == 3 )
-	{
-		dstar.i <- dnorm( x, mean.i, sd.i * sqrt( 2 ) / 2 )
-		pstar.i <- pnorm( x, mean.i, sd.i * sqrt( 2 ) / 2 )
+        # 2つの正規分布の差が小さいときに生じる桁落ち誤差を緩和するために、
+        # ( p.i^2 - p.sum * p.i ) の p.i はカッコの外に出してない。
+        # ただし、これでも桁落ち誤差が生じることがある。
+        v <- ( ( mean.i - mean )^2 + sd.i^2 ) * ( p.i^2 - p.sum * p.i ) / 2 +
+             ( mean.i - mean ) * sd.i * pstar.i / sqrt( pi ) -
+             sd.i^2 * ( x + mean.i - 2 * mean ) * ( p.i - p.sum / 2 ) * d.i -
+             sd.i^4 * d.i^2 / 2
+    }
+    else if ( type1.type == 3 )
+    {
+        dstar.i <- dnorm( x, mean.i, sd.i * sqrt( 2 ) / 2 )
+        pstar.i <- pnorm( x, mean.i, sd.i * sqrt( 2 ) / 2 )
 
-		v <- ( ( mean.i^2 + sd.i^2 / 2 ) * pstar.i -
-			   ( x + mean.i ) * sd.i^2 * dstar.i / 2 -
-			   mean * ( 2 * mean.i * pstar.i - sd.i^2 * dstar.i ) +
-			   mean^2 * pstar.i ) * sqrt( 2 ) / 2
+        v <- ( ( mean.i^2 + sd.i^2 / 2 ) * pstar.i -
+               ( x + mean.i ) * sd.i^2 * dstar.i / 2 -
+               mean * ( 2 * mean.i * pstar.i - sd.i^2 * dstar.i ) +
+               mean^2 * pstar.i ) * sqrt( 2 ) / 2
 
-		if ( k == 1 || k == 3 )
-		{
-			v <- ( mean.i^2 + sd.i^2 ) * p.i -
-				 ( x + mean.i ) * sd.i^2 * d.i -
-				 2 * mean * ( mean.i * p.i - sd.i^2 * d.i ) +
-				 mean^2 * p.i - v
-		}
-	}
+        if ( k == 1 || k == 3 )
+        {
+            v <- ( mean.i^2 + sd.i^2 ) * p.i -
+                 ( x + mean.i ) * sd.i^2 * d.i -
+                 2 * mean * ( mean.i * p.i - sd.i^2 * d.i ) +
+                 mean^2 * p.i - v
+        }
+    }
 
-	return ( v )
+    return ( v )
 }
 
 ################################################################################################
@@ -720,21 +720,21 @@ v.sub <- function( type1.type, mean, mean.i, sd.i, x, q = x, p.sum = 0, k = 0 )
 ################################################################################################
 v.sub.t4 <- function( means, sds )
 {
-	d.mean <- means[1] - means[2]
+    d.mean <- means[1] - means[2]
 
-	( ( 6 - 4 * sqrt( 2 ) ) * means[1]^2 + ( 5 - 3 * sqrt( 2 ) ) * sds[1]^2 +
-	  ( 4 * sqrt( 2 ) - 2 ) * means[2]^2 + ( 2 * sqrt( 2 ) - 1 ) * sds[2]^2 ) / 8 +
-	( ( 4 + sqrt( 2 ) - 2 * sqrt( 6 ) ) * means[1] * sds[1] +
-	  sqrt( 2 ) * means[2] * sds[2] ) / sqrt( pi ) / 4 +
-	( sqrt( 2 ) * ( 2 * ( means[1]^2 - means[2]^2 + sds[1]^2 ) - sds[2]^2 ) *
-	  pnorm( d.mean / sqrt( sds[1]^2 + sds[2]^2 / 2 ), 0, 1 ) -
-	  ( 2 * ( means[1]^2 - means[2]^2 ) + sds[1]^2 - sds[2]^2 ) *
-	  pnorm( sqrt( 2 ) * d.mean / sqrt( sds[1]^2 + sds[2]^2 ), 0, 1 ) ) / 4 +
-	( means[1] + means[2] ) *
-	( sqrt( 4 * sds[1]^2 + 2 * sds[2]^2 ) *
-	  exp( -d.mean^2 / ( 2 * sds[1]^2 + sds[2]^2 ) ) -
-	  sqrt( sds[1]^2 + sds[2]^2 ) *
-	  exp( -d.mean^2 / ( sds[1]^2 + sds[2]^2 ) ) ) / sqrt( pi ) / 4
+    ( ( 6 - 4 * sqrt( 2 ) ) * means[1]^2 + ( 5 - 3 * sqrt( 2 ) ) * sds[1]^2 +
+      ( 4 * sqrt( 2 ) - 2 ) * means[2]^2 + ( 2 * sqrt( 2 ) - 1 ) * sds[2]^2 ) / 8 +
+    ( ( 4 + sqrt( 2 ) - 2 * sqrt( 6 ) ) * means[1] * sds[1] +
+      sqrt( 2 ) * means[2] * sds[2] ) / sqrt( pi ) / 4 +
+    ( sqrt( 2 ) * ( 2 * ( means[1]^2 - means[2]^2 + sds[1]^2 ) - sds[2]^2 ) *
+      pnorm( d.mean / sqrt( sds[1]^2 + sds[2]^2 / 2 ), 0, 1 ) -
+      ( 2 * ( means[1]^2 - means[2]^2 ) + sds[1]^2 - sds[2]^2 ) *
+      pnorm( sqrt( 2 ) * d.mean / sqrt( sds[1]^2 + sds[2]^2 ), 0, 1 ) ) / 4 +
+    ( means[1] + means[2] ) *
+    ( sqrt( 4 * sds[1]^2 + 2 * sds[2]^2 ) *
+      exp( -d.mean^2 / ( 2 * sds[1]^2 + sds[2]^2 ) ) -
+      sqrt( sds[1]^2 + sds[2]^2 ) *
+      exp( -d.mean^2 / ( sds[1]^2 + sds[2]^2 ) ) ) / sqrt( pi ) / 4
 }
 
 ################################################################################################
@@ -777,121 +777,121 @@ v.sub.t4 <- function( means, sds )
 #' @importFrom  stats       pnorm integrate
 ################################################################################################
 v.conn.bound <- function( type1.type, mean, itv.1.or.median, itv.2.or.sd.1,
-						  sd.2 = 0, q = list( numeric(), numeric() ), x = q,
-						  thsd.p.sum = 2e-4,
-						  force.type1 = !inherits( itv.1.or.median, "CGDInterval" ) )
+                          sd.2 = 0, q = list( numeric(), numeric() ), x = q,
+                          thsd.p.sum = 2e-4,
+                          force.type1 = !inherits( itv.1.or.median, "CGDInterval" ) )
 {
-	if ( type1.type == 0 )
-	{
-		# type1.type = 0 では接続区間は空集合
-		return ( 0 )
-	}
+    if ( type1.type == 0 )
+    {
+        # type1.type = 0 では接続区間は空集合
+        return ( 0 )
+    }
 
-	if ( inherits( itv.1.or.median, "CGDInterval" ) )
-	{
-		itv.1 <- itv.1.or.median
-		itv.2 <- itv.2.or.sd.1
+    if ( inherits( itv.1.or.median, "CGDInterval" ) )
+    {
+        itv.1 <- itv.1.or.median
+        itv.2 <- itv.2.or.sd.1
 
-		median <- mean.1 <- mean.2 <- itv.1$mean
-		sd.1 <- itv.1$sd
-		sd.2 <- itv.2$sd
+        median <- mean.1 <- mean.2 <- itv.1$mean
+        sd.1 <- itv.1$sd
+        sd.2 <- itv.2$sd
 
-		q <- c( itv.1$q.ind[2], itv.2$q.ind[1] )
+        q <- c( itv.1$q.ind[2], itv.2$q.ind[1] )
 
-		if ( length( x[1] ) == 0 )
-		{
-			x <- q
-		}
-	}
-	else
-	{
-		median <- mean.1 <- mean.2 <- as.numeric( itv.1.or.median )
-		sd.1 <- as.numeric( itv.2.or.sd.1 )
-	}
+        if ( length( x[1] ) == 0 )
+        {
+            x <- q
+        }
+    }
+    else
+    {
+        median <- mean.1 <- mean.2 <- as.numeric( itv.1.or.median )
+        sd.1 <- as.numeric( itv.2.or.sd.1 )
+    }
 
-	if ( ( q[1] == q[2] ) || ( q[2] - q[1] == 0 ) ||
-		 ( x[1] == x[2] ) || ( x[2] - x[1] == 0 ) )
-	{
-		# 区間の幅が 0 ならば部分分散も 0。
-		v <- 0
-	}
-	else if ( sd.1 == sd.2 )
-	{
-		# 2つの正規分布の標準偏差が等しい ⇒ 接続区間の分布も正規分布
-		v <- v.nd.bound( mean, mean.1, sd.1, x )
-	}
-	else
-	{
-		v <- numeric()
+    if ( ( q[1] == q[2] ) || ( q[2] - q[1] == 0 ) ||
+         ( x[1] == x[2] ) || ( x[2] - x[1] == 0 ) )
+    {
+        # 区間の幅が 0 ならば部分分散も 0。
+        v <- 0
+    }
+    else if ( sd.1 == sd.2 )
+    {
+        # 2つの正規分布の標準偏差が等しい ⇒ 接続区間の分布も正規分布
+        v <- v.nd.bound( mean, mean.1, sd.1, x )
+    }
+    else
+    {
+        v <- numeric()
 
-		if ( force.type1 || ( x[2] <= median && sd.1 < sd.2 ) || ( x[1] >= median && sd.1 > sd.2 ) )
-		{
-			# type 1
-			if ( type1.type == 1 )
-			{
-				v <- ( v.sub( 1, mean, mean.2, sd.2, x[2], q[1] ) -
-					   v.sub( 1, mean, mean.1, sd.1, x[2], q[2] ) -
-					   v.sub( 1, mean, mean.2, sd.2, x[1], q[1] ) +
-					   v.sub( 1, mean, mean.1, sd.1, x[1], q[2] ) ) /
-					 ( 3 * ( q[2] - q[1] ) )
-			}
-			else if ( type1.type == 2 )
-			{
-				p.sum <- pnorm( q, mean.1, sd.1 ) + pnorm( q, mean.2, sd.2 )
+        if ( force.type1 || ( x[2] <= median && sd.1 < sd.2 ) || ( x[1] >= median && sd.1 > sd.2 ) )
+        {
+            # type 1
+            if ( type1.type == 1 )
+            {
+                v <- ( v.sub( 1, mean, mean.2, sd.2, x[2], q[1] ) -
+                       v.sub( 1, mean, mean.1, sd.1, x[2], q[2] ) -
+                       v.sub( 1, mean, mean.2, sd.2, x[1], q[1] ) +
+                       v.sub( 1, mean, mean.1, sd.1, x[1], q[2] ) ) /
+                     ( 3 * ( q[2] - q[1] ) )
+            }
+            else if ( type1.type == 2 )
+            {
+                p.sum <- pnorm( q, mean.1, sd.1 ) + pnorm( q, mean.2, sd.2 )
 
-				if ( ( p.sum[2] - p.sum[1] ) == 0 )
-				{
-					v <- 0
-				}
-				else if ( ( p.sum[2] - p.sum[1] ) < thsd.p.sum )
-				{
-					# p.sum の差の絶対値が小さい場合は、
-					# 数値積分を使わずに計算しようとすると、
-					# サブ関数で著しい桁落ち誤差が生じることがあるので、数値積分で計算する。
-					v <- integrate( function( x )
-									{
-										( x - mean )^2 *
-										( ( p.sum[2] - 2 * pnorm( x, mean.1, sd.1 ) ) * dnorm( x, mean.1, sd.1 ) +
-										  ( 2 * pnorm( x, mean.2, sd.2 ) - p.sum[1] ) * dnorm( x, mean.2, sd.2 ) )
-									}, x[1], x[2] )$value / ( p.sum[2] - p.sum[1] )
-				}
-				else
-				{
-					v <- ( v.sub( 2, mean, mean.2, sd.2, x[2], q[1], p.sum[1] ) -
-						   v.sub( 2, mean, mean.1, sd.1, x[2], q[2], p.sum[2] ) -
-						   v.sub( 2, mean, mean.2, sd.2, x[1], q[1], p.sum[1] ) +
-						   v.sub( 2, mean, mean.1, sd.1, x[1], q[2], p.sum[2] ) ) /
-						 ( p.sum[2] - p.sum[1] ) * 2
-				}
-			}
-		}
-		else if ( x[2] <= median || x[1] >= median )
-		{
-			# type 2
-			v <- ( v.nd.bound( mean, mean.1, sd.1,
-								c( x[1], itv.1$q.conn.next[2] ) ) +
-				   v.nd.bound( mean, mean.2, sd.2,
-								c( itv.2$q.conn.prev[1], x[2] ) ) ) / 2
-		}
-		else if ( sd.2 > sd.1 )
-		{
-			# type 3a
-			v <- v.nd.bound( mean, mean.1, sd.1, c( x[1], median ) ) +
-				 ( v.nd.bound( mean, mean.1, sd.1,
-								c( median, itv.1$q.conn.next[2] ) ) +
-				   v.nd.bound( mean, mean.2, sd.2, c( median, x[2] ) ) ) / 2
-		}
-		else
-		{
-			# type 3b
-			v <- ( v.nd.bound( mean, mean.1, sd.1, c( x[1], median ) ) +
-				   v.nd.bound( mean, mean.2, sd.2,
-								c( itv.2$q.conn.prev[1], median ) ) ) / 2 +
-				 v.nd.bound( mean, mean.2, sd.2, c( median, x[2] ) )
-		}
-	}
+                if ( ( p.sum[2] - p.sum[1] ) == 0 )
+                {
+                    v <- 0
+                }
+                else if ( ( p.sum[2] - p.sum[1] ) < thsd.p.sum )
+                {
+                    # p.sum の差の絶対値が小さい場合は、
+                    # 数値積分を使わずに計算しようとすると、
+                    # サブ関数で著しい桁落ち誤差が生じることがあるので、数値積分で計算する。
+                    v <- integrate( function( x )
+                                    {
+                                        ( x - mean )^2 *
+                                        ( ( p.sum[2] - 2 * pnorm( x, mean.1, sd.1 ) ) * dnorm( x, mean.1, sd.1 ) +
+                                          ( 2 * pnorm( x, mean.2, sd.2 ) - p.sum[1] ) * dnorm( x, mean.2, sd.2 ) )
+                                    }, x[1], x[2] )$value / ( p.sum[2] - p.sum[1] )
+                }
+                else
+                {
+                    v <- ( v.sub( 2, mean, mean.2, sd.2, x[2], q[1], p.sum[1] ) -
+                           v.sub( 2, mean, mean.1, sd.1, x[2], q[2], p.sum[2] ) -
+                           v.sub( 2, mean, mean.2, sd.2, x[1], q[1], p.sum[1] ) +
+                           v.sub( 2, mean, mean.1, sd.1, x[1], q[2], p.sum[2] ) ) /
+                         ( p.sum[2] - p.sum[1] ) * 2
+                }
+            }
+        }
+        else if ( x[2] <= median || x[1] >= median )
+        {
+            # type 2
+            v <- ( v.nd.bound( mean, mean.1, sd.1,
+                                c( x[1], itv.1$q.conn.next[2] ) ) +
+                   v.nd.bound( mean, mean.2, sd.2,
+                                c( itv.2$q.conn.prev[1], x[2] ) ) ) / 2
+        }
+        else if ( sd.2 > sd.1 )
+        {
+            # type 3a
+            v <- v.nd.bound( mean, mean.1, sd.1, c( x[1], median ) ) +
+                 ( v.nd.bound( mean, mean.1, sd.1,
+                                c( median, itv.1$q.conn.next[2] ) ) +
+                   v.nd.bound( mean, mean.2, sd.2, c( median, x[2] ) ) ) / 2
+        }
+        else
+        {
+            # type 3b
+            v <- ( v.nd.bound( mean, mean.1, sd.1, c( x[1], median ) ) +
+                   v.nd.bound( mean, mean.2, sd.2,
+                                c( itv.2$q.conn.prev[1], median ) ) ) / 2 +
+                 v.nd.bound( mean, mean.2, sd.2, c( median, x[2] ) )
+        }
+    }
 
-	return ( v )
+    return ( v )
 }
 
 ################################################################################################
@@ -919,149 +919,149 @@ v.conn.bound <- function( type1.type, mean, itv.1.or.median, itv.2.or.sd.1,
 #' @importFrom  stats       dnorm pnorm
 ################################################################################################
 v.cont <- function( type1.type, means, sds,
-					mean = mean.cont( type1.type, means, sds ),
-					symmetric = FALSE, get.lv = FALSE, get.uv = FALSE )
+                    mean = mean.cont( type1.type, means, sds ),
+                    symmetric = FALSE, get.lv = FALSE, get.uv = FALSE )
 {
-	v <- 0
+    v <- 0
 
-	if ( type1.type == 1 )
-	{
-		if ( get.lv || get.uv )
-		{
-			v <- ( sds[1]^2 + sds[2]^2 ) / 4
-		}
-		else
-		{
-			v <- ( sds[1]^2 + sds[2]^2 ) / 2
-		}
-	}
-	else if ( type1.type == 2 )
-	{
-		if ( symmetric )
-		{
-			v <- ( sds[1]^2 + sds[2]^2 ) / 2 + ( sds[1]^2 - sds[2]^2 ) / pi
+    if ( type1.type == 1 )
+    {
+        if ( get.lv || get.uv )
+        {
+            v <- ( sds[1]^2 + sds[2]^2 ) / 4
+        }
+        else
+        {
+            v <- ( sds[1]^2 + sds[2]^2 ) / 2
+        }
+    }
+    else if ( type1.type == 2 )
+    {
+        if ( symmetric )
+        {
+            v <- ( sds[1]^2 + sds[2]^2 ) / 2 + ( sds[1]^2 - sds[2]^2 ) / pi
 
-			if ( get.lv || get.uv )
-			{
-				v <- v / 2
-			}
-		}
-		else
-		{
-			if ( get.lv || get.uv )
-			{
-				v <- v.sub( 2, mean, means[2], sds[2], mean, -Inf, 0 ) -
-					 v.sub( 2, mean, means[1], sds[1], mean, Inf, 2 )
-			}
+            if ( get.lv || get.uv )
+            {
+                v <- v / 2
+            }
+        }
+        else
+        {
+            if ( get.lv || get.uv )
+            {
+                v <- v.sub( 2, mean, means[2], sds[2], mean, -Inf, 0 ) -
+                     v.sub( 2, mean, means[1], sds[1], mean, Inf, 2 )
+            }
 
-			if ( !get.lv )
-			{
-				v <- ( means[1]^2 + means[2]^2 + sds[1]^2 + sds[2]^2 ) / 2 - mean^2 +
-					 ( sds[2] * means[2] - sds[1] * means[1] ) / sqrt( pi ) - v
-			}
-		}
-	}
-	else if ( type1.type == 3 )
-	{
-		if ( symmetric )
-		{
-			v <- sds[1]^2 + ( sds[2]^2 - sds[1]^2 ) * sqrt( 2 ) / 4
+            if ( !get.lv )
+            {
+                v <- ( means[1]^2 + means[2]^2 + sds[1]^2 + sds[2]^2 ) / 2 - mean^2 +
+                     ( sds[2] * means[2] - sds[1] * means[1] ) / sqrt( pi ) - v
+            }
+        }
+    }
+    else if ( type1.type == 3 )
+    {
+        if ( symmetric )
+        {
+            v <- sds[1]^2 + ( sds[2]^2 - sds[1]^2 ) * sqrt( 2 ) / 4
 
-			if ( get.lv || get.uv )
-			{
-				v <- v / 2
-			}
-		}
-		else if ( means[1] == means[3] && sds[1] == sds[3] )
-		{
-			if ( get.lv || get.uv )
-			{
-				d.1 <- dnorm( mean, means[1], sds[1] )
-				p.1 <- pnorm( mean, means[1], sds[1] )
-				dstar <- dnorm( mean, means[1:2], sds[1:2] * sqrt( 2 ) / 2 )
-				pstar <- pnorm( mean, means[1:2], sds[1:2] * sqrt( 2 ) / 2 )
-				d.mean <- means[1] - means[2]
+            if ( get.lv || get.uv )
+            {
+                v <- v / 2
+            }
+        }
+        else if ( means[1] == means[3] && sds[1] == sds[3] )
+        {
+            if ( get.lv || get.uv )
+            {
+                d.1 <- dnorm( mean, means[1], sds[1] )
+                p.1 <- pnorm( mean, means[1], sds[1] )
+                dstar <- dnorm( mean, means[1:2], sds[1:2] * sqrt( 2 ) / 2 )
+                pstar <- pnorm( mean, means[1:2], sds[1:2] * sqrt( 2 ) / 2 )
+                d.mean <- means[1] - means[2]
 
-				v <- ( d.mean^2 / 2 + sds[1]^2 ) * p.1 -
-					 d.mean * sds[1]^2 * d.1 * sqrt( 2 ) / 2 -
-					 ( ( d.mean^2 + sds[1]^2 ) * pstar[1] * sqrt( 2 ) -
-					   d.mean * sds[1]^2 * dstar[1] -
-					   ( d.mean^2 * ( 3 * sqrt( 2 ) - 4 ) + sds[2]^2 * sqrt( 2 ) ) * pstar[2] -
-					   d.mean * sds[2]^2 * dstar[2] * ( sqrt( 2 ) - 1 ) ) / 4
-			}
+                v <- ( d.mean^2 / 2 + sds[1]^2 ) * p.1 -
+                     d.mean * sds[1]^2 * d.1 * sqrt( 2 ) / 2 -
+                     ( ( d.mean^2 + sds[1]^2 ) * pstar[1] * sqrt( 2 ) -
+                       d.mean * sds[1]^2 * dstar[1] -
+                       ( d.mean^2 * ( 3 * sqrt( 2 ) - 4 ) + sds[2]^2 * sqrt( 2 ) ) * pstar[2] -
+                       d.mean * sds[2]^2 * dstar[2] * ( sqrt( 2 ) - 1 ) ) / 4
+            }
 
-			if ( !get.lv )
-			{
-				v <- ( means[1] - means[2] )^2 * ( sqrt( 2 ) - 1 ) / 2 +
-					 ( ( 4 - sqrt( 2 ) ) * sds[1]^2 + sqrt( 2 ) * sds[2]^2 ) / 4 - v
-			}
-		}
-		else
-		{
-			if ( get.lv )
-			{
-				v <- v.sub( 3, mean, means[1], sds[1], min( mean, means[1] ), k = 1 ) +
-					 v.sub( 3, mean, means[2], sds[2], mean, k = 2 )
+            if ( !get.lv )
+            {
+                v <- ( means[1] - means[2] )^2 * ( sqrt( 2 ) - 1 ) / 2 +
+                     ( ( 4 - sqrt( 2 ) ) * sds[1]^2 + sqrt( 2 ) * sds[2]^2 ) / 4 - v
+            }
+        }
+        else
+        {
+            if ( get.lv )
+            {
+                v <- v.sub( 3, mean, means[1], sds[1], min( mean, means[1] ), k = 1 ) +
+                     v.sub( 3, mean, means[2], sds[2], mean, k = 2 )
 
-				if ( means[3] < mean )
-				{
-					v <- v + v.sub( 3, mean, means[3], sds[3], mean, k = 3 ) -
-						 ( means[3] - mean )^2 * ( 2 - sqrt( 2 ) ) / 4 +
-						 ( means[3] - mean ) * sds[3] * sqrt( 2 ) / sqrt( pi ) / 2 -
-						 sds[3]^2 * ( 4 - sqrt( 2 ) ) / 8
-				}
-			}
-			else if ( get.uv )
-			{
-				v <- ( means[2] - mean )^2 * sqrt( 2 ) / 2 +
-					 sds[2]^2 * sqrt( 2 ) / 4 -
-					 v.sub( 3, mean, means[2], sds[2], mean, k = 2 ) +
-					 ( means[3] - mean )^2 * ( 2 - sqrt( 2 ) ) / 2 +
-					 sds[3]^2 * ( 4 - sqrt( 2 ) ) / 4 -
-					 v.sub( 3, mean, means[3], sds[3], max( mean, means[3] ), k = 3 )
+                if ( means[3] < mean )
+                {
+                    v <- v + v.sub( 3, mean, means[3], sds[3], mean, k = 3 ) -
+                         ( means[3] - mean )^2 * ( 2 - sqrt( 2 ) ) / 4 +
+                         ( means[3] - mean ) * sds[3] * sqrt( 2 ) / sqrt( pi ) / 2 -
+                         sds[3]^2 * ( 4 - sqrt( 2 ) ) / 8
+                }
+            }
+            else if ( get.uv )
+            {
+                v <- ( means[2] - mean )^2 * sqrt( 2 ) / 2 +
+                     sds[2]^2 * sqrt( 2 ) / 4 -
+                     v.sub( 3, mean, means[2], sds[2], mean, k = 2 ) +
+                     ( means[3] - mean )^2 * ( 2 - sqrt( 2 ) ) / 2 +
+                     sds[3]^2 * ( 4 - sqrt( 2 ) ) / 4 -
+                     v.sub( 3, mean, means[3], sds[3], max( mean, means[3] ), k = 3 )
 
-				if ( mean < means[1] )
-				{
-					v <- v - v.sub( 3, mean, means[1], sds[1], mean, k = 1 ) +
-						 ( means[1] - mean )^2 * ( 2 - sqrt( 2 ) ) / 4 -
-						 ( means[1] - mean ) * sds[1] * sqrt( 2 ) / sqrt( pi ) / 2 +
-						 sds[1]^2 * ( 4 - sqrt( 2 ) ) / 8
-				}
-			}
-			else
-			{
-				v <- ( ( means[1] - mean )^2 + ( means[3] - mean )^2 ) *
-					 ( 2 - sqrt( 2 ) ) / 4 -
-					 ( ( means[1] - mean ) * sds[1] - ( means[3] - mean ) * sds[3] ) *
-					 sqrt( 2 ) / sqrt( pi ) / 2 +
-					 ( sds[1]^2 + sds[3]^2 ) * ( 4 - sqrt( 2 ) ) / 8 +
-					 ( ( means[2] - mean )^2 * 2 + sds[2]^2 ) * sqrt( 2 ) / 4
-			}
-		}
-	}
-	else if ( type1.type == 4 )
-	{
-		# For type1.type ==4, both get.lv and get.uv options are invalid.
-		# Use v.cont.t4.via.integrate instead.
+                if ( mean < means[1] )
+                {
+                    v <- v - v.sub( 3, mean, means[1], sds[1], mean, k = 1 ) +
+                         ( means[1] - mean )^2 * ( 2 - sqrt( 2 ) ) / 4 -
+                         ( means[1] - mean ) * sds[1] * sqrt( 2 ) / sqrt( pi ) / 2 +
+                         sds[1]^2 * ( 4 - sqrt( 2 ) ) / 8
+                }
+            }
+            else
+            {
+                v <- ( ( means[1] - mean )^2 + ( means[3] - mean )^2 ) *
+                     ( 2 - sqrt( 2 ) ) / 4 -
+                     ( ( means[1] - mean ) * sds[1] - ( means[3] - mean ) * sds[3] ) *
+                     sqrt( 2 ) / sqrt( pi ) / 2 +
+                     ( sds[1]^2 + sds[3]^2 ) * ( 4 - sqrt( 2 ) ) / 8 +
+                     ( ( means[2] - mean )^2 * 2 + sds[2]^2 ) * sqrt( 2 ) / 4
+            }
+        }
+    }
+    else if ( type1.type == 4 )
+    {
+        # For type1.type ==4, both get.lv and get.uv options are invalid.
+        # Use v.cont.t4.via.integrate instead.
 
-		if ( get.lv || get.uv )
-		{
-			stop( "Error: The get.lv and get.uv options are not supported yet for type1.type = 4." )
-		}
+        if ( get.lv || get.uv )
+        {
+            stop( "Error: The get.lv and get.uv options are not supported yet for type1.type = 4." )
+        }
 
-		if ( length( means ) == 6 )
-		{
-			means <- means[c( 1, 2, 4, 5 )]
-			sds <- sds[c( 1, 2, 4, 5 )]
-		}
+        if ( length( means ) == 6 )
+        {
+            means <- means[c( 1, 2, 4, 5 )]
+            sds <- sds[c( 1, 2, 4, 5 )]
+        }
 
-		v <- ( ( 2 - sqrt( 2 ) ) * means[1]^2 + ( 4 - sqrt( 2 ) ) * sds[1]^2 / 2 +
-			 sqrt( 2 ) * ( means[2]^2 + sds[2]^2 / 2 ) ) / 2 - mean^2 -
-			 v.sub.t4( means[1:2], sds[1:2] ) +
-			 v.sub.t4( means[3:4], sds[3:4] )
-	}
+        v <- ( ( 2 - sqrt( 2 ) ) * means[1]^2 + ( 4 - sqrt( 2 ) ) * sds[1]^2 / 2 +
+             sqrt( 2 ) * ( means[2]^2 + sds[2]^2 / 2 ) ) / 2 - mean^2 -
+             v.sub.t4( means[1:2], sds[1:2] ) +
+             v.sub.t4( means[3:4], sds[3:4] )
+    }
 
-	return ( v )
+    return ( v )
 }
 
 ################################################################################################
@@ -1083,46 +1083,46 @@ v.cont <- function( type1.type, means, sds,
 #' @importFrom  stats       dnorm pnorm integrate
 ################################################################################################
 v.cont.t4.via.integrate <- function( means, sds, mean = mean.cont( 4, means, sds ),
-									 get.lv = FALSE, get.uv = FALSE )
+                                     get.lv = FALSE, get.uv = FALSE )
 {
-	if ( length( means ) == 6 )
-	{
-		means <- means[c( 1, 2, 4, 5 )]
-		sds <- sds[c( 1, 2, 4, 5 )]
-	}
+    if ( length( means ) == 6 )
+    {
+        means <- means[c( 1, 2, 4, 5 )]
+        sds <- sds[c( 1, 2, 4, 5 )]
+    }
 
-	f <- function( x )
-	{
-		( x - mean )^2 *
-		( ( 1 - pnorm( x, means[1], sds[1] ) +
-				pnorm( x, means[1], sds[1] * sqrt( 2 ) / 2 ) * sqrt( 2 ) / 2 -
-				pnorm( x, means[2], sds[2] * sqrt( 2 ) / 2 ) * sqrt( 2 ) / 2 ) *
-		  ( ( 1 - dnorm( x, means[1], sds[1] ) / dnorm( means[1], means[1], sds[1] ) ) *
-				  dnorm( x, means[1], sds[1] ) +
-				  dnorm( x, means[2], sds[2] )^2 / dnorm( means[2], means[2], sds[2] ) ) +
-		  ( pnorm( x, means[3], sds[3] ) -
-			pnorm( x, means[3], sds[3] * sqrt( 2 ) / 2 ) * sqrt( 2 ) / 2 +
-			pnorm( x, means[4], sds[4] * sqrt( 2 ) / 2 ) * sqrt( 2 ) / 2 ) *
-		  ( ( 1 - dnorm( x, means[3], sds[3] ) / dnorm( means[3], means[3], sds[3] ) ) *
-				  dnorm( x, means[3], sds[3] ) +
-				  dnorm( x, means[4], sds[4] )^2 / dnorm( means[4], means[4], sds[4] ) ) )
-	}
+    f <- function( x )
+    {
+        ( x - mean )^2 *
+        ( ( 1 - pnorm( x, means[1], sds[1] ) +
+                pnorm( x, means[1], sds[1] * sqrt( 2 ) / 2 ) * sqrt( 2 ) / 2 -
+                pnorm( x, means[2], sds[2] * sqrt( 2 ) / 2 ) * sqrt( 2 ) / 2 ) *
+          ( ( 1 - dnorm( x, means[1], sds[1] ) / dnorm( means[1], means[1], sds[1] ) ) *
+                  dnorm( x, means[1], sds[1] ) +
+                  dnorm( x, means[2], sds[2] )^2 / dnorm( means[2], means[2], sds[2] ) ) +
+          ( pnorm( x, means[3], sds[3] ) -
+            pnorm( x, means[3], sds[3] * sqrt( 2 ) / 2 ) * sqrt( 2 ) / 2 +
+            pnorm( x, means[4], sds[4] * sqrt( 2 ) / 2 ) * sqrt( 2 ) / 2 ) *
+          ( ( 1 - dnorm( x, means[3], sds[3] ) / dnorm( means[3], means[3], sds[3] ) ) *
+                  dnorm( x, means[3], sds[3] ) +
+                  dnorm( x, means[4], sds[4] )^2 / dnorm( means[4], means[4], sds[4] ) ) )
+    }
 
-	result <- list()
-	if ( get.lv )
-	{
-		result <- integrate( f, -Inf, mean )
-	}
-	else if ( get.uv )
-	{
-		result <- integrate( f, mean, Inf )
-	}
-	else
-	{
-		result <- integrate( f, -Inf, Inf )
-	}
+    result <- list()
+    if ( get.lv )
+    {
+        result <- integrate( f, -Inf, mean )
+    }
+    else if ( get.uv )
+    {
+        result <- integrate( f, mean, Inf )
+    }
+    else
+    {
+        result <- integrate( f, -Inf, Inf )
+    }
 
-	return ( result )
+    return ( result )
 }
 
 ################################################################################################
@@ -1136,26 +1136,26 @@ v.cont.t4.via.integrate <- function( means, sds, mean = mean.cont( 4, means, sds
 ################################################################################################
 bisection <- function( f, interval, tol = .Machine$double.eps * 16 )
 {
-	ans.1 <- f( interval[1] )
-	ans.2 <- f( interval[2] )
-	if ( abs( ans.1 ) < tol || abs( ans.2 ) < tol )
-	{
-		return ( ifelse( abs( ans.1 ) < abs( ans.2 ), interval[1], interval[2] ) )
-	}
+    ans.1 <- f( interval[1] )
+    ans.2 <- f( interval[2] )
+    if ( abs( ans.1 ) < tol || abs( ans.2 ) < tol )
+    {
+        return ( ifelse( abs( ans.1 ) < abs( ans.2 ), interval[1], interval[2] ) )
+    }
 
-	if ( ans.1 * ans.2 > 0 )
-	{
-		stop( "Error: f() values at end points not of opposite sign." )
-	}
+    if ( ans.1 * ans.2 > 0 )
+    {
+        stop( "Error: f() values at end points not of opposite sign." )
+    }
 
-	if ( ans.1 > 0 )
-	{
-		a <- interval[1]
-		interval[1] <- interval[2]
-		interval[2] <- a
-	}
+    if ( ans.1 > 0 )
+    {
+        a <- interval[1]
+        interval[1] <- interval[2]
+        interval[2] <- a
+    }
 
-	return ( bisection.sub( f, interval, tol ) )
+    return ( bisection.sub( f, interval, tol ) )
 }
 
 ################################################################################################
@@ -1169,21 +1169,21 @@ bisection <- function( f, interval, tol = .Machine$double.eps * 16 )
 ################################################################################################
 bisection.sub <- function( f, interval, tol )
 {
-	mid <- ( interval[1] + interval[2] ) / 2
-	ans <- f( mid )
+    mid <- ( interval[1] + interval[2] ) / 2
+    ans <- f( mid )
 
-	if ( abs( ans ) < tol )
-	{
-		return ( mid )
-	}
-	else if ( ans > 0 )
-	{
-		bisection.sub( f, c( interval[1], mid ), tol )
-	}
-	else
-	{
-		bisection.sub( f, c( mid, interval[2] ), tol )
-	}
+    if ( abs( ans ) < tol )
+    {
+        return ( mid )
+    }
+    else if ( ans > 0 )
+    {
+        bisection.sub( f, c( interval[1], mid ), tol )
+    }
+    else
+    {
+        bisection.sub( f, c( mid, interval[2] ), tol )
+    }
 }
 
 ################################################################################################
@@ -1206,20 +1206,20 @@ bisection.sub <- function( f, interval, tol )
 ################################################################################################
 CGDInterval <- setRefClass(
 
-	# クラス名
-	Class = "CGDInterval",
+    # クラス名
+    Class = "CGDInterval",
 
-	# フィールド
-	fields = list(
-		mean = "numeric",			# 独立区間を負担する正規分布の平均値
-		sd = "numeric", 			# 独立区間を負担する正規分布の標準偏差
-		q.ind = "vector",			# 独立区間の定義域
-		q.conn.prev = "vector", 	# 前の接続区間の確率内に値が収まる、この正規分布の累積密度関数の定義域
-		q.conn.next = "vector", 	# 次の接続区間の確率内に値が収まる、この正規分布の累積密度関数の定義域
-		p.ind = "vector",			# この正規分布が負担する独立区間の確率
-		p.conn.prev = "vector", 	# 前の接続区間の確率
-		p.conn.next = "vector"		# 次の接続区間の確率
-	)
+    # フィールド
+    fields = list(
+        mean = "numeric",           # 独立区間を負担する正規分布の平均値
+        sd = "numeric",             # 独立区間を負担する正規分布の標準偏差
+        q.ind = "vector",           # 独立区間の定義域
+        q.conn.prev = "vector",     # 前の接続区間の確率内に値が収まる、この正規分布の累積密度関数の定義域
+        q.conn.next = "vector",     # 次の接続区間の確率内に値が収まる、この正規分布の累積密度関数の定義域
+        p.ind = "vector",           # この正規分布が負担する独立区間の確率
+        p.conn.prev = "vector",     # 前の接続区間の確率
+        p.conn.next = "vector"      # 次の接続区間の確率
+    )
 )
 
 # メソッド
@@ -1238,10 +1238,10 @@ CGDInterval <- setRefClass(
 ################################################################################################
 NULL
 CGDInterval$methods(
-	q.manage = function()
-	{
-		return ( c( q.conn.prev[1], q.conn.next[2] ) )
-	}
+    q.manage = function()
+    {
+        return ( c( q.conn.prev[1], q.conn.next[2] ) )
+    }
 )
 
 ################################################################################################
@@ -1290,25 +1290,25 @@ CGDInterval$methods(
 ################################################################################################
 CGD <- setRefClass(
 
-	# クラス名
-	Class = "CGD",
+    # クラス名
+    Class = "CGD",
 
-	# フィールド
-	fields = list(
-		kind.index = "numeric", 	# この分布の種類のインデックス番号
-		kind = "character", 		# この分布の種類名
+    # フィールド
+    fields = list(
+        kind.index = "numeric",     # この分布の種類のインデックス番号
+        kind = "character",         # この分布の種類名
 
-		median = "numeric", 		# この分布の中央値
-		intervals = "list", 		# 連結区間 (CGDInterval クラスのリスト)
-		type1.type = "numeric", 	# 接続区間が type 1 の場合の計算方法
+        median = "numeric",         # この分布の中央値
+        intervals = "list",         # 連結区間 (CGDInterval クラスのリスト)
+        type1.type = "numeric",     # 接続区間が type 1 の場合の計算方法
 
-		mean = "numeric",			# この分布の平均値
-		sd = "numeric", 			# この分布の標準偏差
-		lsd = "numeric",			# この分布の下半標準偏差
-		usd = "numeric",			# この分布の上半標準偏差
-		lsd.abs.error = "numeric",	# 下半標準偏差の絶対誤差の推定値
-		usd.abs.error = "numeric"	# 上半標準偏差の絶対誤差の推定値
-	)
+        mean = "numeric",           # この分布の平均値
+        sd = "numeric",             # この分布の標準偏差
+        lsd = "numeric",            # この分布の下半標準偏差
+        usd = "numeric",            # この分布の上半標準偏差
+        lsd.abs.error = "numeric",  # 下半標準偏差の絶対誤差の推定値
+        usd.abs.error = "numeric"   # 上半標準偏差の絶対誤差の推定値
+    )
 )
 
 # メソッド
@@ -1337,50 +1337,50 @@ CGD <- setRefClass(
 ################################################################################################
 NULL
 CGD$methods(
-	initialize = function( type1.type = 1 )
-	{
-		kind.index <<- 1
-		kind <<- kinds[1]
+    initialize = function( type1.type = 1 )
+    {
+        kind.index <<- 1
+        kind <<- kinds[1]
 
-		median <<- 0
+        median <<- 0
 
-		if ( length( type1.type ) == 0 || !any( type1.type == 0:4 ) )
-		{
-			warning( paste( "Warning: type1.type" , type1.type, "is undefined." ) )
-			type1.type <<- 1
-			intervals <<- c( CGDInterval$new(	mean = 0,
-												sd = 1,
-												q.ind = c( -Inf, Inf ),
-												q.conn.prev = c( -Inf, -Inf ), q.conn.next = c( Inf, Inf ),
-												p.ind = c( 0, 1 ),
-												p.conn.prev = c( 0, 0 ), p.conn.next = c( 1, 1 ) ) )
-		}
-		else if ( any( type1.type == 0:2 ) )
-		{
-			type1.type <<- type1.type
-			intervals <<- c( CGDInterval$new(	mean = 0,
-												sd = 1,
-												q.ind = c( -Inf, Inf ),
-												q.conn.prev = c( -Inf, -Inf ), q.conn.next = c( Inf, Inf ),
-												p.ind = c( 0, 1 ),
-												p.conn.prev = c( 0, 0 ), p.conn.next = c( 1, 1 ) ) )
-		}
-		else if ( type1.type == 3 )
-		{
-			type1.type <<- type1.type
-			intervals <<- gen.t3.intervals( c( 0, 0, 0 ), c( 1, 1, 1 ) )
-		}
-		else # if ( type1.type == 4 )
-		{
-			type1.type <<- type1.type
-			intervals <<- list( gen.t3.intervals( c( 0, 0, 0 ), c( 1, 1, 1 ) ),
-								gen.t3.intervals( c( 0, 0, 0 ), c( 1, 1, 1 ) ) )
-		}
+        if ( length( type1.type ) == 0 || !any( type1.type == 0:4 ) )
+        {
+            warning( paste( "Warning: type1.type" , type1.type, "is undefined." ) )
+            type1.type <<- 1
+            intervals <<- c( CGDInterval$new(   mean = 0,
+                                                sd = 1,
+                                                q.ind = c( -Inf, Inf ),
+                                                q.conn.prev = c( -Inf, -Inf ), q.conn.next = c( Inf, Inf ),
+                                                p.ind = c( 0, 1 ),
+                                                p.conn.prev = c( 0, 0 ), p.conn.next = c( 1, 1 ) ) )
+        }
+        else if ( any( type1.type == 0:2 ) )
+        {
+            type1.type <<- type1.type
+            intervals <<- c( CGDInterval$new(   mean = 0,
+                                                sd = 1,
+                                                q.ind = c( -Inf, Inf ),
+                                                q.conn.prev = c( -Inf, -Inf ), q.conn.next = c( Inf, Inf ),
+                                                p.ind = c( 0, 1 ),
+                                                p.conn.prev = c( 0, 0 ), p.conn.next = c( 1, 1 ) ) )
+        }
+        else if ( type1.type == 3 )
+        {
+            type1.type <<- type1.type
+            intervals <<- gen.t3.intervals( c( 0, 0, 0 ), c( 1, 1, 1 ) )
+        }
+        else # if ( type1.type == 4 )
+        {
+            type1.type <<- type1.type
+            intervals <<- list( gen.t3.intervals( c( 0, 0, 0 ), c( 1, 1, 1 ) ),
+                                gen.t3.intervals( c( 0, 0, 0 ), c( 1, 1, 1 ) ) )
+        }
 
-		mean <<- 0
-		sd <<- usd <<- lsd <<- 1
-		lsd.abs.error <<- usd.abs.error <<- 0
-	}
+        mean <<- 0
+        sd <<- usd <<- lsd <<- 1
+        lsd.abs.error <<- usd.abs.error <<- 0
+    }
 )
 
 ################################################################################################
@@ -1409,18 +1409,18 @@ CGD$methods(
 ################################################################################################
 NULL
 CGD$methods(
-	clear = function( clear.intervals = TRUE )
-	{
-		median <<- NaN
+    clear = function( clear.intervals = TRUE )
+    {
+        median <<- NaN
 
-		if ( clear.intervals )
-		{
-			intervals <<- list()
-		}
+        if ( clear.intervals )
+        {
+            intervals <<- list()
+        }
 
-		adjust.kind.index()
-		mean <<- sd <<- usd <<- lsd <<- lsd.abs.error <<- usd.abs.error <<- NaN
-	}
+        adjust.kind.index()
+        mean <<- sd <<- usd <<- lsd <<- lsd.abs.error <<- usd.abs.error <<- NaN
+    }
 )
 
 ################################################################################################
@@ -1470,53 +1470,53 @@ CGD$methods(
 ################################################################################################
 NULL
 CGD$methods(
-	set.intervals = function( new.intervals, this.type1.type = NULL )
-	{
-		# intervals フィールド設定
-		#
-		#	この処理は、フィールド初期化よりも先に実行する必要がある
-		#	 (厳密には、フィールド初期化の前に new.intervals を使った何らかの処理を実行しておく必要がある)。
-		#
-		#	理由は、例えば、呼び出し元で a$set.intervals( new.intervals = list( CGDInterval$new( mean = a$median, ...
-		#	のように、 CGDInterval$new() の引数に、自身のフィールドの値を渡している場合に、問題が生じるためである。
-		#
-		#	この場合、 CGDInterval$new() が実行されるタイミングは、 set.intervals() の処理に入る前ではなく、
-		#	set.intervals() 関数の {} 内のコードに new.intervals が最初に現れた時点になる。
-		#
-		#	したがって、フィールドを初期化したあとに new.intervals を初めてコードに書いてしまうと、
-		#	実際の new() の処理では、 set.intervals() を呼び出す時点のフィールドの値ではなく、
-		#	初期化した後のフィールドの値が使われてしまう (上の例では、 CGDInterval$new() の引数 mean は NaN になる)。
-		#	そのため、意図しないエラーが生じたり、誤った結果が得られることがある。
-		#
-		#	この問題を解決するには、フィールド初期化の前に new.intervals を使う処理を書いておけばよい。
-		#	そうすれば、上の例でも、 CGDInterval$new() の引数 mean に、元の a$median の値が渡される。
-		intervals <<- new.intervals
+    set.intervals = function( new.intervals, this.type1.type = NULL )
+    {
+        # intervals フィールド設定
+        #
+        #   この処理は、フィールド初期化よりも先に実行する必要がある
+        #    (厳密には、フィールド初期化の前に new.intervals を使った何らかの処理を実行しておく必要がある)。
+        #
+        #   理由は、例えば、呼び出し元で a$set.intervals( new.intervals = list( CGDInterval$new( mean = a$median, ...
+        #   のように、 CGDInterval$new() の引数に、自身のフィールドの値を渡している場合に、問題が生じるためである。
+        #
+        #   この場合、 CGDInterval$new() が実行されるタイミングは、 set.intervals() の処理に入る前ではなく、
+        #   set.intervals() 関数の {} 内のコードに new.intervals が最初に現れた時点になる。
+        #
+        #   したがって、フィールドを初期化したあとに new.intervals を初めてコードに書いてしまうと、
+        #   実際の new() の処理では、 set.intervals() を呼び出す時点のフィールドの値ではなく、
+        #   初期化した後のフィールドの値が使われてしまう (上の例では、 CGDInterval$new() の引数 mean は NaN になる)。
+        #   そのため、意図しないエラーが生じたり、誤った結果が得られることがある。
+        #
+        #   この問題を解決するには、フィールド初期化の前に new.intervals を使う処理を書いておけばよい。
+        #   そうすれば、上の例でも、 CGDInterval$new() の引数 mean に、元の a$median の値が渡される。
+        intervals <<- new.intervals
 
-		# フィールドを初期化
-		clear( FALSE )
+        # フィールドを初期化
+        clear( FALSE )
 
-		# type1.type フィールド設定
-		if ( !is.null( this.type1.type ) )
-		{
-			if ( any( this.type1.type == 0:4 ) )
-			{
-				type1.type <<- this.type1.type
-			}
-			else
-			{
-				stop( paste( "Error: type1.type" , this.type1.type, "is undefined." ) )
-			}
-		}
+        # type1.type フィールド設定
+        if ( !is.null( this.type1.type ) )
+        {
+            if ( any( this.type1.type == 0:4 ) )
+            {
+                type1.type <<- this.type1.type
+            }
+            else
+            {
+                stop( paste( "Error: type1.type" , this.type1.type, "is undefined." ) )
+            }
+        }
 
-		# median フィールド設定
-		median <<- get.adjusted.median()
+        # median フィールド設定
+        median <<- get.adjusted.median()
 
-		# 分布の種類設定
-		adjust.kind.index()
+        # 分布の種類設定
+        adjust.kind.index()
 
-		# 平均値・標準偏差設定
-		adjust.mean.sd()
-	}
+        # 平均値・標準偏差設定
+        adjust.mean.sd()
+    }
 )
 
 ################################################################################################
@@ -1536,34 +1536,34 @@ CGD$methods(
 ################################################################################################
 NULL
 CGD$methods(
-	get.adjusted.median = function()
-	{
-		median.adj <- NaN
+    get.adjusted.median = function()
+    {
+        median.adj <- NaN
 
-		if ( length( intervals ) == 0 )
-		{
-			return ( NaN )
-		}
+        if ( length( intervals ) == 0 )
+        {
+            return ( NaN )
+        }
 
-		if ( is.uni.mean() )
-		{
-			if ( type1.type == 4 )
-			{
-				median.adj <- intervals[[1]][[1]]$mean
-			}
-			else
-			{
-				median.adj <- intervals[[1]]$mean
-			}
-		}
-		else
-		{
-			means <- intervals.mean()
-			median.adj <- bisection( function( x ) { p( x ) - 0.5 }, c( min( means ), max( means ) ) )
-		}
+        if ( is.uni.mean() )
+        {
+            if ( type1.type == 4 )
+            {
+                median.adj <- intervals[[1]][[1]]$mean
+            }
+            else
+            {
+                median.adj <- intervals[[1]]$mean
+            }
+        }
+        else
+        {
+            means <- intervals.mean()
+            median.adj <- bisection( function( x ) { p( x ) - 0.5 }, c( min( means ), max( means ) ) )
+        }
 
-		return ( median.adj )
-	}
+        return ( median.adj )
+    }
 )
 
 ################################################################################################
@@ -1591,25 +1591,25 @@ CGD$methods(
 ################################################################################################
 NULL
 CGD$methods(
-	intervals.mean = function()
-	{
-		if ( length( intervals ) == 0 )
-		{
-			return ( numeric() )
-		}
-		else
-		{
-			if ( type1.type == 4 )
-			{
-				return ( c( intervals[[1]][[1]]$mean, intervals[[1]][[2]]$mean, intervals[[1]][[3]]$mean,
-							intervals[[2]][[1]]$mean, intervals[[2]][[2]]$mean, intervals[[2]][[3]]$mean ) )
-			}
-			else
-			{
-				return ( vapply( 1:length( intervals ), function( i ) intervals[[i]]$mean, 0 ) )
-			}
-		}
-	}
+    intervals.mean = function()
+    {
+        if ( length( intervals ) == 0 )
+        {
+            return ( numeric() )
+        }
+        else
+        {
+            if ( type1.type == 4 )
+            {
+                return ( c( intervals[[1]][[1]]$mean, intervals[[1]][[2]]$mean, intervals[[1]][[3]]$mean,
+                            intervals[[2]][[1]]$mean, intervals[[2]][[2]]$mean, intervals[[2]][[3]]$mean ) )
+            }
+            else
+            {
+                return ( vapply( 1:length( intervals ), function( i ) intervals[[i]]$mean, 0 ) )
+            }
+        }
+    }
 )
 
 ################################################################################################
@@ -1638,25 +1638,25 @@ CGD$methods(
 ################################################################################################
 NULL
 CGD$methods(
-	intervals.q.ind = function()
-	{
-		if ( type1.type == 4 )
-		{
-			return ( data.frame(
-						q.ind.1 =
-							c( intervals[[1]][[1]]$q.ind[1], intervals[[1]][[2]]$q.ind[1], intervals[[1]][[3]]$q.ind[1],
-								intervals[[2]][[1]]$q.ind[1], intervals[[2]][[2]]$q.ind[1], intervals[[2]][[3]]$q.ind[1] ),
-						q.ind.2 =
-							c( intervals[[1]][[1]]$q.ind[2], intervals[[1]][[2]]$q.ind[2], intervals[[1]][[3]]$q.ind[2],
-								intervals[[2]][[1]]$q.ind[2], intervals[[2]][[2]]$q.ind[2], intervals[[2]][[3]]$q.ind[2] ) ) )
-		}
-		else
-		{
-			return ( data.frame(
-						q.ind.1 = vapply( 1:length( intervals ), function( i ) intervals[[i]]$q.ind[1], 0 ),
-						q.ind.2 = vapply( 1:length( intervals ), function( i ) intervals[[i]]$q.ind[2], 0 ) ) )
-		}
-	}
+    intervals.q.ind = function()
+    {
+        if ( type1.type == 4 )
+        {
+            return ( data.frame(
+                        q.ind.1 =
+                            c( intervals[[1]][[1]]$q.ind[1], intervals[[1]][[2]]$q.ind[1], intervals[[1]][[3]]$q.ind[1],
+                                intervals[[2]][[1]]$q.ind[1], intervals[[2]][[2]]$q.ind[1], intervals[[2]][[3]]$q.ind[1] ),
+                        q.ind.2 =
+                            c( intervals[[1]][[1]]$q.ind[2], intervals[[1]][[2]]$q.ind[2], intervals[[1]][[3]]$q.ind[2],
+                                intervals[[2]][[1]]$q.ind[2], intervals[[2]][[2]]$q.ind[2], intervals[[2]][[3]]$q.ind[2] ) ) )
+        }
+        else
+        {
+            return ( data.frame(
+                        q.ind.1 = vapply( 1:length( intervals ), function( i ) intervals[[i]]$q.ind[1], 0 ),
+                        q.ind.2 = vapply( 1:length( intervals ), function( i ) intervals[[i]]$q.ind[2], 0 ) ) )
+        }
+    }
 )
 
 ################################################################################################
@@ -1685,25 +1685,25 @@ CGD$methods(
 ################################################################################################
 NULL
 CGD$methods(
-	intervals.p.ind = function()
-	{
-		if ( type1.type == 4 )
-		{
-			return ( data.frame(
-						p.ind.1 =
-							c( intervals[[1]][[1]]$p.ind[1], intervals[[1]][[2]]$p.ind[1], intervals[[1]][[3]]$p.ind[1],
-								intervals[[2]][[1]]$p.ind[1], intervals[[2]][[2]]$p.ind[1], intervals[[2]][[3]]$p.ind[1] ),
-						p.ind.2 =
-							c( intervals[[1]][[1]]$p.ind[2], intervals[[1]][[2]]$p.ind[2], intervals[[1]][[3]]$p.ind[2],
-								intervals[[2]][[1]]$p.ind[2], intervals[[2]][[2]]$p.ind[2], intervals[[2]][[3]]$p.ind[2] ) ) )
-		}
-		else
-		{
-			return ( data.frame(
-						p.ind.1 = vapply( 1:length( intervals ), function( i ) intervals[[i]]$p.ind[1], 0 ),
-						p.ind.2 = vapply( 1:length( intervals ), function( i ) intervals[[i]]$p.ind[2], 0 ) ) )
-		}
-	}
+    intervals.p.ind = function()
+    {
+        if ( type1.type == 4 )
+        {
+            return ( data.frame(
+                        p.ind.1 =
+                            c( intervals[[1]][[1]]$p.ind[1], intervals[[1]][[2]]$p.ind[1], intervals[[1]][[3]]$p.ind[1],
+                                intervals[[2]][[1]]$p.ind[1], intervals[[2]][[2]]$p.ind[1], intervals[[2]][[3]]$p.ind[1] ),
+                        p.ind.2 =
+                            c( intervals[[1]][[1]]$p.ind[2], intervals[[1]][[2]]$p.ind[2], intervals[[1]][[3]]$p.ind[2],
+                                intervals[[2]][[1]]$p.ind[2], intervals[[2]][[2]]$p.ind[2], intervals[[2]][[3]]$p.ind[2] ) ) )
+        }
+        else
+        {
+            return ( data.frame(
+                        p.ind.1 = vapply( 1:length( intervals ), function( i ) intervals[[i]]$p.ind[1], 0 ),
+                        p.ind.2 = vapply( 1:length( intervals ), function( i ) intervals[[i]]$p.ind[2], 0 ) ) )
+        }
+    }
 )
 
 ################################################################################################
@@ -1731,25 +1731,25 @@ CGD$methods(
 ################################################################################################
 NULL
 CGD$methods(
-	intervals.sd = function()
-	{
-		if ( length( intervals ) == 0 )
-		{
-			return ( numeric() )
-		}
-		else
-		{
-			if ( type1.type == 4 )
-			{
-				return ( c( intervals[[1]][[1]]$sd, intervals[[1]][[2]]$sd, intervals[[1]][[3]]$sd,
-							intervals[[2]][[1]]$sd, intervals[[2]][[2]]$sd, intervals[[2]][[3]]$sd ) )
-			}
-			else
-			{
-				return ( vapply( 1:length( intervals ), function( i ) intervals[[i]]$sd, 0 ) )
-			}
-		}
-	}
+    intervals.sd = function()
+    {
+        if ( length( intervals ) == 0 )
+        {
+            return ( numeric() )
+        }
+        else
+        {
+            if ( type1.type == 4 )
+            {
+                return ( c( intervals[[1]][[1]]$sd, intervals[[1]][[2]]$sd, intervals[[1]][[3]]$sd,
+                            intervals[[2]][[1]]$sd, intervals[[2]][[2]]$sd, intervals[[2]][[3]]$sd ) )
+            }
+            else
+            {
+                return ( vapply( 1:length( intervals ), function( i ) intervals[[i]]$sd, 0 ) )
+            }
+        }
+    }
 )
 
 ################################################################################################
@@ -1767,110 +1767,110 @@ CGD$methods(
 ################################################################################################
 NULL
 CGD$methods(
-	adjust.kind.index = function()
-	{
-		index <- integer()
+    adjust.kind.index = function()
+    {
+        index <- integer()
 
-		if ( length( intervals ) > 0 )
-		{
-			index <- length( kinds )
+        if ( length( intervals ) > 0 )
+        {
+            index <- length( kinds )
 
-			if ( is.uni.mean() && is.uni.sigma() )
-			{
-				index <- 1L # Normal Distribution
-			}
-			else if ( type1.type <= 2 )
-			{
-				if ( type1.type == 1 && is.continuous() )
-				{
-					index <- 2L # Mean of Mean-Equaled-Sigma-Differed 2 Normal Distributions
-				}
-				else if ( type1.type == 2 && is.symmetric() )
-				{
-					index <- 3L # Symmetric Horizontal Gradational Distribution
-				}
-				else if ( type1.type == 2 && is.continuous() )
-				{
-					if ( is.uni.sigma() )
-					{
-						index <- 4L # Mean-Differed-Sigma-Equaled Horizontal Gradational Distribution
-					}
-					else if ( is.uni.mean() )
-					{
-						index <- 5L # Mean-Equaled-Sigma-Differed Horizontal Gradational Distribution
-					}
-					else
-					{
-						index <- 6L # Mean-Differed-Sigma-Differed Horizontal Gradational Distribution
-					}
-				}
-				else if ( intervals[[1]]$p.conn.prev[2] == 0 && intervals[[length( intervals )]]$p.conn.next[1] == 1 )
-				{
-					index <- length( kinds )	# Discontinuous Connected Gaussian Distribution
-				}
-			}
-			else if ( type1.type == 3 )
-			{
-				if ( is.v.grad() )
-				{
-					if ( is.uni.sigma() )
-					{
-						index <- 7L # 2-Mean-Differed-Sigma-Equaled Vertical Gradational Distribution
-					}
-					else if ( is.uni.mean() )
-					{
-						index <- 8L # 2-Mean-Equaled-Sigma-Differed Vertical Gradational Distribution
-					}
-					else
-					{
-						index <- 9L # 2-Mean-Differed-Sigma-Differed Vertical Gradational Distribution
-					}
-				}
-				else
-				{
-					if ( is.uni.sigma() )
-					{
-						index <- 10L	# 3-Mean-Differed-Sigma-Equaled Vertical Gradational Distribution
-					}
-					else if ( is.uni.mean() )
-					{
-						index <- 11L	# 3-Mean-Equaled-Sigma-Differed Vertical Gradational Distribution
-					}
-					else
-					{
-						index <- 12L	# 3-Mean-Differed-Sigma-Differed Vertical Gradational Distribution
-					}
-				}
-			}
-			else if ( type1.type == 4 )
-			{
-				if ( is.uni.sigma() )
-				{
-					index <- 13L	# Mean-Differed-Sigma-Equaled Vertical-Horizontal Gradational Distribution
-				}
-				else if ( is.uni.mean() )
-				{
-					index <- 14L	# Mean-Equaled-Sigma-Differed Vertical-Horizontal Gradational Distribution
-				}
-				else
-				{
-					index <- 15L	# Mean-Differed-Sigma-Differed Vertical-Horizontal Gradational Distribution
-				}
-			}
-		}
+            if ( is.uni.mean() && is.uni.sigma() )
+            {
+                index <- 1L # Normal Distribution
+            }
+            else if ( type1.type <= 2 )
+            {
+                if ( type1.type == 1 && is.continuous() )
+                {
+                    index <- 2L # Mean of Mean-Equaled Sigma-Differed 2 Normal Distributions
+                }
+                else if ( type1.type == 2 && is.symmetric() )
+                {
+                    index <- 3L # Symmetric Horizontal Gradational Distribution
+                }
+                else if ( type1.type == 2 && is.continuous() )
+                {
+                    if ( is.uni.sigma() )
+                    {
+                        index <- 4L # Mean-Differed Sigma-Equaled Horizontal Gradational Distribution
+                    }
+                    else if ( is.uni.mean() )
+                    {
+                        index <- 5L # Mean-Equaled Sigma-Differed Horizontal Gradational Distribution
+                    }
+                    else
+                    {
+                        index <- 6L # Mean-Differed Sigma-Differed Horizontal Gradational Distribution
+                    }
+                }
+                else if ( intervals[[1]]$p.conn.prev[2] == 0 && intervals[[length( intervals )]]$p.conn.next[1] == 1 )
+                {
+                    index <- length( kinds )    # Discontinuous Connected Gaussian Distribution
+                }
+            }
+            else if ( type1.type == 3 )
+            {
+                if ( is.v.grad() )
+                {
+                    if ( is.uni.sigma() )
+                    {
+                        index <- 7L # 2-Mean-Differed Sigma-Equaled Vertical Gradational Distribution
+                    }
+                    else if ( is.uni.mean() )
+                    {
+                        index <- 8L # 2-Mean-Equaled Sigma-Differed Vertical Gradational Distribution
+                    }
+                    else
+                    {
+                        index <- 9L # 2-Mean-Differed Sigma-Differed Vertical Gradational Distribution
+                    }
+                }
+                else
+                {
+                    if ( is.uni.sigma() )
+                    {
+                        index <- 10L    # 3-Mean-Differed Sigma-Equaled Vertical Gradational Distribution
+                    }
+                    else if ( is.uni.mean() )
+                    {
+                        index <- 11L    # 3-Mean-Equaled Sigma-Differed Vertical Gradational Distribution
+                    }
+                    else
+                    {
+                        index <- 12L    # 3-Mean-Differed Sigma-Differed Vertical Gradational Distribution
+                    }
+                }
+            }
+            else if ( type1.type == 4 )
+            {
+                if ( is.uni.sigma() )
+                {
+                    index <- 13L    # Mean-Differed Sigma-Equaled Horizontal-Vertical Gradational Distribution
+                }
+                else if ( is.uni.mean() )
+                {
+                    index <- 14L    # Mean-Equaled Sigma-Differed Horizontal-Vertical Gradational Distribution
+                }
+                else
+                {
+                    index <- 15L    # Mean-Differed Sigma-Differed Horizontal-Vertical Gradational Distribution
+                }
+            }
+        }
 
-		kind.index <<- index
-		if ( length( index ) == 0 )
-		{
-			kind <<- character()
-		}
-		else
-		{
-			kind <<- kinds[index]
-		}
+        kind.index <<- index
+        if ( length( index ) == 0 )
+        {
+            kind <<- character()
+        }
+        else
+        {
+            kind <<- kinds[index]
+        }
 
-		return ( index )
-	}
+        return ( index )
+    }
 )
 
 ################################################################################################
@@ -1889,148 +1889,148 @@ CGD$methods(
 ################################################################################################
 NULL
 CGD$methods(
-	adjust.mean.sd = function()
-	{
-		means <- intervals.mean()
-		sds <- intervals.sd()
+    adjust.mean.sd = function()
+    {
+        means <- intervals.mean()
+        sds <- intervals.sd()
 
-		if ( length( kind.index ) == 0 )
-		{
-			# No data
-			mean <<- sd <<- lsd <<- usd <<- NaN
-		}
-		else if ( kind.index == 1L )
-		{
-			# Normal Distribution
-			mean <<- means[1]
-			sd <<- lsd <<- usd <<- sds[1]
-			lsd.abs.error <<- usd.abs.error <<- 0
-		}
-		else if ( kind.index == length( kinds ) )
-		{
-			# Discontinuous Distribution
+        if ( length( kind.index ) == 0 )
+        {
+            # No data
+            mean <<- sd <<- lsd <<- usd <<- NaN
+        }
+        else if ( kind.index == 1L )
+        {
+            # Normal Distribution
+            mean <<- means[1]
+            sd <<- lsd <<- usd <<- sds[1]
+            lsd.abs.error <<- usd.abs.error <<- 0
+        }
+        else if ( kind.index == length( kinds ) )
+        {
+            # Discontinuous Distribution
 
-			# 平均値を求める
-			mean <<- sum( vapply( intervals, mean.nd.bound, 0 ) ) +
-					 sum( vapply( 1:( length( intervals ) - 1 ),
-									function( i )
-									{
-										mean.conn.bound( type1.type,
-															intervals[[i]],
-															intervals[[i + 1]] )
-									}, 0 ) )
+            # 平均値を求める
+            mean <<- sum( vapply( intervals, mean.nd.bound, 0 ) ) +
+                     sum( vapply( 1:( length( intervals ) - 1 ),
+                                    function( i )
+                                    {
+                                        mean.conn.bound( type1.type,
+                                                            intervals[[i]],
+                                                            intervals[[i + 1]] )
+                                    }, 0 ) )
 
-			# 分散を求める
-			lv <- sum( vapply( intervals,
-								function ( itv )
-								{
-									if ( itv$q.ind[1] < mean )
-									{
-										v.nd.bound( mean, itv$mean, itv$sd,
-													c( itv$q.ind[1], min( itv$q.ind[2], mean ) ) )
-									}
-									else
-									{
-										0
-									}
-								}, 0 ) ) +
-					sum( vapply( 1:( length( intervals ) - 1 ),
-								function( i )
-								{
-									if ( intervals[[i]]$q.ind[2] < mean )
-									{
-										v.conn.bound( type1.type, mean,
-														intervals[[i]],
-														intervals[[i + 1]],
-														x = c( intervals[[i]]$q.ind[2],
-																min( intervals[[i + 1]]$q.ind[1], mean ) ) )
-									}
-									else
-									{
-										0
-									}
-								}, 0 ) )
+            # 分散を求める
+            lv <- sum( vapply( intervals,
+                                function ( itv )
+                                {
+                                    if ( itv$q.ind[1] < mean )
+                                    {
+                                        v.nd.bound( mean, itv$mean, itv$sd,
+                                                    c( itv$q.ind[1], min( itv$q.ind[2], mean ) ) )
+                                    }
+                                    else
+                                    {
+                                        0
+                                    }
+                                }, 0 ) ) +
+                    sum( vapply( 1:( length( intervals ) - 1 ),
+                                function( i )
+                                {
+                                    if ( intervals[[i]]$q.ind[2] < mean )
+                                    {
+                                        v.conn.bound( type1.type, mean,
+                                                        intervals[[i]],
+                                                        intervals[[i + 1]],
+                                                        x = c( intervals[[i]]$q.ind[2],
+                                                                min( intervals[[i + 1]]$q.ind[1], mean ) ) )
+                                    }
+                                    else
+                                    {
+                                        0
+                                    }
+                                }, 0 ) )
 
-			uv <- sum( vapply( intervals,
-								function ( itv )
-								{
-									if ( mean < itv$q.ind[2] )
-									{
-										v.nd.bound( mean, itv$mean, itv$sd,
-													c( max( mean, itv$q.ind[1] ), itv$q.ind[2] ) )
-									}
-									else
-									{
-										0
-									}
-								}, 0 ) ) +
-					sum( vapply( 1:( length( intervals ) - 1 ),
-								function( i )
-								{
-									if ( mean < intervals[[i + 1]]$q.ind[1] )
-									{
-										v.conn.bound( type1.type, mean,
-														intervals[[i]],
-														intervals[[i + 1]],
-														x = c( max( mean, intervals[[i]]$q.ind[2] ),
-																intervals[[i + 1]]$q.ind[1] ) )
-									}
-									else
-									{
-										0
-									}
-								}, 0 ) )
+            uv <- sum( vapply( intervals,
+                                function ( itv )
+                                {
+                                    if ( mean < itv$q.ind[2] )
+                                    {
+                                        v.nd.bound( mean, itv$mean, itv$sd,
+                                                    c( max( mean, itv$q.ind[1] ), itv$q.ind[2] ) )
+                                    }
+                                    else
+                                    {
+                                        0
+                                    }
+                                }, 0 ) ) +
+                    sum( vapply( 1:( length( intervals ) - 1 ),
+                                function( i )
+                                {
+                                    if ( mean < intervals[[i + 1]]$q.ind[1] )
+                                    {
+                                        v.conn.bound( type1.type, mean,
+                                                        intervals[[i]],
+                                                        intervals[[i + 1]],
+                                                        x = c( max( mean, intervals[[i]]$q.ind[2] ),
+                                                                intervals[[i + 1]]$q.ind[1] ) )
+                                    }
+                                    else
+                                    {
+                                        0
+                                    }
+                                }, 0 ) )
 
-			# 標準偏差算出
-			sd <<- sqrt( lv + uv )
-			lsd <<- sqrt( 2 * lv )
-			usd <<- sqrt( 2 * uv )
-			lsd.abs.error <<- usd.abs.error <<- 0
-		}
-		else
-		{
-			# Continuous Distribution
+            # 標準偏差算出
+            sd <<- sqrt( lv + uv )
+            lsd <<- sqrt( 2 * lv )
+            usd <<- sqrt( 2 * uv )
+            lsd.abs.error <<- usd.abs.error <<- 0
+        }
+        else
+        {
+            # Continuous Distribution
 
-			if ( type1.type == 1 || type1.type == 2 && is.symmetric() ||
-				 type1.type == 3 && is.uni.mean() && is.v.grad() )
-			{
-				# Symmetric Distribution (S.D. = lower S.D = upper S.D.)
-				mean <<- median
+            if ( type1.type == 1 || type1.type == 2 && is.symmetric() ||
+                 type1.type == 3 && is.uni.mean() && is.v.grad() )
+            {
+                # Symmetric Distribution (S.D. = lower S.D = upper S.D.)
+                mean <<- median
 
-				sd <<- lsd <<- usd <<- sqrt( v.cont( type1.type, means, sds, mean, symmetric = TRUE ) )
-				lsd.abs.error <<- usd.abs.error <<- 0
-			}
-			else
-			{
-				# Asymmetric Distribution
-				mean <<- mean.cont( type1.type, means, sds )
+                sd <<- lsd <<- usd <<- sqrt( v.cont( type1.type, means, sds, mean, symmetric = TRUE ) )
+                lsd.abs.error <<- usd.abs.error <<- 0
+            }
+            else
+            {
+                # Asymmetric Distribution
+                mean <<- mean.cont( type1.type, means, sds )
 
-				if ( type1.type == 4 )
-				{
-					sd <<- sqrt( v.cont( 4, means, sds, mean ) )
+                if ( type1.type == 4 )
+                {
+                    sd <<- sqrt( v.cont( 4, means, sds, mean ) )
 
-					lv <- v.cont.t4.via.integrate( means, sds, mean, get.lv = TRUE )
-					lsd <<- sqrt( 2 * lv$value )
-					lsd.abs.error <<- sqrt( 2 * lv$abs.error )
+                    lv <- v.cont.t4.via.integrate( means, sds, mean, get.lv = TRUE )
+                    lsd <<- sqrt( 2 * lv$value )
+                    lsd.abs.error <<- sqrt( 2 * lv$abs.error )
 
-					uv <- v.cont.t4.via.integrate( means, sds, mean, get.uv = TRUE )
-					usd <<- sqrt( 2 * uv$value )
-					usd.abs.error <<- sqrt( 2 * uv$abs.error )
-				}
-				else
-				{
-					symmetric = is.symmetric()
-					lv <- v.cont( type1.type, means, sds, mean, symmetric, get.lv = TRUE )
-					uv <- v.cont( type1.type, means, sds, mean, symmetric, get.uv = TRUE )
+                    uv <- v.cont.t4.via.integrate( means, sds, mean, get.uv = TRUE )
+                    usd <<- sqrt( 2 * uv$value )
+                    usd.abs.error <<- sqrt( 2 * uv$abs.error )
+                }
+                else
+                {
+                    symmetric = is.symmetric()
+                    lv <- v.cont( type1.type, means, sds, mean, symmetric, get.lv = TRUE )
+                    uv <- v.cont( type1.type, means, sds, mean, symmetric, get.uv = TRUE )
 
-					sd <<- sqrt( lv + uv )
-					lsd <<- sqrt( 2 * lv )
-					usd <<- sqrt( 2 * uv )
-					lsd.abs.error <<- usd.abs.error <<- 0
-				}
-			}
-		}
-	}
+                    sd <<- sqrt( lv + uv )
+                    lsd <<- sqrt( 2 * lv )
+                    usd <<- sqrt( 2 * uv )
+                    lsd.abs.error <<- usd.abs.error <<- 0
+                }
+            }
+        }
+    }
 )
 
 ################################################################################################
@@ -2423,7 +2423,7 @@ CGD$methods(
 #'      type1.type = 3, v.grad = FALSE )
 #'  plot( seq( -3, 3, 0.01 ), a$d( seq( -3, 3, 0.01 ) ), type = "l" )
 #'
-#'  ## Vertical-Horizontal Gradation Examples:
+#'  ## Horizontal-Vertical Gradation Examples:
 #'  ##  The type1.type = 4 option gives a vertical-horizontal gradational distribution.
 #'  ##  The number of p of waypoints must be from 5 to 8.
 #'  a <- trace.q(
@@ -2844,7 +2844,7 @@ trace.q <- function( quantiles, continuous = FALSE, symmetric = FALSE, v.grad = 
 #'      this.type1.type = 3, v.grad = FALSE )
 #'  plot( seq( -3, 3, 0.01 ), a$d( seq( -3, 3, 0.01 ) ), type = "l" )
 #'
-#'  ## Vertical-Horizontal Gradation Examples:
+#'  ## Horizontal-Vertical Gradation Examples:
 #'  ##  The type1.type = 4 option gives a vertical-horizontal gradational distribution.
 #'  ##  The number of p of waypoints must be from 5 to 8.
 #'  a$set.waypoints(
@@ -2863,1324 +2863,1344 @@ trace.q <- function( quantiles, continuous = FALSE, symmetric = FALSE, v.grad = 
 ################################################################################################
 NULL
 CGD$methods(
-	set.waypoints = function( waypoints, continuous = FALSE, symmetric = FALSE, v.grad = FALSE,
-							  uni.sigma = FALSE, diff.mean = FALSE, control = list(), this.type1.type = NULL )
-	{
-		result <- NULL
-
-		# フィールドを初期化
-		clear( TRUE )
-
-		if ( !is.null( this.type1.type ) )
-		{
-			if ( any( this.type1.type == 0:4 ) )
-			{
-				type1.type <<- this.type1.type
-			}
-			else
-			{
-				stop( paste( "Error: type1.type" , this.type1.type, "is undefined." ) )
-			}
-		}
-		else if ( !any( type1.type == 0:4 ) )
-		{
-			stop( paste( "Error: type1.type" , type1.type, "is undefined." ) )
-		}
-
-		# 確率 p の範囲チェック
-		if ( length( waypoints$p[( waypoints$p < 0 | waypoints$p > 1 )] ) > 0 )
-		{
-			warning( paste( "Warning: Probability" ,
-								waypoints$p[( waypoints$p < 0 | waypoints$p > 1 )], "is out of range [0, 1]." ) )
-		}
-
-		# X座標が±∞で、確率が 0 または 1 でない場合は警告
-		if ( length( waypoints$q[( waypoints$q == -Inf & waypoints$p != 0 ) |
-									( waypoints$q == Inf & waypoints$p != 1 )]	) > 0 )
-		{
-			warning( "Warning: There is a row which q is infinite (-Inf or Inf) but p is not 0 or 1." )
-		}
-
-		# 経路の点の並び順をチェック
-		wp.order <- order( waypoints$p )
-		if ( nrow( waypoints ) > 1 )
-		{
-			# X座標が確率と同じ順序に並んでいなければエラー
-			if ( any( waypoints$p[wp.order[1:( nrow( waypoints ) - 1 )]] >= waypoints$p[wp.order[2:nrow( waypoints )]] ) ||
-					any( waypoints$q[wp.order[1:( nrow( waypoints ) - 1 )]] >= waypoints$q[wp.order[2:nrow( waypoints )]] ) )
-			{
-				stop( "Error: Order of q is not along with that of p." )
-			}
-		}
-
-		# wp に p = 0, 1, 0.5 の点を除いた昇順ソート済みの経路の点を設定
-		#	正規分布の平均値をすべて等しく取れば、連結ガウス分布の中央値もそれと等しくなるため、
-		#	通常、中央値を除外した wp が nleqnslv の条件になるが、
-		#	中央値を条件に加えなければならない場合は、代えて wp.with.median を条件とする。
-		q.ordered <- waypoints$q[wp.order]
-		p.ordered <- waypoints$p[wp.order]
-		wp.with.median <- data.frame( q = q.ordered[p.ordered > 0 & p.ordered < 1 & q.ordered > -Inf & q.ordered < Inf],
-									  p = p.ordered[p.ordered > 0 & p.ordered < 1 & q.ordered > -Inf & q.ordered < Inf] )
-
-		wp <- wp.with.median[( wp.with.median$p != 0.5 ),]
-		if ( nrow( wp ) == 0 )
-		{
-			warning( "Warning: No waypoints other than (p = 0, 0.5, 1) are given." )
-		}
-
-		# 中央値取得・エラーチェック
-		is.set.median <- any( waypoints$p == 0.5 )
-		if ( is.set.median )
-		{
-			median <<- waypoints$q[waypoints$p == 0.5][1]
-		}
-
-		if ( !is.set.median )
-		{
-			if ( any( type1.type == 1:2 ) && !continuous && !symmetric )
-			{
-				stop( "Error: The point of p = 0.5 must be given for discontinous model of type1.type = 1 or 2." )
-			}
-			else if ( type1.type == 2 && symmetric )
-			{
-				stop( "Error: The point of p = 0.5 must be given when type1.type = 2 and symmetric = TRUE." )
-			}
-		}
-
-		point.num <- nrow( wp.with.median ) # 有効な経路上の点の個数
-
-		if ( type1.type == 0 && point.num < 2 )
-		{
-			stop( "Error: 2 and more quantiles are needed for type1.type = 0." )
-		}
-
-		if ( continuous && !( ( type1.type == 1 && point.num == 3 ) ||
-								( type1.type == 2 && ( ( point.num == 3 ) || point.num == 4 ) ) ) )
-		{
-			stop( "Error: Illegal number of quantiles or illegal type1.type for continuous = TRUE." )
-		}
-
-		if ( symmetric && !( ( type1.type == 1 || type1.type == 2 ) && point.num == 3 ) )
-		{
-			stop( "Error: Illegal number of quantiles or illegal type1.type for symmetric = TRUE." )
-		}
-
-		if ( v.grad && !( type1.type == 3 && ( point.num == 3 || point.num == 4 ) ) )
-		{
-			stop( "Error: Illegal number of quantiles or illegal type1.type for v.grad = TRUE." )
-		}
-
-		if ( uni.sigma && !( ( type1.type == 2 && point.num == 3 ) ||
-								( type1.type == 3 && ( point.num == 3 || ( !v.grad && point.num == 4 ) ) ) ||
-								( type1.type == 4 && point.num == 5 ) ) )
-		{
-			stop( "Error: Illegal number of quantiles or illegal type1.type for uni.sigma = TRUE." )
-		}
-
-		if ( diff.mean && ( type1.type == 1 || ( type1.type == 2 && !continuous ) || ( type1.type == 2 && symmetric ) ) )
-		{
-			stop( "Error: Illegal options for diff.mean = TRUE." )
-		}
-
-		if ( type1.type == 3 && !( point.num > 2 && point.num < 7 ) )
-		{
-			stop( "Error: Illegal number of quantiles for type1.type == 3." )
-		}
-
-		if ( type1.type == 4 && !( point.num > 4 && point.num < 9 ) )
-		{
-			stop( "Error: Illegal number of quantiles for type1.type == 4." )
-		}
-
-		####################################
-		# 確率密度関数が連続な分布を構成
-
-		#  nleqslv では、反復計算中に標準偏差が負値になって警告が出るのを防ぐために、標準偏差を2乗して計算する
-		#	(2乗した方が、収束も1乗より少し速くなるようだ)
-
-		# 分布構成の最大パス数を決定
-		is.discontinuous <- is.max.point <- is.middle.max.point <- is.only.allowSingular <- FALSE
-
-		retry.msg <- NULL	# 一旦構成に失敗してリトライするときの個別メッセージ
-
-		if ( ( type1.type == 1 || type1.type == 2 ) && !continuous && !symmetric )
-		{
-			is.discontinuous <- TRUE
-		}
-		else
-		{
-			if ( ( type1.type == 1 && point.num == 3 ) ||
-				( type1.type == 2 && point.num == 4 ) ||
-				( type1.type == 3 && v.grad && point.num == 4 ) ||
-				( type1.type == 3 && !v.grad && point.num == 6 ) ||
-				( type1.type == 4 && point.num == 8 ) )
-			{
-				is.max.point <- TRUE
-			}
-
-			if ( ( type1.type == 3 && !is.set.median && point.num == 4 ) ||
-				( type1.type == 4 && point.num == 6 ) )
-			{
-				is.middle.max.point <- TRUE
-			}
-
-			if ( type1.type == 4 && point.num == 7 )
-			{
-				is.only.allowSingular <- TRUE
-			}
-		}
-
-		if ( type1.type == 3 && v.grad && point.num == 3 && is.set.median && wp.with.median$p[2] != 0.5 )
-		{
-			max.retry <- 2
-		}
-		else
-		{
-			max.retry <- 1
-		}
-
-		if ( uni.sigma || diff.mean || is.discontinuous || is.max.point || is.middle.max.point || is.only.allowSingular )
-		{
-			max.retry <- max.retry - 1
-		}
-
-		# 分布構成
-		for ( retry in 0:max.retry )
-		{
-			x.0 <- NULL
-			f <- NULL
-			result.list <- NULL
-
-			# nleqslv の初期値および目的関数定義
-			if ( type1.type == 1 && ( continuous || symmetric ) )
-			{
-				if ( !is.set.median )
-				{
-					pseudo.mean <- ms.qp.norm( wp$q[c( 1, 3 )], wp$p[c( 1, 3 )] )$mean
-					x.0 <- c( pseudo.mean, 0.9, 1.1 )
-
-					mean.1 <- 1
-					sd.1 <- 2
-					sd.2 <- 3
-				}
-				else
-				{
-					x.0 <- c( 0.9, 1.1 )
-
-					mean.1 <- 0
-					sd.1 <- 1
-					sd.2 <- 2
-				}
-
-				f <- function( x )
-				{
-					( pnorm( wp$q, ifelse( mean.1 == 0, median, x[mean.1] ), x[sd.1]^2 ) +
-					  pnorm( wp$q, ifelse( mean.1 == 0, median, x[mean.1] ), x[sd.2]^2 ) ) / 2 - wp$p
-				}
-
-				result.list <- function( result )
-				{
-					list(
-						CGDInterval$new(
-							mean = ifelse( mean.1 == 0, median, result$x[mean.1] ),
-							sd = result$x[sd.1]^2,
-							q.ind = c( -Inf, -Inf ), q.conn.prev = c( -Inf, -Inf ), q.conn.next = c( -Inf, Inf ),
-							p.ind = c( 0, 0 ), p.conn.prev = c( 0, 0 ), p.conn.next = c( 0, 1 ) ),
-						CGDInterval$new(
-							mean = ifelse( mean.1 == 0, median, result$x[mean.1] ),
-							sd = result$x[sd.2]^2,
-							q.ind = c( Inf, Inf ), q.conn.prev = c( -Inf, Inf ), q.conn.next = c( Inf, Inf ),
-							p.ind = c( 1, 1 ), p.conn.prev = c( 0, 1 ), p.conn.next = c( 1, 1 ) ) )
-				}
-			}
-			else if ( type1.type == 2 && continuous )
-			{
-				if ( !is.set.median )
-				{
-					pseudo.mean <- ms.qp.norm( wp$q[c( 1, 3 )], wp$p[c( 1, 3 )] )$mean
-				}
-				else
-				{
-					pseudo.mean <- median
-				}
-
-				if ( uni.sigma )
-				{
-					# 標準偏差を同一にして、平均を変えて連結
-					# 仮の標準偏差を計算してから nleqslv を実行する
-					if ( is.set.median )
-					{
-						x.0 <- c( 0, sqrt( ( sd.mqp.norm( pseudo.mean, wp$q[1], wp$p[1] )
-											 + sd.mqp.norm( pseudo.mean, wp$q[2], wp$p[2] ) ) * 15 / 32 ) )
-						median.1 <- 0
-						dist.1 <- 1
-						sd.1 <- 2
-					}
-					else
-					{
-						x.0 <- c( pseudo.mean, pseudo.mean,
-									sqrt( ( sd.mqp.norm( pseudo.mean, wp$q[1], wp$p[1] )
-												+ sd.mqp.norm( pseudo.mean, wp$q[2], wp$p[2] ) ) * 15 / 32 ) )
-						median.1 <- 1
-						dist.1 <- 2
-						sd.1 <- 3
-					}
-
-					f <- function( x )
-					{
-						p1 <- pnorm( wp$q,
-									 ifelse( median.1 == 0, median, x[median.1] ) - x[dist.1],
-									 x[sd.1]^2 )
-						p2 <- pnorm( wp$q,
-									 ifelse( median.1 == 0, median, x[median.1] ) + x[dist.1],
-									 x[sd.1]^2 )
-
-						return ( p1 - ( p1 * p1 - p2 * p2 ) / 2 - wp$p )
-					}
-
-					result.list <- function( result )
-					{
-						list(
-							CGDInterval$new(
-								mean = ifelse( median.1 == 0, median, result$x[median.1] ) - result$x[dist.1],
-								sd = result$x[sd.1]^2,
-								q.ind = c( -Inf, -Inf ),
-								q.conn.prev = c( -Inf, -Inf ), q.conn.next = c( -Inf, Inf ),
-								p.ind = c( 0, 0 ),
-								p.conn.prev = c( 0, 0 ), p.conn.next = c( 0, 1 ) ),
-							CGDInterval$new(
-								mean = ifelse( median.1 == 0, median, result$x[median.1] ) + result$x[dist.1],
-								sd = result$x[sd.1]^2,
-								q.ind = c( Inf, Inf ),
-								q.conn.prev = c( -Inf, Inf ), q.conn.next = c( Inf, Inf ),
-								p.ind = c( 1, 1 ),
-								p.conn.prev = c( 0, 1 ), p.conn.next = c( 1, 1 ) ) )
-					}
-				}
-				else
-				{
-					if ( point.num == 3 )
-					{
-						if ( !diff.mean && retry < max.retry )
-						{
-							# 各正規分布の平均値を統一して、標準偏差を変えて連結
-							if ( is.set.median )
-							{
-								x.0 <- c( 1, 1 )
-							}
-							else
-							{
-								x.0 <- c( pseudo.mean, 1, 1 )
-							}
-
-							mean.1 <- ifelse( is.set.median, 0, 1 )
-							mean.2 <- ifelse( is.set.median, 0, 1 )
-							sd.1 <- mean.2 + 1
-							sd.2 <- mean.2 + 2
-						}
-						else
-						{
-							# 4点経路として計算 (条件不足のため allowSingular = TRUE とする)
-							wp <- data.frame( q = wp.with.median$q[c( 1, 2, 2, 3 )],
-											  p = wp.with.median$p[c( 1, 2, 2, 3 )] )
-							if ( is.null( control$allowSingular ) )
-							{
-								control <- append( control, list( allowSingular = TRUE ) )
-							}
-
-							x.0 <- c( pseudo.mean, pseudo.mean, 1, 1 )
-
-							mean.1 <- 1
-							mean.2 <- 2
-							sd.1 <- 3
-							sd.2 <- 4
-						}
-					}
-					else # if ( point.num == 4 )
-					{
-						# 4点経路
-						# 各正規分布の仮の平均値と標準偏差を計算してから nleqslv を実行する
-						wp <- wp.with.median
-						pseudos <- list( ms.qp.norm( wp$q[1:2], wp$p[1:2] ),
-										 ms.qp.norm( wp$q[3:4], wp$p[3:4] ) )
-						x.0 <- c( pseudos[[1]]$mean, pseudos[[2]]$mean,
-								  sqrt( pseudos[[1]]$sd ), sqrt( pseudos[[2]]$sd ) )
-
-						mean.1 <- 1
-						mean.2 <- 2
-						sd.1 <- 3
-						sd.2 <- 4
-					}
-
-					f <- function( x )
-					{
-						p1 <- pnorm( wp$q, ifelse( mean.1 == 0, median, x[mean.1] ), x[sd.1]^2 )
-						p2 <- pnorm( wp$q, ifelse( mean.2 == 0, median, x[mean.2] ), x[sd.2]^2 )
-
-						return ( p1 - ( p1 * p1 - p2 * p2 ) / 2 - wp$p )
-					}
-
-					result.list <- function( result )
-					{
-						list(
-							CGDInterval$new(
-								mean = ifelse( mean.1 == 0, median, result$x[mean.1] ),
-								sd = result$x[sd.1]^2,
-								q.ind = c( -Inf, -Inf ),
-								q.conn.prev = c( -Inf, -Inf ), q.conn.next = c( -Inf, Inf ),
-								p.ind = c( 0, 0 ),
-								p.conn.prev = c( 0, 0 ), p.conn.next = c( 0, 1 ) ),
-							CGDInterval$new(
-								mean = ifelse( mean.2 == 0, median, result$x[mean.2] ),
-								sd = result$x[sd.2]^2,
-								q.ind = c( Inf, Inf ),
-								q.conn.prev = c( -Inf, Inf ), q.conn.next = c( Inf, Inf ),
-								p.ind = c( 1, 1 ),
-								p.conn.prev = c( 0, 1 ), p.conn.next = c( 1, 1 ) ) )
-					}
-				}
-			}
-			else if ( type1.type == 2 && symmetric )
-			{
-				# symmetric の場合、高速化のために、経路の確率をすべて 0.5 以下にそろえて計算する
-				wp$p <- 0.5 - abs( 0.5 - wp$p )
-				wp$q <- median - abs( median - wp$q )
-
-				x.0 <- c( 1, 1 )
-
-				mean.1 <- 0
-				sd.1 <- 1
-				sd.2 <- 2
-
-				f <- function( x )
-				{
-					p1 <- pnorm( wp$q, median, x[sd.1]^2 )
-					p2 <- pnorm( wp$q, median, x[sd.2]^2 )
-
-					return( ( 1 - p1 ) * p1 + p2 * p2 - wp$p )
-				}
-
-				result.list <- function( result )
-				{
-					list(
-						CGDInterval$new(
-							mean = median,
-							sd = result$x[1]^2,
-							q.ind = c( -Inf, -Inf ),
-							q.conn.prev = c( -Inf, -Inf ), q.conn.next = c( -Inf, median ),
-							p.ind = c( 0, 0 ),
-							p.conn.prev = c( 0, 0 ), p.conn.next = c( 0, 0.5 ) ),
-						CGDInterval$new(
-							mean = median,
-							sd = result$x[2]^2,
-							q.ind = c( median, median ),
-							q.conn.prev = c( -Inf, median ), q.conn.next = c( median, Inf ),
-							p.ind = c( 0.5, 0.5 ),
-							p.conn.prev = c( 0, 0.5 ), p.conn.next = c( 0.5, 1 ) ),
-						CGDInterval$new(
-							mean = median,
-							sd = result$x[1]^2,
-							q.ind = c( Inf, Inf ),
-							q.conn.prev = c( median, Inf ), q.conn.next= c( Inf, Inf ),
-							p.ind = c( 1, 1 ),
-							p.conn.prev = c( 0.5, 1 ), p.conn.next = c( 1, 1 ) ) )
-				}
-			}
-			else if ( type1.type == 3 && v.grad )
-			{
-				# type1.type == 3、縦方向グラデーション
-				if ( uni.sigma )
-				{
-					# 中央値以外の2点を通る正規分布の平均値と標準偏差を仮の値とする
-					pseudo <- ms.qp.norm( wp$q[1:2], wp$p[1:2] )
-
-					x.0 <- c( pseudo$mean, ifelse( is.set.median, median, pseudo$mean ), sqrt( pseudo$sd ) )
-					wp <- wp.with.median
-
-					f <- function( x )
-					{
-						p <- pnorm( wp$q, x[1], x[3]^2 )
-						p.a1 <- pnorm( wp$q, x[1], x[3]^2 * sqrt( 2 ) / 2 )
-						p.a2 <- pnorm( wp$q, x[2], x[3]^2 * sqrt( 2 ) / 2 )
-
-						return ( p - p.a1 * sqrt( 2 ) / 2 + p.a2 * sqrt( 2 ) / 2 - wp$p )
-					}
-
-					result.list <- function( result )
-					{
-						gen.t3.intervals( c( result$x[1], result$x[2], result$x[1] ), rep( result$x[3]^2, 3 ) )
-					}
-				}
-				else if ( point.num == 3 && retry < max.retry )
-				{
-					if ( is.set.median && !diff.mean && retry == 0 )
-					{
-						# 中央値指定あり・3点経路
-						# 2つの正規分布の平均値を全体の中央値に統一して、
-						# 中央値以外の2点を累積分布関数が通るように標準偏差を求める
-						x.0 <- c( 1, 1 )
-
-						f <- function( x )
-						{
-							p <- pnorm( wp$q, median, x[1]^2 )
-							p.a1 <- pnorm( wp$q, median, x[1]^2 * sqrt( 2 ) / 2 )
-							p.a2 <- pnorm( wp$q, median, x[2]^2 * sqrt( 2 ) / 2 )
-
-							return ( p - p.a1 * sqrt( 2 ) / 2 + p.a2 * sqrt( 2 ) / 2 - wp$p )
-						}
-
-						result.list <- function( result )
-						{
-							gen.t3.intervals( rep( median, 3 ),
-											  c( result$x[1]^2, result$x[2]^2, result$x[1]^2 ) )
-						}
-					}
-					else
-					{
-						# より歪んだ (あるいは中央値の指定がない) 3点経路
-						#	この処理は特殊なループ処理なので、他のパスとは別に nleqslv まで独立して行う
-
-						# 経路の1点 (2点目を最優先) で2つの正規分布が交差し、
-						# 他の2点を累積分布関数が通るように平均値と標準偏差を求める
-						# 歪みが小さければ、2点目で交差させて構成できるが、
-						# 歪みが大きい場合は、他の点で交差しないと失敗することがある
-						wp <- wp.with.median
-
-						successed <- FALSE
-						for ( i in c( 2, 3, 1 ) )
-						{
-							if ( wp$p[i] == 0.5 )
-							{
-								next
-							}
-
-							p.i <- c( 1:3 )[-i]
-							means <- c( ms.qp.norm( wp$q[c( p.i[1], i )], wp$p[c( p.i[1], i )] )$mean,
-										ms.qp.norm( wp$q[c( i, p.i[2] )], wp$p[c( i, p.i[2] )] )$mean )
-
-							e <- try( result <- nleqslv( means, f <- function( x )
-																{
-																	x <- ifelse( sd.mqp.norm( x, wp$q[i], wp$p[i] ) < 0,
-																					2 * wp$q[i] - x, x )
-																	sds <- sd.mqp.norm( x, wp$q[i], wp$p[i] )
-
-																	p <- pnorm( wp$q[p.i], x[1], sds[1] )
-																	p.a1 <- pnorm( wp$q[p.i], x[1], sds[1] * sqrt( 2 ) / 2 )
-																	p.a2 <- pnorm( wp$q[p.i], x[2], sds[2] * sqrt( 2 ) / 2 )
-
-																	return ( p - p.a1 * sqrt( 2 ) / 2 +
-																				 p.a2 * sqrt( 2 ) / 2 - wp$p[p.i] )
-																}, control = control ), silent = TRUE )
-							if ( inherits( e, "try-error" ) )
-							{
-								stop( "Error: Failed to construct a continuous probability density function." )
-							}
-							else if ( result$termcd == 1 )
-							{
-								means <- ifelse( sd.mqp.norm( result$x, wp$q[i], wp$p[i] ) < 0,
-												 2 * wp$q[i] - result$x, result$x )
-								sds <- sd.mqp.norm( means, wp$q[i], wp$p[i] )
-
-								set.intervals( gen.t3.intervals( c( means[1], means[2], means[1] ),
-																	c( sds[1], sds[2], sds[1] ) ) )
-								successed <- TRUE
-								break
-							}
-
-							message( paste( "nleqslv has once failed. Message:", result$message ) )
-							message( paste( "Message: 3-point-tracing crossing at #", i, "point has failed.",
-											"The result may distort heavily." ) )
-						}
-
-						if ( successed )
-						{
-							break
-						}
-
-						# 失敗したら4点経路としてリトライ
-						message( paste( "Message: All of tries of 3-point-tracing have failed.",
-										"4-point-tracing with allowSingular = TRUE has been retried." ) )
-						next
-					}
-				}
-				else # if ( point.num == 4 || retry == max.retry )
-				{
-					# 4点経路として構築試行
-					if ( point.num == 3 )
-					{
-						wp <- data.frame( q = wp.with.median$q[c( 1, 2, 2, 3 )], p = wp.with.median$p[c( 1, 2, 2, 3 )] )
-
-						# 条件不足のため allowSingular = TRUE とする
-						if ( is.null( control$allowSingular ) )
-						{
-							control <- append( control, list( allowSingular = TRUE ) )
-						}
-					}
-					else
-					{
-						wp <- wp.with.median
-					}
-
-					l <- t3.v.grad.wp4.intervals( wp, control )
-
-					set.intervals( l$intervals )
-					result <- l$result
-					break
-				}
-			}
-			else if ( type1.type == 3 && !v.grad )
-			{
-				if ( ( point.num == 3 || point.num == 4 ) && is.set.median && retry < max.retry )
-				{
-					# type1.type == 3、非対称、中央値指定あり
-					# 経路の p < 0.5 と p > 0.5 のそれぞれの点の数によって、場合分けする
-					wp <- wp.with.median[( wp.with.median$p != 0.5 ),]
-					num.lower <- length( wp$p[wp$p < 0.5] )
-					num.upper <- length( wp$p[wp$p > 0.5] )
-
-					if ( num.lower >= 3 || num.upper >= 3 )
-					{
-						# 一方の側に3点以上ある場合、
-						# 中央値指定なしの4点経路と同じ方法で累積分布関数を構成
-						next
-					}
-					else
-					{
-						# 場合分けして累積分布関数を構成
-						if ( num.lower == 1 && num.upper == 1 )
-						{
-							# ( #lower, #upper ) = ( 1, 1 )
-							# 山の中央部の標準偏差は上下の裾部の標準偏差の平均とする
-							x.0 <- c( 1, 1 )
-
-							f <- function( x )
-							{
-								x.ave <- ( x[1]^2 + x[2]^2 ) / 2
-								p <- pnorm( wp$q, median, x^2 )
-								p.a1 <- pnorm( wp$q, median, x^2 * sqrt( 2 ) / 2 )
-								p.a2 <- pnorm( wp$q, median, x.ave * sqrt( 2 ) / 2 )
-
-								return ( p - p.a1 * sqrt( 2 ) / 2 + p.a2 * sqrt( 2 ) / 2 - wp$p )
-							}
-
-							result.list <- function( result )
-							{
-								sds <- c( result$x[1]^2, ( result$x[1]^2 + result$x[2]^2 ) / 2, result$x[2]^2 )
-								gen.t3.intervals( rep( median, 3 ), sds )
-							}
-						}
-						else
-						{
-							# ( #lower, #upper ) = ( 2, 0 ) or ( 0, 2 ) or ( 2, 1 ) or ( 1, 2 )
-
-							# 2点ある側の両点を通る正規分布の標準偏差を得る
-							#	ここで、 wp リストのインデックスを入れる変数 wp.* と
-							#	目的関数 f(x) の引数 x のインデックスを入れる変数 xi.* を用いる。
-							#	wp.lower: 2点ある側のうち、 q の値が小さい方のインデックス
-							#	wp.upper: 同、q の値が大きい方のインデックス
-							#	xi.outer: 同、中央値から遠い方のインデックス
-							#	xi.inner: 同、中央値から近い方のインデックス
-
-							# ( #lower == 2 and ( #upper == 0 or 1 (i.e. any) ) ) || ( #lower == 0 and #upper == 2 )
-							# ⇒ wp.lower = 1
-							wp.lower <- ifelse( ( num.lower == 2 || num.lower == 0 ), 1, 2 )
-							wp.upper <- ifelse( ( num.lower == 2 || num.lower == 0 ), 2, 3 )
-							wp.q <- c( wp$q[wp.lower], wp$q[wp.upper] )
-							wp.p <- c( wp$p[wp.lower], wp$p[wp.upper] )
-							xi.outer <- ifelse( num.lower == 2, 1, 2 )
-							xi.inner <- ifelse( num.lower == 2, 2, 1 )
-
-							x.0 <- c( 1, 1 )
-
-							f <- function( x )
-							{
-								p <- pnorm( wp.q, median, x[xi.outer]^2 )
-								p.a1 <- pnorm( wp.q, median, x[xi.outer]^2 * sqrt( 2 ) / 2 )
-								p.a2 <- pnorm( wp.q, median, x[xi.inner]^2 * sqrt( 2 ) / 2 )
-
-								return ( p - p.a1 * sqrt( 2 ) / 2 + p.a2 * sqrt( 2 ) / 2 - wp.p )
-							}
-
-							result.list <- function( result )
-							{
-								sds <- numeric()
-
-								if ( num.upper == 0 || num.lower == 0 )
-								{
-									# ( #lower, #upper ) = ( 2, 0 ) or ( 0, 2 )
-									sds[1] <- result$x[1]^2
-									sds[2] <- result$x[xi.inner]^2
-									sds[3] <- result$x[2]^2
-								}
-								else
-								{
-									# ( #lower, #upper ) = ( 2, 1 ) or ( 1, 2 )
-									# 残りの1つの標準偏差を算出
-									if ( num.lower == 2 )
-									{
-										sds[1] <- result$x[xi.outer]^2
-										sds[2] <- result$x[xi.inner]^2
-
-										i.last <- 3
-									}
-									else
-									{
-										sds[2] <- result$x[xi.inner]^2
-										sds[3] <- result$x[xi.outer]^2
-
-										i.last <- 1
-									}
-
-									# エラーチェック (最後の標準偏差は算出可能か？)
-									#	未計算の確率の残りが 0 より大きく ( 2 - sqrt(2) ) / 4 より小さければ算出可能
-									p.remain <- wp$p[i.last] -
-												pnorm( wp$q[i.last], median, sds[2] * sqrt( 2 ) / 2 ) * sqrt( 2 ) / 2
-									if ( wp$p[i.last] < 0.5 )
-									{
-										if ( p.remain <= 0 )
-										{
-											# 最後の点の確率が低すぎるため、構成できない
-											# => もっと最後の点のX座標が小さければ、構成できるかも知れない
-											message( paste( "Message: The probability of the lowest quantile",
-															"is too small. Or, the lowest quantile (x-coordinate)",
-															"may be too near from the median of the data." ) )
-											return ( NULL )
-										}
-										else if ( p.remain >= ( 0.5 - 0.25 * sqrt( 2 ) ) )
-										{
-											# 最後の点の確率が高すぎる (0.5に近すぎる) ため、構成できない
-											# => もっと最後の点のX座標が中央値に近ければ、構成できるかも知れない
-											message( paste( "Message: The probability of the lowest quantile",
-															"is too near to 0.5. Or, the lowest quantile (x-coordinate)",
-															"may be too far from the median of the data." ) )
-											return ( NULL )
-										}
-									}
-									else
-									{
-										if ( p.remain <= ( 0.5 - 0.25 * sqrt( 2 ) ) )
-										{
-											# 最後の点の確率が低すぎる (0.5に近すぎる) ため、構成できない
-											# => もっと最後の点のX座標が中央値に近ければ、構成できるかも知れない
-											message( paste( "Message: The probability of the highest quantile",
-															"is too near to 0.5. Or, the highest quantile (x-coordinate)",
-															"may be too far from the median of the data." ) )
-											return ( NULL )
-										}
-										else if ( p.remain >= ( 1 - sqrt( 2 ) / 2 ) )
-										{
-											# 最後の点の確率が高すぎるため、構成できない
-											# => もっと最後の点のX座標が大きければ、構成できるかも知れない
-											message( paste( "Message: The probability of the highest quantile",
-															"is too large. Or, the highest quantile (x-coordinate)",
-															"may be too near from the median of the data." ) )
-											return ( NULL )
-										}
-									}
-
-									# 標準偏差の探索範囲決定
-									if ( sds[2] == sd.mqp.norm( median, wp$q[i.last], wp$p[i.last] ) )
-									{
-										# 残りの1つの標準偏差は、山の中央部の標準偏差と等しい
-										sds[i.last] <- sds[2]
-									}
-									else
-									{
-										# 残りの1つの標準偏差は、山の中央部の標準偏差と異なる
-										if ( wp$p[i.last] < 0.5 )
-										{
-											sd.sup <- sd.mqp.norm( median, wp$q[i.last], ( 2 + sqrt( 2 ) ) * p.remain )
-											sd.inf <- sd.mqp.norm( median, wp$q[i.last], p.remain )
-										}
-										else
-										{
-											sd.sup <- sd.mqp.norm( median, wp$q[i.last], ( 2 + sqrt( 2 ) ) * p.remain )
-											sd.inf <- sd.mqp.norm( median, wp$q[i.last], p.remain + sqrt( 2 ) / 2 )
-										}
-
-										sds[i.last] <- bisection(
-														function( x )
-														{
-															pnorm( wp$q[i.last], median, x ) -
-															pnorm( wp$q[i.last], median, x * sqrt( 2 ) / 2 ) * sqrt( 2 ) / 2 -
-															p.remain
-														}, c( sd.inf, sd.sup ) )
-									}
-								}
-
-								return ( gen.t3.intervals( rep( median, 3 ), sds ) )
-							}
-						}
-					}
-				}
-				else if ( point.num == 3 && !is.set.median && !diff.mean && !uni.sigma && retry < max.retry )
-				{
-					# type1.type == 3、非対称、中央値指定なし、3点経路
-
-					# 各正規分布の仮の平均値と標準偏差を計算
-					# 経路の点を中央値に近い順に並べ、それを用いて、仮の平均値と標準偏差を計算し、
-					# さらに、計算結果の山側の正規分布の標準偏差の算出にも用いる
-					wp.near <- data.frame( q = wp$q[order( abs( wp$p - 0.5 ) )],
-											p = wp$p[order( abs( wp$p - 0.5 ) )] )
-
-					pseudos <- list( ms.qp.norm( wp.near$q[1:2], wp.near$p[1:2] ),
-									ms.qp.norm( wp.near$q[2:3], wp.near$p[2:3]) )
-
-					x.0 <- c( ( pseudos[[1]]$mean + pseudos[[2]]$mean ) / 2,
-								sqrt( pseudos[[1]]$sd ), sqrt( pseudos[[2]]$sd ) )
-
-					f <- function( x )
-					{
-						dp.t3( wp$q, rep( x[1], 3 ), c( x[2]^2, t3.mid.sd( x[1], wp.near ), x[3]^2 ), f.t3.p ) - wp$p
-					}
-
-					result.list <- function( result )
-					{
-						gen.t3.intervals( rep( result$x[1], 3 ),
-											c( result$x[2]^2, t3.mid.sd( result$x[1], wp.near ), result$x[3]^2 ) )
-					}
-
-					retry.msg <- paste( "Message: Failed to construct a continuous probability density function",
-										"without allowSingular option.",
-										"Constructing with allowSingular option has been retried." )
-				}
-				else if ( point.num == 4 || ( point.num == 3 && retry == max.retry ) )
-				{
-					# type1.type == 3、4点経路として処理
-					if ( point.num == 3 )
-					{
-						wp <- data.frame( q = wp.with.median$q[c( 1, 2, 2, 3 )],
-										  p = wp.with.median$p[c( 1, 2, 2, 3 )] )
-
-						# 条件不足のため allowSingular = TRUE とする
-						if ( is.null( control$allowSingular ) )
-						{
-							control <- append( control, list( allowSingular = TRUE ) )
-						}
-					}
-					else
-					{
-						wp <- wp.with.median
-					}
-
-					l <- t3.wp4.intervals( wp, uni.sigma, control )
-					set.intervals( l$intervals )
-					result <- l$result
-					break
-				}
-				else if ( point.num == 5 && retry < max.retry )
-				{
-					# 各正規分布の仮の平均値と標準偏差を計算
-					# 山側の正規分布の標準偏差は、中央値以外で、中央値に近い2点を通る正規分布の標準偏差の重み付き平均値とする。
-					wp <- wp.with.median[( wp.with.median$p != 0.5 ),]
-					wp.near <- data.frame( q = wp$q[order( abs( wp$p - 0.5 ) )][1:2],
-										   p = wp$p[order( abs( wp$p - 0.5 ) )][1:2] )
-
-					pseudos <- list( ms.qp.norm( wp.with.median$q[1:2], wp.with.median$p[1:2] ),
-									 ms.qp.norm( wp.with.median$q[4:5], wp.with.median$p[4:5] ) )
-					pseudo.2.mean <- ifelse( is.set.median, median,
-												( wp.near$q[1] * ( wp.near$p[2] - 0.5 ) -
-												  wp.near$q[2] * ( wp.near$p[1] - 0.5 ) ) /
-												( wp.near$p[2] - wp.near$p[1] ) )
-
-					means <- c( pseudos[[1]]$mean, pseudo.2.mean, pseudos[[2]]$mean )
-					sds <- c( pseudos[[1]]$sd, pseudos[[2]]$sd )
-
-					x.0 <- c( means, sqrt( sds ) )
-					wp <- wp.with.median
-
-					f <- function( x )
-					{
-						means <- c( x[1], x[2], x[3] )
-						sds <- c( x[4]^2, t3.mid.sd( x[2], wp.near ), x[5]^2 )
-
-						c( dp.t3( wp$q, means, sds, f.t3.p ) - wp$p )
-					}
-
-					result.list <- function( result )
-					{
-						gen.t3.intervals( result$x[1:3],
-											c( result$x[4]^2, t3.mid.sd( result$x[2], wp.near ), result$x[5]^2 ) )
-					}
-				}
-				else # if ( point.num == 6 || retry == max.retry )
-				{
-					# type1.type == 3、6点経路として計算
-					# 各正規分布の仮の平均値と標準偏差を計算
-					if ( point.num == 5 )
-					{
-						wp <- wp.with.median[( wp.with.median$p != 0.5 ),]
-						wp.near <- data.frame( q = wp$q[order( abs( wp$p - 0.5 ) )][1:2],
-												p = wp$p[order( abs( wp$p - 0.5 ) )][1:2] )
-
-						pseudo.2.mean <- ifelse( is.set.median, median,
-											( wp.near$q[1] * ( wp.near$p[2] - 0.5 ) -
-											  wp.near$q[2] * ( wp.near$p[1] - 0.5 ) ) /
-											( wp.near$p[2] - wp.near$p[1] ) )
-
-						pseudos.2 <- list( mean = pseudo.2.mean,
-											sd = t3.mid.sd( pseudo.2.mean, wp.near ) )
-					}
-					else
-					{
-						pseudos.2 <- ms.qp.norm( wp$q[3:4], wp$p[3:4] )
-					}
-
-					pseudos <- list( ms.qp.norm( wp$q[1:2], wp$p[1:2] ), pseudos.2,
-										ms.qp.norm( wp$q[( nrow( wp ) - 1 ):nrow( wp )], wp$p[( nrow( wp ) - 1 ):nrow( wp )] ) )
-
-					means <- c( pseudos[[1]]$mean, pseudos[[2]]$mean, pseudos[[3]]$mean )
-					sds <- c( pseudos[[1]]$sd, pseudos[[2]]$sd, pseudos[[3]]$sd )
-
-					x.0 <- c( means, sqrt( sds ) )
-
-					if ( point.num == 5 )
-					{
-						wp <- data.frame( q = wp.with.median$q[c( 1, 2, 3, 3, 4, 5 )],
-										  p = wp.with.median$p[c( 1, 2, 3, 3, 4, 5 )] )
-
-						# 条件不足のため allowSingular = TRUE とする
-						if ( is.null( control$allowSingular ) )
-						{
-							control <- append( control, list( allowSingular = TRUE ) )
-						}
-					}
-					else
-					{
-						wp <- wp.with.median
-					}
-
-					f <- function( x )
-					{
-						c( dp.t3( wp$q, x[1:3], x[4:6]^2, f.t3.p ) - wp$p )
-					}
-
-					result.list <- function( result )
-					{
-						gen.t3.intervals( result$x[1:3], result$x[4:6]^2 )
-					}
-				}
-			}
-			else if ( type1.type == 4 && ( point.num == 5 || point.num == 6 ) )
-			{
-				# type1.type == 4、5～6点経路
-				#	まず、上下の正規分布の平均値が等しい縦横グラデーションの構成を試し、
-				#	ダメなら上下の正規分布の平均値が異なる縦横グラデーションを構成する
-
-				# 各正規分布の仮の平均値と標準偏差を計算 (trace.q に control はあえて渡してない)
-				# 経路に中央値が与えられていれば、それを仮の平均値とし、
-				# 与えられていなければ、前後から数えて 3 番目の点の座標を平均値とする
-				if ( any( wp.with.median$p[1:3] == 0.5 ) )
-				{
-					wp.d.1 <- wp.with.median[1:3,]
-				}
-				else
-				{
-					d.1.p <- c( wp.with.median$p[1:2], 0.5 )
-					wp.d.1 <- data.frame( q = wp.with.median$q[order( d.1.p )], p = d.1.p[order( d.1.p )] )
-				}
-				e <- try( d.1 <- trace.q( wp.d.1, type1.type = 3, v.grad = TRUE,
-											uni.sigma = uni.sigma, diff.mean = diff.mean ), silent = TRUE )
-				if ( inherits( e, "try-error" ) )
-				{
-					stop( "Error: Failed to determine the tentative parameters of the lower side distribution." )
-				}
-
-				if ( any( wp.with.median$p[nrow( wp.with.median ) + ( -2:0 )] == 0.5 ) )
-				{
-					wp.d.2 <- wp.with.median[nrow( wp.with.median ) + ( -2:0 ),]
-				}
-				else
-				{
-					d.2.p <- c( 0.5, wp.with.median$p[nrow( wp.with.median ) + ( -1:0 )] )
-					wp.d.2 <- data.frame( q = wp.with.median$q[order( d.2.p ) + nrow( wp.with.median ) - 3],
-											p = d.2.p[order( d.2.p )] )
-				}
-				e <- try( d.2 <- trace.q( wp.d.2, type1.type = 3, v.grad = TRUE,
-											uni.sigma = uni.sigma, diff.mean = diff.mean ), silent = TRUE )
-				if ( inherits( e, "try-error" ) )
-				{
-					stop( "Error: Failed to determine the tentative parameters of the upper side distribution." )
-				}
-
-				if ( uni.sigma )
-				{
-					wp <- wp.with.median
-
-					# length( x.0 ) == 5
-					x.0 <- c( d.1$intervals[[1]]$mean, d.1$intervals[[2]]$mean,
-								d.2$intervals[[1]]$mean, d.2$intervals[[2]]$mean,
-								sqrt( ( d.1$intervals[[2]]$sd + d.2$intervals[[2]]$sd ) / 2 ) )
-
-					f <- function( x )
-					{
-						sd.i <- x[5]^2
-						p.1 <-	f.t3.p[[1]]( wp$q, x[1], sd.i ) + f.t3.p[[2]]( wp$q, x[2], sd.i )
-						p.2 <-	f.t3.p[[1]]( wp$q, x[3], sd.i ) + f.t3.p[[2]]( wp$q, x[4], sd.i )
-
-						p <- p.1 - p.1^2 / 2 + p.2^2 / 2
-						return ( p - wp$p )
-					}
-
-					result.list <- function( result )
-					{
-						means <- result$x[1:4]
-						sds <- rep( result$x[5]^2, 4 )
-
-						return( list( gen.t3.intervals( c( means[1], means[2], means[1] ),
-														c( sds[1], sds[2], sds[1] ) ),
-									  gen.t3.intervals( c( means[3], means[4], means[3] ),
-														c( sds[3], sds[4], sds[3] ) ) ) )
-					}
-				}
-				else if ( point.num == 5 && !diff.mean && retry < max.retry )
-				{
-					# length( x.0 ) == 4
-					x.0 <- sqrt( c( d.1$intervals[[1]]$sd, d.1$intervals[[2]]$sd,
-									d.2$intervals[[1]]$sd, d.2$intervals[[2]]$sd ) )
-
-					f <- function( x )
-					{
-						sds <- x^2
-						p.1 <-	f.t3.p[[1]]( wp$q, median, sds[1] ) +
-								f.t3.p[[2]]( wp$q, median, sds[2] )
-						p.2 <-	f.t3.p[[1]]( wp$q, median, sds[3] ) +
-								f.t3.p[[2]]( wp$q, median, sds[4] )
-
-						p <- p.1 - p.1^2 / 2 + p.2^2 / 2
-						return ( p - wp$p )
-					}
-
-					result.list <- function( result )
-					{
-						means <- rep( median, 4 )
-						sds <- result$x[1:4]^2
-
-						return( list( gen.t3.intervals( c( means[1], means[2], means[1] ),
-														c( sds[1], sds[2], sds[1] ) ),
-									  gen.t3.intervals( c( means[3], means[4], means[3] ),
-														c( sds[3], sds[4], sds[3] ) ) ) )
-					}
-				}
-				else
-				{
-					if ( point.num == 5 )
-					{
-						wp <- data.frame( q = wp.with.median$q[c( 1, 2, 3, 3, 4, 5 )],
-											p = wp.with.median$p[c( 1, 2, 3, 3, 4, 5 )] )
-
-						# 条件不足のため allowSingular = TRUE とする
-						if ( is.null( control$allowSingular ) )
-						{
-							control <- append( control, list( allowSingular = TRUE ) )
-						}
-					}
-					else
-					{
-						wp <- wp.with.median
-					}
-
-					# length( x.0 ) == 6
-					x.0 <- c( d.1$mean, d.2$mean,
-								sqrt( c( d.1$intervals[[1]]$sd, d.1$intervals[[2]]$sd,
-											d.2$intervals[[1]]$sd, d.2$intervals[[2]]$sd ) ) )
-					f <- function( x )
-					{
-						sds <- x[3:6]^2
-						p.1 <-	f.t3.p[[1]]( wp$q, x[1], sds[1] ) + f.t3.p[[2]]( wp$q, x[1], sds[2] )
-						p.2 <-	f.t3.p[[1]]( wp$q, x[2], sds[3] ) + f.t3.p[[2]]( wp$q, x[2], sds[4] )
-
-						p <- p.1 - p.1^2 / 2 + p.2^2 / 2
-						return ( p - wp$p )
-					}
-
-					result.list <- function( result )
-					{
-						means <- c( result$x[1], result$x[1], result$x[2], result$x[2] )
-						sds <- result$x[3:6]^2
-
-						return( list( gen.t3.intervals( c( means[1], means[2], means[1] ),
-														c( sds[1], sds[2], sds[1] ) ),
-									  gen.t3.intervals( c( means[3], means[4], means[3] ),
-														c( sds[3], sds[4], sds[3] ) ) ) )
-					}
-				}
-			}
-			else if ( type1.type == 4 ) # && ( point.num == 7 || point.num == 8 )
-			{
-				# type1.type == 4、7～8点経路
-				#	上下の正規分布の平均値が異なる縦横グラデーションを構成する
-
-				# 各正規分布の仮の平均値と標準偏差を計算
-				#	7～8点経路では、2つの type1.type = 3 分布の経路はX座標・確率とも、指定された通りとする
-				#	type1.type = 3 分布は、4点経路は成功率が低いので、3点で構成する。
-				#	失敗したら、経路のうち2点を通る正規分布の平均値と標準偏差を仮の値とする。
-
-				wp.q <- c( wp$q[1:3], ifelse( rep( point.num == 7, 2 ), wp.with.median$q[4:4], wp.with.median$q[4:5] ),
-							wp$q[( nrow( wp ) - 2 ):nrow( wp )] )
-
-				wp.p <- c( wp$p[1:3], ifelse( rep( point.num == 7, 2 ), wp.with.median$p[4:4], wp.with.median$p[4:5] ),
-							wp$p[( nrow( wp ) - 2 ):nrow( wp )] )
-
-				e <- try( d.1 <- trace.q( data.frame( q = wp.q[1:3], p = wp.p[1:3] ),
-											type1.type = 3, v.grad = TRUE ), silent = TRUE )
-				if ( inherits( e, "try-error" ) )
-				{
-					message( paste( "Message: Failed to the 3-point-trace algorithm for the tentative parameters",
-									"of the lower distribution.",
-									"So the parameters of the normal distributions",
-									"through 2 of the quantiles have been used instead for them." ) )
-					pseudos <- list( ms.qp.norm( wp.q[1:2], wp.p[1:2] ), ms.qp.norm( wp.q[2:3], wp.p[2:3] ) )
-
-					d.1 <- CGD$new( type1.type = 3 )
-					d.1$set.intervals( gen.t3.intervals( c( pseudos[[1]]$mean, pseudos[[2]]$mean, pseudos[[1]]$mean ),
-														c( pseudos[[1]]$sd, pseudos[[2]]$sd, pseudos[[1]]$sd ) ) )
-				}
-
-				e <- try( d.2 <- trace.q( data.frame( q = wp.q[6:8], p = wp.p[6:8] ),
-											type1.type = 3, v.grad = TRUE ), silent = TRUE )
-				if ( inherits( e, "try-error" ) )
-				{
-					message( paste( "Message: Failed to the 3-point-trace algorithm for the tentative parameters",
-									"of the upper distribution.",
-									"So the parameters of the normal distributions",
-									"through 2 of the quantiles have been used instead for them." ) )
-					pseudos <- list( ms.qp.norm( wp.q[7:8], wp.p[7:8] ), ms.qp.norm( wp.q[5:6], wp.p[5:6] ) )
-
-					d.2 <- CGD$new( type1.type = 3 )
-					d.2$set.intervals( gen.t3.intervals( c( pseudos[[1]]$mean, pseudos[[2]]$mean, pseudos[[1]]$mean ),
-														c( pseudos[[1]]$sd, pseudos[[2]]$sd, pseudos[[1]]$sd ) ) )
-				}
-
-				# 7点経路では、条件不足のため allowSingular = TRUE とする
-				if ( point.num == 7 && is.null( control$allowSingular ) )
-				{
-					control <- append( control, list( allowSingular = TRUE ) )
-				}
-
-				x.0 <- c(	d.1$intervals[[1]]$mean, sqrt( d.1$intervals[[1]]$sd ),
-							d.1$intervals[[2]]$mean, sqrt( d.1$intervals[[2]]$sd ),
-							d.2$intervals[[1]]$mean, sqrt( d.2$intervals[[1]]$sd ),
-							d.2$intervals[[2]]$mean, sqrt( d.2$intervals[[2]]$sd ) )
-
-				f <- function( x )
-				{
-					sds <- x[seq( 2, 8, 2 )]^2
-					p.1 <-	f.t3.p[[1]]( wp.q, x[1], sds[1] ) + f.t3.p[[2]]( wp.q, x[3], sds[2] )
-					p.2 <-	f.t3.p[[1]]( wp.q, x[5], sds[3] ) + f.t3.p[[2]]( wp.q, x[7], sds[4] )
-
-					p <- p.1 - p.1^2 / 2 + p.2^2 / 2
-					return ( p - wp.p )
-				}
-
-				result.list <- function( result )
-				{
-					list( gen.t3.intervals( c( result$x[1], result$x[3], result$x[1] ),
-											c( result$x[2], result$x[4], result$x[2] )^2 ),
-						  gen.t3.intervals( c( result$x[5], result$x[7], result$x[5] ),
-											c( result$x[6], result$x[8], result$x[6] )^2 ) )
-				}
-			}
-
-			# nleqslv の計算
-			if ( !is.null( x.0 ) )
-			{
-				intervals.result <- NULL
-
-				e <- try( result <- nleqslv( x.0, f, control = control ), silent = TRUE )
-				if ( inherits( e, "try-error" ) )
-				{
-					stop( "Error: Failed to construct a continuous probability density function." )
-				}
-				else if ( result$termcd == 1 )
-				{
-					intervals.result <- result.list( result )
-				}
-
-				if ( !is.null( intervals.result ) )
-				{
-					set.intervals( intervals.result )
-					break
-				}
-				else
-				{
-					if ( retry < max.retry )
-					{
-						if ( result$termcd != 1 )
-						{
-							message( paste( "nleqslv has once failed. Message:", result$message ) )
-						}
-
-						if ( is.null( retry.msg ) )
-						{
-							message( paste( "Message: Failed to construct",
-											"a mean-equaled continuous probability density function.",
-											"Constructing mean-differed one has been retried." ) )
-						}
-						else
-						{
-							message( retry.msg )
-						}
-					}
-					else
-					{
-						message( paste( "nleqslv has failed. Message:", result$message ) )
-						if ( symmetric )
-						{
-							stop( "Error: Failed to construct a symmetric probability density function." )
-						}
-						else
-						{
-							stop( "Error: Failed to construct a continuous probability density function." )
-						}
-					}
-				}
-			}
-		}
-
-		if ( length( intervals ) > 0 )
-		{
-			return ( result )
-		}
-
-		####################################
-		# 確率密度関数が不連続な分布を構成
-
-		# 経路上の点を通る正規分布の平均値と標準偏差を取得
-		if ( type1.type == 0 )
-		{
-			# type1.type = 0 の場合は、中央値の点も、他の点と同様に処理する
-			wp <- wp.with.median
-
-			ms <- unname( unlist( lapply( as.list( 1:( nrow( wp ) - 1 ) ),
-											function( i )
-											{
-												ms.qp.norm( wp$q[i:( i + 1 )], wp$p[i:( i + 1 )] )
-											} ) ) )
-			means <- ms[seq( 1, length( ms ) - 1, 2 )]
-			sds <- ms[seq( 2, length( ms ), 2 )]
-		}
-		else
-		{
-			means <- rep( median, nrow( wp ) )
-			sds <- sd.mqp.norm( means, wp$q, wp$p )
-		}
-
-		# 連結区間を設定
-		#	ループ回数の上限は wp の行数ではなく、
-		#	sds (あるいは means) のベクトル長とする。
-		#	type1.type = 1 では、それらの値は等しいが、
-		#	type1.type = 0 では、sds のベクトル長は wp の行数より 1 小さいことに注意
-		#	 (type1.type = 0 では、
-		#	  wp の最後の点は必ず、最後-1 の点と同じ独立区間に入るので、それで良い)。
-		i <- 1
-		intervals.tmp <- list()
-		while ( i <= length( sds ) )
-		{
-			if ( i == 1 )
-			{
-				# デフォルトの連結区間パラメータを設定
-				p.conn.prev <- c( 0, 0 )
-				q.conn.prev <- c( -Inf, -Inf )
-
-				p.ind <- c( 0, 1 )
-				q.ind <- c( -Inf, Inf )
-
-				p.conn.next <- c( 1, 1 )
-				q.conn.next <- c( Inf, Inf )
-			}
-			else
-			{
-				# 前の区間との接続区間の確率・定義域を取得
-				if ( type1.type == 0 )
-				{
-					p.conn.prev <- c( wp[i,]$p, wp[i,]$p )
-					q.conn.prev <- c( wp[i,]$q, wp[i,]$q )
-				}
-				else
-				{
-					p.conn.prev <- intervals.tmp[[length( intervals.tmp )]]$p.conn.next
-					q.conn.prev <- c( qnorm( intervals.tmp[[length( intervals.tmp )]]$p.conn.next[1], median, sds[i] ),
-									  wp[i,]$q )
-				}
-
-				# 独立区間の確率・定義域の下限は前の区間との接続区間の確率・定義域の上限
-				p.ind <- c( p.conn.prev[2], 1 )
-				q.ind <- c( q.conn.prev[2], Inf )
-			}
-
-			# 標準偏差を変えずに次の経路上の点を通れるか探索
-			if ( i <= length( sds ) )
-			{
-				j <- i + 1
-				extended.to <- 0	# 延長先の区間
-				while ( j <= length( sds ) )
-				{
-					if ( means[i] == means[j] && sds[i] == sds[j] )
-					{
-						# 平均値と標準偏差が次の経路上の点を通る正規分布のそれらと等しい場合
-						# 独立区間を次の経路上の点まで延長
-						p.ind[2] <- wp[j,]$p
-						q.ind[2] <- qnorm( wp[j,]$p, median, sds[i] )
-						extended.to <- j
-
-						j <- j + 1
-					}
-					else
-					{
-						# 通過できなかったので探索終了
-						break
-					}
-				}
-
-				if ( extended.to > 0 )
-				{
-					i <- extended.to
-				}
-			}
-
-			# 次の区間との接続区間を取得
-			if ( i == length( sds ) )
-			{
-				# 経路の最後の点まで来たので、次の区間は無し
-				p.conn.next <- c( 1, 1 )
-				q.conn.next <- c( Inf, Inf )
-
-				# 経路の最後の点まで通過できた場合、独立区間の定義域は無限大まで
-				p.ind[2] <- 1
-				q.ind[2] <- Inf
-			}
-			else
-			{
-				if ( type1.type == 0 )
-				{
-					p.conn.next <- c( wp[i + 1,]$p, wp[i + 1,]$p )
-					q.conn.next <- c( wp[i + 1,]$q, wp[i + 1,]$q )
-				}
-				else
-				{
-					p.conn.next <- c( wp[i,]$p, wp[i + 1,]$p )
-					q.conn.next <- c( qnorm( wp[i,]$p, median, sds[i] ),
-									  qnorm( wp[i + 1,]$p, median, sds[i] ) )
-				}
-
-				# 独立区間の定義域・確率の上限は次の区間との接続区間の定義域・確率の下限
-				p.ind[2] <- p.conn.next[1]
-				q.ind[2] <- q.conn.next[1]
-			}
-
-			# 連結区間クラスのインスタンス生成
-			intervals.tmp <- c( intervals.tmp, CGDInterval$new(
-													mean = means[i],
-													sd = sds[i],
-													q.ind = q.ind, q.conn.prev = q.conn.prev, q.conn.next = q.conn.next,
-													p.ind = p.ind, p.conn.prev = p.conn.prev, p.conn.next = p.conn.next ) )
-			i <- i + 1
-		}
-		set.intervals( intervals.tmp )
-
-		return ( result )
-	}
+    set.waypoints = function( waypoints, continuous = FALSE, symmetric = FALSE, v.grad = FALSE,
+                              uni.sigma = FALSE, diff.mean = FALSE, control = list(), this.type1.type = NULL )
+    {
+        result <- NULL
+
+        # フィールドを初期化
+        clear( TRUE )
+
+        if ( !is.null( this.type1.type ) )
+        {
+            if ( any( this.type1.type == 0:4 ) )
+            {
+                type1.type <<- this.type1.type
+            }
+            else
+            {
+                stop( paste( "Error: type1.type" , this.type1.type, "is undefined." ) )
+            }
+        }
+        else if ( !any( type1.type == 0:4 ) )
+        {
+            stop( paste( "Error: type1.type" , type1.type, "is undefined." ) )
+        }
+
+        # 確率 p の範囲チェック
+        if ( length( waypoints$p[( waypoints$p < 0 | waypoints$p > 1 )] ) > 0 )
+        {
+            warning( paste( "Warning: Probability" ,
+                                waypoints$p[( waypoints$p < 0 | waypoints$p > 1 )], "is out of range [0, 1]." ) )
+        }
+
+        # X座標が±∞で、確率が 0 または 1 でない場合は警告
+        if ( length( waypoints$q[( waypoints$q == -Inf & waypoints$p != 0 ) |
+                                    ( waypoints$q == Inf & waypoints$p != 1 )]  ) > 0 )
+        {
+            warning( "Warning: There is a row which q is infinite (-Inf or Inf) but p is not 0 or 1." )
+        }
+
+        # 経路の点の並び順をチェック
+        wp.order <- order( waypoints$p )
+        if ( nrow( waypoints ) > 1 )
+        {
+            # X座標が確率と同じ順序に並んでいなければエラー
+            if ( any( waypoints$p[wp.order[1:( nrow( waypoints ) - 1 )]] >= waypoints$p[wp.order[2:nrow( waypoints )]] ) ||
+                    any( waypoints$q[wp.order[1:( nrow( waypoints ) - 1 )]] >= waypoints$q[wp.order[2:nrow( waypoints )]] ) )
+            {
+                stop( "Error: Order of q is not along with that of p." )
+            }
+        }
+
+        # wp に p = 0, 1, 0.5 の点を除いた昇順ソート済みの経路の点を設定
+        #   正規分布の平均値をすべて等しく取れば、連結ガウス分布の中央値もそれと等しくなるため、
+        #   通常、中央値を除外した wp が nleqnslv の条件になるが、
+        #   中央値を条件に加えなければならない場合は、代えて wp.with.median を条件とする。
+        q.ordered <- waypoints$q[wp.order]
+        p.ordered <- waypoints$p[wp.order]
+        wp.with.median <- data.frame( q = q.ordered[p.ordered > 0 & p.ordered < 1 & q.ordered > -Inf & q.ordered < Inf],
+                                      p = p.ordered[p.ordered > 0 & p.ordered < 1 & q.ordered > -Inf & q.ordered < Inf] )
+
+        wp <- wp.with.median[( wp.with.median$p != 0.5 ),]
+        if ( nrow( wp ) == 0 )
+        {
+            warning( "Warning: No waypoints other than (p = 0, 0.5, 1) are given." )
+        }
+
+        # 中央値取得・エラーチェック
+        is.set.median <- any( waypoints$p == 0.5 )
+        if ( is.set.median )
+        {
+            median <<- waypoints$q[waypoints$p == 0.5][1]
+        }
+
+        if ( !is.set.median )
+        {
+            if ( any( type1.type == 1:2 ) && !continuous && !symmetric )
+            {
+                stop( "Error: The point of p = 0.5 must be given for discontinous model of type1.type = 1 or 2." )
+            }
+            else if ( type1.type == 2 && symmetric )
+            {
+                stop( "Error: The point of p = 0.5 must be given when type1.type = 2 and symmetric = TRUE." )
+            }
+        }
+
+        point.num <- nrow( wp.with.median ) # 有効な経路上の点の個数
+
+        if ( type1.type == 0 && point.num < 2 )
+        {
+            stop( "Error: 2 and more quantiles are needed for type1.type = 0." )
+        }
+
+        if ( continuous && !( ( type1.type == 1 && point.num == 3 ) ||
+                                ( type1.type == 2 && ( ( point.num == 3 ) || point.num == 4 ) ) ) )
+        {
+            stop( "Error: Illegal number of quantiles or illegal type1.type for continuous = TRUE." )
+        }
+
+        if ( symmetric && !( ( type1.type == 1 || type1.type == 2 ) && point.num == 3 ) )
+        {
+            stop( "Error: Illegal number of quantiles or illegal type1.type for symmetric = TRUE." )
+        }
+
+        if ( v.grad && !( type1.type == 3 && ( point.num == 3 || point.num == 4 ) ) )
+        {
+            stop( "Error: Illegal number of quantiles or illegal type1.type for v.grad = TRUE." )
+        }
+
+        if ( uni.sigma && !( ( type1.type == 2 && point.num == 3 ) ||
+                                ( type1.type == 3 && ( point.num == 3 || ( !v.grad && point.num == 4 ) ) ) ||
+                                ( type1.type == 4 && point.num == 5 ) ) )
+        {
+            stop( "Error: Illegal number of quantiles or illegal type1.type for uni.sigma = TRUE." )
+        }
+
+        if ( diff.mean && ( type1.type == 1 ||
+                            ( type1.type == 2 && !continuous ) ||
+                            ( type1.type == 2 && symmetric ) ) )
+        {
+            stop( "Error: Illegal options for diff.mean = TRUE." )
+        }
+
+        if ( type1.type == 3 && !( point.num > 2 && point.num < 7 ) )
+        {
+            stop( "Error: Illegal number of quantiles for type1.type == 3." )
+        }
+
+        if ( type1.type == 4 && !( point.num > 4 && point.num < 9 ) )
+        {
+            stop( "Error: Illegal number of quantiles for type1.type == 4." )
+        }
+
+        ####################################
+        # 確率密度関数が連続な分布を構成
+
+        #  nleqslv では、反復計算中に標準偏差が負値になって警告が出るのを防ぐために、標準偏差を2乗して計算する
+        #   (2乗した方が、収束も1乗より少し速くなるようだ)
+
+        # 分布構成の最大パス数を決定
+        #   is.max.point : type1.type に対して経路の点が最大の場合に TRUE
+        #   is.middle.max.point : type1.type に対して経路の点は最大ではないが、
+        #                         より高い自由度の式を使っても、収束が望めない場合に TRUE
+        is.discontinuous <- is.max.point <- is.middle.max.point <- is.only.allowSingular <- FALSE
+
+        retry.msg <- NULL   # 一旦構成に失敗してリトライするときの個別メッセージ
+
+        if ( ( type1.type == 1 || type1.type == 2 ) && !continuous && !symmetric )
+        {
+            is.discontinuous <- TRUE
+        }
+        else
+        {
+            if ( ( type1.type == 1 && point.num == 3 ) ||
+                 ( type1.type == 2 && point.num == 4 ) ||
+                 ( type1.type == 3 && v.grad && point.num == 4 ) ||
+                 ( type1.type == 3 && !v.grad && point.num == 6 ) ||
+                 ( type1.type == 4 && point.num == 8 ) )
+            {
+                is.max.point <- TRUE
+            }
+
+            if ( ( type1.type == 3 && point.num == 4 && !is.set.median ) ||
+                 ( type1.type == 4 && ( ( point.num == 5 && !is.set.median ) ||
+                                        point.num == 6 ) ) )
+            {
+                is.middle.max.point <- TRUE
+            }
+
+            if ( type1.type == 4 && point.num == 7 )
+            {
+                is.only.allowSingular <- TRUE
+            }
+        }
+
+        if ( type1.type == 3 && v.grad && point.num == 3 && is.set.median && wp.with.median$p[2] != 0.5 )
+        {
+            max.retry <- 2
+        }
+        else
+        {
+            max.retry <- 1
+        }
+
+        if ( uni.sigma || diff.mean || is.discontinuous || is.max.point ||
+             is.middle.max.point || is.only.allowSingular )
+        {
+            max.retry <- max.retry - 1
+        }
+
+        # 分布構成
+        for ( retry in 0:max.retry )
+        {
+            x.0 <- NULL
+            f <- NULL
+            result.list <- NULL
+
+            # nleqslv の初期値および目的関数定義
+            if ( type1.type == 1 && ( continuous || symmetric ) )
+            {
+                if ( !is.set.median )
+                {
+                    pseudo.mean <- ms.qp.norm( wp$q[c( 1, 3 )], wp$p[c( 1, 3 )] )$mean
+                    x.0 <- c( pseudo.mean, 0.9, 1.1 )
+
+                    mean.1 <- 1
+                    sd.1 <- 2
+                    sd.2 <- 3
+                }
+                else
+                {
+                    x.0 <- c( 0.9, 1.1 )
+
+                    mean.1 <- 0
+                    sd.1 <- 1
+                    sd.2 <- 2
+                }
+
+                f <- function( x )
+                {
+                    ( pnorm( wp$q, ifelse( mean.1 == 0, median, x[mean.1] ), x[sd.1]^2 ) +
+                      pnorm( wp$q, ifelse( mean.1 == 0, median, x[mean.1] ), x[sd.2]^2 ) ) / 2 - wp$p
+                }
+
+                result.list <- function( result )
+                {
+                    list(
+                        CGDInterval$new(
+                            mean = ifelse( mean.1 == 0, median, result$x[mean.1] ),
+                            sd = result$x[sd.1]^2,
+                            q.ind = c( -Inf, -Inf ), q.conn.prev = c( -Inf, -Inf ), q.conn.next = c( -Inf, Inf ),
+                            p.ind = c( 0, 0 ), p.conn.prev = c( 0, 0 ), p.conn.next = c( 0, 1 ) ),
+                        CGDInterval$new(
+                            mean = ifelse( mean.1 == 0, median, result$x[mean.1] ),
+                            sd = result$x[sd.2]^2,
+                            q.ind = c( Inf, Inf ), q.conn.prev = c( -Inf, Inf ), q.conn.next = c( Inf, Inf ),
+                            p.ind = c( 1, 1 ), p.conn.prev = c( 0, 1 ), p.conn.next = c( 1, 1 ) ) )
+                }
+            }
+            else if ( type1.type == 2 && continuous )
+            {
+                if ( !is.set.median )
+                {
+                    pseudo.mean <- ms.qp.norm( wp$q[c( 1, 3 )], wp$p[c( 1, 3 )] )$mean
+                }
+                else
+                {
+                    pseudo.mean <- median
+                }
+
+                if ( uni.sigma )
+                {
+                    # 標準偏差を同一にして、平均を変えて連結
+                    # 仮の標準偏差を計算してから nleqslv を実行する
+                    if ( is.set.median )
+                    {
+                        x.0 <- c( 0, sqrt( ( sd.mqp.norm( pseudo.mean, wp$q[1], wp$p[1] )
+                                             + sd.mqp.norm( pseudo.mean, wp$q[2], wp$p[2] ) ) * 15 / 32 ) )
+                        median.1 <- 0
+                        dist.1 <- 1
+                        sd.1 <- 2
+                    }
+                    else
+                    {
+                        x.0 <- c( pseudo.mean, pseudo.mean,
+                                    sqrt( ( sd.mqp.norm( pseudo.mean, wp$q[1], wp$p[1] )
+                                                + sd.mqp.norm( pseudo.mean, wp$q[2], wp$p[2] ) ) * 15 / 32 ) )
+                        median.1 <- 1
+                        dist.1 <- 2
+                        sd.1 <- 3
+                    }
+
+                    f <- function( x )
+                    {
+                        p1 <- pnorm( wp$q,
+                                     ifelse( median.1 == 0, median, x[median.1] ) - x[dist.1],
+                                     x[sd.1]^2 )
+                        p2 <- pnorm( wp$q,
+                                     ifelse( median.1 == 0, median, x[median.1] ) + x[dist.1],
+                                     x[sd.1]^2 )
+
+                        return ( p1 - ( p1 * p1 - p2 * p2 ) / 2 - wp$p )
+                    }
+
+                    result.list <- function( result )
+                    {
+                        list(
+                            CGDInterval$new(
+                                mean = ifelse( median.1 == 0, median, result$x[median.1] ) - result$x[dist.1],
+                                sd = result$x[sd.1]^2,
+                                q.ind = c( -Inf, -Inf ),
+                                q.conn.prev = c( -Inf, -Inf ), q.conn.next = c( -Inf, Inf ),
+                                p.ind = c( 0, 0 ),
+                                p.conn.prev = c( 0, 0 ), p.conn.next = c( 0, 1 ) ),
+                            CGDInterval$new(
+                                mean = ifelse( median.1 == 0, median, result$x[median.1] ) + result$x[dist.1],
+                                sd = result$x[sd.1]^2,
+                                q.ind = c( Inf, Inf ),
+                                q.conn.prev = c( -Inf, Inf ), q.conn.next = c( Inf, Inf ),
+                                p.ind = c( 1, 1 ),
+                                p.conn.prev = c( 0, 1 ), p.conn.next = c( 1, 1 ) ) )
+                    }
+                }
+                else
+                {
+                    if ( point.num == 3 )
+                    {
+                        if ( !diff.mean && retry < max.retry )
+                        {
+                            # 各正規分布の平均値を統一して、標準偏差を変えて連結
+                            if ( is.set.median )
+                            {
+                                x.0 <- c( 1, 1 )
+                            }
+                            else
+                            {
+                                x.0 <- c( pseudo.mean, 1, 1 )
+                            }
+
+                            mean.1 <- ifelse( is.set.median, 0, 1 )
+                            mean.2 <- ifelse( is.set.median, 0, 1 )
+                            sd.1 <- mean.2 + 1
+                            sd.2 <- mean.2 + 2
+                        }
+                        else
+                        {
+                            # 4点経路として計算 (条件不足のため allowSingular = TRUE とする)
+                            wp <- data.frame( q = wp.with.median$q[c( 1, 2, 2, 3 )],
+                                              p = wp.with.median$p[c( 1, 2, 2, 3 )] )
+                            if ( is.null( control$allowSingular ) )
+                            {
+                                control <- append( control, list( allowSingular = TRUE ) )
+                            }
+
+                            x.0 <- c( pseudo.mean, pseudo.mean, 1, 1 )
+
+                            mean.1 <- 1
+                            mean.2 <- 2
+                            sd.1 <- 3
+                            sd.2 <- 4
+                        }
+                    }
+                    else # if ( point.num == 4 )
+                    {
+                        # 4点経路
+                        # 各正規分布の仮の平均値と標準偏差を計算してから nleqslv を実行する
+                        wp <- wp.with.median
+                        pseudos <- list( ms.qp.norm( wp$q[1:2], wp$p[1:2] ),
+                                         ms.qp.norm( wp$q[3:4], wp$p[3:4] ) )
+                        x.0 <- c( pseudos[[1]]$mean, pseudos[[2]]$mean,
+                                  sqrt( pseudos[[1]]$sd ), sqrt( pseudos[[2]]$sd ) )
+
+                        mean.1 <- 1
+                        mean.2 <- 2
+                        sd.1 <- 3
+                        sd.2 <- 4
+                    }
+
+                    f <- function( x )
+                    {
+                        p1 <- pnorm( wp$q, ifelse( mean.1 == 0, median, x[mean.1] ), x[sd.1]^2 )
+                        p2 <- pnorm( wp$q, ifelse( mean.2 == 0, median, x[mean.2] ), x[sd.2]^2 )
+
+                        return ( p1 - ( p1 * p1 - p2 * p2 ) / 2 - wp$p )
+                    }
+
+                    result.list <- function( result )
+                    {
+                        list(
+                            CGDInterval$new(
+                                mean = ifelse( mean.1 == 0, median, result$x[mean.1] ),
+                                sd = result$x[sd.1]^2,
+                                q.ind = c( -Inf, -Inf ),
+                                q.conn.prev = c( -Inf, -Inf ), q.conn.next = c( -Inf, Inf ),
+                                p.ind = c( 0, 0 ),
+                                p.conn.prev = c( 0, 0 ), p.conn.next = c( 0, 1 ) ),
+                            CGDInterval$new(
+                                mean = ifelse( mean.2 == 0, median, result$x[mean.2] ),
+                                sd = result$x[sd.2]^2,
+                                q.ind = c( Inf, Inf ),
+                                q.conn.prev = c( -Inf, Inf ), q.conn.next = c( Inf, Inf ),
+                                p.ind = c( 1, 1 ),
+                                p.conn.prev = c( 0, 1 ), p.conn.next = c( 1, 1 ) ) )
+                    }
+                }
+            }
+            else if ( type1.type == 2 && symmetric )
+            {
+                # symmetric の場合、高速化のために、経路の確率をすべて 0.5 以下にそろえて計算する
+                wp$p <- 0.5 - abs( 0.5 - wp$p )
+                wp$q <- median - abs( median - wp$q )
+
+                x.0 <- c( 1, 1 )
+
+                mean.1 <- 0
+                sd.1 <- 1
+                sd.2 <- 2
+
+                f <- function( x )
+                {
+                    p1 <- pnorm( wp$q, median, x[sd.1]^2 )
+                    p2 <- pnorm( wp$q, median, x[sd.2]^2 )
+
+                    return( ( 1 - p1 ) * p1 + p2 * p2 - wp$p )
+                }
+
+                result.list <- function( result )
+                {
+                    list(
+                        CGDInterval$new(
+                            mean = median,
+                            sd = result$x[1]^2,
+                            q.ind = c( -Inf, -Inf ),
+                            q.conn.prev = c( -Inf, -Inf ), q.conn.next = c( -Inf, median ),
+                            p.ind = c( 0, 0 ),
+                            p.conn.prev = c( 0, 0 ), p.conn.next = c( 0, 0.5 ) ),
+                        CGDInterval$new(
+                            mean = median,
+                            sd = result$x[2]^2,
+                            q.ind = c( median, median ),
+                            q.conn.prev = c( -Inf, median ), q.conn.next = c( median, Inf ),
+                            p.ind = c( 0.5, 0.5 ),
+                            p.conn.prev = c( 0, 0.5 ), p.conn.next = c( 0.5, 1 ) ),
+                        CGDInterval$new(
+                            mean = median,
+                            sd = result$x[1]^2,
+                            q.ind = c( Inf, Inf ),
+                            q.conn.prev = c( median, Inf ), q.conn.next= c( Inf, Inf ),
+                            p.ind = c( 1, 1 ),
+                            p.conn.prev = c( 0.5, 1 ), p.conn.next = c( 1, 1 ) ) )
+                }
+            }
+            else if ( type1.type == 3 && v.grad )
+            {
+                # type1.type == 3、縦方向グラデーション
+                if ( uni.sigma )
+                {
+                    # 中央値以外の2点を通る正規分布の平均値と標準偏差を仮の値とする
+                    pseudo <- ms.qp.norm( wp$q[1:2], wp$p[1:2] )
+
+                    x.0 <- c( pseudo$mean, ifelse( is.set.median, median, pseudo$mean ), sqrt( pseudo$sd ) )
+                    wp <- wp.with.median
+
+                    f <- function( x )
+                    {
+                        p <- pnorm( wp$q, x[1], x[3]^2 )
+                        p.a1 <- pnorm( wp$q, x[1], x[3]^2 * sqrt( 2 ) / 2 )
+                        p.a2 <- pnorm( wp$q, x[2], x[3]^2 * sqrt( 2 ) / 2 )
+
+                        return ( p - p.a1 * sqrt( 2 ) / 2 + p.a2 * sqrt( 2 ) / 2 - wp$p )
+                    }
+
+                    result.list <- function( result )
+                    {
+                        gen.t3.intervals( c( result$x[1], result$x[2], result$x[1] ), rep( result$x[3]^2, 3 ) )
+                    }
+                }
+                else if ( point.num == 3 && retry < max.retry )
+                {
+                    if ( is.set.median && !diff.mean && retry == 0 )
+                    {
+                        # 中央値指定あり・3点経路
+                        # 2つの正規分布の平均値を全体の中央値に統一して、
+                        # 中央値以外の2点を累積分布関数が通るように標準偏差を求める
+                        x.0 <- c( 1, 1 )
+
+                        f <- function( x )
+                        {
+                            p <- pnorm( wp$q, median, x[1]^2 )
+                            p.a1 <- pnorm( wp$q, median, x[1]^2 * sqrt( 2 ) / 2 )
+                            p.a2 <- pnorm( wp$q, median, x[2]^2 * sqrt( 2 ) / 2 )
+
+                            return ( p - p.a1 * sqrt( 2 ) / 2 + p.a2 * sqrt( 2 ) / 2 - wp$p )
+                        }
+
+                        result.list <- function( result )
+                        {
+                            gen.t3.intervals( rep( median, 3 ),
+                                              c( result$x[1]^2, result$x[2]^2, result$x[1]^2 ) )
+                        }
+                    }
+                    else
+                    {
+                        # より歪んだ (あるいは中央値の指定がない) 3点経路
+                        #   この処理は特殊なループ処理なので、他のパスとは別に nleqslv まで独立して行う
+
+                        # 経路の1点 (2点目を最優先) で2つの正規分布が交差し、
+                        # 他の2点を累積分布関数が通るように平均値と標準偏差を求める
+                        # 歪みが小さければ、2点目で交差させて構成できるが、
+                        # 歪みが大きい場合は、他の点で交差しないと失敗することがある
+                        wp <- wp.with.median
+
+                        successed <- FALSE
+                        for ( i in c( 2, 3, 1 ) )
+                        {
+                            if ( wp$p[i] == 0.5 )
+                            {
+                                next
+                            }
+
+                            p.i <- c( 1:3 )[-i]
+                            means <- c( ms.qp.norm( wp$q[c( p.i[1], i )], wp$p[c( p.i[1], i )] )$mean,
+                                        ms.qp.norm( wp$q[c( i, p.i[2] )], wp$p[c( i, p.i[2] )] )$mean )
+
+                            e <- try( result <- nleqslv( means, f <- function( x )
+                                                                {
+                                                                    x <- ifelse( sd.mqp.norm( x, wp$q[i], wp$p[i] ) < 0,
+                                                                                    2 * wp$q[i] - x, x )
+                                                                    sds <- sd.mqp.norm( x, wp$q[i], wp$p[i] )
+
+                                                                    p <- pnorm( wp$q[p.i], x[1], sds[1] )
+                                                                    p.a1 <- pnorm( wp$q[p.i], x[1], sds[1] * sqrt( 2 ) / 2 )
+                                                                    p.a2 <- pnorm( wp$q[p.i], x[2], sds[2] * sqrt( 2 ) / 2 )
+
+                                                                    return ( p - p.a1 * sqrt( 2 ) / 2 +
+                                                                                 p.a2 * sqrt( 2 ) / 2 - wp$p[p.i] )
+                                                                }, control = control ), silent = TRUE )
+                            if ( inherits( e, "try-error" ) )
+                            {
+                                stop( "Error: Failed to construct a continuous probability density function." )
+                            }
+                            else if ( result$termcd == 1 )
+                            {
+                                means <- ifelse( sd.mqp.norm( result$x, wp$q[i], wp$p[i] ) < 0,
+                                                 2 * wp$q[i] - result$x, result$x )
+                                sds <- sd.mqp.norm( means, wp$q[i], wp$p[i] )
+
+                                set.intervals( gen.t3.intervals( c( means[1], means[2], means[1] ),
+                                                                    c( sds[1], sds[2], sds[1] ) ) )
+                                successed <- TRUE
+                                break
+                            }
+
+                            message( paste( "nleqslv has once failed. Message:", result$message ) )
+                            message( paste( "Message: 3-point-tracing crossing at #", i, "point has failed.",
+                                            "The result may distort heavily." ) )
+                        }
+
+                        if ( successed )
+                        {
+                            break
+                        }
+
+                        # 失敗したら4点経路としてリトライ
+                        message( paste( "Message: All of tries of 3-point-tracing have failed.",
+                                        "4-point-tracing with allowSingular = TRUE has been retried." ) )
+                        next
+                    }
+                }
+                else # if ( point.num == 4 || retry == max.retry )
+                {
+                    # 4点経路として構築試行
+                    if ( point.num == 3 )
+                    {
+                        wp <- data.frame( q = wp.with.median$q[c( 1, 2, 2, 3 )], p = wp.with.median$p[c( 1, 2, 2, 3 )] )
+
+                        # 条件不足のため allowSingular = TRUE とする
+                        if ( is.null( control$allowSingular ) )
+                        {
+                            control <- append( control, list( allowSingular = TRUE ) )
+                        }
+                    }
+                    else
+                    {
+                        wp <- wp.with.median
+                    }
+
+                    l <- t3.v.grad.wp4.intervals( wp, control )
+
+                    set.intervals( l$intervals )
+                    result <- l$result
+                    break
+                }
+            }
+            else if ( type1.type == 3 && !v.grad )
+            {
+                if ( ( point.num == 3 || point.num == 4 ) && is.set.median && retry < max.retry )
+                {
+                    # type1.type == 3、非対称、中央値指定あり
+                    # 経路の p < 0.5 と p > 0.5 のそれぞれの点の数によって、場合分けする
+                    wp <- wp.with.median[( wp.with.median$p != 0.5 ),]
+                    num.lower <- length( wp$p[wp$p < 0.5] )
+                    num.upper <- length( wp$p[wp$p > 0.5] )
+
+                    if ( num.lower >= 3 || num.upper >= 3 )
+                    {
+                        # 一方の側に3点以上ある場合、
+                        # 中央値指定なしの4点経路と同じ方法で累積分布関数を構成
+                        next
+                    }
+                    else
+                    {
+                        # 場合分けして累積分布関数を構成
+                        if ( num.lower == 1 && num.upper == 1 )
+                        {
+                            # ( #lower, #upper ) = ( 1, 1 )
+                            # 山の中央部の標準偏差は上下の裾部の標準偏差の平均とする
+                            x.0 <- c( 1, 1 )
+
+                            f <- function( x )
+                            {
+                                x.ave <- ( x[1]^2 + x[2]^2 ) / 2
+                                p <- pnorm( wp$q, median, x^2 )
+                                p.a1 <- pnorm( wp$q, median, x^2 * sqrt( 2 ) / 2 )
+                                p.a2 <- pnorm( wp$q, median, x.ave * sqrt( 2 ) / 2 )
+
+                                return ( p - p.a1 * sqrt( 2 ) / 2 + p.a2 * sqrt( 2 ) / 2 - wp$p )
+                            }
+
+                            result.list <- function( result )
+                            {
+                                sds <- c( result$x[1]^2, ( result$x[1]^2 + result$x[2]^2 ) / 2, result$x[2]^2 )
+                                gen.t3.intervals( rep( median, 3 ), sds )
+                            }
+                        }
+                        else
+                        {
+                            # ( #lower, #upper ) = ( 2, 0 ) or ( 0, 2 ) or ( 2, 1 ) or ( 1, 2 )
+
+                            # 2点ある側の両点を通る正規分布の標準偏差を得る
+                            #   ここで、 wp リストのインデックスを入れる変数 wp.* と
+                            #   目的関数 f(x) の引数 x のインデックスを入れる変数 xi.* を用いる。
+                            #   wp.lower: 2点ある側のうち、 q の値が小さい方のインデックス
+                            #   wp.upper: 同、q の値が大きい方のインデックス
+                            #   xi.outer: 同、中央値から遠い方のインデックス
+                            #   xi.inner: 同、中央値から近い方のインデックス
+
+                            # ( #lower == 2 and ( #upper == 0 or 1 (i.e. any) ) ) || ( #lower == 0 and #upper == 2 )
+                            # ⇒ wp.lower = 1
+                            wp.lower <- ifelse( ( num.lower == 2 || num.lower == 0 ), 1, 2 )
+                            wp.upper <- ifelse( ( num.lower == 2 || num.lower == 0 ), 2, 3 )
+                            wp.q <- c( wp$q[wp.lower], wp$q[wp.upper] )
+                            wp.p <- c( wp$p[wp.lower], wp$p[wp.upper] )
+                            xi.outer <- ifelse( num.lower == 2, 1, 2 )
+                            xi.inner <- ifelse( num.lower == 2, 2, 1 )
+
+                            x.0 <- c( 1, 1 )
+
+                            f <- function( x )
+                            {
+                                p <- pnorm( wp.q, median, x[xi.outer]^2 )
+                                p.a1 <- pnorm( wp.q, median, x[xi.outer]^2 * sqrt( 2 ) / 2 )
+                                p.a2 <- pnorm( wp.q, median, x[xi.inner]^2 * sqrt( 2 ) / 2 )
+
+                                return ( p - p.a1 * sqrt( 2 ) / 2 + p.a2 * sqrt( 2 ) / 2 - wp.p )
+                            }
+
+                            result.list <- function( result )
+                            {
+                                sds <- numeric()
+
+                                if ( num.upper == 0 || num.lower == 0 )
+                                {
+                                    # ( #lower, #upper ) = ( 2, 0 ) or ( 0, 2 )
+                                    sds[1] <- result$x[1]^2
+                                    sds[2] <- result$x[xi.inner]^2
+                                    sds[3] <- result$x[2]^2
+                                }
+                                else
+                                {
+                                    # ( #lower, #upper ) = ( 2, 1 ) or ( 1, 2 )
+                                    # 残りの1つの標準偏差を算出
+                                    if ( num.lower == 2 )
+                                    {
+                                        sds[1] <- result$x[xi.outer]^2
+                                        sds[2] <- result$x[xi.inner]^2
+
+                                        i.last <- 3
+                                    }
+                                    else
+                                    {
+                                        sds[2] <- result$x[xi.inner]^2
+                                        sds[3] <- result$x[xi.outer]^2
+
+                                        i.last <- 1
+                                    }
+
+                                    # エラーチェック (最後の標準偏差は算出可能か？)
+                                    #   未計算の確率の残りが 0 より大きく ( 2 - sqrt(2) ) / 4 より小さければ算出可能
+                                    p.remain <- wp$p[i.last] -
+                                                pnorm( wp$q[i.last], median, sds[2] * sqrt( 2 ) / 2 ) * sqrt( 2 ) / 2
+                                    if ( wp$p[i.last] < 0.5 )
+                                    {
+                                        if ( p.remain <= 0 )
+                                        {
+                                            # 最後の点の確率が低すぎるため、構成できない
+                                            # => もっと最後の点のX座標が小さければ、構成できるかも知れない
+                                            message( paste( "Message: The probability of the lowest quantile",
+                                                            "is too small. Or, the lowest quantile (x-coordinate)",
+                                                            "may be too near from the median of the data." ) )
+                                            return ( NULL )
+                                        }
+                                        else if ( p.remain >= ( 0.5 - 0.25 * sqrt( 2 ) ) )
+                                        {
+                                            # 最後の点の確率が高すぎる (0.5に近すぎる) ため、構成できない
+                                            # => もっと最後の点のX座標が中央値に近ければ、構成できるかも知れない
+                                            message( paste( "Message: The probability of the lowest quantile",
+                                                            "is too near to 0.5. Or, the lowest quantile (x-coordinate)",
+                                                            "may be too far from the median of the data." ) )
+                                            return ( NULL )
+                                        }
+                                    }
+                                    else
+                                    {
+                                        if ( p.remain <= ( 0.5 - 0.25 * sqrt( 2 ) ) )
+                                        {
+                                            # 最後の点の確率が低すぎる (0.5に近すぎる) ため、構成できない
+                                            # => もっと最後の点のX座標が中央値に近ければ、構成できるかも知れない
+                                            message( paste( "Message: The probability of the highest quantile",
+                                                            "is too near to 0.5. Or, the highest quantile (x-coordinate)",
+                                                            "may be too far from the median of the data." ) )
+                                            return ( NULL )
+                                        }
+                                        else if ( p.remain >= ( 1 - sqrt( 2 ) / 2 ) )
+                                        {
+                                            # 最後の点の確率が高すぎるため、構成できない
+                                            # => もっと最後の点のX座標が大きければ、構成できるかも知れない
+                                            message( paste( "Message: The probability of the highest quantile",
+                                                            "is too large. Or, the highest quantile (x-coordinate)",
+                                                            "may be too near from the median of the data." ) )
+                                            return ( NULL )
+                                        }
+                                    }
+
+                                    # 標準偏差の探索範囲決定
+                                    if ( sds[2] == sd.mqp.norm( median, wp$q[i.last], wp$p[i.last] ) )
+                                    {
+                                        # 残りの1つの標準偏差は、山の中央部の標準偏差と等しい
+                                        sds[i.last] <- sds[2]
+                                    }
+                                    else
+                                    {
+                                        # 残りの1つの標準偏差は、山の中央部の標準偏差と異なる
+                                        if ( wp$p[i.last] < 0.5 )
+                                        {
+                                            sd.sup <- sd.mqp.norm( median, wp$q[i.last], ( 2 + sqrt( 2 ) ) * p.remain )
+                                            sd.inf <- sd.mqp.norm( median, wp$q[i.last], p.remain )
+                                        }
+                                        else
+                                        {
+                                            sd.sup <- sd.mqp.norm( median, wp$q[i.last], ( 2 + sqrt( 2 ) ) * p.remain )
+                                            sd.inf <- sd.mqp.norm( median, wp$q[i.last], p.remain + sqrt( 2 ) / 2 )
+                                        }
+
+                                        sds[i.last] <- bisection(
+                                                        function( x )
+                                                        {
+                                                            pnorm( wp$q[i.last], median, x ) -
+                                                            pnorm( wp$q[i.last], median, x * sqrt( 2 ) / 2 ) * sqrt( 2 ) / 2 -
+                                                            p.remain
+                                                        }, c( sd.inf, sd.sup ) )
+                                    }
+                                }
+
+                                return ( gen.t3.intervals( rep( median, 3 ), sds ) )
+                            }
+                        }
+                    }
+                }
+                else if ( point.num == 3 && !is.set.median && !diff.mean && !uni.sigma && retry < max.retry )
+                {
+                    # type1.type == 3、非対称、中央値指定なし、3点経路
+
+                    # 各正規分布の仮の平均値と標準偏差を計算
+                    # 経路の点を中央値に近い順に並べ、それを用いて、仮の平均値と標準偏差を計算し、
+                    # さらに、計算結果の山側の正規分布の標準偏差の算出にも用いる
+                    wp.near <- data.frame( q = wp$q[order( abs( wp$p - 0.5 ) )],
+                                            p = wp$p[order( abs( wp$p - 0.5 ) )] )
+
+                    pseudos <- list( ms.qp.norm( wp.near$q[1:2], wp.near$p[1:2] ),
+                                    ms.qp.norm( wp.near$q[2:3], wp.near$p[2:3]) )
+
+                    x.0 <- c( ( pseudos[[1]]$mean + pseudos[[2]]$mean ) / 2,
+                                sqrt( pseudos[[1]]$sd ), sqrt( pseudos[[2]]$sd ) )
+
+                    f <- function( x )
+                    {
+                        dp.t3( wp$q, rep( x[1], 3 ), c( x[2]^2, t3.mid.sd( x[1], wp.near ), x[3]^2 ), f.t3.p ) - wp$p
+                    }
+
+                    result.list <- function( result )
+                    {
+                        gen.t3.intervals( rep( result$x[1], 3 ),
+                                            c( result$x[2]^2, t3.mid.sd( result$x[1], wp.near ), result$x[3]^2 ) )
+                    }
+
+                    retry.msg <- paste( "Message: Failed to construct a continuous probability density function",
+                                        "without allowSingular option.",
+                                        "Constructing with allowSingular option has been retried." )
+                }
+                else if ( point.num == 4 || ( point.num == 3 && retry == max.retry ) )
+                {
+                    # type1.type == 3、4点経路として処理
+                    if ( point.num == 3 )
+                    {
+                        wp <- data.frame( q = wp.with.median$q[c( 1, 2, 2, 3 )],
+                                          p = wp.with.median$p[c( 1, 2, 2, 3 )] )
+
+                        # 条件不足のため allowSingular = TRUE とする
+                        if ( is.null( control$allowSingular ) )
+                        {
+                            control <- append( control, list( allowSingular = TRUE ) )
+                        }
+                    }
+                    else
+                    {
+                        wp <- wp.with.median
+                    }
+
+                    l <- t3.wp4.intervals( wp, uni.sigma, control )
+                    set.intervals( l$intervals )
+                    result <- l$result
+                    break
+                }
+                else if ( point.num == 5 && retry < max.retry )
+                {
+                    # 各正規分布の仮の平均値と標準偏差を計算
+                    # 山側の正規分布の標準偏差は、中央値以外で、中央値に近い2点を通る正規分布の標準偏差の重み付き平均値とする。
+                    wp <- wp.with.median[( wp.with.median$p != 0.5 ),]
+                    wp.near <- data.frame( q = wp$q[order( abs( wp$p - 0.5 ) )][1:2],
+                                           p = wp$p[order( abs( wp$p - 0.5 ) )][1:2] )
+
+                    pseudos <- list( ms.qp.norm( wp.with.median$q[1:2], wp.with.median$p[1:2] ),
+                                     ms.qp.norm( wp.with.median$q[4:5], wp.with.median$p[4:5] ) )
+                    pseudo.2.mean <- ifelse( is.set.median, median,
+                                                ( wp.near$q[1] * ( wp.near$p[2] - 0.5 ) -
+                                                  wp.near$q[2] * ( wp.near$p[1] - 0.5 ) ) /
+                                                ( wp.near$p[2] - wp.near$p[1] ) )
+
+                    means <- c( pseudos[[1]]$mean, pseudo.2.mean, pseudos[[2]]$mean )
+                    sds <- c( pseudos[[1]]$sd, pseudos[[2]]$sd )
+
+                    x.0 <- c( means, sqrt( sds ) )
+                    wp <- wp.with.median
+
+                    f <- function( x )
+                    {
+                        means <- c( x[1], x[2], x[3] )
+                        sds <- c( x[4]^2, t3.mid.sd( x[2], wp.near ), x[5]^2 )
+
+                        c( dp.t3( wp$q, means, sds, f.t3.p ) - wp$p )
+                    }
+
+                    result.list <- function( result )
+                    {
+                        gen.t3.intervals( result$x[1:3],
+                                            c( result$x[4]^2, t3.mid.sd( result$x[2], wp.near ), result$x[5]^2 ) )
+                    }
+                }
+                else # if ( point.num == 6 || retry == max.retry )
+                {
+                    # type1.type == 3、6点経路として計算
+                    # 各正規分布の仮の平均値と標準偏差を計算
+                    if ( point.num == 5 )
+                    {
+                        wp <- wp.with.median[( wp.with.median$p != 0.5 ),]
+                        wp.near <- data.frame( q = wp$q[order( abs( wp$p - 0.5 ) )][1:2],
+                                                p = wp$p[order( abs( wp$p - 0.5 ) )][1:2] )
+
+                        pseudo.2.mean <- ifelse( is.set.median, median,
+                                            ( wp.near$q[1] * ( wp.near$p[2] - 0.5 ) -
+                                              wp.near$q[2] * ( wp.near$p[1] - 0.5 ) ) /
+                                            ( wp.near$p[2] - wp.near$p[1] ) )
+
+                        pseudos.2 <- list( mean = pseudo.2.mean,
+                                            sd = t3.mid.sd( pseudo.2.mean, wp.near ) )
+                    }
+                    else
+                    {
+                        pseudos.2 <- ms.qp.norm( wp$q[3:4], wp$p[3:4] )
+                    }
+
+                    pseudos <- list( ms.qp.norm( wp$q[1:2], wp$p[1:2] ), pseudos.2,
+                                        ms.qp.norm( wp$q[( nrow( wp ) - 1 ):nrow( wp )], wp$p[( nrow( wp ) - 1 ):nrow( wp )] ) )
+
+                    means <- c( pseudos[[1]]$mean, pseudos[[2]]$mean, pseudos[[3]]$mean )
+                    sds <- c( pseudos[[1]]$sd, pseudos[[2]]$sd, pseudos[[3]]$sd )
+
+                    x.0 <- c( means, sqrt( sds ) )
+
+                    if ( point.num == 5 )
+                    {
+                        wp <- data.frame( q = wp.with.median$q[c( 1, 2, 3, 3, 4, 5 )],
+                                          p = wp.with.median$p[c( 1, 2, 3, 3, 4, 5 )] )
+
+                        # 条件不足のため allowSingular = TRUE とする
+                        if ( is.null( control$allowSingular ) )
+                        {
+                            control <- append( control, list( allowSingular = TRUE ) )
+                        }
+                    }
+                    else
+                    {
+                        wp <- wp.with.median
+                    }
+
+                    f <- function( x )
+                    {
+                        c( dp.t3( wp$q, x[1:3], x[4:6]^2, f.t3.p ) - wp$p )
+                    }
+
+                    result.list <- function( result )
+                    {
+                        gen.t3.intervals( result$x[1:3], result$x[4:6]^2 )
+                    }
+                }
+            }
+            else if ( type1.type == 4 && ( point.num == 5 || point.num == 6 ) )
+            {
+                # type1.type == 4、5～6点経路
+                #   まず、上下の正規分布の平均値が等しい縦横グラデーションの構成を試し、
+                #   ダメなら上下の正規分布の平均値が異なる縦横グラデーションを構成する
+
+                # 各正規分布の仮の平均値と標準偏差を計算 (trace.q に control はあえて渡してない)
+                # 経路に中央値が与えられていれば、それを仮の平均値とし、
+                # 与えられていなければ、前後から数えて 3 番目の点の座標を平均値とする
+                if ( any( wp.with.median$p[1:3] == 0.5 ) )
+                {
+                    wp.d.1 <- wp.with.median[1:3,]
+                }
+                else
+                {
+                    d.1.p <- c( wp.with.median$p[1:2], 0.5 )
+                    wp.d.1 <- data.frame( q = wp.with.median$q[order( d.1.p )], p = d.1.p[order( d.1.p )] )
+                }
+                e <- try( d.1 <- trace.q( wp.d.1, type1.type = 3, v.grad = TRUE,
+                                            uni.sigma = uni.sigma, diff.mean = diff.mean ), silent = TRUE )
+                if ( inherits( e, "try-error" ) )
+                {
+                    message( paste( "Message: Tracing 3 lower points for",
+                                             "initial guesses has failed.",
+                                             "2 lower points tracing has used instead." ) )
+                    pseudos <- ms.qp.norm( wp.with.median$q[1:2], wp.with.median$p[1:2] )
+
+                    d.1 <- CGD$new( type1.type = 3 )
+                    d.1$set.intervals( gen.t3.intervals( rep( pseudos$mean, 3 ), rep( pseudos$sd, 3 ) ) )
+                }
+
+                if ( any( wp.with.median$p[nrow( wp.with.median ) + ( -2:0 )] == 0.5 ) )
+                {
+                    wp.d.2 <- wp.with.median[nrow( wp.with.median ) + ( -2:0 ),]
+                }
+                else
+                {
+                    d.2.p <- c( 0.5, wp.with.median$p[nrow( wp.with.median ) + ( -1:0 )] )
+                    wp.d.2 <- data.frame( q = wp.with.median$q[order( d.2.p ) + nrow( wp.with.median ) - 3],
+                                            p = d.2.p[order( d.2.p )] )
+                }
+                e <- try( d.2 <- trace.q( wp.d.2, type1.type = 3, v.grad = TRUE,
+                                            uni.sigma = uni.sigma, diff.mean = diff.mean ), silent = TRUE )
+                if ( inherits( e, "try-error" ) )
+                {
+                    message( paste( "Message: Tracing 3 upper points for",
+                                             "initial guesses has failed.",
+                                             "2 upper points tracing has used instead." ) )
+                    pseudos <- ms.qp.norm( wp.with.median$q[nrow( wp.with.median ) + ( -1:0 )],
+                                           wp.with.median$p[nrow( wp.with.median ) + ( -1:0 )] )
+
+                    d.2 <- CGD$new( type1.type = 3 )
+                    d.2$set.intervals( gen.t3.intervals( rep( pseudos$mean, 3 ), rep( pseudos$sd, 3 ) ) )
+                }
+
+                if ( uni.sigma )
+                {
+                    wp <- wp.with.median
+
+                    # length( x.0 ) == 5
+                    x.0 <- c( d.1$intervals[[1]]$mean, d.1$intervals[[2]]$mean,
+                                d.2$intervals[[1]]$mean, d.2$intervals[[2]]$mean,
+                                sqrt( ( d.1$intervals[[2]]$sd + d.2$intervals[[2]]$sd ) / 2 ) )
+
+                    f <- function( x )
+                    {
+                        sd.i <- x[5]^2
+                        p.1 <-  f.t3.p[[1]]( wp$q, x[1], sd.i ) + f.t3.p[[2]]( wp$q, x[2], sd.i )
+                        p.2 <-  f.t3.p[[1]]( wp$q, x[3], sd.i ) + f.t3.p[[2]]( wp$q, x[4], sd.i )
+
+                        p <- p.1 - p.1^2 / 2 + p.2^2 / 2
+                        return ( p - wp$p )
+                    }
+
+                    result.list <- function( result )
+                    {
+                        means <- result$x[1:4]
+                        sds <- rep( result$x[5]^2, 4 )
+
+                        return( list( gen.t3.intervals( c( means[1], means[2], means[1] ),
+                                                        c( sds[1], sds[2], sds[1] ) ),
+                                      gen.t3.intervals( c( means[3], means[4], means[3] ),
+                                                        c( sds[3], sds[4], sds[3] ) ) ) )
+                    }
+                }
+                else if ( point.num == 5 && !diff.mean && retry < max.retry )
+                {
+                    # length( x.0 ) == 4
+                    x.0 <- sqrt( c( d.1$intervals[[1]]$sd, d.1$intervals[[2]]$sd,
+                                    d.2$intervals[[1]]$sd, d.2$intervals[[2]]$sd ) )
+
+                    f <- function( x )
+                    {
+                        sds <- x^2
+                        p.1 <-  f.t3.p[[1]]( wp$q, median, sds[1] ) +
+                                f.t3.p[[2]]( wp$q, median, sds[2] )
+                        p.2 <-  f.t3.p[[1]]( wp$q, median, sds[3] ) +
+                                f.t3.p[[2]]( wp$q, median, sds[4] )
+
+                        p <- p.1 - p.1^2 / 2 + p.2^2 / 2
+                        return ( p - wp$p )
+                    }
+
+                    result.list <- function( result )
+                    {
+                        means <- rep( median, 4 )
+                        sds <- result$x[1:4]^2
+
+                        return( list( gen.t3.intervals( c( means[1], means[2], means[1] ),
+                                                        c( sds[1], sds[2], sds[1] ) ),
+                                      gen.t3.intervals( c( means[3], means[4], means[3] ),
+                                                        c( sds[3], sds[4], sds[3] ) ) ) )
+                    }
+                }
+                else
+                {
+                    if ( point.num == 5 )
+                    {
+                        wp <- data.frame( q = wp.with.median$q[c( 1, 2, 3, 3, 4, 5 )],
+                                            p = wp.with.median$p[c( 1, 2, 3, 3, 4, 5 )] )
+
+                        # 条件不足のため allowSingular = TRUE とする
+                        if ( is.null( control$allowSingular ) )
+                        {
+                            control <- append( control, list( allowSingular = TRUE ) )
+                        }
+                    }
+                    else
+                    {
+                        wp <- wp.with.median
+                    }
+
+                    # length( x.0 ) == 6
+                    x.0 <- c( d.1$mean, d.2$mean,
+                                sqrt( c( d.1$intervals[[1]]$sd, d.1$intervals[[2]]$sd,
+                                            d.2$intervals[[1]]$sd, d.2$intervals[[2]]$sd ) ) )
+                    f <- function( x )
+                    {
+                        sds <- x[3:6]^2
+                        p.1 <-  f.t3.p[[1]]( wp$q, x[1], sds[1] ) + f.t3.p[[2]]( wp$q, x[1], sds[2] )
+                        p.2 <-  f.t3.p[[1]]( wp$q, x[2], sds[3] ) + f.t3.p[[2]]( wp$q, x[2], sds[4] )
+
+                        p <- p.1 - p.1^2 / 2 + p.2^2 / 2
+                        return ( p - wp$p )
+                    }
+
+                    result.list <- function( result )
+                    {
+                        means <- c( result$x[1], result$x[1], result$x[2], result$x[2] )
+                        sds <- result$x[3:6]^2
+
+                        return( list( gen.t3.intervals( c( means[1], means[2], means[1] ),
+                                                        c( sds[1], sds[2], sds[1] ) ),
+                                      gen.t3.intervals( c( means[3], means[4], means[3] ),
+                                                        c( sds[3], sds[4], sds[3] ) ) ) )
+                    }
+                }
+            }
+            else if ( type1.type == 4 ) # && ( point.num == 7 || point.num == 8 )
+            {
+                # type1.type == 4、7～8点経路
+                #   上下の正規分布の平均値が異なる縦横グラデーションを構成する
+
+                # 各正規分布の仮の平均値と標準偏差を計算
+                #   7～8点経路では、2つの type1.type = 3 分布の経路はX座標・確率とも、指定された通りとする
+                #   type1.type = 3 分布は、4点経路は成功率が低いので、3点で構成する。
+                #   失敗したら、経路のうち2点を通る正規分布の平均値と標準偏差を仮の値とする。
+
+                wp.q <- c( wp$q[1:3], ifelse( rep( point.num == 7, 2 ), wp.with.median$q[4:4], wp.with.median$q[4:5] ),
+                            wp$q[( nrow( wp ) - 2 ):nrow( wp )] )
+
+                wp.p <- c( wp$p[1:3], ifelse( rep( point.num == 7, 2 ), wp.with.median$p[4:4], wp.with.median$p[4:5] ),
+                            wp$p[( nrow( wp ) - 2 ):nrow( wp )] )
+
+                e <- try( d.1 <- trace.q( data.frame( q = wp.q[1:3], p = wp.p[1:3] ),
+                                            type1.type = 3, v.grad = TRUE ), silent = TRUE )
+                if ( inherits( e, "try-error" ) )
+                {
+                    message( paste( "Message: Failed to the 3-point-trace algorithm for the tentative parameters",
+                                    "of the lower distribution.",
+                                    "So the parameters of the normal distributions",
+                                    "through 2 of the quantiles have been used instead." ) )
+                    pseudos <- list( ms.qp.norm( wp.q[1:2], wp.p[1:2] ), ms.qp.norm( wp.q[2:3], wp.p[2:3] ) )
+
+                    d.1 <- CGD$new( type1.type = 3 )
+                    d.1$set.intervals( gen.t3.intervals( c( pseudos[[1]]$mean, pseudos[[2]]$mean, pseudos[[1]]$mean ),
+                                                        c( pseudos[[1]]$sd, pseudos[[2]]$sd, pseudos[[1]]$sd ) ) )
+                }
+
+                e <- try( d.2 <- trace.q( data.frame( q = wp.q[6:8], p = wp.p[6:8] ),
+                                            type1.type = 3, v.grad = TRUE ), silent = TRUE )
+                if ( inherits( e, "try-error" ) )
+                {
+                    message( paste( "Message: Failed to the 3-point-trace algorithm for the tentative parameters",
+                                    "of the upper distribution.",
+                                    "So the parameters of the normal distributions",
+                                    "through 2 of the quantiles have been used instead for them." ) )
+                    pseudos <- list( ms.qp.norm( wp.q[7:8], wp.p[7:8] ), ms.qp.norm( wp.q[5:6], wp.p[5:6] ) )
+
+                    d.2 <- CGD$new( type1.type = 3 )
+                    d.2$set.intervals( gen.t3.intervals( c( pseudos[[1]]$mean, pseudos[[2]]$mean, pseudos[[1]]$mean ),
+                                                        c( pseudos[[1]]$sd, pseudos[[2]]$sd, pseudos[[1]]$sd ) ) )
+                }
+
+                # 7点経路では、条件不足のため allowSingular = TRUE とする
+                if ( point.num == 7 && is.null( control$allowSingular ) )
+                {
+                    control <- append( control, list( allowSingular = TRUE ) )
+                }
+
+                x.0 <- c(   d.1$intervals[[1]]$mean, sqrt( d.1$intervals[[1]]$sd ),
+                            d.1$intervals[[2]]$mean, sqrt( d.1$intervals[[2]]$sd ),
+                            d.2$intervals[[1]]$mean, sqrt( d.2$intervals[[1]]$sd ),
+                            d.2$intervals[[2]]$mean, sqrt( d.2$intervals[[2]]$sd ) )
+
+                f <- function( x )
+                {
+                    sds <- x[seq( 2, 8, 2 )]^2
+                    p.1 <-  f.t3.p[[1]]( wp.q, x[1], sds[1] ) + f.t3.p[[2]]( wp.q, x[3], sds[2] )
+                    p.2 <-  f.t3.p[[1]]( wp.q, x[5], sds[3] ) + f.t3.p[[2]]( wp.q, x[7], sds[4] )
+
+                    p <- p.1 - p.1^2 / 2 + p.2^2 / 2
+                    return ( p - wp.p )
+                }
+
+                result.list <- function( result )
+                {
+                    list( gen.t3.intervals( c( result$x[1], result$x[3], result$x[1] ),
+                                            c( result$x[2], result$x[4], result$x[2] )^2 ),
+                          gen.t3.intervals( c( result$x[5], result$x[7], result$x[5] ),
+                                            c( result$x[6], result$x[8], result$x[6] )^2 ) )
+                }
+            }
+
+            # nleqslv の計算
+            if ( !is.null( x.0 ) )
+            {
+                intervals.result <- NULL
+
+                e <- try( result <- nleqslv( x.0, f, control = control ), silent = TRUE )
+                if ( inherits( e, "try-error" ) )
+                {
+                    stop( "Error: Failed to construct a continuous probability density function." )
+                }
+                else if ( result$termcd == 1 )
+                {
+                    intervals.result <- result.list( result )
+                }
+
+                if ( !is.null( intervals.result ) )
+                {
+                    set.intervals( intervals.result )
+                    break
+                }
+                else
+                {
+                    if ( retry < max.retry )
+                    {
+                        if ( result$termcd != 1 )
+                        {
+                            message( paste( "nleqslv has once failed. Message:", result$message ) )
+                        }
+
+                        if ( is.null( retry.msg ) )
+                        {
+                            message( paste( "Message: Failed to construct",
+                                            "a mean-equaled continuous probability density function.",
+                                            "Constructing mean-differed one has been retried." ) )
+                        }
+                        else
+                        {
+                            message( retry.msg )
+                        }
+                    }
+                    else
+                    {
+                        message( paste( "nleqslv has failed. Message:", result$message ) )
+                        if ( symmetric )
+                        {
+                            stop( "Error: Failed to construct a symmetric probability density function." )
+                        }
+                        else
+                        {
+                            stop( "Error: Failed to construct a continuous probability density function." )
+                        }
+                    }
+                }
+            }
+        }
+
+        if ( length( intervals ) > 0 )
+        {
+            return ( result )
+        }
+
+        ####################################
+        # 確率密度関数が不連続な分布を構成
+
+        # 経路上の点を通る正規分布の平均値と標準偏差を取得
+        if ( type1.type == 0 )
+        {
+            # type1.type = 0 の場合は、中央値の点も、他の点と同様に処理する
+            wp <- wp.with.median
+
+            ms <- unname( unlist( lapply( as.list( 1:( nrow( wp ) - 1 ) ),
+                                            function( i )
+                                            {
+                                                ms.qp.norm( wp$q[i:( i + 1 )], wp$p[i:( i + 1 )] )
+                                            } ) ) )
+            means <- ms[seq( 1, length( ms ) - 1, 2 )]
+            sds <- ms[seq( 2, length( ms ), 2 )]
+        }
+        else
+        {
+            means <- rep( median, nrow( wp ) )
+            sds <- sd.mqp.norm( means, wp$q, wp$p )
+        }
+
+        # 連結区間を設定
+        #   ループ回数の上限は wp の行数ではなく、
+        #   sds (あるいは means) のベクトル長とする。
+        #   type1.type = 1 では、それらの値は等しいが、
+        #   type1.type = 0 では、sds のベクトル長は wp の行数より 1 小さいことに注意
+        #    (type1.type = 0 では、
+        #     wp の最後の点は必ず、最後-1 の点と同じ独立区間に入るので、それで良い)。
+        i <- 1
+        intervals.tmp <- list()
+        while ( i <= length( sds ) )
+        {
+            if ( i == 1 )
+            {
+                # デフォルトの連結区間パラメータを設定
+                p.conn.prev <- c( 0, 0 )
+                q.conn.prev <- c( -Inf, -Inf )
+
+                p.ind <- c( 0, 1 )
+                q.ind <- c( -Inf, Inf )
+
+                p.conn.next <- c( 1, 1 )
+                q.conn.next <- c( Inf, Inf )
+            }
+            else
+            {
+                # 前の区間との接続区間の確率・定義域を取得
+                if ( type1.type == 0 )
+                {
+                    p.conn.prev <- c( wp[i,]$p, wp[i,]$p )
+                    q.conn.prev <- c( wp[i,]$q, wp[i,]$q )
+                }
+                else
+                {
+                    p.conn.prev <- intervals.tmp[[length( intervals.tmp )]]$p.conn.next
+                    q.conn.prev <- c( qnorm( intervals.tmp[[length( intervals.tmp )]]$p.conn.next[1], median, sds[i] ),
+                                      wp[i,]$q )
+                }
+
+                # 独立区間の確率・定義域の下限は前の区間との接続区間の確率・定義域の上限
+                p.ind <- c( p.conn.prev[2], 1 )
+                q.ind <- c( q.conn.prev[2], Inf )
+            }
+
+            # 標準偏差を変えずに次の経路上の点を通れるか探索
+            if ( i <= length( sds ) )
+            {
+                j <- i + 1
+                extended.to <- 0    # 延長先の区間
+                while ( j <= length( sds ) )
+                {
+                    if ( means[i] == means[j] && sds[i] == sds[j] )
+                    {
+                        # 平均値と標準偏差が次の経路上の点を通る正規分布のそれらと等しい場合
+                        # 独立区間を次の経路上の点まで延長
+                        p.ind[2] <- wp[j,]$p
+                        q.ind[2] <- qnorm( wp[j,]$p, median, sds[i] )
+                        extended.to <- j
+
+                        j <- j + 1
+                    }
+                    else
+                    {
+                        # 通過できなかったので探索終了
+                        break
+                    }
+                }
+
+                if ( extended.to > 0 )
+                {
+                    i <- extended.to
+                }
+            }
+
+            # 次の区間との接続区間を取得
+            if ( i == length( sds ) )
+            {
+                # 経路の最後の点まで来たので、次の区間は無し
+                p.conn.next <- c( 1, 1 )
+                q.conn.next <- c( Inf, Inf )
+
+                # 経路の最後の点まで通過できた場合、独立区間の定義域は無限大まで
+                p.ind[2] <- 1
+                q.ind[2] <- Inf
+            }
+            else
+            {
+                if ( type1.type == 0 )
+                {
+                    p.conn.next <- c( wp[i + 1,]$p, wp[i + 1,]$p )
+                    q.conn.next <- c( wp[i + 1,]$q, wp[i + 1,]$q )
+                }
+                else
+                {
+                    p.conn.next <- c( wp[i,]$p, wp[i + 1,]$p )
+                    q.conn.next <- c( qnorm( wp[i,]$p, median, sds[i] ),
+                                      qnorm( wp[i + 1,]$p, median, sds[i] ) )
+                }
+
+                # 独立区間の定義域・確率の上限は次の区間との接続区間の定義域・確率の下限
+                p.ind[2] <- p.conn.next[1]
+                q.ind[2] <- q.conn.next[1]
+            }
+
+            # 連結区間クラスのインスタンス生成
+            intervals.tmp <- c( intervals.tmp, CGDInterval$new(
+                                                    mean = means[i],
+                                                    sd = sds[i],
+                                                    q.ind = q.ind, q.conn.prev = q.conn.prev, q.conn.next = q.conn.next,
+                                                    p.ind = p.ind, p.conn.prev = p.conn.prev, p.conn.next = p.conn.next ) )
+            i <- i + 1
+        }
+        set.intervals( intervals.tmp )
+
+        return ( result )
+    }
 )
 
 ################################################################################################
@@ -4195,28 +4215,28 @@ CGD$methods(
 ################################################################################################
 dp.t3 <- function( x, means, sds, f.t3 )
 {
-	results <- vapply( x, function( x )
-	{
-		result <- f.t3[[2]]( x, means[2], sds[2] )
+    results <- vapply( x, function( x )
+    {
+        result <- f.t3[[2]]( x, means[2], sds[2] )
 
-		if ( x < means[1] )
-		{
-			result <- result + f.t3[[1]]( x, means[1], sds[1] )
-		}
-		else
-		{
-			result <- result + f.t3[[3]]
-		}
+        if ( x < means[1] )
+        {
+            result <- result + f.t3[[1]]( x, means[1], sds[1] )
+        }
+        else
+        {
+            result <- result + f.t3[[3]]
+        }
 
-		if ( x > means[3] )
-		{
-			result <- result + f.t3[[1]]( x, means[3], sds[3] ) - f.t3[[3]]
-		}
+        if ( x > means[3] )
+        {
+            result <- result + f.t3[[1]]( x, means[3], sds[3] ) - f.t3[[3]]
+        }
 
-		return ( result )
-	}, 0 )
+        return ( result )
+    }, 0 )
 
-	return ( results )
+    return ( results )
 }
 
 ################################################################################################
@@ -4231,63 +4251,64 @@ dp.t3 <- function( x, means, sds, f.t3 )
 ################################################################################################
 t3.v.grad.wp4.intervals <- function( wp, control )
 {
-	if ( nrow( wp ) != 4 )
-	{
-		stop( paste( "Error: nrow( wp ) must be 4 for t3.v.grad.wp4.intervals( wp ). The nrow: ", nrow( wp ) ) )
-	}
+    if ( nrow( wp ) != 4 )
+    {
+        stop( paste( "Error: nrow( wp ) must be 4 for t3.v.grad.wp4.intervals( wp ). The nrow: ", nrow( wp ) ) )
+    }
 
-	# 経路を中央値に近い順に並び替えて、
-	# 中央値から遠い2点を通る正規分布と、中央値に近い2点を通る正規分布の平均値と標準偏差をそれぞれ算出し、
-	# それらの平均値と標準偏差を nleqslv のための仮の値とする
-	wp <- data.frame( q = wp$q[order( abs( wp$p - 0.5 ) )], p = wp$p[order( abs( wp$p - 0.5 ) )] )
-	if ( wp$p[2] == 0.5 )
-	{
-		# 中央値の点が2つある場合は、中央値から遠い点を通る正規分布と、中央値に近い点を通る正規分布を使う
-		# そして、条件不足のため allowSingular = TRUE とする
-		pseudo.far <- ms.qp.norm( wp$q[c( 2, 4 )], wp$p[c( 2, 4 )] )
-		pseudo.near <- ms.qp.norm( wp$q[c( 1, 3 )], wp$p[c( 1, 3 )] )
+    # 経路を中央値に近い順に並び替えて、
+    # 中央値から遠い2点を通る正規分布と、中央値に近い2点を通る正規分布の平均値と標準偏差をそれぞれ算出し、
+    # それらの平均値と標準偏差を nleqslv のための仮の値とする
+    wp <- data.frame( q = wp$q[order( abs( wp$p - 0.5 ) )], p = wp$p[order( abs( wp$p - 0.5 ) )] )
+    if ( wp$p[1] == wp$p[2] )
+    {
+        # 中央値に最も近い、同一の点が2つある場合は、
+        # その点と中央値から最も遠い点を通る正規分布と、2番目に遠い点を通る正規分布を使う
+        # そして、条件不足のため allowSingular = TRUE とする
+        pseudo.far <- ms.qp.norm( wp$q[c( 2, 4 )], wp$p[c( 2, 4 )] )
+        pseudo.near <- ms.qp.norm( wp$q[c( 1, 3 )], wp$p[c( 1, 3 )] )
 
-		if ( is.null( control$allowSingular ) )
-		{
-			control <- append( control, list( allowSingular = TRUE ) )
-		}
-	}
-	else
-	{
+        if ( is.null( control$allowSingular ) )
+        {
+            control <- append( control, list( allowSingular = TRUE ) )
+        }
+    }
+    else
+    {
 
-		pseudo.far <- ms.qp.norm( wp$q[3:4], wp$p[3:4] )
-		pseudo.near <- ms.qp.norm( wp$q[1:2], wp$p[1:2] )
-	}
+        pseudo.far <- ms.qp.norm( wp$q[3:4], wp$p[3:4] )
+        pseudo.near <- ms.qp.norm( wp$q[1:2], wp$p[1:2] )
+    }
 
-	x.0 <- c( pseudo.far$mean, pseudo.near$mean, sqrt( pseudo.far$sd ), sqrt( pseudo.near$sd ) )
+    x.0 <- c( pseudo.far$mean, pseudo.near$mean, sqrt( pseudo.far$sd ), sqrt( pseudo.near$sd ) )
 
-	f <- function( x )
-	{
-		p <- pnorm( wp$q, x[1], x[3]^2 )
-		p.a1 <- pnorm( wp$q, x[1], x[3]^2 * sqrt( 2 ) / 2 )
-		p.a2 <- pnorm( wp$q, x[2], x[4]^2 * sqrt( 2 ) / 2 )
+    f <- function( x )
+    {
+        p <- pnorm( wp$q, x[1], x[3]^2 )
+        p.a1 <- pnorm( wp$q, x[1], x[3]^2 * sqrt( 2 ) / 2 )
+        p.a2 <- pnorm( wp$q, x[2], x[4]^2 * sqrt( 2 ) / 2 )
 
-		return ( p - p.a1 * sqrt( 2 ) / 2 + p.a2 * sqrt( 2 ) / 2 - wp$p )
-	}
+        return ( p - p.a1 * sqrt( 2 ) / 2 + p.a2 * sqrt( 2 ) / 2 - wp$p )
+    }
 
-	# nleqslv の計算
-	e <- try( result <- nleqslv( x.0, f, control = control ), silent = TRUE )
-	if ( inherits( e, "try-error" ) )
-	{
-		stop( "Error: Failed to construct a continuous probability density function." )
-	}
-	else if ( result$termcd == 1 )
-	{
-		means <- c( result$x[1], result$x[2], result$x[1] )
-		sds <- c( result$x[3]^2, result$x[4]^2, result$x[3]^2 )
-	}
-	else
-	{
-		message( paste( "nleqslv has failed. Message:", result$message ) )
-		stop( "Error: Failed to construct a continuous probability density function." )
-	}
+    # nleqslv の計算
+    e <- try( result <- nleqslv( x.0, f, control = control ), silent = TRUE )
+    if ( inherits( e, "try-error" ) )
+    {
+        stop( "Error: Failed to construct a continuous probability density function." )
+    }
+    else if ( result$termcd == 1 )
+    {
+        means <- c( result$x[1], result$x[2], result$x[1] )
+        sds <- c( result$x[3]^2, result$x[4]^2, result$x[3]^2 )
+    }
+    else
+    {
+        message( paste( "nleqslv has failed. Message:", result$message ) )
+        stop( "Error: Failed to construct a continuous probability density function." )
+    }
 
-	return ( list( intervals = gen.t3.intervals( means, sds ), result = result ) )
+    return ( list( intervals = gen.t3.intervals( means, sds ), result = result ) )
 }
 
 ################################################################################################
@@ -4300,130 +4321,133 @@ t3.v.grad.wp4.intervals <- function( wp, control )
 ################################################################################################
 t3.wp4.intervals <- function( wp, uni.sigma, control )
 {
-	if ( nrow( wp ) != 4 )
-	{
-		stop( paste( "Error: nrow( wp ) must be 4 for t3.wp4.intervals( wp ). The nrow: ", nrow( wp ) ) )
-	}
+    if ( nrow( wp ) != 4 )
+    {
+        stop( paste( "Error: nrow( wp ) must be 4 for t3.wp4.intervals( wp ). The nrow: ", nrow( wp ) ) )
+    }
 
-	# 経路を中央値に近い順に並び替えて、
-	# 中央値から遠い2点を通る正規分布と、中央値に近い2点を通る正規分布の平均値と標準偏差をそれぞれ算出し、
-	# それらの平均値を nleqslv のための仮の値とする
+    # 経路を中央値に近い順に並び替えて、
+    # 中央値から遠い2点を通る正規分布と、中央値に近い2点を通る正規分布の平均値と標準偏差をそれぞれ算出し、
+    # それらの平均値を nleqslv のための仮の値とする
 
-	wp <- data.frame( q = wp$q[order( abs( wp$p - 0.5 ) )], p = wp$p[order( abs( wp$p - 0.5 ) )] )
+    wp <- data.frame( q = wp$q[order( abs( wp$p - 0.5 ) )], p = wp$p[order( abs( wp$p - 0.5 ) )] )
 
-	if ( wp$p[2] == 0.5 )
-	{
-		# 中央値の点が2つある場合は、中央値から遠い点を通る正規分布と、中央値に近い点を通る正規分布を使う
-		# そして、条件不足のため allowSingular = TRUE とする
-		pseudos <- list( ms.qp.norm( wp$q[c( 1, 3 )], wp$p[c( 1, 3 )] ), ms.qp.norm( wp$q[c( 2, 4 )], wp$p[c( 2, 4 )] ) )
 
-		if ( is.null( control$allowSingular ) )
-		{
-			control <- append( control, list( allowSingular = TRUE ) )
-		}
-	}
-	else
-	{
-		pseudos <- list( ms.qp.norm( wp$q[1:2], wp$p[1:2] ), ms.qp.norm( wp$q[3:4], wp$p[3:4] ) )
-	}
+    if ( wp$p[1] == wp$p[2] )
+    {
+        # 中央値に最も近い、同一の点が2つある場合は、
+        # その点と中央値から最も遠い点を通る正規分布と、2番目に遠い点を通る正規分布を使う
+        # そして、条件不足のため allowSingular = TRUE とする
+        pseudos <- list( ms.qp.norm( wp$q[c( 1, 3 )], wp$p[c( 1, 3 )] ),
+                         ms.qp.norm( wp$q[c( 2, 4 )], wp$p[c( 2, 4 )] ) )
 
-	pseudos.2 <- list( mean = ( pseudos[[1]]$mean + pseudos[[2]]$mean ) / 2,
-						sd = ( pseudos[[1]]$sd + pseudos[[2]]$sd ) / 2 )
+        if ( is.null( control$allowSingular ) )
+        {
+            control <- append( control, list( allowSingular = TRUE ) )
+        }
+    }
+    else
+    {
+        pseudos <- list( ms.qp.norm( wp$q[1:2], wp$p[1:2] ), ms.qp.norm( wp$q[3:4], wp$p[3:4] ) )
+    }
 
-	if ( uni.sigma )
-	{
-		e <- try( result <- nleqslv( c( pseudos[[1]]$mean, pseudos.2$mean, pseudos[[2]]$mean,
-										sqrt( pseudos.2$sd ) ),
-										f <- function( x )
-										{
-											means <- x[1:3]
-											sds <- rep( x[4]^2, 3 )
-											return ( dp.t3( wp$q, means, sds, f.t3.p ) - wp$p )
-										}, control = control ), silent = TRUE )
-		if ( inherits( e, "try-error" ) )
-		{
-			stop( "Error: Failed to construct a continuous probability density function." )
-		}
-		else if ( result$termcd == 1 )
-		{
-			means <- result$x[1:3]
-			sds <- rep( result$x[4]^2, 3 )
-		}
-		else
-		{
-			message( paste( "nleqslv has failed. Message:", result$message ) )
-			stop( "Error: Failed to construct a continuous probability density function." )
-		}
-	}
-	else
-	{
-		e <- try( result <- nleqslv( c( pseudos.2$mean,
-										sqrt( pseudos[[1]]$sd ), sqrt( pseudos.2$sd ), sqrt( pseudos[[2]]$sd ) ),
-										f <- function( x )
-										{
-											means <- rep( x[1], 3 )
-											sds <- x[2:4]^2
-											return ( dp.t3( wp$q, means, sds, f.t3.p ) - wp$p )
-										}, control = control ), silent = TRUE )
-		if ( inherits( e, "try-error" ) )
-		{
-			stop( "Error: Failed to construct a continuous probability density function." )
-		}
-		else if ( result$termcd == 1 )
-		{
-			means <- rep( result$x[1], 3 )
-			sds <- result$x[2:4]^2
-		}
-		else
-		{
-			# 失敗したら t3.v.grad.wp4.intervals でリトライ
-			message( paste( "nleqslv has once failed. Message:", result$message ) )
-			message( paste( "Message: Failed to construct a continuous probability density function",
-							"with v.grad = FALSE. Constructing with v.grad = TRUE has been retried." ) )
-			e <- try( l <- t3.v.grad.wp4.intervals( wp, control ), silent = TRUE )
-			if ( inherits( e, "try-error" ) )
-			{
-				# それも失敗したら6点経路としてリトライ (条件不足のため allowSingular = TRUE とする)
-				message( paste( "Message: Failed to construct a continuous probability density function",
-								"with v.grad = TRUE. Constructing with allowSingular = TRUE has been retried." ) )
+    pseudos.2 <- list( mean = ( pseudos[[1]]$mean + pseudos[[2]]$mean ) / 2,
+                        sd = ( pseudos[[1]]$sd + pseudos[[2]]$sd ) / 2 )
 
-				wp <- data.frame( q = c( wp$q[1:2], wp$q ), p = c( wp$p[1:2], wp$p ) )
+    if ( uni.sigma )
+    {
+        e <- try( result <- nleqslv( c( pseudos[[1]]$mean, pseudos.2$mean, pseudos[[2]]$mean,
+                                        sqrt( pseudos.2$sd ) ),
+                                        f <- function( x )
+                                        {
+                                            means <- x[1:3]
+                                            sds <- rep( x[4]^2, 3 )
+                                            return ( dp.t3( wp$q, means, sds, f.t3.p ) - wp$p )
+                                        }, control = control ), silent = TRUE )
+        if ( inherits( e, "try-error" ) )
+        {
+            stop( "Error: Failed to construct a continuous probability density function." )
+        }
+        else if ( result$termcd == 1 )
+        {
+            means <- result$x[1:3]
+            sds <- rep( result$x[4]^2, 3 )
+        }
+        else
+        {
+            message( paste( "nleqslv has failed. Message:", result$message ) )
+            stop( "Error: Failed to construct a continuous probability density function." )
+        }
+    }
+    else
+    {
+        e <- try( result <- nleqslv( c( pseudos.2$mean,
+                                        sqrt( pseudos[[1]]$sd ), sqrt( pseudos.2$sd ), sqrt( pseudos[[2]]$sd ) ),
+                                        f <- function( x )
+                                        {
+                                            means <- rep( x[1], 3 )
+                                            sds <- x[2:4]^2
+                                            return ( dp.t3( wp$q, means, sds, f.t3.p ) - wp$p )
+                                        }, control = control ), silent = TRUE )
+        if ( inherits( e, "try-error" ) )
+        {
+            stop( "Error: Failed to construct a continuous probability density function." )
+        }
+        else if ( result$termcd == 1 )
+        {
+            means <- rep( result$x[1], 3 )
+            sds <- result$x[2:4]^2
+        }
+        else
+        {
+            # 失敗したら t3.v.grad.wp4.intervals でリトライ
+            message( paste( "nleqslv has once failed. Message:", result$message ) )
+            message( paste( "Message: Failed to construct a continuous probability density function",
+                            "with v.grad = FALSE. Constructing with v.grad = TRUE has been retried." ) )
+            e <- try( l <- t3.v.grad.wp4.intervals( wp, control ), silent = TRUE )
+            if ( inherits( e, "try-error" ) )
+            {
+                # それも失敗したら6点経路としてリトライ (条件不足のため allowSingular = TRUE とする)
+                message( paste( "Message: Failed to construct a continuous probability density function",
+                                "with v.grad = TRUE. Constructing with allowSingular = TRUE has been retried." ) )
 
-				if ( is.null( control$allowSingular ) )
-				{
-					control <- append( control, list( allowSingular = TRUE ) )
-				}
-				e <- try( result <- nleqslv( c( pseudos[[1]]$mean, pseudos.2$mean, pseudos[[2]]$mean,
-												sqrt( pseudos[[1]]$sd ), sqrt( pseudos.2$sd ), sqrt( pseudos[[2]]$sd ) ),
-												f <- function( x )
-												{
-													means <- x[1:3]
-													sds <- x[4:6]^2
-													return ( dp.t3( wp$q, means, sds, f.t3.p ) - wp$p )
-												}, control = control ), silent = TRUE )
-				if ( inherits( e, "try-error" ) )
-				{
-					stop( "Error: Failed to construct a continuous probability density function." )
-				}
-				else if ( result$termcd == 1 )
-				{
-					means <- result$x[1:3]
-					sds <- result$x[4:6]^2
-				}
-				else
-				{
-					message( paste( "The last nleqslv has failed. Message:", result$message ) )
-					stop( "Error: Failed to construct a continuous probability density function." )
-				}
-			}
-			else
-			{
-				return ( l )
-			}
-		}
-	}
+                wp <- data.frame( q = c( wp$q[1:2], wp$q ), p = c( wp$p[1:2], wp$p ) )
 
-	return ( list( intervals = gen.t3.intervals( means, sds ), result = result ) )
+                if ( is.null( control$allowSingular ) )
+                {
+                    control <- append( control, list( allowSingular = TRUE ) )
+                }
+                e <- try( result <- nleqslv( c( pseudos[[1]]$mean, pseudos.2$mean, pseudos[[2]]$mean,
+                                                sqrt( pseudos[[1]]$sd ), sqrt( pseudos.2$sd ), sqrt( pseudos[[2]]$sd ) ),
+                                                f <- function( x )
+                                                {
+                                                    means <- x[1:3]
+                                                    sds <- x[4:6]^2
+                                                    return ( dp.t3( wp$q, means, sds, f.t3.p ) - wp$p )
+                                                }, control = control ), silent = TRUE )
+                if ( inherits( e, "try-error" ) )
+                {
+                    stop( "Error: Failed to construct a continuous probability density function." )
+                }
+                else if ( result$termcd == 1 )
+                {
+                    means <- result$x[1:3]
+                    sds <- result$x[4:6]^2
+                }
+                else
+                {
+                    message( paste( "The last nleqslv has failed. Message:", result$message ) )
+                    stop( "Error: Failed to construct a continuous probability density function." )
+                }
+            }
+            else
+            {
+                return ( l )
+            }
+        }
+    }
+
+    return ( list( intervals = gen.t3.intervals( means, sds ), result = result ) )
 }
 
 ################################################################################################
@@ -4441,39 +4465,39 @@ t3.wp4.intervals <- function( wp, uni.sigma, control )
 ################################################################################################
 gen.t3.intervals <- function( means, sds )
 {
-	if ( means[1] == means[2] && means[2] == means[3] )
-	{
-		ps <- c( 0.5, 0.5, 0.5 )
-	}
-	else
-	{
-		ps <- c( dp.t3( means[1], means, sds, f.t3.p ),
-					dp.t3( means[2], means, sds, f.t3.p ),
-					dp.t3( means[3], means, sds, f.t3.p ) )
-	}
+    if ( means[1] == means[2] && means[2] == means[3] )
+    {
+        ps <- c( 0.5, 0.5, 0.5 )
+    }
+    else
+    {
+        ps <- c( dp.t3( means[1], means, sds, f.t3.p ),
+                    dp.t3( means[2], means, sds, f.t3.p ),
+                    dp.t3( means[3], means, sds, f.t3.p ) )
+    }
 
-	return ( list( CGDInterval$new(
-						mean = means[1],
-						sd = sds[1],
-						q.ind = c( -Inf, -Inf ),
-						q.conn.prev = c( -Inf, -Inf ), q.conn.next = c( -Inf, means[1] ),
-						p.ind = c( 0, 0 ),
-						p.conn.prev = c( 0, 0 ), p.conn.next = c( 0, ps[1] ) ),
-					CGDInterval$new(
-						mean = means[2],
-						sd = sds[2],
-						q.ind = c( means[2], means[2] ),
-						q.conn.prev = c( -Inf, qnorm( ps[1], means[2], sds[2] ) ),
-						q.conn.next = c( qnorm( ps[3], means[2], sds[2] ), Inf ),
-						p.ind = c( ps[2], ps[2] ),
-						p.conn.prev = c( 0, ps[1] ), p.conn.next = c( ps[3], 1 ) ),
-					CGDInterval$new(
-						mean = means[3],
-						sd = sds[3],
-						q.ind = c( Inf, Inf ),
-						q.conn.prev = c( means[3], Inf ), q.conn.next = c( Inf, Inf ),
-						p.ind = c( 1, 1 ),
-						p.conn.prev = c( ps[3], 1 ), p.conn.next = c( 1, 1 ) ) ) )
+    return ( list( CGDInterval$new(
+                        mean = means[1],
+                        sd = sds[1],
+                        q.ind = c( -Inf, -Inf ),
+                        q.conn.prev = c( -Inf, -Inf ), q.conn.next = c( -Inf, means[1] ),
+                        p.ind = c( 0, 0 ),
+                        p.conn.prev = c( 0, 0 ), p.conn.next = c( 0, ps[1] ) ),
+                    CGDInterval$new(
+                        mean = means[2],
+                        sd = sds[2],
+                        q.ind = c( means[2], means[2] ),
+                        q.conn.prev = c( -Inf, qnorm( ps[1], means[2], sds[2] ) ),
+                        q.conn.next = c( qnorm( ps[3], means[2], sds[2] ), Inf ),
+                        p.ind = c( ps[2], ps[2] ),
+                        p.conn.prev = c( 0, ps[1] ), p.conn.next = c( ps[3], 1 ) ),
+                    CGDInterval$new(
+                        mean = means[3],
+                        sd = sds[3],
+                        q.ind = c( Inf, Inf ),
+                        q.conn.prev = c( means[3], Inf ), q.conn.next = c( Inf, Inf ),
+                        p.ind = c( 1, 1 ),
+                        p.conn.prev = c( ps[3], 1 ), p.conn.next = c( 1, 1 ) ) ) )
 }
 
 ################################################################################################
@@ -4491,23 +4515,23 @@ gen.t3.intervals <- function( means, sds )
 ################################################################################################
 t3.mid.sd <- function( mean.2, wp.near )
 {
-	sd.1 <- sd.mqp.norm( mean.2, wp.near$q[1], wp.near$p[1] )
-	sd.2 <- sd.mqp.norm( mean.2, wp.near$q[2], wp.near$p[2] )
+    sd.1 <- sd.mqp.norm( mean.2, wp.near$q[1], wp.near$p[1] )
+    sd.2 <- sd.mqp.norm( mean.2, wp.near$q[2], wp.near$p[2] )
 
-	if ( sd.1 < 0 )
-	{
-		sd.1 <- sd.mqp.norm( mean.2, 2 * mean.2 - wp.near$q[1], wp.near$p[1] )
-	}
+    if ( sd.1 < 0 )
+    {
+        sd.1 <- sd.mqp.norm( mean.2, 2 * mean.2 - wp.near$q[1], wp.near$p[1] )
+    }
 
-	if ( sd.2 < 0 )
-	{
-		sd.2 <- sd.mqp.norm( mean.2, 2 * mean.2 - wp.near$q[2], wp.near$p[2] )
-	}
+    if ( sd.2 < 0 )
+    {
+        sd.2 <- sd.mqp.norm( mean.2, 2 * mean.2 - wp.near$q[2], wp.near$p[2] )
+    }
 
-	dist.1 <- abs( mean.2 - wp.near$q[1] )
-	dist.2 <- abs( mean.2 - wp.near$q[2] )
+    dist.1 <- abs( mean.2 - wp.near$q[1] )
+    dist.2 <- abs( mean.2 - wp.near$q[2] )
 
-	return ( ( sd.1 * dist.2 + sd.2 * dist.1 ) / ( dist.1 + dist.2 ) )
+    return ( ( sd.1 * dist.2 + sd.2 * dist.1 ) / ( dist.1 + dist.2 ) )
 }
 
 
@@ -4686,7 +4710,7 @@ t3.mid.sd <- function( mean.2, wp.near )
 #'  plot.freq.and.d( a, x, freq, total )
 #'
 #'  a$nls.freq( x, freq, total,
-#'              kind = "2-Mean-Equaled-Sigma-Differed Vertical Gradational Distribution" )
+#'              kind = "2-Mean-Equaled Sigma-Differed Vertical Gradational Distribution" )
 #'  a
 #'  plot.freq.and.d( a, x, freq, total )
 #'
@@ -4712,153 +4736,153 @@ t3.mid.sd <- function( mean.2, wp.near )
 #'  plot.freq.and.d( a, x, freq, total )
 ################################################################################################
 nls.freq <- function( x, freq, total, start = NULL, control = list(), set.by.start = FALSE,
-					  kind = NULL, normal = FALSE, symmetric = FALSE, v.grad = FALSE,
-					  type1.type = 2, uni.sigma = FALSE, uni.mean = TRUE, ... )
+                      kind = NULL, normal = FALSE, symmetric = FALSE, v.grad = FALSE,
+                      type1.type = 2, uni.sigma = FALSE, uni.mean = TRUE, ... )
 {
-	obj <- CGD$new()
-	obj$nls.freq( x, freq, total, start, control, set.by.start, kind,
-							normal, symmetric, v.grad, type1.type,
-							uni.sigma, uni.mean, ... )
-	return ( obj )
+    obj <- CGD$new()
+    obj$nls.freq( x, freq, total, start, control, set.by.start, kind,
+                            normal, symmetric, v.grad, type1.type,
+                            uni.sigma, uni.mean, ... )
+    return ( obj )
 }
 
 CGD$methods(
-	nls.freq = function( x, freq, total, start = NULL, control = list(), set.by.start = FALSE, kind = NULL,
-							normal = FALSE, symmetric = FALSE, v.grad = FALSE, this.type1.type = NULL,
-							uni.sigma = FALSE, uni.mean = TRUE, ... )
-	{
-		result <- NULL
+    nls.freq = function( x, freq, total, start = NULL, control = list(), set.by.start = FALSE, kind = NULL,
+                            normal = FALSE, symmetric = FALSE, v.grad = FALSE, this.type1.type = NULL,
+                            uni.sigma = FALSE, uni.mean = TRUE, ... )
+    {
+        result <- NULL
 
-		# フィールドを初期化
-		clear( TRUE )
+        # フィールドを初期化
+        clear( TRUE )
 
-		# 引数チェック
-		if ( length( x ) != length( freq ) )
-		{
-			stop( "Error: The lengths of x and freq are different." )
-		}
+        # 引数チェック
+        if ( length( x ) != length( freq ) )
+        {
+            stop( "Error: The lengths of x and freq are different." )
+        }
 
-		if ( length( x ) < 3 )
-		{
-			stop( "Error: The lengths of x and freq are too short." )
-		}
+        if ( length( x ) < 3 )
+        {
+            stop( "Error: The lengths of x and freq are too short." )
+        }
 
-		if ( !all( x[1:length( x ) - 1] < x[2:length( x )] ) )
-		{
-			stop( "Error: x must have been sorted in ascending order, and must not duplicated." )
-		}
+        if ( !all( x[1:length( x ) - 1] < x[2:length( x )] ) )
+        {
+            stop( "Error: x must have been sorted in ascending order, and must not duplicated." )
+        }
 
-		if ( sum( freq ) > total )
-		{
-			stop( "Error: total is smaller than the sum of freq." )
-		}
+        if ( sum( freq ) > total )
+        {
+            stop( "Error: total is smaller than the sum of freq." )
+        }
 
-		# kind 指定時の各オプション設定
-		index <- NaN
-		if ( !is.null( kind ) )
-		{
-			index <- cgd.kind.index( kind )[1]
-		}
+        # kind 指定時の各オプション設定
+        index <- NaN
+        if ( !is.null( kind ) )
+        {
+            index <- cgd.kind.index( kind )[1]
+        }
 
-		if ( !is.na( index ) )
-		{
-			normal		<- ( index == 1 )
-			symmetric	<- ( index == 3 )
-			v.grad		<- any( index == 7:9 )
-			uni.sigma	<- ( index > 3 && ( index %% 3 == 1 ) )
-			uni.mean	<- ( index == 3 || ( index %% 3 != 0 ) )
+        if ( !is.na( index ) )
+        {
+            normal      <- ( index == 1 )
+            symmetric   <- ( index == 3 )
+            v.grad      <- any( index == 7:9 )
+            uni.sigma   <- ( index > 3 && ( index %% 3 == 1 ) )
+            uni.mean    <- ( index == 3 || ( index %% 3 != 0 ) )
 
-			if ( index == 2 )
-			{
-				this.type1.type <- 1
-			}
-			else if ( any( index == 3:6 ) )
-			{
-				this.type1.type <- 2
-			}
-			else if ( any( index == 7:12 ) )
-			{
-				this.type1.type <- 3
-			}
-			else if ( any( index == 13:15 ) )
-			{
-				this.type1.type <- 4
-			}
-		}
+            if ( index == 2 )
+            {
+                this.type1.type <- 1
+            }
+            else if ( any( index == 3:6 ) )
+            {
+                this.type1.type <- 2
+            }
+            else if ( any( index == 7:12 ) )
+            {
+                this.type1.type <- 3
+            }
+            else if ( any( index == 13:15 ) )
+            {
+                this.type1.type <- 4
+            }
+        }
 
-		# type1.type 設定
-		if ( is.null( this.type1.type ) )
-		{
-			this.type1.type <- type1.type
-		}
+        # type1.type 設定
+        if ( is.null( this.type1.type ) )
+        {
+            this.type1.type <- type1.type
+        }
 
-		if ( normal )
-		{
-			if ( this.type1.type == 1 || this.type1.type == 2 )
-			{
-				type1.type <<- this.type1.type
-			}
-			else
-			{
-				type1.type <<- 1
-			}
-		}
-		else if ( symmetric )
-		{
-			type1.type <<- 2
-		}
-		else if ( v.grad )
-		{
-			type1.type <<- 3
-		}
-		else if ( this.type1.type == 1 || this.type1.type == 2 || this.type1.type == 3 || this.type1.type == 4 )
-		{
-			type1.type <<- this.type1.type
-		}
-		else
-		{
-			stop( paste( "Error: type1.type" , this.type1.type, "is not allowed for nls.freq." ) )
-		}
+        if ( normal )
+        {
+            if ( this.type1.type == 1 || this.type1.type == 2 )
+            {
+                type1.type <<- this.type1.type
+            }
+            else
+            {
+                type1.type <<- 1
+            }
+        }
+        else if ( symmetric )
+        {
+            type1.type <<- 2
+        }
+        else if ( v.grad )
+        {
+            type1.type <<- 3
+        }
+        else if ( this.type1.type == 1 || this.type1.type == 2 || this.type1.type == 3 || this.type1.type == 4 )
+        {
+            type1.type <<- this.type1.type
+        }
+        else
+        {
+            stop( paste( "Error: type1.type" , this.type1.type, "is not allowed for nls.freq." ) )
+        }
 
-		if ( uni.sigma )
-		{
-			uni.mean <- FALSE	# uni.sigma = TRUE ⇒ uni.mean = FALSE
-		}
+        if ( uni.sigma )
+        {
+            uni.mean <- FALSE   # uni.sigma = TRUE ⇒ uni.mean = FALSE
+        }
 
-		# nls 用の初期値を取得
-		params <- get.nls.params( x, freq, total,
-									normal, symmetric, v.grad, type1.type,
-									uni.sigma, uni.mean )
-		if ( is.null( start ) )
-		{
-			start <- params$start
-		}
+        # nls 用の初期値を取得
+        params <- get.nls.params( x, freq, total,
+                                    normal, symmetric, v.grad, type1.type,
+                                    uni.sigma, uni.mean )
+        if ( is.null( start ) )
+        {
+            start <- params$start
+        }
 
-		if ( set.by.start )
-		{
-			# nls を使わず、初期値をそのまま出力する
-			coefs <- unlist( start )
-		}
-		else
-		{
-			# nls 実行
-			e <- try( result <- nls( params$formula, data = list( d = get.d( x, freq, total ), x = x ),
-									 start = start, control = control, ... ), silent = TRUE )
-			if ( inherits( e, "try-error" ) )
-			{
-				stop( paste( "nls has failed. Message:", e ) )
-			}
-			else
-			{
-				coefs <- coef( result )
-			}
-		}
+        if ( set.by.start )
+        {
+            # nls を使わず、初期値をそのまま出力する
+            coefs <- unlist( start )
+        }
+        else
+        {
+            # nls 実行
+            e <- try( result <- nls( params$formula, data = list( d = get.d( x, freq, total ), x = x ),
+                                     start = start, control = control, ... ), silent = TRUE )
+            if ( inherits( e, "try-error" ) )
+            {
+                stop( paste( "nls has failed. Message:", e ) )
+            }
+            else
+            {
+                coefs <- coef( result )
+            }
+        }
 
-		set.intervals( get.intervals.with.nls.coef( coefs, normal, symmetric, v.grad,
-													uni.sigma, uni.mean, type1.type ) )
+        set.intervals( get.intervals.with.nls.coef( coefs, normal, symmetric, v.grad,
+                                                    uni.sigma, uni.mean, type1.type ) )
 
-		return ( result )
-	}
+        return ( result )
+    }
 )
 
 ################################################################################################
@@ -4884,30 +4908,30 @@ CGD$methods(
 ################################################################################################
 get.d <- function( x, freq, total )
 {
-	d <- vapply( 1:length( x ), function( i )
-	{
-		if ( i == 1 )
-		{
-			x.width.lower <- ( x[2] - x[1] ) / 2
-		}
-		else
-		{
-			x.width.lower <- ( x[i] - x[i - 1] ) / 2
-		}
+    d <- vapply( 1:length( x ), function( i )
+    {
+        if ( i == 1 )
+        {
+            x.width.lower <- ( x[2] - x[1] ) / 2
+        }
+        else
+        {
+            x.width.lower <- ( x[i] - x[i - 1] ) / 2
+        }
 
-		if ( i == length( x ) )
-		{
-			x.width.upper <- ( x[i] - x[i - 1] ) / 2
-		}
-		else
-		{
-			x.width.upper <- ( x[i + 1] - x[i] ) / 2
-		}
+        if ( i == length( x ) )
+        {
+            x.width.upper <- ( x[i] - x[i - 1] ) / 2
+        }
+        else
+        {
+            x.width.upper <- ( x[i + 1] - x[i] ) / 2
+        }
 
-		freq[i] / total / ( x.width.lower + x.width.upper )
-	}, 0 )
+        freq[i] / total / ( x.width.lower + x.width.upper )
+    }, 0 )
 
-	return ( d )
+    return ( d )
 }
 
 ################################################################################################
@@ -4929,190 +4953,224 @@ get.d <- function( x, freq, total )
 ################################################################################################
 get.nls.params <- function( x, freq, total, normal, symmetric, v.grad, type1.type, uni.sigma, uni.mean )
 {
-	fm <- NULL
-	start <- list()
+    fm <- NULL
+    start <- list()
 
-	data.mean <- sum( x * freq ) / total
+    data.mean <- sum( x * freq ) / total
 
-	# 標準偏差の初期値を得るために、度数分布を四分割する
-	xf <- separate.freq.four( x, freq, data.mean )
+    # 標準偏差の初期値を得るために、度数分布を四分割する
+    xf <- separate.freq.four( x, freq, data.mean )
 
-	# uni.sigma = TRUE のときは、必ず構成要素の正規分布の平均値が異なるようになることから、
-	# 初めから裾部だけの標準偏差を計算しておいて、それを標準偏差の初期値として与える
-	if ( uni.sigma )
-	{
-		length.1 <- length( xf$x[[1]] )
-		length.4 <- length( xf$x[[4]] )
+    # uni.sigma = TRUE のときは、必ず構成要素の正規分布の平均値が異なるようになることから、
+    # 初めから裾部だけの標準偏差を計算しておいて、それを標準偏差の初期値として与える
+    if ( uni.sigma )
+    {
+        length.1 <- length( xf$x[[1]] )
+        length.4 <- length( xf$x[[4]] )
 
-		sd.1 <- sqrt( sum( ( xf$x[[1]] - xf$x[[1]][length.1] )^2 * freq[1:length.1] ) /
-						sum( freq[1:length.1] ) )
+        sd.1 <- sqrt( sum( ( xf$x[[1]] - xf$x[[1]][length.1] )^2 * freq[1:length.1] ) /
+                        sum( freq[1:length.1] ) )
 
-		sd.4 <- sqrt( sum( ( xf$x[[4]] - xf$x[[4]][1] )^2 * freq[length( freq ) - length.4 + 1:length.4] ) /
-						sum( freq[length( freq ) - length.4 + 1:length.4] ) )
+        sd.4 <- sqrt( sum( ( xf$x[[4]] - xf$x[[4]][1] )^2 * freq[length( freq ) - length.4 + 1:length.4] ) /
+                        sum( freq[length( freq ) - length.4 + 1:length.4] ) )
 
-		sqrt.sd.for.uni.sigma <- sqrt( ( sd.1 + sd.4 ) / 2 )
-	}
+        sqrt.sd.for.uni.sigma <- sqrt( ( sd.1 + sd.4 ) / 2 )
+    }
 
-	if ( normal )
-	{
-		# 正規分布
-		fm <- d ~ dnorm( x, mean, sqrt.sd^2 )
+    if ( normal )
+    {
+        # 正規分布
+        fm <- d ~ dnorm( x, mean, sqrt.sd^2 )
 
-		start <- list( mean = data.mean, sqrt.sd = ( sum( ( x - data.mean )^2 * freq ) / total )^0.25 )
-	}
-	else
-	{
-		if ( type1.type == 1 )
-		{
-			# 平均値が等しい2つの正規分布の平均
-			fm <- d ~ ( dnorm( x, mean, sqrt.sd.1^2 ) + dnorm( x, mean, sqrt.sd.2^2 ) ) / 2
-			start <- list( mean = data.mean,
-							sqrt.sd.1 = ( sum( ( xf$x.outer - data.mean )^2 * xf$freq.outer ) / sum( xf$freq.outer ) )^0.25,
-							sqrt.sd.2 = ( sum( ( xf$x.inner - data.mean )^2 * xf$freq.inner ) / sum( xf$freq.inner ) )^0.25 )
-		}
-		else if ( type1.type == 2 )
-		{
-			# 横方向グラデーション
-			if ( symmetric )
-			{
-				fm <- d ~ ( 1 - 2 * pnorm( mean + abs( mean - x ), mean, sqrt.sd.1^2 ) ) *
-									dnorm( mean + abs( mean - x ), mean, sqrt.sd.1^2 ) +
-							2 * pnorm( mean + abs( mean - x ), mean, sqrt.sd.2^2 ) *
-								dnorm( mean + abs( mean - x ), mean, sqrt.sd.2^2 )
+        start <- list( mean = data.mean, sqrt.sd = ( sum( ( x - data.mean )^2 * freq ) / total )^0.25 )
+    }
+    else
+    {
+        if ( type1.type == 1 )
+        {
+            # 平均値が等しい2つの正規分布の平均
+            fm <- d ~ ( dnorm( x, mean, sqrt.sd.1^2 ) + dnorm( x, mean, sqrt.sd.2^2 ) ) / 2
+            start <- list( mean = data.mean,
+                            sqrt.sd.1 = ( sum( ( xf$x.outer - data.mean )^2 * xf$freq.outer ) /
+                                            sum( xf$freq.outer ) )^0.25,
+                            sqrt.sd.2 = ( sum( ( xf$x.inner - data.mean )^2 * xf$freq.inner ) /
+                                            sum( xf$freq.inner ) )^0.25 )
+        }
+        else if ( type1.type == 2 )
+        {
+            # 横方向グラデーション
+            if ( symmetric )
+            {
+                fm <- d ~ ( 1 - 2 * pnorm( mean + abs( mean - x ), mean, sqrt.sd.1^2 ) ) *
+                                    dnorm( mean + abs( mean - x ), mean, sqrt.sd.1^2 ) +
+                            2 * pnorm( mean + abs( mean - x ), mean, sqrt.sd.2^2 ) *
+                                dnorm( mean + abs( mean - x ), mean, sqrt.sd.2^2 )
 
-				start <- list( mean = data.mean,
-								sqrt.sd.1 = ( sum( ( xf$x.outer - data.mean )^2 * xf$freq.outer ) / sum( xf$freq.outer ) )^0.25,
-								sqrt.sd.2 = ( sum( ( xf$x.inner - data.mean )^2 * xf$freq.inner ) / sum( xf$freq.inner ) )^0.25 )
-			}
-			else if ( uni.sigma )
-			{
-				fm <- d ~ ( 1 - pnorm( x, mean.1, sqrt.sd^2 ) ) * dnorm( x, mean.1, sqrt.sd^2 ) +
-							pnorm( x, mean.2, sqrt.sd^2 ) * dnorm( x, mean.2, sqrt.sd^2 )
+                start <- list( mean = data.mean,
+                                sqrt.sd.1 = ( sum( ( xf$x.outer - data.mean )^2 * xf$freq.outer ) /
+                                                sum( xf$freq.outer ) )^0.25,
+                                sqrt.sd.2 = ( sum( ( xf$x.inner - data.mean )^2 * xf$freq.inner ) /
+                                                sum( xf$freq.inner ) )^0.25 )
+            }
+            else if ( uni.sigma )
+            {
+                fm <- d ~ ( 1 - pnorm( x, mean.1, sqrt.sd^2 ) ) * dnorm( x, mean.1, sqrt.sd^2 ) +
+                          pnorm( x, mean.2, sqrt.sd^2 ) * dnorm( x, mean.2, sqrt.sd^2 )
 
-				start <- list( mean.1 = data.mean, mean.2 = data.mean, sqrt.sd = sqrt.sd.for.uni.sigma )
-			}
-			else if ( uni.mean )
-			{
-				fm <- d ~ ( 1 - pnorm( x, mean, sqrt.sd.1^2 ) ) * dnorm( x, mean, sqrt.sd.1^2 ) +
-							pnorm( x, mean, sqrt.sd.2^2 ) * dnorm( x, mean, sqrt.sd.2^2 )
+                start <- list( mean.1 = data.mean, mean.2 = data.mean, sqrt.sd = sqrt.sd.for.uni.sigma )
+            }
+            else if ( uni.mean )
+            {
+                fm <- d ~ ( 1 - pnorm( x, mean, sqrt.sd.1^2 ) ) * dnorm( x, mean, sqrt.sd.1^2 ) +
+                          pnorm( x, mean, sqrt.sd.2^2 ) * dnorm( x, mean, sqrt.sd.2^2 )
 
-				start <- list( mean = data.mean,
-								sqrt.sd.1 = ( sum( ( xf$x.lower - data.mean )^2 * xf$freq.lower ) / sum( xf$freq.lower ) )^0.25,
-								sqrt.sd.2 = ( sum( ( xf$x.upper - data.mean )^2 * xf$freq.upper ) / sum( xf$freq.upper ) )^0.25 )
-			}
-			else
-			{
-				fm <- d ~ ( 1 - pnorm( x, mean.1, sqrt.sd.1 ) ) * dnorm( x, mean.1, sqrt.sd.1 ) +
-							pnorm( x, mean.2, sqrt.sd.2 ) * dnorm( x, mean.2, sqrt.sd.2 )
+                start <- list( mean = data.mean,
+                                sqrt.sd.1 = ( sum( ( xf$x.lower - data.mean )^2 * xf$freq.lower ) /
+                                                sum( xf$freq.lower ) )^0.25,
+                                sqrt.sd.2 = ( sum( ( xf$x.upper - data.mean )^2 * xf$freq.upper ) /
+                                                sum( xf$freq.upper ) )^0.25 )
+            }
+            else
+            {
+                fm <- d ~ ( 1 - pnorm( x, mean.1, sqrt.sd.1^2 ) ) * dnorm( x, mean.1, sqrt.sd.1^2 ) +
+                          pnorm( x, mean.2, sqrt.sd.2^2 ) * dnorm( x, mean.2, sqrt.sd.2^2 )
 
-				start <- list( mean.1 = data.mean, mean.2 = data.mean,
-								sqrt.sd.1 = ( sum( ( xf$x.lower - data.mean )^2 * xf$freq.lower ) / sum( xf$freq.lower ) )^0.25,
-								sqrt.sd.2 = ( sum( ( xf$x.upper - data.mean )^2 * xf$freq.upper ) / sum( xf$freq.upper ) )^0.25 )
-			}
-		}
-		else if ( type1.type == 3 )
-		{
-			if ( v.grad )
-			{
-				# 縦方向グラデーション
-				if ( uni.sigma )
-				{
-					fm <- d ~ dp.t3( x, c( mean.1, mean.2, mean.1 ), c( sqrt.sd^2, sqrt.sd^2, sqrt.sd^2 ), f.t3.d )
+                start <- list( mean.1 = data.mean, mean.2 = data.mean,
+                                sqrt.sd.1 = ( sum( ( xf$x.lower - data.mean )^2 * xf$freq.lower ) /
+                                                sum( xf$freq.lower ) )^0.25,
+                                sqrt.sd.2 = ( sum( ( xf$x.upper - data.mean )^2 * xf$freq.upper ) /
+                                                sum( xf$freq.upper ) )^0.25 )
+            }
+        }
+        else if ( type1.type == 3 )
+        {
+            if ( v.grad )
+            {
+                # 縦方向グラデーション
+                if ( uni.sigma )
+                {
+                    fm <- d ~ dp.t3( x, c( mean.1, mean.2, mean.1 ), c( sqrt.sd^2, sqrt.sd^2, sqrt.sd^2 ), f.t3.d )
 
-					start <- list( mean.1 = data.mean, mean.2 = data.mean, sqrt.sd = sqrt.sd.for.uni.sigma )
-				}
-				else if ( uni.mean )
-				{
-					fm <- d ~ dp.t3( x, c( mean, mean, mean ), c( sqrt.sd.1^2, sqrt.sd.2^2, sqrt.sd.1^2 ), f.t3.d )
+                    start <- list( mean.1 = data.mean, mean.2 = data.mean, sqrt.sd = sqrt.sd.for.uni.sigma )
+                }
+                else if ( uni.mean )
+                {
+                    fm <- d ~ dp.t3( x, c( mean, mean, mean ), c( sqrt.sd.1^2, sqrt.sd.2^2, sqrt.sd.1^2 ), f.t3.d )
 
-					start <- list( mean = data.mean,
-								sqrt.sd.1 = ( sum( ( xf$x.outer - data.mean )^2 * xf$freq.outer ) / sum( xf$freq.outer ) )^0.25,
-								sqrt.sd.2 = ( sum( ( xf$x.inner - data.mean )^2 * xf$freq.inner ) / sum( xf$freq.inner ) )^0.25 )
-				}
-				else
-				{
-					fm <- d ~ dp.t3( x, c( mean.1, mean.2, mean.1 ), c( sqrt.sd.1^2, sqrt.sd.2^2, sqrt.sd.1^2 ), f.t3.d )
+                    start <- list( mean = data.mean,
+                                sqrt.sd.1 = ( sum( ( xf$x.outer - data.mean )^2 * xf$freq.outer ) /
+                                                sum( xf$freq.outer ) )^0.25,
+                                sqrt.sd.2 = ( sum( ( xf$x.inner - data.mean )^2 * xf$freq.inner ) /
+                                                sum( xf$freq.inner ) )^0.25 )
+                }
+                else
+                {
+                    fm <- d ~ dp.t3( x, c( mean.1, mean.2, mean.1 ),
+                                        c( sqrt.sd.1^2, sqrt.sd.2^2, sqrt.sd.1^2 ), f.t3.d )
 
-					start <- list( mean.1 = data.mean, mean.2 = data.mean,
-								sqrt.sd.1 = ( sum( ( xf$x.outer - data.mean )^2 * xf$freq.outer ) / sum( xf$freq.outer ) )^0.25,
-								sqrt.sd.2 = ( sum( ( xf$x.inner - data.mean )^2 * xf$freq.inner ) / sum( xf$freq.inner ) )^0.25 )
-				}
-			}
-			else
-			{
-				# 歪んだ縦方向グラデーション
-				if ( uni.sigma )
-				{
-					fm <- d ~ dp.t3( x, c( mean.1, mean.2, mean.3 ), c( sqrt.sd^2, sqrt.sd^2, sqrt.sd^2 ), f.t3.d )
+                    start <- list( mean.1 = data.mean, mean.2 = data.mean,
+                                sqrt.sd.1 = ( sum( ( xf$x.outer - data.mean )^2 * xf$freq.outer ) /
+                                                sum( xf$freq.outer ) )^0.25,
+                                sqrt.sd.2 = ( sum( ( xf$x.inner - data.mean )^2 * xf$freq.inner ) /
+                                                sum( xf$freq.inner ) )^0.25 )
+                }
+            }
+            else
+            {
+                # 歪んだ縦方向グラデーション
+                if ( uni.sigma )
+                {
+                    fm <- d ~ dp.t3( x, c( mean.1, mean.2, mean.3 ),
+                                        c( sqrt.sd^2, sqrt.sd^2, sqrt.sd^2 ), f.t3.d )
 
-					start <- list( mean.1 = data.mean, mean.2 = data.mean, mean.3 = data.mean,
-									sqrt.sd = sqrt.sd.for.uni.sigma )
-				}
-				else if ( uni.mean )
-				{
-					fm <- d ~ dp.t3( x, c( mean, mean, mean ), c( sqrt.sd.1^2, sqrt.sd.2^2, sqrt.sd.3^2 ), f.t3.d )
+                    start <- list( mean.1 = data.mean, mean.2 = data.mean, mean.3 = data.mean,
+                                    sqrt.sd = sqrt.sd.for.uni.sigma )
+                }
+                else if ( uni.mean )
+                {
+                    fm <- d ~ dp.t3( x, c( mean, mean, mean ),
+                                        c( sqrt.sd.1^2, sqrt.sd.2^2, sqrt.sd.3^2 ), f.t3.d )
 
-					start <- list( mean = data.mean,
-								sqrt.sd.1 = ( sum( ( xf$x[[1]] - data.mean )^2 * xf$freq[[1]] ) / sum( xf$freq[[1]] ) )^0.25,
-								sqrt.sd.2 = ( sum( ( xf$x.inner - data.mean )^2 * xf$freq.inner ) / sum( xf$freq.inner ) )^0.25,
-								sqrt.sd.3 = ( sum( ( xf$x[[4]] - data.mean )^2 * xf$freq[[4]] ) / sum( xf$freq[[4]] ) )^0.25 )
-				}
-				else
-				{
-					fm <- d ~ dp.t3( x, c( mean.1, mean.2, mean.3 ), c( sqrt.sd.1^2, sqrt.sd.2^2, sqrt.sd.3^2 ), f.t3.d )
+                    start <- list( mean = data.mean,
+                                sqrt.sd.1 = ( sum( ( xf$x[[1]] - data.mean )^2 * xf$freq[[1]] ) /
+                                                sum( xf$freq[[1]] ) )^0.25,
+                                sqrt.sd.2 = ( sum( ( xf$x.inner - data.mean )^2 * xf$freq.inner ) /
+                                                sum( xf$freq.inner ) )^0.25,
+                                sqrt.sd.3 = ( sum( ( xf$x[[4]] - data.mean )^2 * xf$freq[[4]] ) /
+                                                sum( xf$freq[[4]] ) )^0.25 )
+                }
+                else
+                {
+                    fm <- d ~ dp.t3( x, c( mean.1, mean.2, mean.3 ),
+                                        c( sqrt.sd.1^2, sqrt.sd.2^2, sqrt.sd.3^2 ), f.t3.d )
 
-					start <- list( mean.1 = data.mean, mean.2 = data.mean, mean.3 = data.mean,
-								sqrt.sd.1 = ( sum( ( xf$x[[1]] - data.mean )^2 * xf$freq[[1]] ) / sum( xf$freq[[1]] ) )^0.25,
-								sqrt.sd.2 = ( sum( ( xf$x.inner - data.mean )^2 * xf$freq.inner ) / sum( xf$freq.inner ) )^0.25,
-								sqrt.sd.3 = ( sum( ( xf$x[[4]] - data.mean )^2 * xf$freq[[4]] ) / sum( xf$freq[[4]] ) )^0.25 )
-				}
-			}
-		}
-		else if ( type1.type == 4 )
-		{
-			# 縦横グラデーション
-			if ( uni.sigma )
-			{
-				fm <- d ~ ( 1 - f.t3.p[[1]]( x, mean.1.1, sqrt.sd^2 ) - f.t3.p[[2]]( x, mean.1.2, sqrt.sd^2 ) ) *
-								( f.t3.d[[1]]( x, mean.1.1, sqrt.sd^2 ) + f.t3.d[[2]]( x, mean.1.2, sqrt.sd^2 ) ) +
-							( f.t3.p[[1]]( x, mean.2.1, sqrt.sd^2 ) + f.t3.p[[2]]( x, mean.2.2, sqrt.sd^2 ) ) *
-								( f.t3.d[[1]]( x, mean.2.1, sqrt.sd^2 ) + f.t3.d[[2]]( x, mean.2.2, sqrt.sd^2 ) )
+                    start <- list( mean.1 = data.mean, mean.2 = data.mean, mean.3 = data.mean,
+                                sqrt.sd.1 = ( sum( ( xf$x[[1]] - data.mean )^2 * xf$freq[[1]] ) /
+                                                sum( xf$freq[[1]] ) )^0.25,
+                                sqrt.sd.2 = ( sum( ( xf$x.inner - data.mean )^2 * xf$freq.inner ) /
+                                                sum( xf$freq.inner ) )^0.25,
+                                sqrt.sd.3 = ( sum( ( xf$x[[4]] - data.mean )^2 * xf$freq[[4]] ) /
+                                                sum( xf$freq[[4]] ) )^0.25 )
+                }
+            }
+        }
+        else if ( type1.type == 4 )
+        {
+            # 縦横グラデーション
+            if ( uni.sigma )
+            {
+                fm <- d ~ ( 1 - f.t3.p[[1]]( x, mean.1.1, sqrt.sd^2 ) - f.t3.p[[2]]( x, mean.1.2, sqrt.sd^2 ) ) *
+                                ( f.t3.d[[1]]( x, mean.1.1, sqrt.sd^2 ) + f.t3.d[[2]]( x, mean.1.2, sqrt.sd^2 ) ) +
+                            ( f.t3.p[[1]]( x, mean.2.1, sqrt.sd^2 ) + f.t3.p[[2]]( x, mean.2.2, sqrt.sd^2 ) ) *
+                                ( f.t3.d[[1]]( x, mean.2.1, sqrt.sd^2 ) + f.t3.d[[2]]( x, mean.2.2, sqrt.sd^2 ) )
 
-				start <- list( mean.1.1 = data.mean, mean.1.2 = data.mean,
-								mean.2.1 = data.mean, mean.2.2 = data.mean,
-								sqrt.sd = sqrt.sd.for.uni.sigma )
-			}
-			else if ( uni.mean )
-			{
-				fm <- d ~ ( 1 - f.t3.p[[1]]( x, mean, sqrt.sd.1.1^2 ) - f.t3.p[[2]]( x, mean, sqrt.sd.1.2^2 ) ) *
-								( f.t3.d[[1]]( x, mean, sqrt.sd.1.1^2 ) + f.t3.d[[2]]( x, mean, sqrt.sd.1.2^2 ) ) +
-							( f.t3.p[[1]]( x, mean, sqrt.sd.2.1^2 ) + f.t3.p[[2]]( x, mean, sqrt.sd.2.2^2 ) ) *
-								( f.t3.d[[1]]( x, mean, sqrt.sd.2.1^2 ) + f.t3.d[[2]]( x, mean, sqrt.sd.2.2^2 ) )
+                start <- list( mean.1.1 = data.mean, mean.1.2 = data.mean,
+                                mean.2.1 = data.mean, mean.2.2 = data.mean,
+                                sqrt.sd = sqrt.sd.for.uni.sigma )
+            }
+            else if ( uni.mean )
+            {
+                fm <- d ~ ( 1 - f.t3.p[[1]]( x, mean, sqrt.sd.1.1^2 ) - f.t3.p[[2]]( x, mean, sqrt.sd.1.2^2 ) ) *
+                                ( f.t3.d[[1]]( x, mean, sqrt.sd.1.1^2 ) + f.t3.d[[2]]( x, mean, sqrt.sd.1.2^2 ) ) +
+                            ( f.t3.p[[1]]( x, mean, sqrt.sd.2.1^2 ) + f.t3.p[[2]]( x, mean, sqrt.sd.2.2^2 ) ) *
+                                ( f.t3.d[[1]]( x, mean, sqrt.sd.2.1^2 ) + f.t3.d[[2]]( x, mean, sqrt.sd.2.2^2 ) )
 
-				start <- list( mean = data.mean,
-								sqrt.sd.1.1 = ( sum( ( xf$x[[1]] - data.mean )^2 * xf$freq[[1]] ) / sum( xf$freq[[1]] ) )^0.25,
-								sqrt.sd.1.2 = ( sum( ( xf$x[[2]] - data.mean )^2 * xf$freq[[2]] ) / sum( xf$freq[[2]] ) )^0.25,
-								sqrt.sd.2.1 = ( sum( ( xf$x[[3]] - data.mean )^2 * xf$freq[[3]] ) / sum( xf$freq[[3]] ) )^0.25,
-								sqrt.sd.2.2 = ( sum( ( xf$x[[4]] - data.mean )^2 * xf$freq[[4]] ) / sum( xf$freq[[4]] ) )^0.25 )
-			}
-			else
-			{
-				fm <- d ~ ( 1 - f.t3.p[[1]]( x, mean.1.1, sqrt.sd.1.1^2 ) - f.t3.p[[2]]( x, mean.1.2, sqrt.sd.1.2^2 ) ) *
-								( f.t3.d[[1]]( x, mean.1.1, sqrt.sd.1.1^2 ) + f.t3.d[[2]]( x, mean.1.2, sqrt.sd.1.2^2 ) ) +
-							( f.t3.p[[1]]( x, mean.2.1, sqrt.sd.2.1^2 ) + f.t3.p[[2]]( x, mean.2.2, sqrt.sd.2.2^2 ) ) *
-								( f.t3.d[[1]]( x, mean.2.1, sqrt.sd.2.1^2 ) + f.t3.d[[2]]( x, mean.2.2, sqrt.sd.2.2^2 ) )
+                start <- list( mean = data.mean,
+                                sqrt.sd.1.1 = ( sum( ( xf$x[[1]] - data.mean )^2 * xf$freq[[1]] ) /
+                                                sum( xf$freq[[1]] ) )^0.25,
+                                sqrt.sd.1.2 = ( sum( ( xf$x[[2]] - data.mean )^2 * xf$freq[[2]] ) /
+                                                sum( xf$freq[[2]] ) )^0.25,
+                                sqrt.sd.2.1 = ( sum( ( xf$x[[3]] - data.mean )^2 * xf$freq[[3]] ) /
+                                                sum( xf$freq[[3]] ) )^0.25,
+                                sqrt.sd.2.2 = ( sum( ( xf$x[[4]] - data.mean )^2 * xf$freq[[4]] ) /
+                                                sum( xf$freq[[4]] ) )^0.25 )
+            }
+            else
+            {
+                fm <- d ~ ( 1 - f.t3.p[[1]]( x, mean.1.1, sqrt.sd.1.1^2 ) -
+                                f.t3.p[[2]]( x, mean.1.2, sqrt.sd.1.2^2 ) ) *
+                                ( f.t3.d[[1]]( x, mean.1.1, sqrt.sd.1.1^2 ) +
+                                  f.t3.d[[2]]( x, mean.1.2, sqrt.sd.1.2^2 ) ) +
+                            ( f.t3.p[[1]]( x, mean.2.1, sqrt.sd.2.1^2 ) +
+                              f.t3.p[[2]]( x, mean.2.2, sqrt.sd.2.2^2 ) ) *
+                                ( f.t3.d[[1]]( x, mean.2.1, sqrt.sd.2.1^2 ) +
+                                  f.t3.d[[2]]( x, mean.2.2, sqrt.sd.2.2^2 ) )
 
-				start <- list( mean.1.1 = data.mean, mean.1.2 = data.mean,
-								mean.2.1 = data.mean, mean.2.2 = data.mean,
-								sqrt.sd.1.1 = ( sum( ( xf$x[[1]] - data.mean )^2 * xf$freq[[1]] ) / sum( xf$freq[[1]] ) )^0.25,
-								sqrt.sd.1.2 = ( sum( ( xf$x[[2]] - data.mean )^2 * xf$freq[[2]] ) / sum( xf$freq[[2]] ) )^0.25,
-								sqrt.sd.2.1 = ( sum( ( xf$x[[3]] - data.mean )^2 * xf$freq[[3]] ) / sum( xf$freq[[3]] ) )^0.25,
-								sqrt.sd.2.2 = ( sum( ( xf$x[[4]] - data.mean )^2 * xf$freq[[4]] ) / sum( xf$freq[[4]] ) )^0.25 )
-			}
-		}
-	}
+                start <- list( mean.1.1 = data.mean, mean.1.2 = data.mean,
+                                mean.2.1 = data.mean, mean.2.2 = data.mean,
+                                sqrt.sd.1.1 = ( sum( ( xf$x[[1]] - data.mean )^2 * xf$freq[[1]] ) /
+                                                sum( xf$freq[[1]] ) )^0.25,
+                                sqrt.sd.1.2 = ( sum( ( xf$x[[2]] - data.mean )^2 * xf$freq[[2]] ) /
+                                                sum( xf$freq[[2]] ) )^0.25,
+                                sqrt.sd.2.1 = ( sum( ( xf$x[[3]] - data.mean )^2 * xf$freq[[3]] ) /
+                                                sum( xf$freq[[3]] ) )^0.25,
+                                sqrt.sd.2.2 = ( sum( ( xf$x[[4]] - data.mean )^2 * xf$freq[[4]] ) /
+                                                sum( xf$freq[[4]] ) )^0.25 )
+            }
+        }
+    }
 
-	return ( list( formula = fm, start = start ) )
+    return ( list( formula = fm, start = start ) )
 }
 
 ################################################################################################
@@ -5130,42 +5188,42 @@ get.nls.params <- function( x, freq, total, normal, symmetric, v.grad, type1.typ
 ################################################################################################
 separate.freq.four <- function( x, freq, data.mean )
 {
-	xs <- freqs <- list( numeric(), numeric(), numeric(), numeric() )
+    xs <- freqs <- list( numeric(), numeric(), numeric(), numeric() )
 
-	xs.lower <- x[x <= data.mean]
-	xs.upper <- x[x >= data.mean]
-	freqs.lower <- freq[x <= data.mean]
-	freqs.upper <- freq[x >= data.mean]
+    xs.lower <- x[x <= data.mean]
+    xs.upper <- x[x >= data.mean]
+    freqs.lower <- freq[x <= data.mean]
+    freqs.upper <- freq[x >= data.mean]
 
-	xs[[1]] <- head( xs.lower, ceiling( length( xs.lower ) / 2 ) )
-	xs[[2]] <- tail( xs.lower, ceiling( length( xs.lower ) / 2 ) )
-	xs[[3]] <- head( xs.upper, ceiling( length( xs.upper ) / 2 ) )
-	xs[[4]] <- tail( xs.upper, ceiling( length( xs.upper ) / 2 ) )
+    xs[[1]] <- head( xs.lower, ceiling( length( xs.lower ) / 2 ) )
+    xs[[2]] <- tail( xs.lower, ceiling( length( xs.lower ) / 2 ) )
+    xs[[3]] <- head( xs.upper, ceiling( length( xs.upper ) / 2 ) )
+    xs[[4]] <- tail( xs.upper, ceiling( length( xs.upper ) / 2 ) )
 
-	freqs[[1]] <- head( freqs.lower, ceiling( length( freqs.lower ) / 2 ) )
-	freqs[[2]] <- tail( freqs.lower, ceiling( length( freqs.lower ) / 2 ) )
-	freqs[[3]] <- head( freqs.upper, ceiling( length( freqs.upper ) / 2 ) )
-	freqs[[4]] <- tail( freqs.upper, ceiling( length( freqs.upper ) / 2 ) )
+    freqs[[1]] <- head( freqs.lower, ceiling( length( freqs.lower ) / 2 ) )
+    freqs[[2]] <- tail( freqs.lower, ceiling( length( freqs.lower ) / 2 ) )
+    freqs[[3]] <- head( freqs.upper, ceiling( length( freqs.upper ) / 2 ) )
+    freqs[[4]] <- tail( freqs.upper, ceiling( length( freqs.upper ) / 2 ) )
 
-	if ( xs[[2]][length( xs[[2]] )] == xs[[3]][1] )
-	{
-		xs.inner <- c( head( xs[[2]], length( xs[[2]] ) - 1 ), xs[[3]] )
-		freqs.inner <- c( head( freqs[[2]], length( freqs[[2]] ) - 1 ), freqs[[3]] )
-	}
-	else
-	{
-		xs.inner <- c( xs[[2]], xs[[3]] )
-		freqs.inner <- c( freqs[[2]], freqs[[3]] )
-	}
+    if ( xs[[2]][length( xs[[2]] )] == xs[[3]][1] )
+    {
+        xs.inner <- c( head( xs[[2]], length( xs[[2]] ) - 1 ), xs[[3]] )
+        freqs.inner <- c( head( freqs[[2]], length( freqs[[2]] ) - 1 ), freqs[[3]] )
+    }
+    else
+    {
+        xs.inner <- c( xs[[2]], xs[[3]] )
+        freqs.inner <- c( freqs[[2]], freqs[[3]] )
+    }
 
-	xs.outer <- c( xs[[1]], xs[[4]] )
-	freqs.outer <- c( freqs[[1]], freqs[[4]] )
+    xs.outer <- c( xs[[1]], xs[[4]] )
+    freqs.outer <- c( freqs[[1]], freqs[[4]] )
 
-	return ( list( x = xs, freq = freqs,
-					x.lower = xs.lower, x.upper = xs.upper,
-					freq.lower = freqs.lower, freq.upper = freqs.upper,
-					x.outer = xs.outer, x.inner = xs.inner,
-					freq.outer = freqs.outer, freq.inner = freqs.inner ) )
+    return ( list( x = xs, freq = freqs,
+                    x.lower = xs.lower, x.upper = xs.upper,
+                    freq.lower = freqs.lower, freq.upper = freqs.upper,
+                    x.outer = xs.outer, x.inner = xs.inner,
+                    freq.outer = freqs.outer, freq.inner = freqs.inner ) )
 }
 
 ################################################################################################
@@ -5184,170 +5242,170 @@ separate.freq.four <- function( x, freq, data.mean )
 ################################################################################################
 get.intervals.with.nls.coef <- function( coefs, normal, symmetric, v.grad, uni.sigma, uni.mean, type1.type )
 {
-	intervals <- list()
-	if ( normal )
-	{
-		# 正規分布
-		intervals <- list( CGDInterval$new(
-								mean = unname( coefs["mean"] ),
-								sd = unname( coefs["sqrt.sd"] )^2,
-								q.ind = c( -Inf, Inf ),
-								q.conn.prev = c( -Inf, -Inf ), q.conn.next = c( Inf, Inf ),
-								p.ind = c( 0, 1 ),
-								p.conn.prev = c( 0, 0 ), p.conn.next = c( 1, 1 ) ) )
-	}
-	else if ( symmetric )
-	{
-		# 左右対称・横方向グラデーション
-		mean <- unname( coefs["mean"] )
+    intervals <- list()
+    if ( normal )
+    {
+        # 正規分布
+        intervals <- list( CGDInterval$new(
+                                mean = unname( coefs["mean"] ),
+                                sd = unname( coefs["sqrt.sd"] )^2,
+                                q.ind = c( -Inf, Inf ),
+                                q.conn.prev = c( -Inf, -Inf ), q.conn.next = c( Inf, Inf ),
+                                p.ind = c( 0, 1 ),
+                                p.conn.prev = c( 0, 0 ), p.conn.next = c( 1, 1 ) ) )
+    }
+    else if ( symmetric )
+    {
+        # 左右対称・横方向グラデーション
+        mean <- unname( coefs["mean"] )
 
-		intervals <- list( CGDInterval$new(
-								mean = mean,
-								sd = unname( coefs["sqrt.sd.1"] )^2,
-								q.ind = c( -Inf, -Inf ),
-								q.conn.prev = c( -Inf, -Inf ), q.conn.next = c( -Inf, mean ),
-								p.ind = c( 0, 0 ),
-								p.conn.prev = c( 0, 0 ), p.conn.next = c( 0, 0.5 ) ),
-							CGDInterval$new(
-								mean = mean,
-								sd = unname( coefs["sqrt.sd.2"] )^2,
-								q.ind = c( mean, mean ),
-								q.conn.prev = c( -Inf, mean ), q.conn.next = c( mean, Inf ),
-								p.ind = c( 0.5, 0.5 ),
-								p.conn.prev = c( 0, 0.5 ), p.conn.next = c( 0.5, 1 ) ),
-							CGDInterval$new(
-								mean = mean,
-								sd = unname( coefs["sqrt.sd.1"] )^2,
-								q.ind = c( Inf, Inf ),
-								q.conn.prev = c( mean, Inf ), q.conn.next= c( Inf, Inf ),
-								p.ind = c( 1, 1 ),
-								p.conn.prev = c( 0.5, 1 ), p.conn.next = c( 1, 1 ) ) )
-	}
-	else if ( type1.type == 1 || type1.type == 2 )
-	{
-		# 平均値が等しい2つの正規分布の平均, 横方向グラデーション
-		if ( type1.type == 1 )
-		{
-			mean.1 <- mean.2 <- unname( coefs["mean"] )
+        intervals <- list( CGDInterval$new(
+                                mean = mean,
+                                sd = unname( coefs["sqrt.sd.1"] )^2,
+                                q.ind = c( -Inf, -Inf ),
+                                q.conn.prev = c( -Inf, -Inf ), q.conn.next = c( -Inf, mean ),
+                                p.ind = c( 0, 0 ),
+                                p.conn.prev = c( 0, 0 ), p.conn.next = c( 0, 0.5 ) ),
+                            CGDInterval$new(
+                                mean = mean,
+                                sd = unname( coefs["sqrt.sd.2"] )^2,
+                                q.ind = c( mean, mean ),
+                                q.conn.prev = c( -Inf, mean ), q.conn.next = c( mean, Inf ),
+                                p.ind = c( 0.5, 0.5 ),
+                                p.conn.prev = c( 0, 0.5 ), p.conn.next = c( 0.5, 1 ) ),
+                            CGDInterval$new(
+                                mean = mean,
+                                sd = unname( coefs["sqrt.sd.1"] )^2,
+                                q.ind = c( Inf, Inf ),
+                                q.conn.prev = c( mean, Inf ), q.conn.next= c( Inf, Inf ),
+                                p.ind = c( 1, 1 ),
+                                p.conn.prev = c( 0.5, 1 ), p.conn.next = c( 1, 1 ) ) )
+    }
+    else if ( type1.type == 1 || type1.type == 2 )
+    {
+        # 平均値が等しい2つの正規分布の平均, 横方向グラデーション
+        if ( type1.type == 1 )
+        {
+            mean.1 <- mean.2 <- unname( coefs["mean"] )
 
-			sd.1 <- unname( coefs["sqrt.sd.1"] )^2
-			sd.2 <- unname( coefs["sqrt.sd.2"] )^2
-		}
-		else # ( type1.type == 2 )
-		{
-			if ( uni.mean )
-			{
-				mean.1 <- mean.2 <- unname( coefs["mean"] )
-			}
-			else
-			{
-				mean.1 <- unname( coefs["mean.1"] )
-				mean.2 <- unname( coefs["mean.2"] )
-			}
+            sd.1 <- unname( coefs["sqrt.sd.1"] )^2
+            sd.2 <- unname( coefs["sqrt.sd.2"] )^2
+        }
+        else # ( type1.type == 2 )
+        {
+            if ( uni.mean )
+            {
+                mean.1 <- mean.2 <- unname( coefs["mean"] )
+            }
+            else
+            {
+                mean.1 <- unname( coefs["mean.1"] )
+                mean.2 <- unname( coefs["mean.2"] )
+            }
 
-			if ( uni.sigma )
-			{
-				sd.1 <- sd.2 <- unname( coefs["sqrt.sd"] )^2
-			}
-			else
-			{
-				sd.1 <- unname( coefs["sqrt.sd.1"] )^2
-				sd.2 <- unname( coefs["sqrt.sd.2"] )^2
-			}
-		}
+            if ( uni.sigma )
+            {
+                sd.1 <- sd.2 <- unname( coefs["sqrt.sd"] )^2
+            }
+            else
+            {
+                sd.1 <- unname( coefs["sqrt.sd.1"] )^2
+                sd.2 <- unname( coefs["sqrt.sd.2"] )^2
+            }
+        }
 
-		intervals <- list( CGDInterval$new(
-								mean = mean.1,
-								sd = sd.1,
-								q.ind = c( -Inf, -Inf ),
-								q.conn.prev = c( -Inf, -Inf ), q.conn.next = c( -Inf, Inf ),
-								p.ind = c( 0, 0 ),
-								p.conn.prev = c( 0, 0 ), p.conn.next = c( 0, 1 ) ),
-							CGDInterval$new(
-								mean = mean.2,
-								sd = sd.2,
-								q.ind = c( Inf, Inf ),
-								q.conn.prev = c( -Inf, Inf ), q.conn.next = c( Inf, Inf ),
-								p.ind = c( 1, 1 ),
-								p.conn.prev = c( 0, 1 ), p.conn.next = c( 1, 1 ) ) )
-	}
-	else if ( type1.type == 3 )
-	{
-		# (歪んでない/歪んだ) 縦方向グラデーション
-		if ( uni.sigma )
-		{
-			mean.3.coef <- ifelse( v.grad, "mean.1", "mean.3" )
+        intervals <- list( CGDInterval$new(
+                                mean = mean.1,
+                                sd = sd.1,
+                                q.ind = c( -Inf, -Inf ),
+                                q.conn.prev = c( -Inf, -Inf ), q.conn.next = c( -Inf, Inf ),
+                                p.ind = c( 0, 0 ),
+                                p.conn.prev = c( 0, 0 ), p.conn.next = c( 0, 1 ) ),
+                            CGDInterval$new(
+                                mean = mean.2,
+                                sd = sd.2,
+                                q.ind = c( Inf, Inf ),
+                                q.conn.prev = c( -Inf, Inf ), q.conn.next = c( Inf, Inf ),
+                                p.ind = c( 1, 1 ),
+                                p.conn.prev = c( 0, 1 ), p.conn.next = c( 1, 1 ) ) )
+    }
+    else if ( type1.type == 3 )
+    {
+        # (歪んでない/歪んだ) 縦方向グラデーション
+        if ( uni.sigma )
+        {
+            mean.3.coef <- ifelse( v.grad, "mean.1", "mean.3" )
 
-			intervals <- gen.t3.intervals(	c(	unname( coefs["mean.1"] ),
-												unname( coefs["mean.2"] ),
-												unname( coefs[mean.3.coef] ) ),
-											rep( unname( coefs["sqrt.sd"] )^2, 3 ) )
-		}
-		else if ( uni.mean )
-		{
-			sqrt.sd.3.coef <- ifelse( v.grad, "sqrt.sd.1", "sqrt.sd.3" )
+            intervals <- gen.t3.intervals(  c(  unname( coefs["mean.1"] ),
+                                                unname( coefs["mean.2"] ),
+                                                unname( coefs[mean.3.coef] ) ),
+                                            rep( unname( coefs["sqrt.sd"] )^2, 3 ) )
+        }
+        else if ( uni.mean )
+        {
+            sqrt.sd.3.coef <- ifelse( v.grad, "sqrt.sd.1", "sqrt.sd.3" )
 
-			intervals <- gen.t3.intervals( rep( unname( coefs["mean"] ), 3 ),
-											c(	unname( coefs["sqrt.sd.1"] )^2,
-												unname( coefs["sqrt.sd.2"] )^2,
-												unname( coefs[sqrt.sd.3.coef] )^2 ) )
-		}
-		else
-		{
-			mean.3.coef <- ifelse( v.grad, "mean.1", "mean.3" )
-			sqrt.sd.3.coef <- ifelse( v.grad, "sqrt.sd.1", "sqrt.sd.3" )
+            intervals <- gen.t3.intervals( rep( unname( coefs["mean"] ), 3 ),
+                                            c(  unname( coefs["sqrt.sd.1"] )^2,
+                                                unname( coefs["sqrt.sd.2"] )^2,
+                                                unname( coefs[sqrt.sd.3.coef] )^2 ) )
+        }
+        else
+        {
+            mean.3.coef <- ifelse( v.grad, "mean.1", "mean.3" )
+            sqrt.sd.3.coef <- ifelse( v.grad, "sqrt.sd.1", "sqrt.sd.3" )
 
-			intervals <- gen.t3.intervals(	c(	unname( coefs["mean.1"] ),
-												unname( coefs["mean.2"] ),
-												unname( coefs[mean.3.coef] ) ),
-											c(	unname( coefs["sqrt.sd.1"] )^2,
-												unname( coefs["sqrt.sd.2"] )^2,
-												unname( coefs[sqrt.sd.3.coef] )^2 ) )
-		}
-	}
-	else if ( type1.type == 4 )
-	{
-		# 縦横グラデーション
-		if ( uni.sigma )
-		{
-			intervals <- list( gen.t3.intervals( c( unname( coefs["mean.1.1"] ),
-													unname( coefs["mean.1.2"] ),
-													unname( coefs["mean.1.1"] ) ),
-												rep( unname( coefs["sqrt.sd"] )^2, 3 ) ),
-								gen.t3.intervals( c( unname( coefs["mean.2.1"] ),
-													unname( coefs["mean.2.2"] ),
-													unname( coefs["mean.2.1"] ) ),
-												rep( unname( coefs["sqrt.sd"] )^2, 3 ) ) )
-		}
-		else if ( uni.mean )
-		{
-			intervals <- list( gen.t3.intervals( rep( unname( coefs["mean"] ), 3 ),
-												c(	unname( coefs["sqrt.sd.1.1"] )^2,
-													unname( coefs["sqrt.sd.1.2"] )^2,
-													unname( coefs["sqrt.sd.1.1"] )^2 ) ),
-								gen.t3.intervals( rep( unname( coefs["mean"] ), 3 ),
-												c(	unname( coefs["sqrt.sd.2.1"] )^2,
-													unname( coefs["sqrt.sd.2.2"] )^2,
-													unname( coefs["sqrt.sd.2.1"] )^2 ) ) )
-		}
-		else
-		{
-			intervals <- list( gen.t3.intervals( c( unname( coefs["mean.1.1"] ),
-													unname( coefs["mean.1.2"] ),
-													unname( coefs["mean.1.1"] ) ),
-												c(	unname( coefs["sqrt.sd.1.1"] )^2,
-													unname( coefs["sqrt.sd.1.2"] )^2,
-													unname( coefs["sqrt.sd.1.1"] )^2 ) ),
-								gen.t3.intervals( c( unname( coefs["mean.2.1"] ),
-													unname( coefs["mean.2.2"] ),
-													unname( coefs["mean.2.1"] ) ),
-												c(	unname( coefs["sqrt.sd.2.1"] )^2,
-													unname( coefs["sqrt.sd.2.2"] )^2,
-													unname( coefs["sqrt.sd.2.1"] )^2 ) ) )
-		}
-	}
+            intervals <- gen.t3.intervals(  c(  unname( coefs["mean.1"] ),
+                                                unname( coefs["mean.2"] ),
+                                                unname( coefs[mean.3.coef] ) ),
+                                            c(  unname( coefs["sqrt.sd.1"] )^2,
+                                                unname( coefs["sqrt.sd.2"] )^2,
+                                                unname( coefs[sqrt.sd.3.coef] )^2 ) )
+        }
+    }
+    else if ( type1.type == 4 )
+    {
+        # 縦横グラデーション
+        if ( uni.sigma )
+        {
+            intervals <- list( gen.t3.intervals( c( unname( coefs["mean.1.1"] ),
+                                                    unname( coefs["mean.1.2"] ),
+                                                    unname( coefs["mean.1.1"] ) ),
+                                                rep( unname( coefs["sqrt.sd"] )^2, 3 ) ),
+                                gen.t3.intervals( c( unname( coefs["mean.2.1"] ),
+                                                    unname( coefs["mean.2.2"] ),
+                                                    unname( coefs["mean.2.1"] ) ),
+                                                rep( unname( coefs["sqrt.sd"] )^2, 3 ) ) )
+        }
+        else if ( uni.mean )
+        {
+            intervals <- list( gen.t3.intervals( rep( unname( coefs["mean"] ), 3 ),
+                                                c(  unname( coefs["sqrt.sd.1.1"] )^2,
+                                                    unname( coefs["sqrt.sd.1.2"] )^2,
+                                                    unname( coefs["sqrt.sd.1.1"] )^2 ) ),
+                                gen.t3.intervals( rep( unname( coefs["mean"] ), 3 ),
+                                                c(  unname( coefs["sqrt.sd.2.1"] )^2,
+                                                    unname( coefs["sqrt.sd.2.2"] )^2,
+                                                    unname( coefs["sqrt.sd.2.1"] )^2 ) ) )
+        }
+        else
+        {
+            intervals <- list( gen.t3.intervals( c( unname( coefs["mean.1.1"] ),
+                                                    unname( coefs["mean.1.2"] ),
+                                                    unname( coefs["mean.1.1"] ) ),
+                                                c(  unname( coefs["sqrt.sd.1.1"] )^2,
+                                                    unname( coefs["sqrt.sd.1.2"] )^2,
+                                                    unname( coefs["sqrt.sd.1.1"] )^2 ) ),
+                                gen.t3.intervals( c( unname( coefs["mean.2.1"] ),
+                                                    unname( coefs["mean.2.2"] ),
+                                                    unname( coefs["mean.2.1"] ) ),
+                                                c(  unname( coefs["sqrt.sd.2.1"] )^2,
+                                                    unname( coefs["sqrt.sd.2.2"] )^2,
+                                                    unname( coefs["sqrt.sd.2.1"] )^2 ) ) )
+        }
+    }
 
-	return ( intervals )
+    return ( intervals )
 }
 
 ################################################################################################
@@ -5461,9 +5519,9 @@ get.intervals.with.nls.coef <- function( coefs, normal, symmetric, v.grad, uni.s
 #'  result$cor[[10]]
 #'  result$cor[[13]]    ## smaller than result$cor[[10]]
 #'
-#'  ## "3-Mean-Differed-Sigma-Equaled Vertical Gradational Distribution"
+#'  ## "3-Mean-Differed Sigma-Equaled Vertical Gradational Distribution"
 #'  result$cgd[[10]]$kind
-#'  ## "Mean-Differed-Sigma-Equaled Vertical-Horizontal Gradational Distribution"
+#'  ## "Mean-Differed Sigma-Equaled Horizontal-Vertical Gradational Distribution"
 #'  result$cgd[[13]]$kind
 #'
 #'  ## Also cgd.kind and cgd.kind.index functions work well
@@ -5472,9 +5530,9 @@ get.intervals.with.nls.coef <- function( coefs, normal, symmetric, v.grad, uni.s
 #'  cgd.kind( 13 )
 #'
 #'  cgd.kind.index(
-#'      "3-Mean-Differed-Sigma-Equaled Vertical Gradational Distribution" )
+#'      "3-Mean-Differed Sigma-Equaled Vertical Gradational Distribution" )
 #'  cgd.kind.index(
-#'      "Mean-Differed-Sigma-Equaled Vertical-Horizontal Gradational Distribution" )
+#'      "Mean-Differed Sigma-Equaled Horizontal-Vertical Gradational Distribution" )
 #'
 #'  ## see the plots
 #'  plot.freq.and.d( result$cgd[[10]], x, freq, total )
@@ -5513,52 +5571,52 @@ get.intervals.with.nls.coef <- function( coefs, normal, symmetric, v.grad, uni.s
 #'  plot.freq.and.d( result$cgd[[15]], x, freq, total )
 ################################################################################################
 nls.freq.all <- function( x, freq, total, start.lists = NULL,
-						  control = list( maxiter = 300, warnOnly = TRUE ), method = NULL, ... )
+                          control = list( maxiter = 300, warnOnly = TRUE ), method = NULL, ... )
 {
-	# start.lists 用リスト作成
-	if ( is.null( start.lists ) )
-	{
-		start.lists <- init.start.lists()
-	}
+    # start.lists 用リスト作成
+    if ( is.null( start.lists ) )
+    {
+        start.lists <- init.start.lists()
+    }
 
-	# nls実行 (エラー時はメッセージ表示するが、処理は継続)
-	cgds <- list()
-	for ( i in 1:length( start.lists ) )
-	{
-		cgds[[i]] <- CGD$new()
-		try( cgds[[i]]$nls.freq( x, freq, total, start = start.lists[[i]],
-								 control = control, kind = i, ... ) )
-	}
+    # nls実行 (エラー時はメッセージ表示するが、処理は継続)
+    cgds <- list()
+    for ( i in 1:length( start.lists ) )
+    {
+        cgds[[i]] <- CGD$new()
+        try( cgds[[i]]$nls.freq( x, freq, total, start = start.lists[[i]],
+                                 control = control, kind = i, ... ) )
+    }
 
-	# 結果をまとめる
-	if ( is.null( method ) )
-	{
-		cor.f <- function( cd, fd, m ) cor( cd, fd )
-	}
-	else
-	{
-		cor.f <- function( cd, fd, m ) cor( cd, fd, method = m )
-	}
+    # 結果をまとめる
+    if ( is.null( method ) )
+    {
+        cor.f <- function( cd, fd, m ) cor( cd, fd )
+    }
+    else
+    {
+        cor.f <- function( cd, fd, m ) cor( cd, fd, method = m )
+    }
 
-	cors <- unlist( lapply( cgds, function( cgd )
-									{
-										if ( is.null( cgd ) )
-										{
-											return ( NaN )
-										}
+    cors <- unlist( lapply( cgds, function( cgd )
+                                    {
+                                        if ( is.null( cgd ) )
+                                        {
+                                            return ( NA )
+                                        }
 
-										if ( length( cgd$intervals ) == 0 )
-										{
-											return ( NaN )
-										}
+                                        if ( length( cgd$intervals ) == 0 )
+                                        {
+                                            return ( NA )
+                                        }
 
-										return ( cor.f( cgd$d( x ), get.d( x, freq, total ), method ) )
-									} ) )
+                                        return ( cor.f( cgd$d( x ), get.d( x, freq, total ), method ) )
+                                    } ) )
 
-	best.cor <- max( cors, na.rm = TRUE )
+    best.cor <- max( cors, na.rm = TRUE )
 
-	return ( list( best = cgds[( !is.nan( cors ) ) & ( cors == best.cor )][[1]],
-					best.cor = best.cor, cgd = cgds, cor = cors ) )
+    return ( list( best = cgds[( !is.na( cors ) ) & ( cors == best.cor )][[1]],
+                   best.cor = best.cor, cgd = cgds, cor = cors ) )
 }
 
 ################################################################################################
@@ -5603,13 +5661,13 @@ nls.freq.all <- function( x, freq, total, start.lists = NULL,
 ################################################################################################
 init.start.lists <- function()
 {
-	start.lists <- list()
-	for ( i in 1:( length( kinds ) - 1 ) )
-	{
-		start.lists[i] <- list( NULL )
-	}
+    start.lists <- list()
+    for ( i in 1:( length( kinds ) - 1 ) )
+    {
+        start.lists[i] <- list( NULL )
+    }
 
-	return ( start.lists )
+    return ( start.lists )
 }
 
 ################################################################################################
@@ -5648,78 +5706,78 @@ init.start.lists <- function()
 ################################################################################################
 nls.start.template <- function( target )
 {
-	kind.index <- cgd.kind.index( target )[1]
+    kind.index <- cgd.kind.index( target )[1]
 
-	if ( is.na( kind.index ) || all( kind.index != 1:( length( kinds ) - 1 ) ) )
-	{
-		warning( paste( target, "is not suitable for cgd.kind.index." ) )
-		return ( NULL )
-	}
+    if ( is.na( kind.index ) || all( kind.index != 1:( length( kinds ) - 1 ) ) )
+    {
+        warning( paste( target, "is not suitable for cgd.kind.index." ) )
+        return ( NULL )
+    }
 
-	temp <- list()
-	if ( kind.index == 1 )
-	{
-		temp <- list( mean = 0, sqrt.sd = 1 )
-	}
-	else if ( kind.index == 2 )
-	{
-		temp <- list( mean = 0, sqrt.sd.1 = 1, sqrt.sd.2 = 1 )
-	}
-	else if ( kind.index == 3 )
-	{
-		temp <- list( mean = 0, sqrt.sd.1 = 1, sqrt.sd.2 = 1 )
-	}
-	else if ( kind.index == 4 )
-	{
-		temp <- list( mean.1 = 0, mean.2 = 0, sqrt.sd = 1 )
-	}
-	else if ( kind.index == 5 )
-	{
-		temp <- list( mean = 0, sqrt.sd.1 = 1, sqrt.sd.2 = 1 )
-	}
-	else if ( kind.index == 6 )
-	{
-		temp <- list( mean.1 = 0, mean.2 = 0, sqrt.sd.1 = 1, sqrt.sd.2 = 1 )
-	}
-	else if ( kind.index == 7 )
-	{
-		temp <- list( mean.1 = 0, mean.2 = 0, sqrt.sd = 1 )
-	}
-	else if ( kind.index == 8 )
-	{
-		temp <- list( mean = 0, sqrt.sd.1 = 1, sqrt.sd.2 = 1 )
-	}
-	else if ( kind.index == 9 )
-	{
-		temp <- list( mean.1 = 0, mean.2 = 0, sqrt.sd.1 = 1, sqrt.sd.2 = 1 )
-	}
-	else if ( kind.index == 10 )
-	{
-		temp <- list( mean.1 = 0, mean.2 = 0, mean.3 = 0, sqrt.sd = 1 )
-	}
-	else if ( kind.index == 11 )
-	{
-		temp <- list( mean = 0, sqrt.sd.1 = 1, sqrt.sd.2 = 1, sqrt.sd.3 = 1 )
-	}
-	else if ( kind.index == 12 )
-	{
-		temp <- list( mean.1 = 0, mean.2 = 0, mean.3 = 0, sqrt.sd.1 = 1, sqrt.sd.2 = 1, sqrt.sd.3 = 1 )
-	}
-	else if ( kind.index == 13 )
-	{
-		temp <- list( mean.1.1 = 0, mean.1.2 = 0, mean.2.1 = 0, mean.2.2 = 0, sqrt.sd = 1 )
-	}
-	else if ( kind.index == 14 )
-	{
-		temp <- list( mean = 0, sqrt.sd.1.1 = 1, sqrt.sd.1.2 = 1, sqrt.sd.2.1 = 1, sqrt.sd.2.2 = 1 )
-	}
-	else if ( kind.index == 15 )
-	{
-		temp <- list( mean.1.1 = 0, mean.1.2 = 0, sqrt.sd.1.1 = 1, sqrt.sd.1.2 = 1,
-						mean.2.1 = 0, mean.2.2 = 0, sqrt.sd.2.1 = 1, sqrt.sd.2.2 = 1 )
-	}
+    temp <- list()
+    if ( kind.index == 1 )
+    {
+        temp <- list( mean = 0, sqrt.sd = 1 )
+    }
+    else if ( kind.index == 2 )
+    {
+        temp <- list( mean = 0, sqrt.sd.1 = 1, sqrt.sd.2 = 1 )
+    }
+    else if ( kind.index == 3 )
+    {
+        temp <- list( mean = 0, sqrt.sd.1 = 1, sqrt.sd.2 = 1 )
+    }
+    else if ( kind.index == 4 )
+    {
+        temp <- list( mean.1 = 0, mean.2 = 0, sqrt.sd = 1 )
+    }
+    else if ( kind.index == 5 )
+    {
+        temp <- list( mean = 0, sqrt.sd.1 = 1, sqrt.sd.2 = 1 )
+    }
+    else if ( kind.index == 6 )
+    {
+        temp <- list( mean.1 = 0, mean.2 = 0, sqrt.sd.1 = 1, sqrt.sd.2 = 1 )
+    }
+    else if ( kind.index == 7 )
+    {
+        temp <- list( mean.1 = 0, mean.2 = 0, sqrt.sd = 1 )
+    }
+    else if ( kind.index == 8 )
+    {
+        temp <- list( mean = 0, sqrt.sd.1 = 1, sqrt.sd.2 = 1 )
+    }
+    else if ( kind.index == 9 )
+    {
+        temp <- list( mean.1 = 0, mean.2 = 0, sqrt.sd.1 = 1, sqrt.sd.2 = 1 )
+    }
+    else if ( kind.index == 10 )
+    {
+        temp <- list( mean.1 = 0, mean.2 = 0, mean.3 = 0, sqrt.sd = 1 )
+    }
+    else if ( kind.index == 11 )
+    {
+        temp <- list( mean = 0, sqrt.sd.1 = 1, sqrt.sd.2 = 1, sqrt.sd.3 = 1 )
+    }
+    else if ( kind.index == 12 )
+    {
+        temp <- list( mean.1 = 0, mean.2 = 0, mean.3 = 0, sqrt.sd.1 = 1, sqrt.sd.2 = 1, sqrt.sd.3 = 1 )
+    }
+    else if ( kind.index == 13 )
+    {
+        temp <- list( mean.1.1 = 0, mean.1.2 = 0, mean.2.1 = 0, mean.2.2 = 0, sqrt.sd = 1 )
+    }
+    else if ( kind.index == 14 )
+    {
+        temp <- list( mean = 0, sqrt.sd.1.1 = 1, sqrt.sd.1.2 = 1, sqrt.sd.2.1 = 1, sqrt.sd.2.2 = 1 )
+    }
+    else if ( kind.index == 15 )
+    {
+        temp <- list( mean.1.1 = 0, mean.1.2 = 0, sqrt.sd.1.1 = 1, sqrt.sd.1.2 = 1,
+                        mean.2.1 = 0, mean.2.2 = 0, sqrt.sd.2.1 = 1, sqrt.sd.2.2 = 1 )
+    }
 
-	return ( temp )
+    return ( temp )
 }
 
 ################################################################################################
@@ -5741,7 +5799,7 @@ nls.start.template <- function( target )
 #'  cgd.kind.index( cgd:::kinds )
 #'  cgd.kind.index( 1:16 )
 #'  cgd.kind.index( 6 )
-#'  cgd.kind.index( "3-Mean-Differed-Sigma-Differed Vertical Gradational Distribution" )
+#'  cgd.kind.index( "3-Mean-Differed Sigma-Differed Vertical Gradational Distribution" )
 #'
 #'  a <- CGD$new()
 #'  cgd.kind.index( a )
@@ -5760,44 +5818,44 @@ nls.start.template <- function( target )
 ################################################################################################
 cgd.kind.index <- function( targets )
 {
-	if ( inherits( targets, "CGD" ) )
-	{
-		targets <- list( targets )
-	}
+    if ( inherits( targets, "CGD" ) )
+    {
+        targets <- list( targets )
+    }
 
-	results <- unlist( lapply( as.list( targets ), function( target )
-	{
-		if ( inherits( target, "CGD" ) )
-		{
-			result <- target$kind.index
-		}
-		else if ( is.numeric( target[[1]] ) )
-		{
-			if ( complete.cases( target ) && any( target == 1:length( kinds ) ) )
-			{
-				result <- as.integer( target )
-			}
-			else
-			{
-				result <- as.integer( NA )
-			}
-		}
-		else
-		{
-			if ( complete.cases( target ) )
-			{
-				result <- ( 1:length( kinds ) )[( kinds == target )]
-			}
-			else
-			{
-				result <- as.integer( NA )
-			}
-		}
+    results <- unlist( lapply( as.list( targets ), function( target )
+    {
+        if ( inherits( target, "CGD" ) )
+        {
+            result <- target$kind.index
+        }
+        else if ( is.numeric( target[[1]] ) )
+        {
+            if ( complete.cases( target ) && any( target == 1:length( kinds ) ) )
+            {
+                result <- as.integer( target )
+            }
+            else
+            {
+                result <- as.integer( NA )
+            }
+        }
+        else
+        {
+            if ( complete.cases( target ) )
+            {
+                result <- ( 1:length( kinds ) )[( kinds == target )]
+            }
+            else
+            {
+                result <- as.integer( NA )
+            }
+        }
 
-		return ( result )
-	} ) )
+        return ( result )
+    } ) )
 
-	return ( results )
+    return ( results )
 }
 
 ################################################################################################
@@ -5816,7 +5874,7 @@ cgd.kind.index <- function( targets )
 #'  cgd.kind( cgd:::kinds )
 #'  cgd.kind( 1:16 )
 #'  cgd.kind( 6 )
-#'  cgd.kind( "3-Mean-Differed-Sigma-Differed Vertical Gradational Distribution" )
+#'  cgd.kind( "3-Mean-Differed Sigma-Differed Vertical Gradational Distribution" )
 #'
 #'  a <- CGD$new()
 #'  cgd.kind( a )
@@ -5835,7 +5893,7 @@ cgd.kind.index <- function( targets )
 ################################################################################################
 cgd.kind <- function( target )
 {
-	return ( kinds[cgd.kind.index( target )] )
+    return ( kinds[cgd.kind.index( target )] )
 }
 
 ################################################################################################
@@ -5858,15 +5916,15 @@ cgd.kind <- function( target )
 #'  a$set.waypoints(
 #'      data.frame( p = c( 0.25, 0.5, 0.75 ), q = c( -0.67, 0, 0.53 ) ),
 #'      this.type1.type = 2, continuous = TRUE )
-#'  a$kind  ## Mean-Equaled-Sigma-Differed Horizontal Gradational Distribution
+#'  a$kind  ## Mean-Equaled Sigma-Differed Horizontal Gradational Distribution
 #'  a$is.continuous()   ## TRUE
 ################################################################################################
 NULL
 CGD$methods(
-	is.continuous = function()
-	{
-		return ( any( type1.type == 1:2 ) && intervals[[1]]$p.conn.next[1] == 0 && intervals[[1]]$p.conn.next[2] == 1 )
-	}
+    is.continuous = function()
+    {
+        return ( any( type1.type == 1:2 ) && intervals[[1]]$p.conn.next[1] == 0 && intervals[[1]]$p.conn.next[2] == 1 )
+    }
 )
 
 ################################################################################################
@@ -5894,19 +5952,19 @@ CGD$methods(
 ################################################################################################
 NULL
 CGD$methods(
-	is.symmetric = function()
-	{
-		# type1.type == 2 の場合の判定式は、
-		# length( intervals ) <= 2 のときエラーが発生しないように、少し複雑な判定式になっている
-		#  ( intervals[[3]]$p.conn.prev[1] と書くと、エラーになることがある)
-		return ( ( type1.type == 1 && intervals[[1]]$p.conn.next[1] == 0 && intervals[[1]]$p.conn.next[2] == 1 )
-					|| ( type1.type == 2 && length( intervals ) == 3 &&
-							intervals[[1]]$p.conn.next[1] == 0 &&
-							intervals[[1]]$p.conn.next[2] == 0.5 &&
-							intervals[[length( intervals )]]$p.conn.prev[1] == 0.5 &&
-							intervals[[length( intervals )]]$p.conn.prev[2] == 1 &&
-							intervals[[1]]$sd == intervals[[length( intervals )]]$sd ) )
-	}
+    is.symmetric = function()
+    {
+        # type1.type == 2 の場合の判定式は、
+        # length( intervals ) <= 2 のときエラーが発生しないように、少し複雑な判定式になっている
+        #  ( intervals[[3]]$p.conn.prev[1] と書くと、エラーになることがある)
+        return ( ( type1.type == 1 && intervals[[1]]$p.conn.next[1] == 0 && intervals[[1]]$p.conn.next[2] == 1 )
+                    || ( type1.type == 2 && length( intervals ) == 3 &&
+                            intervals[[1]]$p.conn.next[1] == 0 &&
+                            intervals[[1]]$p.conn.next[2] == 0.5 &&
+                            intervals[[length( intervals )]]$p.conn.prev[1] == 0.5 &&
+                            intervals[[length( intervals )]]$p.conn.prev[2] == 1 &&
+                            intervals[[1]]$sd == intervals[[length( intervals )]]$sd ) )
+    }
 )
 
 ################################################################################################
@@ -5926,17 +5984,17 @@ CGD$methods(
 #'  a$set.waypoints(
 #'      data.frame( p = c( 0.1, 0.4, 0.6, 0.9 ), q = c( -1.92, -0.20, 0.20, 1.92 ) ),
 #'      this.type1.type = 3, v.grad = TRUE )
-#'  a$kind  ## 2-Mean-Differed-Sigma-Differed Vertical Gradational Distribution
+#'  a$kind  ## 2-Mean-Differed Sigma-Differed Vertical Gradational Distribution
 #'  a$is.v.grad()   ## TRUE
 ################################################################################################
 NULL
 CGD$methods(
-	is.v.grad = function()
-	{
-		return ( type1.type == 3 &&
-					intervals[[1]]$mean == intervals[[length( intervals )]]$mean &&
-					intervals[[1]]$sd == intervals[[length( intervals )]]$sd )
-	}
+    is.v.grad = function()
+    {
+        return ( type1.type == 3 &&
+                    intervals[[1]]$mean == intervals[[length( intervals )]]$mean &&
+                    intervals[[1]]$sd == intervals[[length( intervals )]]$sd )
+    }
 )
 
 ################################################################################################
@@ -5956,7 +6014,7 @@ CGD$methods(
 #'  a$set.waypoints(
 #'      data.frame( p = c( 0.1, 0.4, 0.6, 0.9 ), q = c( -1.92, -0.20, 0.20, 1.92 ) ),
 #'      this.type1.type = 3, v.grad = TRUE )
-#'  a$kind  ## 2-Mean-Differed-Sigma-Differed Vertical Gradational Distribution
+#'  a$kind  ## 2-Mean-Differed Sigma-Differed Vertical Gradational Distribution
 #'  a$is.uni.sigma()    ## FALSE
 #'
 #'  a$set.waypoints(
@@ -5967,11 +6025,11 @@ CGD$methods(
 ################################################################################################
 NULL
 CGD$methods(
-	is.uni.sigma = function()
-	{
-		sds <- intervals.sd()
-		return ( all( sds == sds[1] ) )
-	}
+    is.uni.sigma = function()
+    {
+        sds <- intervals.sd()
+        return ( all( sds == sds[1] ) )
+    }
 )
 
 ################################################################################################
@@ -5991,7 +6049,7 @@ CGD$methods(
 #'  a$set.waypoints(
 #'      data.frame( p = c( 0.1, 0.4, 0.6, 0.9 ), q = c( -1.92, -0.20, 0.20, 1.92 ) ),
 #'      this.type1.type = 3, v.grad = TRUE )
-#'  a$kind  ## 2-Mean-Differed-Sigma-Differed Vertical Gradational Distribution
+#'  a$kind  ## 2-Mean-Differed Sigma-Differed Vertical Gradational Distribution
 #'  a$is.uni.mean() ## FALSE
 #'
 #'  a <- CGD$new()
@@ -6005,11 +6063,11 @@ CGD$methods(
 ################################################################################################
 NULL
 CGD$methods(
-	is.uni.mean = function()
-	{
-		means <- intervals.mean()
-		return ( all( means == means[1] ) )
-	}
+    is.uni.mean = function()
+    {
+        means <- intervals.mean()
+        return ( all( means == means[1] ) )
+    }
 )
 
 ################################################################################################
@@ -6035,49 +6093,49 @@ CGD$methods(
 ################################################################################################
 NULL
 CGD$methods(
-	is.ind.p = function( p )
-	{
-		bool <- rep( FALSE, length( p ) )
-		i.result <- rep( NaN, length( p ) )
+    is.ind.p = function( p )
+    {
+        bool <- rep( FALSE, length( p ) )
+        i.result <- rep( NaN, length( p ) )
 
-		for ( i in 1:length( p ) )
-		{
-			if ( p[i] < 0 || p[i] > 1 )
-			{
-				# 確率が負または1を超えている
-				warning( paste( "Warning: Probability" , p[i] , "is out of range [0, 1]." ) )
-				next
-			}
+        for ( i in 1:length( p ) )
+        {
+            if ( p[i] < 0 || p[i] > 1 )
+            {
+                # 確率が負または1を超えている
+                warning( paste( "Warning: Probability" , p[i] , "is out of range [0, 1]." ) )
+                next
+            }
 
-			if ( type1.type == 4 )
-			{
-				if ( p[i] == 0 )
-				{
-					bool[i] <- TRUE
-					i.result[i] <- 1
-				}
-				else if ( p[i] == 1 )
-				{
-					bool[i] <- TRUE
-					i.result[i] <- 2
-				}
-			}
-			else
-			{
-				for ( j in 1:length( intervals ) )
-				{
-					if ( p[i] >= intervals[[j]]$p.ind[1] && p[i] <= intervals[[j]]$p.ind[2] )
-					{
-						bool[i] <- TRUE
-						i.result[i] <- j
-						break
-					}
-				}
-			}
-		}
+            if ( type1.type == 4 )
+            {
+                if ( p[i] == 0 )
+                {
+                    bool[i] <- TRUE
+                    i.result[i] <- 1
+                }
+                else if ( p[i] == 1 )
+                {
+                    bool[i] <- TRUE
+                    i.result[i] <- 2
+                }
+            }
+            else
+            {
+                for ( j in 1:length( intervals ) )
+                {
+                    if ( p[i] >= intervals[[j]]$p.ind[1] && p[i] <= intervals[[j]]$p.ind[2] )
+                    {
+                        bool[i] <- TRUE
+                        i.result[i] <- j
+                        break
+                    }
+                }
+            }
+        }
 
-		return ( list( bool = bool, i = i.result ) )
-	}
+        return ( list( bool = bool, i = i.result ) )
+    }
 )
 
 ################################################################################################
@@ -6108,52 +6166,52 @@ CGD$methods(
 ################################################################################################
 NULL
 CGD$methods(
-	is.conn.p = function( p )
-	{
-		bool <- rep( FALSE, length( p ) )
-		i.1 <- rep( NaN, length( p ) )
-		i.2 <- rep( NaN, length( p ) )
+    is.conn.p = function( p )
+    {
+        bool <- rep( FALSE, length( p ) )
+        i.1 <- rep( NaN, length( p ) )
+        i.2 <- rep( NaN, length( p ) )
 
-		for ( i in 1:length( p ) )
-		{
-			if ( p[i] < 0 || p[i] > 1 )
-			{
-				# 確率が負または1を超えている
-				warning( paste( "Warning: Probability" , p[i] , "is out of range [0, 1]." ) )
-				next
-			}
+        for ( i in 1:length( p ) )
+        {
+            if ( p[i] < 0 || p[i] > 1 )
+            {
+                # 確率が負または1を超えている
+                warning( paste( "Warning: Probability" , p[i] , "is out of range [0, 1]." ) )
+                next
+            }
 
-			is.ind <- is.ind.p( p[i] )
-			if ( !is.ind$bool )
-			{
-				bool[i] <- TRUE
-				if ( type1.type == 4 )
-				{
-					i.1[i] <- 1
-					i.2[i] <- 2
-				}
-				else
-				{
-					for ( j in 1:( length( intervals ) - 1 ) )
-					{
-						# 論理的には = は不要だが、計算誤差回避のために = を付けておく
-						if ( p[i] >= intervals[[j]]$p.ind[2] && p[i] <= intervals[[j + 1]]$p.ind[1] )
-						{
-							i.1[i] <- j
-							i.2[i] <- j + 1
-							break
-						}
-					}
-				}
-			}
-			else
-			{
-				i.1[i] <- is.ind$i
-			}
-		}
+            is.ind <- is.ind.p( p[i] )
+            if ( !is.ind$bool )
+            {
+                bool[i] <- TRUE
+                if ( type1.type == 4 )
+                {
+                    i.1[i] <- 1
+                    i.2[i] <- 2
+                }
+                else
+                {
+                    for ( j in 1:( length( intervals ) - 1 ) )
+                    {
+                        # 論理的には = は不要だが、計算誤差回避のために = を付けておく
+                        if ( p[i] >= intervals[[j]]$p.ind[2] && p[i] <= intervals[[j + 1]]$p.ind[1] )
+                        {
+                            i.1[i] <- j
+                            i.2[i] <- j + 1
+                            break
+                        }
+                    }
+                }
+            }
+            else
+            {
+                i.1[i] <- is.ind$i
+            }
+        }
 
-		return ( list( bool = bool, i.1 = i.1, i.2 = i.2 ) )
-	}
+        return ( list( bool = bool, i.1 = i.1, i.2 = i.2 ) )
+    }
 )
 
 ################################################################################################
@@ -6179,42 +6237,42 @@ CGD$methods(
 ################################################################################################
 NULL
 CGD$methods(
-	is.ind.x = function( x )
-	{
-		bool <- rep( FALSE, length( x ) )
-		i.result <- rep( NaN, length( x ) )
+    is.ind.x = function( x )
+    {
+        bool <- rep( FALSE, length( x ) )
+        i.result <- rep( NaN, length( x ) )
 
-		for ( i in 1:length( x ) )
-		{
-			if ( type1.type == 4 )
-			{
-				if ( x[i] == -Inf )
-				{
-					bool[i] <- TRUE
-					i.result[i] <- 1
-				}
-				else if ( x[i] == Inf )
-				{
-					bool[i] <- TRUE
-					i.result[i] <- 2
-				}
-			}
-			else
-			{
-				for ( j in 1:length( intervals ) )
-				{
-					if ( x[i] >= intervals[[j]]$q.ind[1] && x[i] <= intervals[[j]]$q.ind[2] )
-					{
-						bool[i] <- TRUE
-						i.result[i] <- j
-						break
-					}
-				}
-			}
-		}
+        for ( i in 1:length( x ) )
+        {
+            if ( type1.type == 4 )
+            {
+                if ( x[i] == -Inf )
+                {
+                    bool[i] <- TRUE
+                    i.result[i] <- 1
+                }
+                else if ( x[i] == Inf )
+                {
+                    bool[i] <- TRUE
+                    i.result[i] <- 2
+                }
+            }
+            else
+            {
+                for ( j in 1:length( intervals ) )
+                {
+                    if ( x[i] >= intervals[[j]]$q.ind[1] && x[i] <= intervals[[j]]$q.ind[2] )
+                    {
+                        bool[i] <- TRUE
+                        i.result[i] <- j
+                        break
+                    }
+                }
+            }
+        }
 
-		return ( list( bool = bool, i = i.result ) )
-	}
+        return ( list( bool = bool, i = i.result ) )
+    }
 )
 
 ################################################################################################
@@ -6245,45 +6303,45 @@ CGD$methods(
 ################################################################################################
 NULL
 CGD$methods(
-	is.conn.x = function( x )
-	{
-		bool <- rep( FALSE, length( x ) )
-		i.1 <- rep( NaN, length( x ) )
-		i.2 <- rep( NaN, length( x ) )
+    is.conn.x = function( x )
+    {
+        bool <- rep( FALSE, length( x ) )
+        i.1 <- rep( NaN, length( x ) )
+        i.2 <- rep( NaN, length( x ) )
 
-		for ( i in 1:length( x ) )
-		{
-			is.ind <- is.ind.x( x[i] )
-			if ( !is.ind$bool )
-			{
-				bool[i] <- TRUE
-				if ( type1.type == 4 )
-				{
-					i.1[i] <- 1
-					i.2[i] <- 2
-				}
-				else
-				{
-					for ( j in 1:( length( intervals ) - 1 ) )
-					{
-						# 論理的には = は不要だが、計算誤差回避のために = を付けておく
-						if ( x[i] >= intervals[[j]]$q.ind[2] && x[i] <= intervals[[j + 1]]$q.ind[1] )
-						{
-							i.1[i] <- j
-							i.2[i] <- j + 1
-							break
-						}
-					}
-				}
-			}
-			else
-			{
-				i.1[i] <- is.ind$i
-			}
-		}
+        for ( i in 1:length( x ) )
+        {
+            is.ind <- is.ind.x( x[i] )
+            if ( !is.ind$bool )
+            {
+                bool[i] <- TRUE
+                if ( type1.type == 4 )
+                {
+                    i.1[i] <- 1
+                    i.2[i] <- 2
+                }
+                else
+                {
+                    for ( j in 1:( length( intervals ) - 1 ) )
+                    {
+                        # 論理的には = は不要だが、計算誤差回避のために = を付けておく
+                        if ( x[i] >= intervals[[j]]$q.ind[2] && x[i] <= intervals[[j + 1]]$q.ind[1] )
+                        {
+                            i.1[i] <- j
+                            i.2[i] <- j + 1
+                            break
+                        }
+                    }
+                }
+            }
+            else
+            {
+                i.1[i] <- is.ind$i
+            }
+        }
 
-		return ( list( bool = bool, i.1 = i.1, i.2 = i.2 ) )
-	}
+        return ( list( bool = bool, i.1 = i.1, i.2 = i.2 ) )
+    }
 )
 
 ################################################################################################
@@ -6309,10 +6367,10 @@ CGD$methods(
 ################################################################################################
 NULL
 CGD$methods(
-	is.ind.q = function( q )
-	{
-		return ( is.ind.x( q ) )
-	}
+    is.ind.q = function( q )
+    {
+        return ( is.ind.x( q ) )
+    }
 )
 
 ################################################################################################
@@ -6343,10 +6401,10 @@ CGD$methods(
 ################################################################################################
 NULL
 CGD$methods(
-	is.conn.q = function( q )
-	{
-		return ( is.conn.x( q ) )
-	}
+    is.conn.q = function( q )
+    {
+        return ( is.conn.x( q ) )
+    }
 )
 
 ################################################################################################
@@ -6370,272 +6428,272 @@ CGD$methods(
 ################################################################################################
 NULL
 CGD$methods(
-	d = function( x )
-	{
-		if ( type1.type == 2 && is.symmetric() )
-		{
-			x <- median - abs( median - x )
-		}
+    d = function( x )
+    {
+        if ( type1.type == 2 && is.symmetric() )
+        {
+            x <- median - abs( median - x )
+        }
 
-		results <- vapply( x, function( x )
-		{
-			if ( type1.type == 4 )
-			{
-				# type1.type == 4
-				p.1 <- f.t3.p[[1]]( x, intervals[[1]][[1]]$mean, intervals[[1]][[1]]$sd ) +
-					   f.t3.p[[2]]( x, intervals[[1]][[2]]$mean, intervals[[1]][[2]]$sd )
-				p.2 <- f.t3.p[[1]]( x, intervals[[2]][[1]]$mean, intervals[[2]][[1]]$sd ) +
-					   f.t3.p[[2]]( x, intervals[[2]][[2]]$mean, intervals[[2]][[2]]$sd )
+        results <- vapply( x, function( x )
+        {
+            if ( type1.type == 4 )
+            {
+                # type1.type == 4
+                p.1 <- f.t3.p[[1]]( x, intervals[[1]][[1]]$mean, intervals[[1]][[1]]$sd ) +
+                       f.t3.p[[2]]( x, intervals[[1]][[2]]$mean, intervals[[1]][[2]]$sd )
+                p.2 <- f.t3.p[[1]]( x, intervals[[2]][[1]]$mean, intervals[[2]][[1]]$sd ) +
+                       f.t3.p[[2]]( x, intervals[[2]][[2]]$mean, intervals[[2]][[2]]$sd )
 
-				result <- ( 1 - p.1 ) * ( f.t3.d[[1]]( x, intervals[[1]][[1]]$mean, intervals[[1]][[1]]$sd ) +
-										  f.t3.d[[2]]( x, intervals[[1]][[2]]$mean, intervals[[1]][[2]]$sd ) ) +
-							p.2 * ( f.t3.d[[1]]( x, intervals[[2]][[1]]$mean, intervals[[2]][[1]]$sd ) +
-									f.t3.d[[2]]( x, intervals[[2]][[2]]$mean, intervals[[2]][[2]]$sd ) )
-			}
-			else if ( type1.type == 3 )
-			{
-				# type1.type == 3 の場合の計算は v.grad であってもなくても同じ
+                result <- ( 1 - p.1 ) * ( f.t3.d[[1]]( x, intervals[[1]][[1]]$mean, intervals[[1]][[1]]$sd ) +
+                                          f.t3.d[[2]]( x, intervals[[1]][[2]]$mean, intervals[[1]][[2]]$sd ) ) +
+                            p.2 * ( f.t3.d[[1]]( x, intervals[[2]][[1]]$mean, intervals[[2]][[1]]$sd ) +
+                                    f.t3.d[[2]]( x, intervals[[2]][[2]]$mean, intervals[[2]][[2]]$sd ) )
+            }
+            else if ( type1.type == 3 )
+            {
+                # type1.type == 3 の場合の計算は v.grad であってもなくても同じ
 
-				result <- dp.t3( x, c( intervals[[1]]$mean, intervals[[2]]$mean, intervals[[3]]$mean ),
-									c( intervals[[1]]$sd, intervals[[2]]$sd, intervals[[3]]$sd ), f.t3.d )
-			}
-			else if ( is.continuous() )
-			{
-				# continuous の場合
-				if ( type1.type == 1 )
-				{
-					result <- ( dnorm( x, intervals[[1]]$mean, intervals[[1]]$sd ) +
-								dnorm( x, intervals[[2]]$mean, intervals[[2]]$sd ) ) / 2
-				}
-				else # if ( type1.type == 2 )
-				{
-					result <- ( 1 - pnorm( x, intervals[[1]]$mean, intervals[[1]]$sd ) ) *
-									dnorm( x, intervals[[1]]$mean, intervals[[1]]$sd ) +
-									pnorm( x, intervals[[2]]$mean, intervals[[2]]$sd ) *
-									dnorm( x, intervals[[2]]$mean, intervals[[2]]$sd )
-				}
-			}
-			else if ( is.symmetric() )
-			{
-				# symmetric の場合
-				# type1.type == 2 ( type1.type == 1 は is.continuous() == TRUE になる)
-				result <- ( 1 - 2 * pnorm( x, intervals[[1]]$mean, intervals[[1]]$sd ) ) *
-									dnorm( x, intervals[[1]]$mean, intervals[[1]]$sd ) +
-								2 * pnorm( x, intervals[[1]]$mean, intervals[[2]]$sd ) *
-									dnorm( x, intervals[[1]]$mean, intervals[[2]]$sd )
-			}
-			else
-			{
-				# 確率密度関数が不連続の場合
-				is.conn <- is.conn.x( x )
-				if ( !is.conn$bool )
-				{
-					# 独立区間内 ⇒ 確率密度をそのまま出力
-					result <- dnorm( x, intervals[[is.conn$i.1]]$mean, intervals[[is.conn$i.1]]$sd )
-				}
-				else
-				{
-					# 接続区間内 ⇒ 区間前後の2つの分布で確率密度を負担
-					j <- is.conn$i.1
-					if ( x > intervals[[j]]$q.manage()[2] && x < intervals[[j + 1]]$q.manage()[1] )
-					{
-						# 負担分布なし ⇒ d( x ) = 0 (このケースは type 2 の場合に生じる)
-						return ( 0 )
-					}
+                result <- dp.t3( x, c( intervals[[1]]$mean, intervals[[2]]$mean, intervals[[3]]$mean ),
+                                    c( intervals[[1]]$sd, intervals[[2]]$sd, intervals[[3]]$sd ), f.t3.d )
+            }
+            else if ( is.continuous() )
+            {
+                # continuous の場合
+                if ( type1.type == 1 )
+                {
+                    result <- ( dnorm( x, intervals[[1]]$mean, intervals[[1]]$sd ) +
+                                dnorm( x, intervals[[2]]$mean, intervals[[2]]$sd ) ) / 2
+                }
+                else # if ( type1.type == 2 )
+                {
+                    result <- ( 1 - pnorm( x, intervals[[1]]$mean, intervals[[1]]$sd ) ) *
+                                    dnorm( x, intervals[[1]]$mean, intervals[[1]]$sd ) +
+                                    pnorm( x, intervals[[2]]$mean, intervals[[2]]$sd ) *
+                                    dnorm( x, intervals[[2]]$mean, intervals[[2]]$sd )
+                }
+            }
+            else if ( is.symmetric() )
+            {
+                # symmetric の場合
+                # type1.type == 2 ( type1.type == 1 は is.continuous() == TRUE になる)
+                result <- ( 1 - 2 * pnorm( x, intervals[[1]]$mean, intervals[[1]]$sd ) ) *
+                                    dnorm( x, intervals[[1]]$mean, intervals[[1]]$sd ) +
+                                2 * pnorm( x, intervals[[1]]$mean, intervals[[2]]$sd ) *
+                                    dnorm( x, intervals[[1]]$mean, intervals[[2]]$sd )
+            }
+            else
+            {
+                # 確率密度関数が不連続の場合
+                is.conn <- is.conn.x( x )
+                if ( !is.conn$bool )
+                {
+                    # 独立区間内 ⇒ 確率密度をそのまま出力
+                    result <- dnorm( x, intervals[[is.conn$i.1]]$mean, intervals[[is.conn$i.1]]$sd )
+                }
+                else
+                {
+                    # 接続区間内 ⇒ 区間前後の2つの分布で確率密度を負担
+                    j <- is.conn$i.1
+                    if ( x > intervals[[j]]$q.manage()[2] && x < intervals[[j + 1]]$q.manage()[1] )
+                    {
+                        # 負担分布なし ⇒ d( x ) = 0 (このケースは type 2 の場合に生じる)
+                        return ( 0 )
+                    }
 
-					d.1 <- intervals[[j]]			# 確率分布1 (接続区間前を負担)
-					d.2 <- intervals[[j + 1]]		# 確率分布2 (接続区間後を負担)
-					x.conn <- c( d.1$q.conn.next[1], d.2$q.conn.prev[2] )
-													# 接続区間の範囲のX座標
+                    d.1 <- intervals[[j]]           # 確率分布1 (接続区間前を負担)
+                    d.2 <- intervals[[j + 1]]       # 確率分布2 (接続区間後を負担)
+                    x.conn <- c( d.1$q.conn.next[1], d.2$q.conn.prev[2] )
+                                                    # 接続区間の範囲のX座標
 
-					if ( x.conn[1] < median )		# 中央値より絶対小でなければならない。「以下」は不可
-					{
-						if ( x.conn[2] <= median )
-						{
-							# 中央値をまたがない
-							if ( d.2$sd >= d.1$sd )
-							{
-								# type 1
-								if ( type1.type == 1 )
-								{
-									result <- ( dnorm( x, median, d.1$sd ) * ( x.conn[2] - x ) +
-												dnorm( x, median, d.2$sd ) * ( x - x.conn[1] ) +
-												pnorm( x, median, d.2$sd ) - pnorm( x, median, d.1$sd ) ) /
-												( x.conn[2] - x.conn[1] )
-								}
-								else # if ( type1.type == 2 )
-								{
-									p1.conn1 <- pnorm( x.conn[1], median, d.1$sd )
-									p2.conn1 <- pnorm( x.conn[1], median, d.2$sd )
-									psum.conn1 <- p1.conn1 + p2.conn1
+                    if ( x.conn[1] < median )       # 中央値より絶対小でなければならない。「以下」は不可
+                    {
+                        if ( x.conn[2] <= median )
+                        {
+                            # 中央値をまたがない
+                            if ( d.2$sd >= d.1$sd )
+                            {
+                                # type 1
+                                if ( type1.type == 1 )
+                                {
+                                    result <- ( dnorm( x, median, d.1$sd ) * ( x.conn[2] - x ) +
+                                                dnorm( x, median, d.2$sd ) * ( x - x.conn[1] ) +
+                                                pnorm( x, median, d.2$sd ) - pnorm( x, median, d.1$sd ) ) /
+                                                ( x.conn[2] - x.conn[1] )
+                                }
+                                else # if ( type1.type == 2 )
+                                {
+                                    p1.conn1 <- pnorm( x.conn[1], median, d.1$sd )
+                                    p2.conn1 <- pnorm( x.conn[1], median, d.2$sd )
+                                    psum.conn1 <- p1.conn1 + p2.conn1
 
-									p1.conn2 <- pnorm( x.conn[2], median, d.1$sd )
-									p2.conn2 <- pnorm( x.conn[2], median, d.2$sd )
-									psum.conn2 <- p1.conn2 + p2.conn2
+                                    p1.conn2 <- pnorm( x.conn[2], median, d.1$sd )
+                                    p2.conn2 <- pnorm( x.conn[2], median, d.2$sd )
+                                    psum.conn2 <- p1.conn2 + p2.conn2
 
-									result <- ( ( psum.conn2 - 2 * pnorm( x, median, d.1$sd ) ) *
-													dnorm( x, median, d.1$sd ) +
-												( 2 * pnorm( x, median, d.2$sd ) - psum.conn1 ) *
-													dnorm( x, median, d.2$sd ) ) /
-												( psum.conn2 - psum.conn1 )
-								}
-							}
-							else
-							{
-								# type 2
-								if ( x < d.2$q.conn.prev[1] )
-								{
-									# P2(x) < inf
-									if ( x < d.1$q.conn.next[2] )
-									{
-										# P1(x) < sup ⇒ 確率分布1 が単独で負担
-										result <- dnorm( x, median, d.1$sd ) / 2
-									}
-									else
-									{
-										# P1(x) >= sup ⇒ 負担分布なし
-										#	注: v1.2.0 以降、
-										#		負担分布なしの場合には前の処理で return ( 0 ) とするようにしたため、
-										#		この処理は使われなくなったが、今後の注意のために残しておく。
-										result <- 0
-									}
-								}
-								else
-								{
-									# P2(x) >= inf
-									if ( x < d.1$q.conn.next[2] )
-									{
-										# P1(x) < sup ⇒ 確率分布1 と 2 が負担
-										result <- ( dnorm( x, median, d.1$sd ) + dnorm( x, median, d.2$sd ) ) / 2
-									}
-									else
-									{
-										# P1(x) >= sup ⇒ 確率分布2 が単独で負担
-										result <- dnorm( x, median, d.2$sd ) / 2
-									}
-								}
-							}
-						}
-						else
-						{
-							# 中央値をまたぐ
-							if ( d.2$sd >= d.1$sd )
-							{
-								# type 3a
-								if ( x <= median )
-								{
-									result <- dnorm( x, median, d.1$sd )
-								}
-								else
-								{
-									if ( x < d.1$q.conn.next[2] )
-									{
-										# P1(x) < sup ⇒ 確率分布1 と 2 が負担
-										result <- ( dnorm( x, median, d.1$sd ) + dnorm( x, median, d.2$sd ) ) / 2
-									}
-									else
-									{
-										# P1(x) >= sup ⇒ 確率分布2 が単独で負担
-										result <- dnorm( x, median, d.2$sd ) / 2
-									}
-								}
-							}
-							else
-							{
-								# type 3b
-								if ( x <= median )
-								{
-									if ( x < d.2$q.conn.prev[1] )
-									{
-										# P2(x) < inf ⇒ 確率分布1 が単独で負担
-										result <- dnorm( x, median, d.1$sd ) / 2
-									}
-									else
-									{
-										# P2(x) >= inf ⇒ 確率分布1 と 2 が負担
-										result <- ( dnorm( x, median, d.1$sd ) + dnorm( x, median, d.2$sd ) ) / 2
-									}
-								}
-								else
-								{
-									result <- dnorm( x, median, d.2$sd )
-								}
-							}
-						}
-					}
-					else	# ( x.conn[1] >= median )	# 中央値より絶対大でなくてもよい。「以上」でよい
-					{
-						if ( d.2$sd >= d.1$sd )
-						{
-							# type 2
-							if ( x < d.2$q.conn.prev[1] )
-							{
-								# P2(x) < inf
-								if ( x < d.1$q.conn.next[2] )
-								{
-									# P1(x) < sup ⇒ 確率分布1 が単独で負担
-									result <- dnorm( x, median, d.1$sd ) / 2
-								}
-								else
-								{
-									# P1(x) >= sup ⇒ 負担分布なし
-									#	注: v1.2.0 以降、
-									#		負担分布なしの場合には前の処理で return ( 0 ) とするようにしたため、
-									#		この処理は使われなくなったが、今後の注意のために残しておく。
-									result <- 0
-								}
-							}
-							else
-							{
-								# P2(x) >= inf
-								if ( x < d.1$q.conn.next[2] )
-								{
-									# P1(x) < sup ⇒ 確率分布1 と 2 が負担
-									result <- ( dnorm( x, median, d.1$sd ) + dnorm( x, median, d.2$sd ) ) / 2
-								}
-								else
-								{
-									# P1(x) >= sup ⇒ 確率分布2 が単独で負担
-									result <- dnorm( x, median, d.2$sd ) / 2
-								}
-							}
-						}
-						else
-						{
-							# type 1
-							if ( type1.type == 1 )
-							{
-								result <- ( dnorm( x, median, d.1$sd ) * ( x.conn[2] - x ) +
-											dnorm( x, median, d.2$sd ) * ( x - x.conn[1] ) +
-											pnorm( x, median, d.2$sd ) - pnorm( x, median, d.1$sd ) ) /
-											( x.conn[2] - x.conn[1] )
-							}
-							else # if ( type1.type == 2 )
-							{
-								p1.conn1 <- pnorm( x.conn[1], median, d.1$sd )
-								p2.conn1 <- pnorm( x.conn[1], median, d.2$sd )
-								psum.conn1 <- p1.conn1 + p2.conn1
+                                    result <- ( ( psum.conn2 - 2 * pnorm( x, median, d.1$sd ) ) *
+                                                    dnorm( x, median, d.1$sd ) +
+                                                ( 2 * pnorm( x, median, d.2$sd ) - psum.conn1 ) *
+                                                    dnorm( x, median, d.2$sd ) ) /
+                                                ( psum.conn2 - psum.conn1 )
+                                }
+                            }
+                            else
+                            {
+                                # type 2
+                                if ( x < d.2$q.conn.prev[1] )
+                                {
+                                    # P2(x) < inf
+                                    if ( x < d.1$q.conn.next[2] )
+                                    {
+                                        # P1(x) < sup ⇒ 確率分布1 が単独で負担
+                                        result <- dnorm( x, median, d.1$sd ) / 2
+                                    }
+                                    else
+                                    {
+                                        # P1(x) >= sup ⇒ 負担分布なし
+                                        #   注: v1.2.0 以降、
+                                        #       負担分布なしの場合には前の処理で return ( 0 ) とするようにしたため、
+                                        #       この処理は使われなくなったが、今後の注意のために残しておく。
+                                        result <- 0
+                                    }
+                                }
+                                else
+                                {
+                                    # P2(x) >= inf
+                                    if ( x < d.1$q.conn.next[2] )
+                                    {
+                                        # P1(x) < sup ⇒ 確率分布1 と 2 が負担
+                                        result <- ( dnorm( x, median, d.1$sd ) + dnorm( x, median, d.2$sd ) ) / 2
+                                    }
+                                    else
+                                    {
+                                        # P1(x) >= sup ⇒ 確率分布2 が単独で負担
+                                        result <- dnorm( x, median, d.2$sd ) / 2
+                                    }
+                                }
+                            }
+                        }
+                        else
+                        {
+                            # 中央値をまたぐ
+                            if ( d.2$sd >= d.1$sd )
+                            {
+                                # type 3a
+                                if ( x <= median )
+                                {
+                                    result <- dnorm( x, median, d.1$sd )
+                                }
+                                else
+                                {
+                                    if ( x < d.1$q.conn.next[2] )
+                                    {
+                                        # P1(x) < sup ⇒ 確率分布1 と 2 が負担
+                                        result <- ( dnorm( x, median, d.1$sd ) + dnorm( x, median, d.2$sd ) ) / 2
+                                    }
+                                    else
+                                    {
+                                        # P1(x) >= sup ⇒ 確率分布2 が単独で負担
+                                        result <- dnorm( x, median, d.2$sd ) / 2
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                # type 3b
+                                if ( x <= median )
+                                {
+                                    if ( x < d.2$q.conn.prev[1] )
+                                    {
+                                        # P2(x) < inf ⇒ 確率分布1 が単独で負担
+                                        result <- dnorm( x, median, d.1$sd ) / 2
+                                    }
+                                    else
+                                    {
+                                        # P2(x) >= inf ⇒ 確率分布1 と 2 が負担
+                                        result <- ( dnorm( x, median, d.1$sd ) + dnorm( x, median, d.2$sd ) ) / 2
+                                    }
+                                }
+                                else
+                                {
+                                    result <- dnorm( x, median, d.2$sd )
+                                }
+                            }
+                        }
+                    }
+                    else    # ( x.conn[1] >= median )   # 中央値より絶対大でなくてもよい。「以上」でよい
+                    {
+                        if ( d.2$sd >= d.1$sd )
+                        {
+                            # type 2
+                            if ( x < d.2$q.conn.prev[1] )
+                            {
+                                # P2(x) < inf
+                                if ( x < d.1$q.conn.next[2] )
+                                {
+                                    # P1(x) < sup ⇒ 確率分布1 が単独で負担
+                                    result <- dnorm( x, median, d.1$sd ) / 2
+                                }
+                                else
+                                {
+                                    # P1(x) >= sup ⇒ 負担分布なし
+                                    #   注: v1.2.0 以降、
+                                    #       負担分布なしの場合には前の処理で return ( 0 ) とするようにしたため、
+                                    #       この処理は使われなくなったが、今後の注意のために残しておく。
+                                    result <- 0
+                                }
+                            }
+                            else
+                            {
+                                # P2(x) >= inf
+                                if ( x < d.1$q.conn.next[2] )
+                                {
+                                    # P1(x) < sup ⇒ 確率分布1 と 2 が負担
+                                    result <- ( dnorm( x, median, d.1$sd ) + dnorm( x, median, d.2$sd ) ) / 2
+                                }
+                                else
+                                {
+                                    # P1(x) >= sup ⇒ 確率分布2 が単独で負担
+                                    result <- dnorm( x, median, d.2$sd ) / 2
+                                }
+                            }
+                        }
+                        else
+                        {
+                            # type 1
+                            if ( type1.type == 1 )
+                            {
+                                result <- ( dnorm( x, median, d.1$sd ) * ( x.conn[2] - x ) +
+                                            dnorm( x, median, d.2$sd ) * ( x - x.conn[1] ) +
+                                            pnorm( x, median, d.2$sd ) - pnorm( x, median, d.1$sd ) ) /
+                                            ( x.conn[2] - x.conn[1] )
+                            }
+                            else # if ( type1.type == 2 )
+                            {
+                                p1.conn1 <- pnorm( x.conn[1], median, d.1$sd )
+                                p2.conn1 <- pnorm( x.conn[1], median, d.2$sd )
+                                psum.conn1 <- p1.conn1 + p2.conn1
 
-								p1.conn2 <- pnorm( x.conn[2], median, d.1$sd )
-								p2.conn2 <- pnorm( x.conn[2], median, d.2$sd )
-								psum.conn2 <- p1.conn2 + p2.conn2
+                                p1.conn2 <- pnorm( x.conn[2], median, d.1$sd )
+                                p2.conn2 <- pnorm( x.conn[2], median, d.2$sd )
+                                psum.conn2 <- p1.conn2 + p2.conn2
 
-								result <- ( ( psum.conn2 - 2 * pnorm( x, median, d.1$sd ) ) *
-												dnorm( x, median, d.1$sd ) +
-											( 2 * pnorm( x, median, d.2$sd ) - psum.conn1 ) *
-												dnorm( x, median, d.2$sd ) ) /
-											( psum.conn2 - psum.conn1 )
-							}
-						}
-					}
-				}
-			}
+                                result <- ( ( psum.conn2 - 2 * pnorm( x, median, d.1$sd ) ) *
+                                                dnorm( x, median, d.1$sd ) +
+                                            ( 2 * pnorm( x, median, d.2$sd ) - psum.conn1 ) *
+                                                dnorm( x, median, d.2$sd ) ) /
+                                            ( psum.conn2 - psum.conn1 )
+                            }
+                        }
+                    }
+                }
+            }
 
-			return ( result )
-		}, 0 )
+            return ( result )
+        }, 0 )
 
-		return ( results )
-	}
+        return ( results )
+    }
 )
 
 ################################################################################################
@@ -6659,269 +6717,269 @@ CGD$methods(
 ################################################################################################
 NULL
 CGD$methods(
-	p = function( q )
-	{
-		results <- vapply( q, function( q )
-		{
-			if ( type1.type == 4 )
-			{
-				# type1.type == 4
-				p.1 <- f.t3.p[[1]]( q, intervals[[1]][[1]]$mean, intervals[[1]][[1]]$sd ) +
-					   f.t3.p[[2]]( q, intervals[[1]][[2]]$mean, intervals[[1]][[2]]$sd )
-				p.2 <- f.t3.p[[1]]( q, intervals[[2]][[1]]$mean, intervals[[2]][[1]]$sd ) +
-					   f.t3.p[[2]]( q, intervals[[2]][[2]]$mean, intervals[[2]][[2]]$sd )
+    p = function( q )
+    {
+        results <- vapply( q, function( q )
+        {
+            if ( type1.type == 4 )
+            {
+                # type1.type == 4
+                p.1 <- f.t3.p[[1]]( q, intervals[[1]][[1]]$mean, intervals[[1]][[1]]$sd ) +
+                       f.t3.p[[2]]( q, intervals[[1]][[2]]$mean, intervals[[1]][[2]]$sd )
+                p.2 <- f.t3.p[[1]]( q, intervals[[2]][[1]]$mean, intervals[[2]][[1]]$sd ) +
+                       f.t3.p[[2]]( q, intervals[[2]][[2]]$mean, intervals[[2]][[2]]$sd )
 
-				result <- p.1 - p.1^2 / 2 + p.2^2 / 2
-			}
-			else if ( type1.type == 3 )
-			{
-				# type1.type == 3 の場合の計算は v.grad であってもなくても同じ
+                result <- p.1 - p.1^2 / 2 + p.2^2 / 2
+            }
+            else if ( type1.type == 3 )
+            {
+                # type1.type == 3 の場合の計算は v.grad であってもなくても同じ
 
-				result <- dp.t3( q, c( intervals[[1]]$mean, intervals[[2]]$mean, intervals[[3]]$mean ),
-									c( intervals[[1]]$sd, intervals[[2]]$sd, intervals[[3]]$sd ), f.t3.p )
-			}
-			else if ( is.continuous() )
-			{
-				# continuous の場合
-				if ( type1.type == 1 )
-				{
-					result <- ( pnorm( q, intervals[[1]]$mean, intervals[[1]]$sd ) +
-								pnorm( q, intervals[[2]]$mean, intervals[[2]]$sd ) ) / 2
-				}
-				else # if ( type1.type == 2 )
-				{
-					p1 <- pnorm( q, intervals[[1]]$mean, intervals[[1]]$sd )
-					p2 <- pnorm( q, intervals[[2]]$mean, intervals[[2]]$sd )
-					result <- p1 - ( p1 * p1 - p2 * p2 ) / 2
-				}
-			}
-			else if ( is.symmetric() )
-			{
-				# symmetric の場合
-				# type1.type == 2
-				if ( q <= median )
-				{
-					p1 <- pnorm( q, intervals[[1]]$mean, intervals[[1]]$sd )
-					p2 <- pnorm( q, intervals[[2]]$mean, intervals[[2]]$sd )
-					result <- ( 1 - p1 ) * p1 + p2 * p2
-				}
-				else
-				{
-					p1 <- pnorm( 2 * intervals[[1]]$mean - q, intervals[[1]]$mean, intervals[[1]]$sd )
-					p2 <- pnorm( 2 * intervals[[2]]$mean - q, intervals[[2]]$mean, intervals[[2]]$sd )
-					result <- 1 - ( 1 - p1 ) * p1 - p2 * p2
-				}
-			}
-			else
-			{
-				# 確率密度関数が不連続の場合
-				is.conn <- is.conn.q( q )
-				if ( !is.conn$bool )
-				{
-					# 独立区間内 ⇒ 確率をそのまま出力
-					result <- pnorm( q, intervals[[is.conn$i.1]]$mean, intervals[[is.conn$i.1]]$sd )
-				}
-				else
-				{
-					# 接続区間内 ⇒ 区間前後の2つの分布で確率を負担
-					j <- is.conn$i.1
-					if ( q > intervals[[j]]$q.manage()[2] && q < intervals[[j + 1]]$q.manage()[1] )
-					{
-						# 負担分布なし ⇒ p = 直前の分布が負担する確率の上限 = 接続区間の確率の上限と下限の平均
-						return ( ( intervals[[j]]$p.conn.next[1] + intervals[[j]]$p.conn.next[2] ) / 2 )
-					}
+                result <- dp.t3( q, c( intervals[[1]]$mean, intervals[[2]]$mean, intervals[[3]]$mean ),
+                                    c( intervals[[1]]$sd, intervals[[2]]$sd, intervals[[3]]$sd ), f.t3.p )
+            }
+            else if ( is.continuous() )
+            {
+                # continuous の場合
+                if ( type1.type == 1 )
+                {
+                    result <- ( pnorm( q, intervals[[1]]$mean, intervals[[1]]$sd ) +
+                                pnorm( q, intervals[[2]]$mean, intervals[[2]]$sd ) ) / 2
+                }
+                else # if ( type1.type == 2 )
+                {
+                    p1 <- pnorm( q, intervals[[1]]$mean, intervals[[1]]$sd )
+                    p2 <- pnorm( q, intervals[[2]]$mean, intervals[[2]]$sd )
+                    result <- p1 - ( p1 * p1 - p2 * p2 ) / 2
+                }
+            }
+            else if ( is.symmetric() )
+            {
+                # symmetric の場合
+                # type1.type == 2
+                if ( q <= median )
+                {
+                    p1 <- pnorm( q, intervals[[1]]$mean, intervals[[1]]$sd )
+                    p2 <- pnorm( q, intervals[[2]]$mean, intervals[[2]]$sd )
+                    result <- ( 1 - p1 ) * p1 + p2 * p2
+                }
+                else
+                {
+                    p1 <- pnorm( 2 * intervals[[1]]$mean - q, intervals[[1]]$mean, intervals[[1]]$sd )
+                    p2 <- pnorm( 2 * intervals[[2]]$mean - q, intervals[[2]]$mean, intervals[[2]]$sd )
+                    result <- 1 - ( 1 - p1 ) * p1 - p2 * p2
+                }
+            }
+            else
+            {
+                # 確率密度関数が不連続の場合
+                is.conn <- is.conn.q( q )
+                if ( !is.conn$bool )
+                {
+                    # 独立区間内 ⇒ 確率をそのまま出力
+                    result <- pnorm( q, intervals[[is.conn$i.1]]$mean, intervals[[is.conn$i.1]]$sd )
+                }
+                else
+                {
+                    # 接続区間内 ⇒ 区間前後の2つの分布で確率を負担
+                    j <- is.conn$i.1
+                    if ( q > intervals[[j]]$q.manage()[2] && q < intervals[[j + 1]]$q.manage()[1] )
+                    {
+                        # 負担分布なし ⇒ p = 直前の分布が負担する確率の上限 = 接続区間の確率の上限と下限の平均
+                        return ( ( intervals[[j]]$p.conn.next[1] + intervals[[j]]$p.conn.next[2] ) / 2 )
+                    }
 
-					d.1 <- intervals[[j]]			# 確率分布1 (接続区間前を負担)
-					d.2 <- intervals[[j + 1]]		# 確率分布2 (接続区間後を負担)
-					x.conn <- c( d.1$q.conn.next[1], d.2$q.conn.prev[2] )
-													# 接続区間のX座標
+                    d.1 <- intervals[[j]]           # 確率分布1 (接続区間前を負担)
+                    d.2 <- intervals[[j + 1]]       # 確率分布2 (接続区間後を負担)
+                    x.conn <- c( d.1$q.conn.next[1], d.2$q.conn.prev[2] )
+                                                    # 接続区間のX座標
 
-					if ( x.conn[1] < median )		# 中央値より絶対小でなければならない。「以下」は不可
-					{
-						if ( d.1$q.conn.next[2] <= median )
-						{
-							# 中央値をまたがない
-							if ( d.2$sd >= d.1$sd )
-							{
-								# type 1
-								if ( type1.type == 1 )
-								{
-									result <- ( pnorm( q, median, d.1$sd ) * ( x.conn[2] - q ) +
-												pnorm( q, median, d.2$sd ) * ( q - x.conn[1] ) ) /
-												( x.conn[2] - x.conn[1] )
-								}
-								else # if ( type1.type == 2 )
-								{
-									p1.conn1 <- pnorm( x.conn[1], median, d.1$sd )
-									p2.conn1 <- pnorm( x.conn[1], median, d.2$sd )
-									psum.conn1 <- p1.conn1 + p2.conn1
+                    if ( x.conn[1] < median )       # 中央値より絶対小でなければならない。「以下」は不可
+                    {
+                        if ( d.1$q.conn.next[2] <= median )
+                        {
+                            # 中央値をまたがない
+                            if ( d.2$sd >= d.1$sd )
+                            {
+                                # type 1
+                                if ( type1.type == 1 )
+                                {
+                                    result <- ( pnorm( q, median, d.1$sd ) * ( x.conn[2] - q ) +
+                                                pnorm( q, median, d.2$sd ) * ( q - x.conn[1] ) ) /
+                                                ( x.conn[2] - x.conn[1] )
+                                }
+                                else # if ( type1.type == 2 )
+                                {
+                                    p1.conn1 <- pnorm( x.conn[1], median, d.1$sd )
+                                    p2.conn1 <- pnorm( x.conn[1], median, d.2$sd )
+                                    psum.conn1 <- p1.conn1 + p2.conn1
 
-									p1.conn2 <- pnorm( x.conn[2], median, d.1$sd )
-									p2.conn2 <- pnorm( x.conn[2], median, d.2$sd )
-									psum.conn2 <- p1.conn2 + p2.conn2
+                                    p1.conn2 <- pnorm( x.conn[2], median, d.1$sd )
+                                    p2.conn2 <- pnorm( x.conn[2], median, d.2$sd )
+                                    psum.conn2 <- p1.conn2 + p2.conn2
 
-									p1.q <- pnorm( q, median, d.1$sd )
-									p2.q <- pnorm( q, median, d.2$sd )
+                                    p1.q <- pnorm( q, median, d.1$sd )
+                                    p2.q <- pnorm( q, median, d.2$sd )
 
-									result <- ( ( psum.conn2 - p1.q ) * p1.q + ( p2.q - psum.conn1 ) * p2.q ) /
-												( psum.conn2 - psum.conn1 )
-								}
-							}
-							else
-							{
-								# type 2
-								if ( q < d.2$q.conn.prev[1] )
-								{
-									# P2(x) < inf
-									if ( q < d.1$q.conn.next[2] )
-									{
-										# P1(x) < sup ⇒ 確率分布1 が単独で負担
-										result <- ( d.1$p.conn.next[1] + pnorm( q, median, d.1$sd ) ) / 2
-									}
-									else
-									{
-										# P1(x) >= sup ⇒ 負担分布なし
-										#	注: v1.2.0 以降、負担分布なしの場合には前の処理で
-										#		接続区間の確率の上限と下限の平均を return するようにしたため、
-										#		この処理は使われなくなったが、今後の注意のために残しておく。
-										result <- ( d.1$p.conn.next[1] + d.1$p.conn.next[2] ) / 2
-									}
-								}
-								else
-								{
-									# P2(x) >= inf
-									if ( q < d.1$q.conn.next[2] )
-									{
-										# P1(x) < sup ⇒ 確率分布1 と 2 が負担
-										result <- ( pnorm( q, median, d.1$sd ) + pnorm( q, median, d.2$sd ) ) / 2
-									}
-									else
-									{
-										# P1(x) >= sup ⇒ 確率分布2 が単独で負担
-										result <- ( d.1$p.conn.next[2] + pnorm( q, median, d.2$sd ) ) / 2
-									}
-								}
-							}
-						}
-						else
-						{
-							# 中央値をまたぐ
-							if ( d.2$sd >= d.1$sd )
-							{
-								# type 3a
-								if ( q <= median )
-								{
-									result <- pnorm( q, median, d.1$sd )
-								}
-								else
-								{
-									if ( q < d.1$q.conn.next[2] )
-									{
-										# P1(x) < sup ⇒ 確率分布1 と 2 が負担
-										result <- ( pnorm( q, median, d.1$sd ) + pnorm( q, median, d.2$sd ) ) / 2
-									}
-									else
-									{
-										# P1(x) >= sup ⇒ 確率分布2 が単独で負担
-										result <- ( d.1$p.conn.next[2] + pnorm( q, median, d.2$sd ) ) / 2
-									}
-								}
-							}
-							else
-							{
-								# type 3b
-								if ( q <= median )
-								{
-									if ( q < d.2$q.conn.prev[1] )
-									{
-										# P2(x) < inf ⇒ 確率分布1 が単独で負担
-										result <- ( pnorm( q, median, d.1$sd ) + d.2$p.conn.prev[1] ) / 2
-									}
-									else
-									{
-										# P2(x) >= inf ⇒ 確率分布1 と 2 が負担
-										result <- ( pnorm( q, median, d.1$sd ) + pnorm( q, median, d.2$sd ) ) / 2
-									}
-								}
-								else
-								{
-									result <- pnorm( q, median, d.2$sd )
-								}
-							}
-						}
-					}
-					else	# ( x.conn[1] >= median )	# 中央値より絶対大でなくてもよい。「以上」でよい
-					{
-						if ( d.2$sd >= d.1$sd )
-						{
-							# type 2
-							if ( q < d.2$q.conn.prev[1] )
-							{
-								# P2(x) < inf
-								if ( q < d.1$q.conn.next[2] )
-								{
-									# P1(x) < sup ⇒ 確率分布1 が単独で負担
-									result <- ( d.1$p.conn.next[1] + pnorm( q, median, d.1$sd ) ) / 2
-								}
-								else
-								{
-									# P1(x) >= sup ⇒ 負担分布なし
-									#	注: v1.2.0 以降、負担分布なしの場合には前の処理で
-									#		接続区間の確率の上限と下限の平均を return するようにしたため、
-									#		この処理は使われなくなったが、今後の注意のために残しておく。
-									result <- ( d.1$p.conn.next[1] + d.1$p.conn.next[2] ) / 2
-								}
-							}
-							else
-							{
-								# P2(x) >= inf
-								if ( q < d.1$q.conn.next[2] )
-								{
-									# P1(x) < sup ⇒ 確率分布1 と 2 が負担
-									result <- ( pnorm( q, median, d.1$sd ) + pnorm( q, median, d.2$sd ) ) / 2
-								}
-								else
-								{
-									# P1(x) >= sup ⇒ 確率分布2 が単独で負担
-									result <- ( d.1$p.conn.next[2] + pnorm( q, median, d.2$sd ) ) / 2
-								}
-							}
-						}
-						else
-						{
-							# type 1
-							if ( type1.type == 1 )
-							{
-								result <- ( pnorm( q, median, d.1$sd ) * ( x.conn[2] - q ) +
-											pnorm( q, median, d.2$sd ) * ( q - x.conn[1] ) ) /
-											( x.conn[2] - x.conn[1] )
-							}
-							else # if ( type1.type == 2 )
-							{
-								p1.conn1 <- pnorm( x.conn[1], median, d.1$sd )
-								p2.conn1 <- pnorm( x.conn[1], median, d.2$sd )
-								psum.conn1 <- p1.conn1 + p2.conn1
+                                    result <- ( ( psum.conn2 - p1.q ) * p1.q + ( p2.q - psum.conn1 ) * p2.q ) /
+                                                ( psum.conn2 - psum.conn1 )
+                                }
+                            }
+                            else
+                            {
+                                # type 2
+                                if ( q < d.2$q.conn.prev[1] )
+                                {
+                                    # P2(x) < inf
+                                    if ( q < d.1$q.conn.next[2] )
+                                    {
+                                        # P1(x) < sup ⇒ 確率分布1 が単独で負担
+                                        result <- ( d.1$p.conn.next[1] + pnorm( q, median, d.1$sd ) ) / 2
+                                    }
+                                    else
+                                    {
+                                        # P1(x) >= sup ⇒ 負担分布なし
+                                        #   注: v1.2.0 以降、負担分布なしの場合には前の処理で
+                                        #       接続区間の確率の上限と下限の平均を return するようにしたため、
+                                        #       この処理は使われなくなったが、今後の注意のために残しておく。
+                                        result <- ( d.1$p.conn.next[1] + d.1$p.conn.next[2] ) / 2
+                                    }
+                                }
+                                else
+                                {
+                                    # P2(x) >= inf
+                                    if ( q < d.1$q.conn.next[2] )
+                                    {
+                                        # P1(x) < sup ⇒ 確率分布1 と 2 が負担
+                                        result <- ( pnorm( q, median, d.1$sd ) + pnorm( q, median, d.2$sd ) ) / 2
+                                    }
+                                    else
+                                    {
+                                        # P1(x) >= sup ⇒ 確率分布2 が単独で負担
+                                        result <- ( d.1$p.conn.next[2] + pnorm( q, median, d.2$sd ) ) / 2
+                                    }
+                                }
+                            }
+                        }
+                        else
+                        {
+                            # 中央値をまたぐ
+                            if ( d.2$sd >= d.1$sd )
+                            {
+                                # type 3a
+                                if ( q <= median )
+                                {
+                                    result <- pnorm( q, median, d.1$sd )
+                                }
+                                else
+                                {
+                                    if ( q < d.1$q.conn.next[2] )
+                                    {
+                                        # P1(x) < sup ⇒ 確率分布1 と 2 が負担
+                                        result <- ( pnorm( q, median, d.1$sd ) + pnorm( q, median, d.2$sd ) ) / 2
+                                    }
+                                    else
+                                    {
+                                        # P1(x) >= sup ⇒ 確率分布2 が単独で負担
+                                        result <- ( d.1$p.conn.next[2] + pnorm( q, median, d.2$sd ) ) / 2
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                # type 3b
+                                if ( q <= median )
+                                {
+                                    if ( q < d.2$q.conn.prev[1] )
+                                    {
+                                        # P2(x) < inf ⇒ 確率分布1 が単独で負担
+                                        result <- ( pnorm( q, median, d.1$sd ) + d.2$p.conn.prev[1] ) / 2
+                                    }
+                                    else
+                                    {
+                                        # P2(x) >= inf ⇒ 確率分布1 と 2 が負担
+                                        result <- ( pnorm( q, median, d.1$sd ) + pnorm( q, median, d.2$sd ) ) / 2
+                                    }
+                                }
+                                else
+                                {
+                                    result <- pnorm( q, median, d.2$sd )
+                                }
+                            }
+                        }
+                    }
+                    else    # ( x.conn[1] >= median )   # 中央値より絶対大でなくてもよい。「以上」でよい
+                    {
+                        if ( d.2$sd >= d.1$sd )
+                        {
+                            # type 2
+                            if ( q < d.2$q.conn.prev[1] )
+                            {
+                                # P2(x) < inf
+                                if ( q < d.1$q.conn.next[2] )
+                                {
+                                    # P1(x) < sup ⇒ 確率分布1 が単独で負担
+                                    result <- ( d.1$p.conn.next[1] + pnorm( q, median, d.1$sd ) ) / 2
+                                }
+                                else
+                                {
+                                    # P1(x) >= sup ⇒ 負担分布なし
+                                    #   注: v1.2.0 以降、負担分布なしの場合には前の処理で
+                                    #       接続区間の確率の上限と下限の平均を return するようにしたため、
+                                    #       この処理は使われなくなったが、今後の注意のために残しておく。
+                                    result <- ( d.1$p.conn.next[1] + d.1$p.conn.next[2] ) / 2
+                                }
+                            }
+                            else
+                            {
+                                # P2(x) >= inf
+                                if ( q < d.1$q.conn.next[2] )
+                                {
+                                    # P1(x) < sup ⇒ 確率分布1 と 2 が負担
+                                    result <- ( pnorm( q, median, d.1$sd ) + pnorm( q, median, d.2$sd ) ) / 2
+                                }
+                                else
+                                {
+                                    # P1(x) >= sup ⇒ 確率分布2 が単独で負担
+                                    result <- ( d.1$p.conn.next[2] + pnorm( q, median, d.2$sd ) ) / 2
+                                }
+                            }
+                        }
+                        else
+                        {
+                            # type 1
+                            if ( type1.type == 1 )
+                            {
+                                result <- ( pnorm( q, median, d.1$sd ) * ( x.conn[2] - q ) +
+                                            pnorm( q, median, d.2$sd ) * ( q - x.conn[1] ) ) /
+                                            ( x.conn[2] - x.conn[1] )
+                            }
+                            else # if ( type1.type == 2 )
+                            {
+                                p1.conn1 <- pnorm( x.conn[1], median, d.1$sd )
+                                p2.conn1 <- pnorm( x.conn[1], median, d.2$sd )
+                                psum.conn1 <- p1.conn1 + p2.conn1
 
-								p1.conn2 <- pnorm( x.conn[2], median, d.1$sd )
-								p2.conn2 <- pnorm( x.conn[2], median, d.2$sd )
-								psum.conn2 <- p1.conn2 + p2.conn2
+                                p1.conn2 <- pnorm( x.conn[2], median, d.1$sd )
+                                p2.conn2 <- pnorm( x.conn[2], median, d.2$sd )
+                                psum.conn2 <- p1.conn2 + p2.conn2
 
-								p1.q <- pnorm( q, median, d.1$sd )
-								p2.q <- pnorm( q, median, d.2$sd )
+                                p1.q <- pnorm( q, median, d.1$sd )
+                                p2.q <- pnorm( q, median, d.2$sd )
 
-								result <- ( ( psum.conn2 - p1.q ) * p1.q + ( p2.q - psum.conn1 ) * p2.q ) /
-											( psum.conn2 - psum.conn1 )
-							}
-						}
-					}
-				}
-			}
+                                result <- ( ( psum.conn2 - p1.q ) * p1.q + ( p2.q - psum.conn1 ) * p2.q ) /
+                                            ( psum.conn2 - psum.conn1 )
+                            }
+                        }
+                    }
+                }
+            }
 
-			return ( result )
-		}, 0 )
+            return ( result )
+        }, 0 )
 
-		return ( results )
-	}
+        return ( results )
+    }
 )
 
 ################################################################################################
@@ -6946,210 +7004,210 @@ CGD$methods(
 ################################################################################################
 NULL
 CGD$methods(
-	q = function( prob, tol = .Machine$double.eps * 16 )
-	{
-		means <- intervals.mean()
-		sds <- intervals.sd()
+    q = function( prob, tol = .Machine$double.eps * 16 )
+    {
+        means <- intervals.mean()
+        sds <- intervals.sd()
 
-		if ( type1.type == 4 )
-		{
-			min.mean <- min( means )
-			max.mean <- max( means )
-			min.sd <- min( sds[1], sds[2] * sqrt( 2 ) / 2, sds[4], sds[5] * sqrt( 2 ) / 2 )
-			max.sd <- max( sds[1], sds[2] * sqrt( 2 ) / 2, sds[4], sds[5] * sqrt( 2 ) / 2 )
-			qs <- numeric( 4 )
-		}
-		else if ( type1.type == 3 )
-		{
-			sds.star <- sds * sqrt( 2 ) / 2
+        if ( type1.type == 4 )
+        {
+            min.mean <- min( means )
+            max.mean <- max( means )
+            min.sd <- min( sds[1], sds[2] * sqrt( 2 ) / 2, sds[4], sds[5] * sqrt( 2 ) / 2 )
+            max.sd <- max( sds[1], sds[2] * sqrt( 2 ) / 2, sds[4], sds[5] * sqrt( 2 ) / 2 )
+            qs <- numeric( 4 )
+        }
+        else if ( type1.type == 3 )
+        {
+            sds.star <- sds * sqrt( 2 ) / 2
 
-			max.mean.a <- max( means[1:2] )
-			min.mean.a <- min( means[1:2] )
-			max.mean.b <- max( means[2:3] )
-			min.mean.b <- min( means[2:3] )
+            max.mean.a <- max( means[1:2] )
+            min.mean.a <- min( means[1:2] )
+            max.mean.b <- max( means[2:3] )
+            min.mean.b <- min( means[2:3] )
 
-			max.sd.a <- max( sds[1], sds.star[2] )
-			#min.sd.a <- min( sds[1], sds.star[2] ) # 使わない
-			min.sd.a.2 <- min( sds.star[1], sds.star[2] )
-			max.sd.b <- max( sds[3], sds.star[2] )
-			min.sd.b <- min( sds[3], sds.star[2] )
-			min.sd.b.2 <- min( sds.star[3], sds.star[2] )
-			qs <- numeric( 6 )
-		}
-		else if ( is.continuous() || is.symmetric() )
-		{
-			qs <- numeric( 2 )
-		}
+            max.sd.a <- max( sds[1], sds.star[2] )
+            #min.sd.a <- min( sds[1], sds.star[2] ) # 使わない
+            min.sd.a.2 <- min( sds.star[1], sds.star[2] )
+            max.sd.b <- max( sds[3], sds.star[2] )
+            min.sd.b <- min( sds[3], sds.star[2] )
+            min.sd.b.2 <- min( sds.star[3], sds.star[2] )
+            qs <- numeric( 6 )
+        }
+        else if ( is.continuous() || is.symmetric() )
+        {
+            qs <- numeric( 2 )
+        }
 
-		results <- vapply( prob, function( prob )
-		{
-			if ( prob < 0 || prob > 1 )
-			{
-				# 確率が負または1を超えている
-				warning( paste( "Warning: Probability" , prob, "is out of range [0, 1]." ) )
-				return ( NaN )
-			}
-			else if ( prob == 0 )
-			{
-				return ( -Inf )
-			}
-			else if ( prob == 1 )
-			{
-				return ( Inf )
-			}
-			else if ( prob == 0.5 )
-			{
-				result <- median
-			}
+        results <- vapply( prob, function( prob )
+        {
+            if ( prob < 0 || prob > 1 )
+            {
+                # 確率が負または1を超えている
+                warning( paste( "Warning: Probability" , prob, "is out of range [0, 1]." ) )
+                return ( NaN )
+            }
+            else if ( prob == 0 )
+            {
+                return ( -Inf )
+            }
+            else if ( prob == 1 )
+            {
+                return ( Inf )
+            }
+            else if ( prob == 0.5 )
+            {
+                result <- median
+            }
 
-			if ( is.uni.mean() && is.uni.sigma() )
-			{
-				# 正規分布
-				result <- qnorm( prob, means[1], sds[1] )
-			}
-			else
-			{
-				if ( type1.type == 4 )
-				{
-					p.2.m.sqrt2 <- ( 2 - sqrt( 2 ) ) * prob
-					qs[1] <- qnorm( p.2.m.sqrt2, min.mean, min.sd )
-					qs[2] <- qnorm( p.2.m.sqrt2, min.mean, max.sd )
-					qs[3] <- qnorm( p.2.m.sqrt2 + sqrt( 2 ) - 1, max.mean, min.sd )
-					qs[4] <- qnorm( p.2.m.sqrt2 + sqrt( 2 ) - 1, max.mean, max.sd )
+            if ( is.uni.mean() && is.uni.sigma() )
+            {
+                # 正規分布
+                result <- qnorm( prob, means[1], sds[1] )
+            }
+            else
+            {
+                if ( type1.type == 4 )
+                {
+                    p.2.m.sqrt2 <- ( 2 - sqrt( 2 ) ) * prob
+                    qs[1] <- qnorm( p.2.m.sqrt2, min.mean, min.sd )
+                    qs[2] <- qnorm( p.2.m.sqrt2, min.mean, max.sd )
+                    qs[3] <- qnorm( p.2.m.sqrt2 + sqrt( 2 ) - 1, max.mean, min.sd )
+                    qs[4] <- qnorm( p.2.m.sqrt2 + sqrt( 2 ) - 1, max.mean, max.sd )
 
-					if ( prob < 0.5 )
-					{
-						result <- bisection( function( x ) { p( x ) - prob }, c( min( qs[1:2] ), median ), tol )
-					}
-					else
-					{
-						result <- bisection( function( x ) { p( x ) - prob }, c( median, max( qs[3:4] ) ), tol )
-					}
-				}
-				else if ( type1.type == 3 )
-				{
-					if ( prob >= p( means[1] ) && prob <= p( means[3] ) )
-					{
-						result <- qnorm( sqrt( 2 ) * ( prob - 0.5 ) + 0.5, means[2], sds.star[2] )
-					}
-					else
-					{
-						if ( prob < 0.5 )
-						{
-							qs[1] <- median
-							qs[2] <- qnorm( ( 2 - sqrt( 2 ) ) * prob, min.mean.a, max.sd.a )
-							qs[3] <- qnorm( prob, min.mean.b, max.sd.b )
-							qs[4] <- median
-							qs[5] <- qnorm( prob, max.mean.a, min.sd.a.2 )
-							qs[6] <- qnorm( ( 2 - sqrt( 2 ) ) * prob + sqrt( 2 ) - 1, max.mean.b, min.sd.b )
-							result <- bisection( function( x ) { p( x ) - prob }, c( min( qs[1:3] ), max( qs[4:6] ) ), tol )
-						}
-						else
-						{
-							# 高速化のための median の位置に注意
-							qs[1] <- qnorm( ( 2 - sqrt( 2 ) ) * prob, min.mean.a, sds[1] )
-							qs[2] <- qnorm( ( 2 - sqrt( 2 ) ) * prob, min.mean.a, sds.star[2] )
-							qs[3] <- qnorm( prob, min.mean.b, min.sd.b.2 )
-							qs[4] <- median
-							qs[5] <- qnorm( prob, max.mean.a, max.sd.a )
-							qs[6] <- qnorm( ( 2 - sqrt( 2 ) ) * prob + sqrt( 2 ) - 1, max.mean.b, max.sd.b )
-							result <- bisection( function( x ) { p( x ) - prob }, c( min( qs[1:4] ), max( qs[4:6] ) ), tol )
-						}
-					}
-				}
-				else if ( is.continuous() || is.symmetric() )
-				{
-					# type1.type = 1, 2, continuous or symmetric ⇒
-					# 累積分布関数の上限と下限は、構成要素の正規分布の累積分布関数で押さえられており、
-					# それら2つの累積分布関数の値に挟まれた間から外に出ることはない
-					qs[1] <- qnorm( prob, means[1], sds[1] )
-					qs[2] <- qnorm( prob, means[2], sds[2] )
-					if ( qs[1]	== qs[2] )
-					{
-						result <- qs[1]
-					}
-					else
-					{
-						result <- bisection( function( x ) { p( x ) - prob }, qs, tol )
-					}
-				}
-				else
-				{
-					# 確率密度関数が不連続の場合
-					is.conn <- is.conn.p( prob )
-					j <- is.conn$i.1
-					if ( !is.conn$bool )
-					{
-						# 独立区間内 ⇒ 正規分布のクォンタイル関数の値をそのまま出力
-						result <- qnorm( prob, intervals[[j]]$mean, intervals[[j]]$sd )
-					}
-					else
-					{
-						# 接続区間内 ⇒ 区間前後の2つの分布で確率密度を負担
-						if ( intervals[[j]]$p.conn.next[1] < 0.5 && intervals[[j]]$p.conn.next[2] > 0.5 )
-						{
-							# type 3 ⇒ prob が中央値より大か小かで値域を絞れる
-							if ( prob < 0.5 )
-							{
-								result <- bisection( function( x ) { p( x ) - prob },
-													 c( intervals[[j]]$q.conn.next[1], median ), tol )
-							}
-							else # if ( prob > 0.5 )
-							{
-								result <- bisection( function( x ) { p( x ) - prob },
-													 c( median, intervals[[j + 1]]$q.conn.prev[2] ), tol )
-							}
-						}
-						else
-						{
-							if ( intervals[[j]]$sd < intervals[[j + 1]]$sd )
-							{
-								# type 1 ⇒ 接続区間内は至る所で微分可能かつ単調増加なので、場合分けしなくても収束する
-								result <- bisection( function( x ) { p( x ) - prob },
-														c( intervals[[j]]$q.conn.next[1],
-															intervals[[j + 1]]$q.conn.prev[2] ), tol )
-							}
-							else
-							{
-								# type 2 ⇒ 場合分けが必要
-								dm <- ( intervals[[j]]$p.conn.next[1] + intervals[[j]]$p.conn.next[2] ) / 2 - prob
-								if ( dm == 0 )
-								{
-									# prob が接続区間の確率の上限と下限の平均 ⇒ 負担分布なしの可能性あり
-									if ( intervals[[j]]$q.conn.next[2] < intervals[[j + 1]]$q.conn.prev[1] )
-									{
-										# 負担分布なし
-										# ⇒ 累積分布関数の逆写像は幅のある区間となり、一点に定まらない。
-										# その区間は
-										#	[intervals[[j]]$q.manage()[2], intervals[[j + 1]]$q.manage()[1]] になる。
-										# この場合は、区間の平均値を出力しておく。
-										result <- ( intervals[[j]]$q.manage()[2] + intervals[[j + 1]]$q.manage()[1] ) / 2
-									}
-									else
-									{
-										# 負担分布あり ⇒ X座標が接続区間の中点とは限らないので、その周りの範囲で方程式を解く
-										result <- bisection( function( x ) { p( x ) - prob },
-																c( intervals[[j + 1]]$q.conn.prev[1],
-																	intervals[[j]]$q.conn.next[2] ), tol )
-									}
-								}
-								else
-								{
-									result <- bisection( function( x ) { p( x ) - prob },
-															c( intervals[[j]]$q.conn.next[1],
-																intervals[[j + 1]]$q.conn.prev[2] ), tol )
-								}
-							}
-						}
-					}
-				}
-			}
+                    if ( prob < 0.5 )
+                    {
+                        result <- bisection( function( x ) { p( x ) - prob }, c( min( qs[1:2] ), median ), tol )
+                    }
+                    else
+                    {
+                        result <- bisection( function( x ) { p( x ) - prob }, c( median, max( qs[3:4] ) ), tol )
+                    }
+                }
+                else if ( type1.type == 3 )
+                {
+                    if ( prob >= p( means[1] ) && prob <= p( means[3] ) )
+                    {
+                        result <- qnorm( sqrt( 2 ) * ( prob - 0.5 ) + 0.5, means[2], sds.star[2] )
+                    }
+                    else
+                    {
+                        if ( prob < 0.5 )
+                        {
+                            qs[1] <- median
+                            qs[2] <- qnorm( ( 2 - sqrt( 2 ) ) * prob, min.mean.a, max.sd.a )
+                            qs[3] <- qnorm( prob, min.mean.b, max.sd.b )
+                            qs[4] <- median
+                            qs[5] <- qnorm( prob, max.mean.a, min.sd.a.2 )
+                            qs[6] <- qnorm( ( 2 - sqrt( 2 ) ) * prob + sqrt( 2 ) - 1, max.mean.b, min.sd.b )
+                            result <- bisection( function( x ) { p( x ) - prob }, c( min( qs[1:3] ), max( qs[4:6] ) ), tol )
+                        }
+                        else
+                        {
+                            # 高速化のための median の位置に注意
+                            qs[1] <- qnorm( ( 2 - sqrt( 2 ) ) * prob, min.mean.a, sds[1] )
+                            qs[2] <- qnorm( ( 2 - sqrt( 2 ) ) * prob, min.mean.a, sds.star[2] )
+                            qs[3] <- qnorm( prob, min.mean.b, min.sd.b.2 )
+                            qs[4] <- median
+                            qs[5] <- qnorm( prob, max.mean.a, max.sd.a )
+                            qs[6] <- qnorm( ( 2 - sqrt( 2 ) ) * prob + sqrt( 2 ) - 1, max.mean.b, max.sd.b )
+                            result <- bisection( function( x ) { p( x ) - prob }, c( min( qs[1:4] ), max( qs[4:6] ) ), tol )
+                        }
+                    }
+                }
+                else if ( is.continuous() || is.symmetric() )
+                {
+                    # type1.type = 1, 2, continuous or symmetric ⇒
+                    # 累積分布関数の上限と下限は、構成要素の正規分布の累積分布関数で押さえられており、
+                    # それら2つの累積分布関数の値に挟まれた間から外に出ることはない
+                    qs[1] <- qnorm( prob, means[1], sds[1] )
+                    qs[2] <- qnorm( prob, means[2], sds[2] )
+                    if ( qs[1]  == qs[2] )
+                    {
+                        result <- qs[1]
+                    }
+                    else
+                    {
+                        result <- bisection( function( x ) { p( x ) - prob }, qs, tol )
+                    }
+                }
+                else
+                {
+                    # 確率密度関数が不連続の場合
+                    is.conn <- is.conn.p( prob )
+                    j <- is.conn$i.1
+                    if ( !is.conn$bool )
+                    {
+                        # 独立区間内 ⇒ 正規分布のクォンタイル関数の値をそのまま出力
+                        result <- qnorm( prob, intervals[[j]]$mean, intervals[[j]]$sd )
+                    }
+                    else
+                    {
+                        # 接続区間内 ⇒ 区間前後の2つの分布で確率密度を負担
+                        if ( intervals[[j]]$p.conn.next[1] < 0.5 && intervals[[j]]$p.conn.next[2] > 0.5 )
+                        {
+                            # type 3 ⇒ prob が中央値より大か小かで値域を絞れる
+                            if ( prob < 0.5 )
+                            {
+                                result <- bisection( function( x ) { p( x ) - prob },
+                                                     c( intervals[[j]]$q.conn.next[1], median ), tol )
+                            }
+                            else # if ( prob > 0.5 )
+                            {
+                                result <- bisection( function( x ) { p( x ) - prob },
+                                                     c( median, intervals[[j + 1]]$q.conn.prev[2] ), tol )
+                            }
+                        }
+                        else
+                        {
+                            if ( intervals[[j]]$sd < intervals[[j + 1]]$sd )
+                            {
+                                # type 1 ⇒ 接続区間内は至る所で微分可能かつ単調増加なので、場合分けしなくても収束する
+                                result <- bisection( function( x ) { p( x ) - prob },
+                                                        c( intervals[[j]]$q.conn.next[1],
+                                                            intervals[[j + 1]]$q.conn.prev[2] ), tol )
+                            }
+                            else
+                            {
+                                # type 2 ⇒ 場合分けが必要
+                                dm <- ( intervals[[j]]$p.conn.next[1] + intervals[[j]]$p.conn.next[2] ) / 2 - prob
+                                if ( dm == 0 )
+                                {
+                                    # prob が接続区間の確率の上限と下限の平均 ⇒ 負担分布なしの可能性あり
+                                    if ( intervals[[j]]$q.conn.next[2] < intervals[[j + 1]]$q.conn.prev[1] )
+                                    {
+                                        # 負担分布なし
+                                        # ⇒ 累積分布関数の逆写像は幅のある区間となり、一点に定まらない。
+                                        # その区間は
+                                        #   [intervals[[j]]$q.manage()[2], intervals[[j + 1]]$q.manage()[1]] になる。
+                                        # この場合は、区間の平均値を出力しておく。
+                                        result <- ( intervals[[j]]$q.manage()[2] + intervals[[j + 1]]$q.manage()[1] ) / 2
+                                    }
+                                    else
+                                    {
+                                        # 負担分布あり ⇒ X座標が接続区間の中点とは限らないので、その周りの範囲で方程式を解く
+                                        result <- bisection( function( x ) { p( x ) - prob },
+                                                                c( intervals[[j + 1]]$q.conn.prev[1],
+                                                                    intervals[[j]]$q.conn.next[2] ), tol )
+                                    }
+                                }
+                                else
+                                {
+                                    result <- bisection( function( x ) { p( x ) - prob },
+                                                            c( intervals[[j]]$q.conn.next[1],
+                                                                intervals[[j + 1]]$q.conn.prev[2] ), tol )
+                                }
+                            }
+                        }
+                    }
+                }
+            }
 
-			return ( result )
-		}, 0 )
+            return ( result )
+        }, 0 )
 
-		return ( results )
-	}
+        return ( results )
+    }
 )
 
 ################################################################################################
@@ -7173,10 +7231,10 @@ CGD$methods(
 ################################################################################################
 NULL
 CGD$methods(
-	r = function( n, tol = 2^(-17) )
-	{
-		return ( q( runif( n, 0, 1 ), tol ) )
-	}
+    r = function( n, tol = 2^(-17) )
+    {
+        return ( q( runif( n, 0, 1 ), tol ) )
+    }
 )
 
 ################################################################################################
@@ -7217,62 +7275,62 @@ CGD$methods(
 ################################################################################################
 NULL
 CGD$methods(
-	tex = function( decimal = 6, write.comma = TRUE, con = stdout(), sep = "\n" )
-	{
-		if ( decimal < 0 || decimal > 16 )
-		{
-			decimal <- 6
-		}
+    tex = function( decimal = 6, write.comma = TRUE, con = stdout(), sep = "\n" )
+    {
+        if ( decimal < 0 || decimal > 16 )
+        {
+            decimal <- 6
+        }
 
-		tex.body <- ""
-		if ( kind.index == 1 )
-		{
-			tex.body <- paste0( tex.p.all[kind.index], tex.d.all[kind.index], "\\\\\n",
-								tex.p.sub.0, tex.d.sub.0 )
-		}
-		else if ( type1.type == 1 || ( type1.type == 2 && is.symmetric() ) )
-		{
-			tex.body <- paste0( tex.p.all[kind.index], tex.d.all[kind.index], "\\\\\n",
-								tex.p.sub.1, tex.d.sub.1 )
-		}
-		else if ( type1.type == 2 )
-		{
-			tex.body <- paste0( tex.p.all[kind.index], tex.d.all[kind.index], "\\\\\n",
-								tex.p.sub.2, tex.d.sub.2 )
-		}
-		else if ( type1.type == 3 && is.v.grad() )
-		{
-			tex.body <- paste0( tex.p.all[kind.index], tex.d.all[kind.index], "\\\\\n",
-								tex.p.sub.v, tex.d.sub.v )
-		}
-		else if ( type1.type == 3 )
-		{
-			tex.body <- paste0( tex.p.all[kind.index], tex.d.all[kind.index], "\\\\\n",
-								tex.p.sub.3[1], tex.d.sub.3[1], "\\\\\n", tex.p.sub.3[2], tex.d.sub.3[2] )
-		}
-		else if ( type1.type == 4 )
-		{
-			tex.body <- paste0( tex.p.all[kind.index], tex.d.all[kind.index], "\\\\\n",
-								tex.p.sub.4[1], tex.d.sub.4[1], "\\\\\n", tex.p.sub.4[2], tex.d.sub.4[2] )
-		}
+        tex.body <- ""
+        if ( kind.index == 1 )
+        {
+            tex.body <- paste0( tex.p.all[kind.index], tex.d.all[kind.index], "\\\\\n",
+                                tex.p.sub.0, tex.d.sub.0 )
+        }
+        else if ( type1.type == 1 || ( type1.type == 2 && is.symmetric() ) )
+        {
+            tex.body <- paste0( tex.p.all[kind.index], tex.d.all[kind.index], "\\\\\n",
+                                tex.p.sub.1, tex.d.sub.1 )
+        }
+        else if ( type1.type == 2 )
+        {
+            tex.body <- paste0( tex.p.all[kind.index], tex.d.all[kind.index], "\\\\\n",
+                                tex.p.sub.2, tex.d.sub.2 )
+        }
+        else if ( type1.type == 3 && is.v.grad() )
+        {
+            tex.body <- paste0( tex.p.all[kind.index], tex.d.all[kind.index], "\\\\\n",
+                                tex.p.sub.v, tex.d.sub.v )
+        }
+        else if ( type1.type == 3 )
+        {
+            tex.body <- paste0( tex.p.all[kind.index], tex.d.all[kind.index], "\\\\\n",
+                                tex.p.sub.3[1], tex.d.sub.3[1], "\\\\\n", tex.p.sub.3[2], tex.d.sub.3[2] )
+        }
+        else if ( type1.type == 4 )
+        {
+            tex.body <- paste0( tex.p.all[kind.index], tex.d.all[kind.index], "\\\\\n",
+                                tex.p.sub.4[1], tex.d.sub.4[1], "\\\\\n", tex.p.sub.4[2], tex.d.sub.4[2] )
+        }
 
-		tex.form <- paste0( tex.body, get.tex.val( .self, decimal ) )
+        tex.form <- paste0( tex.body, get.tex.val( .self, decimal ) )
 
-		if ( write.comma )
-		{
-			tex.form <- paste0( tex.form.header,
-								gsub( ";", ",", gsub( ";;", ".", tex.form ) ),
-								tex.form.footer )
-		}
-		else
-		{
-			tex.form <- paste0( tex.form.header,
-								gsub( ";", "", tex.form ),
-								tex.form.footer )
-		}
+        if ( write.comma )
+        {
+            tex.form <- paste0( tex.form.header,
+                                gsub( ";", ",", gsub( ";;", ".", tex.form ) ),
+                                tex.form.footer )
+        }
+        else
+        {
+            tex.form <- paste0( tex.form.header,
+                                gsub( ";", "", tex.form ),
+                                tex.form.footer )
+        }
 
-		writeLines( strsplit( tex.form, "\n" )[[1]], con, sep )
-	}
+        writeLines( strsplit( tex.form, "\n" )[[1]], con, sep )
+    }
 )
 
 ################################################################################################
@@ -7313,58 +7371,58 @@ CGD$methods(
 ################################################################################################
 NULL
 CGD$methods(
-	tex.p = function( decimal = 6, write.comma = TRUE, con = stdout(), sep = "\n" )
-	{
-		if ( decimal < 0 || decimal > 16 )
-		{
-			decimal <- 6
-		}
+    tex.p = function( decimal = 6, write.comma = TRUE, con = stdout(), sep = "\n" )
+    {
+        if ( decimal < 0 || decimal > 16 )
+        {
+            decimal <- 6
+        }
 
-		tex.body <- ""
-		if ( kind.index == 1 )
-		{
-			tex.body <- paste0( tex.p.all[kind.index], "\\\\\n", tex.p.sub.0 )
-		}
-		else if ( type1.type == 1 || ( type1.type == 2 && is.symmetric() ) )
-		{
-			tex.body <- paste0( tex.p.all[kind.index], "\\\\\n", tex.p.sub.1 )
-		}
-		else if ( type1.type == 2 )
-		{
-			tex.body <- paste0( tex.p.all[kind.index], "\\\\\n", tex.p.sub.2 )
-		}
-		else if ( type1.type == 3 && is.v.grad() )
-		{
-			tex.body <- paste0( tex.p.all[kind.index], "\\\\\n", tex.p.sub.v )
-		}
-		else if ( type1.type == 3 )
-		{
-			tex.body <- paste0( tex.p.all[kind.index], "\\\\\n",
-								tex.p.sub.3[1], "\\\\\n", tex.p.sub.3[2] )
-		}
-		else if ( type1.type == 4 )
-		{
-			tex.body <- paste0( tex.p.all[kind.index], "\\\\\n",
-								tex.p.sub.4[1], "\\\\\n", tex.p.sub.4[2] )
-		}
+        tex.body <- ""
+        if ( kind.index == 1 )
+        {
+            tex.body <- paste0( tex.p.all[kind.index], "\\\\\n", tex.p.sub.0 )
+        }
+        else if ( type1.type == 1 || ( type1.type == 2 && is.symmetric() ) )
+        {
+            tex.body <- paste0( tex.p.all[kind.index], "\\\\\n", tex.p.sub.1 )
+        }
+        else if ( type1.type == 2 )
+        {
+            tex.body <- paste0( tex.p.all[kind.index], "\\\\\n", tex.p.sub.2 )
+        }
+        else if ( type1.type == 3 && is.v.grad() )
+        {
+            tex.body <- paste0( tex.p.all[kind.index], "\\\\\n", tex.p.sub.v )
+        }
+        else if ( type1.type == 3 )
+        {
+            tex.body <- paste0( tex.p.all[kind.index], "\\\\\n",
+                                tex.p.sub.3[1], "\\\\\n", tex.p.sub.3[2] )
+        }
+        else if ( type1.type == 4 )
+        {
+            tex.body <- paste0( tex.p.all[kind.index], "\\\\\n",
+                                tex.p.sub.4[1], "\\\\\n", tex.p.sub.4[2] )
+        }
 
-		tex.form <- paste0( tex.body, get.tex.val( .self, decimal ) )
+        tex.form <- paste0( tex.body, get.tex.val( .self, decimal ) )
 
-		if ( write.comma )
-		{
-			tex.form <- paste0( tex.form.header,
-								gsub( ";", ",", gsub( ";;", ".", tex.form ) ),
-								tex.form.footer )
-		}
-		else
-		{
-			tex.form <- paste0( tex.form.header,
-								gsub( ";", "", tex.form ),
-								tex.form.footer )
-		}
+        if ( write.comma )
+        {
+            tex.form <- paste0( tex.form.header,
+                                gsub( ";", ",", gsub( ";;", ".", tex.form ) ),
+                                tex.form.footer )
+        }
+        else
+        {
+            tex.form <- paste0( tex.form.header,
+                                gsub( ";", "", tex.form ),
+                                tex.form.footer )
+        }
 
-		writeLines( strsplit( tex.form, "\n" )[[1]], con, sep )
-	}
+        writeLines( strsplit( tex.form, "\n" )[[1]], con, sep )
+    }
 )
 
 ################################################################################################
@@ -7405,60 +7463,60 @@ CGD$methods(
 ################################################################################################
 NULL
 CGD$methods(
-	tex.d = function( decimal = 6, write.comma = TRUE, con = stdout(), sep = "\n" )
-	{
-		if ( decimal < 0 || decimal > 16 )
-		{
-			decimal <- 6
-		}
+    tex.d = function( decimal = 6, write.comma = TRUE, con = stdout(), sep = "\n" )
+    {
+        if ( decimal < 0 || decimal > 16 )
+        {
+            decimal <- 6
+        }
 
-		tex.body <- ""
-		if ( kind.index == 1 )
-		{
-			tex.body <- paste0( tex.d.all[kind.index], "\\\\\n", tex.d.sub.0 )
-		}
-		else if ( type1.type == 1 || ( type1.type == 2 && is.symmetric() ) )
-		{
-			tex.body <- paste0( tex.d.all[kind.index], "\\\\\n", tex.d.sub.1 )
-		}
-		else if ( type1.type == 2 )
-		{
-			# type1.type == 2 では、式に Ψ_i(x) が出てくるので、 tex.p.sub.2 も必要
-			tex.body <- paste0( tex.d.all[kind.index], "\\\\\n", tex.p.sub.2, tex.d.sub.2 )
-		}
-		else if ( type1.type == 3 && is.v.grad() )
-		{
-			tex.body <- paste0( tex.d.all[kind.index], "\\\\\n", tex.d.sub.v )
-		}
-		else if ( type1.type == 3 )
-		{
-			tex.body <- paste0( tex.d.all[kind.index], "\\\\\n",
-								tex.d.sub.3[1], "\\\\\n", tex.d.sub.3[2] )
-		}
-		else if ( type1.type == 4 )
-		{
-			# type1.type == 4 では、式に Ψ_i(x) が出てくるので、 tex.p.sub.4 も必要
-			tex.body <- paste0( tex.d.all[kind.index], "\\\\\n",
-								tex.p.sub.4[1], tex.d.sub.4[1], "\\\\\n", tex.p.sub.4[2], tex.d.sub.4[2] )
-		}
+        tex.body <- ""
+        if ( kind.index == 1 )
+        {
+            tex.body <- paste0( tex.d.all[kind.index], "\\\\\n", tex.d.sub.0 )
+        }
+        else if ( type1.type == 1 || ( type1.type == 2 && is.symmetric() ) )
+        {
+            tex.body <- paste0( tex.d.all[kind.index], "\\\\\n", tex.d.sub.1 )
+        }
+        else if ( type1.type == 2 )
+        {
+            # type1.type == 2 では、式に Ψ_i(x) が出てくるので、 tex.p.sub.2 も必要
+            tex.body <- paste0( tex.d.all[kind.index], "\\\\\n", tex.p.sub.2, tex.d.sub.2 )
+        }
+        else if ( type1.type == 3 && is.v.grad() )
+        {
+            tex.body <- paste0( tex.d.all[kind.index], "\\\\\n", tex.d.sub.v )
+        }
+        else if ( type1.type == 3 )
+        {
+            tex.body <- paste0( tex.d.all[kind.index], "\\\\\n",
+                                tex.d.sub.3[1], "\\\\\n", tex.d.sub.3[2] )
+        }
+        else if ( type1.type == 4 )
+        {
+            # type1.type == 4 では、式に Ψ_i(x) が出てくるので、 tex.p.sub.4 も必要
+            tex.body <- paste0( tex.d.all[kind.index], "\\\\\n",
+                                tex.p.sub.4[1], tex.d.sub.4[1], "\\\\\n", tex.p.sub.4[2], tex.d.sub.4[2] )
+        }
 
-		tex.form <- paste0( tex.body, get.tex.val( .self, decimal ) )
+        tex.form <- paste0( tex.body, get.tex.val( .self, decimal ) )
 
-		if ( write.comma )
-		{
-			tex.form <- paste0( tex.form.header,
-								gsub( ";", ",", gsub( ";;", ".", tex.form ) ),
-								tex.form.footer )
-		}
-		else
-		{
-			tex.form <- paste0( tex.form.header,
-								gsub( ";", "", tex.form ),
-								tex.form.footer )
-		}
+        if ( write.comma )
+        {
+            tex.form <- paste0( tex.form.header,
+                                gsub( ";", ",", gsub( ";;", ".", tex.form ) ),
+                                tex.form.footer )
+        }
+        else
+        {
+            tex.form <- paste0( tex.form.header,
+                                gsub( ";", "", tex.form ),
+                                tex.form.footer )
+        }
 
-		writeLines( strsplit( tex.form, "\n" )[[1]], con, sep )
-	}
+        writeLines( strsplit( tex.form, "\n" )[[1]], con, sep )
+    }
 )
 
 ################################################################################################
@@ -7471,100 +7529,100 @@ CGD$methods(
 ################################################################################################
 get.tex.val = function( cgd, decimal )
 {
-	formatter <- sprintf( "%%.%df", decimal )
+    formatter <- sprintf( "%%.%df", decimal )
 
-	if ( cgd$kind.index == 1 )
-	{
-		tex <- sub( "mean", sprintf( formatter, cgd$mean ), tex.val.sub.0 )
-		tex <- sub( "sd", sprintf( formatter, cgd$sd ), tex )
-	}
-	else if ( cgd$type1.type == 1 || ( cgd$type1.type == 2 && cgd$is.symmetric() ) )
-	{
-		tex <- sub( "mean", sprintf( formatter, cgd$mean ), tex.val.sub.1 )
-		tex <- sub( "sd.1", sprintf( formatter, cgd$intervals[[1]]$sd ), tex )
-		tex <- sub( "sd.2", sprintf( formatter, cgd$intervals[[2]]$sd ), tex )
-	}
-	else if ( cgd$type1.type == 2 || ( cgd$type1.type == 3 && cgd$is.v.grad() ) )
-	{
-		tex <- sub( "mean.1", sprintf( formatter, cgd$intervals[[1]]$mean ), tex.val.sub.2 )
-		tex <- sub( "sd.1", sprintf( formatter, cgd$intervals[[1]]$sd ), tex )
+    if ( cgd$kind.index == 1 )
+    {
+        tex <- sub( "mean", sprintf( formatter, cgd$mean ), tex.val.sub.0 )
+        tex <- sub( "sd", sprintf( formatter, cgd$sd ), tex )
+    }
+    else if ( cgd$type1.type == 1 || ( cgd$type1.type == 2 && cgd$is.symmetric() ) )
+    {
+        tex <- sub( "mean", sprintf( formatter, cgd$mean ), tex.val.sub.1 )
+        tex <- sub( "sd.1", sprintf( formatter, cgd$intervals[[1]]$sd ), tex )
+        tex <- sub( "sd.2", sprintf( formatter, cgd$intervals[[2]]$sd ), tex )
+    }
+    else if ( cgd$type1.type == 2 || ( cgd$type1.type == 3 && cgd$is.v.grad() ) )
+    {
+        tex <- sub( "mean.1", sprintf( formatter, cgd$intervals[[1]]$mean ), tex.val.sub.2 )
+        tex <- sub( "sd.1", sprintf( formatter, cgd$intervals[[1]]$sd ), tex )
 
-		if ( cgd$is.uni.mean() )
-		{
-			tex <- sub( "mean.2", "\\\\mu_1", tex )
-		}
-		else
-		{
-			tex <- sub( "mean.2", sprintf( formatter, cgd$intervals[[2]]$mean ), tex )
-		}
+        if ( cgd$is.uni.mean() )
+        {
+            tex <- sub( "mean.2", "\\\\mu_1", tex )
+        }
+        else
+        {
+            tex <- sub( "mean.2", sprintf( formatter, cgd$intervals[[2]]$mean ), tex )
+        }
 
-		if ( cgd$is.uni.sigma() )
-		{
-			tex <- sub( "sd.2", "\\\\sigma_1", tex )
-		}
-		else
-		{
-			tex <- sub( "sd.2", sprintf( formatter, cgd$intervals[[2]]$sd ), tex )
-		}
-	}
-	else if ( cgd$type1.type == 3 )
-	{
-		tex <- sub( "mean.1", sprintf( formatter, cgd$intervals[[1]]$mean ), tex.val.sub.3 )
-		tex <- sub( "sd.1", sprintf( formatter, cgd$intervals[[1]]$sd ), tex )
+        if ( cgd$is.uni.sigma() )
+        {
+            tex <- sub( "sd.2", "\\\\sigma_1", tex )
+        }
+        else
+        {
+            tex <- sub( "sd.2", sprintf( formatter, cgd$intervals[[2]]$sd ), tex )
+        }
+    }
+    else if ( cgd$type1.type == 3 )
+    {
+        tex <- sub( "mean.1", sprintf( formatter, cgd$intervals[[1]]$mean ), tex.val.sub.3 )
+        tex <- sub( "sd.1", sprintf( formatter, cgd$intervals[[1]]$sd ), tex )
 
-		if ( cgd$is.uni.mean() )
-		{
-			tex <- sub( "mean.2", "\\\\mu_1", tex )
-			tex <- sub( "mean.3", "\\\\mu_1", tex )
-		}
-		else
-		{
-			tex <- sub( "mean.2", sprintf( formatter, cgd$intervals[[2]]$mean ), tex )
-			tex <- sub( "mean.3", sprintf( formatter, cgd$intervals[[3]]$mean ), tex )
-		}
+        if ( cgd$is.uni.mean() )
+        {
+            tex <- sub( "mean.2", "\\\\mu_1", tex )
+            tex <- sub( "mean.3", "\\\\mu_1", tex )
+        }
+        else
+        {
+            tex <- sub( "mean.2", sprintf( formatter, cgd$intervals[[2]]$mean ), tex )
+            tex <- sub( "mean.3", sprintf( formatter, cgd$intervals[[3]]$mean ), tex )
+        }
 
-		if ( cgd$is.uni.sigma() )
-		{
-			tex <- sub( "sd.2", "\\\\sigma_1", tex )
-			tex <- sub( "sd.3", "\\\\sigma_1", tex )
-		}
-		else
-		{
-			tex <- sub( "sd.2", sprintf( formatter, cgd$intervals[[2]]$sd ), tex )
-			tex <- sub( "sd.3", sprintf( formatter, cgd$intervals[[3]]$sd ), tex )
-		}
-	}
-	else # if ( cgd$type1.type == 4 )
-	{
-		tex <- sub( "mean.1.1", sprintf( formatter, cgd$intervals[[1]][[1]]$mean ), tex.val.sub.4 )
-		tex <- sub( "sd.1.1", sprintf( formatter, cgd$intervals[[1]][[1]]$sd ), tex )
+        if ( cgd$is.uni.sigma() )
+        {
+            tex <- sub( "sd.2", "\\\\sigma_1", tex )
+            tex <- sub( "sd.3", "\\\\sigma_1", tex )
+        }
+        else
+        {
+            tex <- sub( "sd.2", sprintf( formatter, cgd$intervals[[2]]$sd ), tex )
+            tex <- sub( "sd.3", sprintf( formatter, cgd$intervals[[3]]$sd ), tex )
+        }
+    }
+    else # if ( cgd$type1.type == 4 )
+    {
+        tex <- sub( "mean.1.1", sprintf( formatter, cgd$intervals[[1]][[1]]$mean ), tex.val.sub.4 )
+        tex <- sub( "sd.1.1", sprintf( formatter, cgd$intervals[[1]][[1]]$sd ), tex )
 
-		if ( cgd$is.uni.mean() )
-		{
-			tex <- sub( "mean.1.2", "\\\\mu_{1,1}", tex )
-			tex <- sub( "mean.2.1", "\\\\mu_{1,1}", tex )
-			tex <- sub( "mean.2.2", "\\\\mu_{1,1}", tex )
-		}
-		else
-		{
-			tex <- sub( "mean.1.2", sprintf( formatter, cgd$intervals[[1]][[2]]$mean ), tex )
-			tex <- sub( "mean.2.1", sprintf( formatter, cgd$intervals[[2]][[1]]$mean ), tex )
-			tex <- sub( "mean.2.2", sprintf( formatter, cgd$intervals[[2]][[2]]$mean ), tex )
-		}
+        if ( cgd$is.uni.mean() )
+        {
+            tex <- sub( "mean.1.2", "\\\\mu_{1,1}", tex )
+            tex <- sub( "mean.2.1", "\\\\mu_{1,1}", tex )
+            tex <- sub( "mean.2.2", "\\\\mu_{1,1}", tex )
+        }
+        else
+        {
+            tex <- sub( "mean.1.2", sprintf( formatter, cgd$intervals[[1]][[2]]$mean ), tex )
+            tex <- sub( "mean.2.1", sprintf( formatter, cgd$intervals[[2]][[1]]$mean ), tex )
+            tex <- sub( "mean.2.2", sprintf( formatter, cgd$intervals[[2]][[2]]$mean ), tex )
+        }
 
-		if ( cgd$is.uni.sigma() )
-		{
-			tex <- sub( "sd.1.2", "\\\\sigma_{1,1}", tex )
-			tex <- sub( "sd.2.1", "\\\\sigma_{1,1}", tex )
-			tex <- sub( "sd.2.2", "\\\\sigma_{1,1}", tex )
-		}
-		else
-		{
-			tex <- sub( "sd.1.2", sprintf( formatter, cgd$intervals[[1]][[2]]$sd ), tex )
-			tex <- sub( "sd.2.1", sprintf( formatter, cgd$intervals[[2]][[1]]$sd ), tex )
-			tex <- sub( "sd.2.2", sprintf( formatter, cgd$intervals[[2]][[2]]$sd ), tex )
-		}
-	}
+        if ( cgd$is.uni.sigma() )
+        {
+            tex <- sub( "sd.1.2", "\\\\sigma_{1,1}", tex )
+            tex <- sub( "sd.2.1", "\\\\sigma_{1,1}", tex )
+            tex <- sub( "sd.2.2", "\\\\sigma_{1,1}", tex )
+        }
+        else
+        {
+            tex <- sub( "sd.1.2", sprintf( formatter, cgd$intervals[[1]][[2]]$sd ), tex )
+            tex <- sub( "sd.2.1", sprintf( formatter, cgd$intervals[[2]][[1]]$sd ), tex )
+            tex <- sub( "sd.2.2", sprintf( formatter, cgd$intervals[[2]][[2]]$sd ), tex )
+        }
+    }
 
-	return ( tex )
+    return ( tex )
 }

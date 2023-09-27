@@ -25,7 +25,7 @@ cgd:::kinds の要素の文字列か、またはそのインデックス番号�
  cgd.kind.index( cgd:::kinds )
  cgd.kind.index( 1:16 )
  cgd.kind.index( 6 )
- cgd.kind.index( "3-Mean-Differed-Sigma-Differed Vertical Gradational Distribution" )
+ cgd.kind.index( "3-Mean-Differed Sigma-Differed Vertical Gradational Distribution" )
 
  a <- CGD$new()
  cgd.kind.index( a )

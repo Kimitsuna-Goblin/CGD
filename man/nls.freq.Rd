@@ -178,7 +178,7 @@ NULL の場合は、 type1.type フィールドの値を変更しない。
  plot.freq.and.d( a, x, freq, total )
 
  a$nls.freq( x, freq, total,
-             kind = "2-Mean-Equaled-Sigma-Differed Vertical Gradational Distribution" )
+             kind = "2-Mean-Equaled Sigma-Differed Vertical Gradational Distribution" )
  a
  plot.freq.and.d( a, x, freq, total )
 
